@@ -1,6 +1,8 @@
 #ifndef resource_h
 #define resource_h
 
+#define IDI_MAIN                        100
+
 #define IDD_ABOUT                       108
 #define ID_MAIN                         109
 #define ID_COLOR_SPLITBAR               109
@@ -15,7 +17,6 @@
 #define IDS_REGVIEW                     113
 #define IDD_GOTOLINE                    114
 #define IDS_STACKVIEW                   114
-#define IDB_CAMEL                       115
 #define IDD_PHER                        117
 #define IDD_BREAKPOINT                  118
 #define IDC_LIST1                       1002
@@ -71,7 +72,6 @@
 #define IDM_DEBUG						10006
 #define IDM_CONNECT                     10007
 #define IDM_DISCONNECT                  10008
-//#define IDM_EXIT                        10009
 
 #define IDB_CHIP                        5031
 #ifdef APSTUDIO_INVOKED

@@ -1,45 +1,84 @@
-//Microsoft Developer Studio generated resource script.
-//
 #include "../resource.h"
 
-#define APSTUDIO_READONLY_SYMBOLS
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 2 resource.
-//
 #include <windows.h>
 
-/////////////////////////////////////////////////////////////////////////////
-#undef APSTUDIO_READONLY_SYMBOLS
-
-/////////////////////////////////////////////////////////////////////////////
-// Japanese resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
-#ifdef _WIN32
-LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
-#pragma code_page(932)
-#endif //_WIN32
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Bitmap
-//
-
+// 位图
 IDB_TOOLBAR_MAIN        BITMAP  DISCARDABLE     "toolbar.bmp"
 IDB_CHIP                BITMAP  DISCARDABLE     "chips.bmp"
-#endif    // Japanese resources
-/////////////////////////////////////////////////////////////////////////////
 
+// 图标
+IDI_MAIN                 ICON    DISCARDABLE     "generic.ico"
 
-/////////////////////////////////////////////////////////////////////////////
-// Chinese (P.R.C.) resources
+// 主菜单
+ID_MAIN MENU DISCARDABLE 
+BEGIN
+    POPUP "文件(&F)"
+    BEGIN
+        MENUITEM "加载文件...",                 IDM_FILE_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "保存文件映像...",             IDM_FILE_DUMP
+        MENUITEM "保存汇编文件...",             IDM_FILE_SAVESOURCE
+        MENUITEM SEPARATOR
+        MENUITEM "关闭",                        IDM_FILE_CLOSE
+        MENUITEM SEPARATOR
+        MENUITEM "退出",                        IDM_EXIT
+    END
+    POPUP "查看(&V)"
+    BEGIN
+        MENUITEM "Toolbar",                     IDM_VIEW_TOOLBAR
+        MENUITEM SEPARATOR
+        MENUITEM "Font...",                     IDM_VIEW_FONT
+        MENUITEM "Color...",                    IDM_VIEW_COLOR
+        MENUITEM SEPARATOR
+        MENUITEM "Fullscreen",                  IDM_VIEW_FULLSCREEN
+        MENUITEM "Saty Top",                    IDM_STAY
+    END
+    POPUP "模拟(&E)"
+    BEGIN
+        MENUITEM "重新启动",                    ID_MENUITEM4024
+        MENUITEM "运行",                        ID_MENUITEM4028
+        MENUITEM SEPARATOR
+        MENUITEM "单步                  F7",    IDM_EXE_RUN
+        MENUITEM SEPARATOR
+        MENUITEM "转到...",                     IDM_VIEW_GOTOLINE
+        MENUITEM "断点",                        IDM_EMU_SETBREAK
+    END
+    POPUP "选项(&O)"
+    BEGIN
+        MENUITEM "& 协议调试....",              IDM_PROTOCAL_DEBUG
+    END
+    POPUP "&帮助"
+    BEGIN
+        MENUITEM "&索引",                       IDM_HELP
+        MENUITEM "&关于...",                    IDM_ABOUT
+    END
+END
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
-#ifdef _WIN32
-LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
-#pragma code_page(936)
-#endif //_WIN32
+// 调试菜单
+IDM_DEBUG MENU DISCARDABLE 
+BEGIN
+    POPUP "网络(&N)"
+    BEGIN
+        MENUITEM "连接(&C)",                    IDM_CONNECT
+        MENUITEM "断开[&D]",                    IDM_DISCONNECT
+    END
+END
+
+// 符号表
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_COLOR_SPLITBAR       "Split bar"
+    ID_COLOR_CURLINE        "Current line"
+    IDS_DATAVIEW            "Data View"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_CODEVIEW            "Code View"
+    IDS_REGVIEW             "Register View"
+    IDS_STACKVIEW           "Stack View"
+END
+
 
 // 跳转到指定行
 IDD_GOTOLINE DIALOGEX 0, 0, 187, 68
@@ -85,142 +124,20 @@ BEGIN
     VK_F9,          IDM_EXE_BRK,            VIRTKEY, NOINVERT
 END
 
-#ifndef _MAC
-/////////////////////////////////////////////////////////////////////////////
-//
-// Version
-//
-
-VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
- FILEFLAGSMASK 0x3fL
-#ifdef _DEBUG
- FILEFLAGS 0x1L
-#else
- FILEFLAGS 0x0L
-#endif
- FILEOS 0x40004L
- FILETYPE 0x1L
- FILESUBTYPE 0x0L
-BEGIN
-    BLOCK "StringFileInfo"
-    BEGIN
-        BLOCK "080404b0"
-        BEGIN
-            VALUE "Comments", "\0"
-            VALUE "CompanyName", "www.pirate.net\0"
-            VALUE "FileDescription", "simu51\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "simu51\0"
-            VALUE "LegalCopyright", "Copyright ? 2006\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "simu51.exe\0"
-            VALUE "PrivateBuild", "\0"
-            VALUE "ProductName", "simu51\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
-            VALUE "SpecialBuild", "\0"
-        END
-    END
-    BLOCK "VarFileInfo"
-    BEGIN
-        VALUE "Translation", 0x804, 1200
-    END
-END
-
-#endif    // !_MAC
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Menu
-//
-
-ID_MAIN MENU DISCARDABLE 
-BEGIN
-    POPUP "文件(&F)"
-    BEGIN
-        MENUITEM "加载文件...",                 IDM_FILE_OPEN
-        MENUITEM SEPARATOR
-        MENUITEM "保存文件映像...",             IDM_FILE_DUMP
-        MENUITEM "保存汇编文件...",             IDM_FILE_SAVESOURCE
-        MENUITEM SEPARATOR
-        MENUITEM "关闭",                        IDM_FILE_CLOSE
-        MENUITEM SEPARATOR
-        MENUITEM "退出",                        IDM_EXIT
-    END
-    POPUP "查看(&V)"
-    BEGIN
-        MENUITEM "Toolbar",                     IDM_VIEW_TOOLBAR
-        MENUITEM SEPARATOR
-        MENUITEM "Font...",                     IDM_VIEW_FONT
-        MENUITEM "Color...",                    IDM_VIEW_COLOR
-        MENUITEM SEPARATOR
-        MENUITEM "Fullscreen",                  IDM_VIEW_FULLSCREEN
-        MENUITEM "Saty Top",                    IDM_STAY
-    END
-    POPUP "模拟(&E)"
-    BEGIN
-        MENUITEM "重新启动",                    ID_MENUITEM4024
-        MENUITEM "运行",                        ID_MENUITEM4028
-        MENUITEM SEPARATOR
-        MENUITEM "单步                  F7",    IDM_EXE_RUN
-        MENUITEM SEPARATOR
-        MENUITEM "转到...",                     IDM_VIEW_GOTOLINE
-        MENUITEM "断点",                        IDM_EMU_SETBREAK
-    END
-    POPUP "选项(&O)"
-    BEGIN
-        MENUITEM "& 协议调试....",              IDM_PROTOCAL_DEBUG
-    END
-    POPUP "&帮助"
-    BEGIN
-        MENUITEM "&索引",                       IDM_HELP
-        MENUITEM "&关于...",                    IDM_ABOUT
-    END
-END
-
-IDM_DEBUG MENU DISCARDABLE 
-BEGIN
-    POPUP "网络(&N)"
-    BEGIN
-        MENUITEM "连接(&C)",                    IDM_CONNECT
-        MENUITEM "断开[&D]",                    IDM_DISCONNECT
-    END
-END
-
-#endif
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
-#endif //_WIN32
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Bitmap
-//
-
-IDB_CAMEL               BITMAP  DISCARDABLE     "camel.bmp"
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
+// 关于
 IDD_ABOUT DIALOGEX 20, 20, 175, 75
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_TOOLWINDOW | WS_EX_STATICEDGE
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,67,57,50,14,WS_GROUP
-    CONTROL         115,IDC_RS,"Static",SS_BITMAP | WS_GROUP,7,7,20,20
-    CTEXT           "Information box",IDC_STATIC,43,11,64,11
-    CTEXT           "Simu51 project",IDC_STATIC,21,30,103,11
-    CTEXT           "test information for Simu51",IDC_STATIC,3,44,147,10
+    CONTROL         100,IDC_RS,"Static",SS_BITMAP | WS_GROUP,7,7,20,20
+    CTEXT           "http://warmode.net",IDC_STATIC,43,11,64,11
+    CTEXT           "wedis",IDC_STATIC,21,30,103,11
+    CTEXT           "wedis",IDC_STATIC,3,44,147,10
 END
 
+// 硬件
 IDD_HARDWARE DIALOGEX 0, 0, 253, 184
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_TOOLWINDOW
@@ -250,6 +167,7 @@ BEGIN
     PUSHBUTTON      "Add new Device",IDC_BUTTON1,139,143,61,14
 END
 
+// 字体
 IDD_FONT DIALOGEX 0, 0, 102, 77
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
 EXSTYLE WS_EX_TOOLWINDOW
@@ -257,6 +175,7 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
 END
 
+// 颜色
 IDD_COLOR DIALOGEX 0, 0, 201, 133
 STYLE DS_ABSALIGN | DS_SYSMODAL | DS_MODALFRAME | DS_SETFOREGROUND | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_TOOLWINDOW | WS_EX_STATICEDGE
@@ -274,6 +193,7 @@ BEGIN
     LTEXT           "backcolor",IDC_STATIC,135,49,53,11
 END
 
+// 周边
 IDD_PHER DIALOG DISCARDABLE  0, 0, 245, 180
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Dialog"
@@ -281,58 +201,36 @@ FONT 8, "MS Sans Serif"
 BEGIN
 END
 
-
-#ifdef APSTUDIO_INVOKED
-
-1 TEXTINCLUDE DISCARDABLE 
+// 版本信息
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+ FILEFLAGS 0x0L
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
 BEGIN
-    "resource.h\0"
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080404b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "warmcode.net\0"
+            VALUE "FileDescription", "wedis\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "wedis\0"
+            VALUE "LegalCopyright", "Copyright ? 20120\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "wedis.exe\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "wedis\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 1200
+    END
 END
-
-2 TEXTINCLUDE DISCARDABLE 
-BEGIN
-    "#include <windows.h>\r\n"
-    "\0"
-END
-
-3 TEXTINCLUDE DISCARDABLE 
-BEGIN
-    "\r\n"
-    "\0"
-END
-
-#endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Icon
-//
-
-// Icon with lowest ID value placed first to ensure application icon
-// remains consistent on all systems.
-ID_MAIN                 ICON    DISCARDABLE     "generic.ico"
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// String Table
-//
-
-STRINGTABLE DISCARDABLE 
-BEGIN
-    ID_COLOR_SPLITBAR       "Split bar"
-    ID_COLOR_CURLINE        "Current line"
-    IDS_DATAVIEW            "Data View"
-END
-
-STRINGTABLE DISCARDABLE 
-BEGIN
-    IDS_CODEVIEW            "Code View"
-    IDS_REGVIEW             "Register View"
-    IDS_STACKVIEW           "Stack View"
-END
-
-#endif    // English (U.S.) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
