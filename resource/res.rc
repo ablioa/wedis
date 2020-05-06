@@ -1,0 +1,338 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "../resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include <windows.h>
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Japanese resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
+#ifdef _WIN32
+LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
+#pragma code_page(932)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_TOOLBAR_MAIN        BITMAP  DISCARDABLE     "toolbar.bmp"
+IDB_CHIP                BITMAP  DISCARDABLE     "chips.bmp"
+#endif    // Japanese resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (P.R.C.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+#endif //_WIN32
+
+// 跳转到指定行
+IDD_GOTOLINE DIALOGEX 0, 0, 187, 68
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW | WS_EX_STATICEDGE
+CAPTION "goto line"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    LTEXT           "Please enter the address you want to jump\nto......",
+                    IDC_STATIC,9,7,170,18
+    EDITTEXT        IDC_ADDRESS,49,37,83,13,ES_AUTOHSCROLL | NOT WS_BORDER,
+                    WS_EX_STATICEDGE
+    LTEXT           "Address:",IDC_STATIC,11,39,36,11
+    PUSHBUTTON      "OK",IDC_BTN_OK,148,36,30,14
+END
+
+// 断点
+IDD_BREAKPOINT DIALOGEX 0, 0, 181, 77
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,144,34,29,14
+    EDITTEXT        IDC_BRKVALUE,11,31,108,16,ES_AUTOHSCROLL | NOT WS_BORDER,
+                    WS_EX_STATICEDGE
+    LTEXT           "Set Break Point at",IDC_STATIC,11,17,86,9
+END
+
+// 协议调试
+IDD_PROTOCAL_DEBUG DIALOGEX 0, 0, 300, 200
+STYLE DS_ABSALIGN | DS_SYSMODAL | DS_MODALFRAME | DS_SETFOREGROUND | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW | WS_EX_STATICEDGE
+CAPTION "协议调试"
+MENU IDM_DEBUG
+BEGIN
+    EDITTEXT        IDC_OUTDUMP,1,1,298,187,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY | ES_WANTRETURN | NOT WS_BORDER | WS_VSCROLL,WS_EX_STATICEDGE
+	EDITTEXT        IDC_MSGSEND,1,189,298,10,ES_MULTILINE | ES_AUTOHSCROLL | WS_DISABLED | NOT WS_BORDER,WS_EX_STATICEDGE
+END
+
+IDA_RUN ACCELERATORS DISCARDABLE 
+BEGIN
+    VK_F7,          IDM_EXE_RUN,            VIRTKEY, NOINVERT
+    VK_F9,          IDM_EXE_BRK,            VIRTKEY, NOINVERT
+END
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080404b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "www.pirate.net\0"
+            VALUE "FileDescription", "simu51\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "simu51\0"
+            VALUE "LegalCopyright", "Copyright ? 2006\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "simu51.exe\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "simu51\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+ID_MAIN MENU DISCARDABLE 
+BEGIN
+    POPUP "文件(&F)"
+    BEGIN
+        MENUITEM "加载文件...",                 IDM_FILE_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "保存文件映像...",             IDM_FILE_DUMP
+        MENUITEM "保存汇编文件...",             IDM_FILE_SAVESOURCE
+        MENUITEM SEPARATOR
+        MENUITEM "关闭",                        IDM_FILE_CLOSE
+        MENUITEM SEPARATOR
+        MENUITEM "退出",                        IDM_EXIT
+    END
+    POPUP "查看(&V)"
+    BEGIN
+        MENUITEM "Toolbar",                     IDM_VIEW_TOOLBAR
+        MENUITEM SEPARATOR
+        MENUITEM "Font...",                     IDM_VIEW_FONT
+        MENUITEM "Color...",                    IDM_VIEW_COLOR
+        MENUITEM SEPARATOR
+        MENUITEM "Fullscreen",                  IDM_VIEW_FULLSCREEN
+        MENUITEM "Saty Top",                    IDM_STAY
+    END
+    POPUP "模拟(&E)"
+    BEGIN
+        MENUITEM "重新启动",                    ID_MENUITEM4024
+        MENUITEM "运行",                        ID_MENUITEM4028
+        MENUITEM SEPARATOR
+        MENUITEM "单步                  F7",    IDM_EXE_RUN
+        MENUITEM SEPARATOR
+        MENUITEM "转到...",                     IDM_VIEW_GOTOLINE
+        MENUITEM "断点",                        IDM_EMU_SETBREAK
+    END
+    POPUP "选项(&O)"
+    BEGIN
+        MENUITEM "& 协议调试....",              IDM_PROTOCAL_DEBUG
+    END
+    POPUP "&帮助"
+    BEGIN
+        MENUITEM "&索引",                       IDM_HELP
+        MENUITEM "&关于...",                    IDM_ABOUT
+    END
+END
+
+IDM_DEBUG MENU DISCARDABLE 
+BEGIN
+    POPUP "网络(&N)"
+    BEGIN
+        MENUITEM "连接(&C)",                    IDM_CONNECT
+        MENUITEM "断开[&D]",                    IDM_DISCONNECT
+    END
+END
+
+#endif
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_CAMEL               BITMAP  DISCARDABLE     "camel.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUT DIALOGEX 20, 20, 175, 75
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW | WS_EX_STATICEDGE
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,67,57,50,14,WS_GROUP
+    CONTROL         115,IDC_RS,"Static",SS_BITMAP | WS_GROUP,7,7,20,20
+    CTEXT           "Information box",IDC_STATIC,43,11,64,11
+    CTEXT           "Simu51 project",IDC_STATIC,21,30,103,11
+    CTEXT           "test information for Simu51",IDC_STATIC,3,44,147,10
+END
+
+IDD_HARDWARE DIALOGEX 0, 0, 253, 184
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+CAPTION "Hardware"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,48,168,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,151,168,50,14
+    LISTBOX         IDC_LIST1,4,2,128,157,LBS_SORT | LBS_NOINTEGRALHEIGHT | 
+                    NOT WS_BORDER | WS_VSCROLL | WS_TABSTOP,WS_EX_STATICEDGE
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,164,251,1
+    EDITTEXT        IDC_EDIT3,178,12,40,12,ES_AUTOHSCROLL | WS_DISABLED | 
+                    NOT WS_BORDER,WS_EX_STATICEDGE
+    LTEXT           "ROM SIZE",IDC_STATIC,136,14,37,18
+    LTEXT           "Clock Freq",IDC_STATIC,135,36,37,11
+    EDITTEXT        IDC_EDIT4,178,35,39,12,ES_AUTOHSCROLL | WS_DISABLED | 
+                    NOT WS_BORDER,WS_EX_STATICEDGE
+    EDITTEXT        IDC_EDIT1,178,57,40,13,ES_AUTOHSCROLL | WS_DISABLED | 
+                    NOT WS_BORDER,WS_EX_STATICEDGE
+    EDITTEXT        IDC_EDIT2,178,97,40,13,ES_AUTOHSCROLL | WS_DISABLED | 
+                    NOT WS_BORDER,WS_EX_STATICEDGE
+    EDITTEXT        IDC_EDIT5,178,77,40,13,ES_AUTOHSCROLL | WS_DISABLED | 
+                    NOT WS_BORDER,WS_EX_STATICEDGE
+    EDITTEXT        IDC_EDIT6,178,116,40,13,ES_AUTOHSCROLL | WS_DISABLED | 
+                    NOT WS_BORDER,WS_EX_STATICEDGE
+    LTEXT           "I/O lines",IDC_STATIC,137,59,36,16
+    PUSHBUTTON      "Add new Device",IDC_BUTTON1,139,143,61,14
+END
+
+IDD_FONT DIALOGEX 0, 0, 102, 77
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+EXSTYLE WS_EX_TOOLWINDOW
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+END
+
+IDD_COLOR DIALOGEX 0, 0, 201, 133
+STYLE DS_ABSALIGN | DS_SYSMODAL | DS_MODALFRAME | DS_SETFOREGROUND | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW | WS_EX_STATICEDGE
+CAPTION "Set Color"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    PUSHBUTTON      "OK",IDOK,55,115,40,15,0,WS_EX_STATICEDGE
+    PUSHBUTTON      "Cancel",IDCANCEL,119,114,38,16,0,WS_EX_STATICEDGE
+    LISTBOX         IDC_LST_COLORS,4,5,120,101,LBS_NOINTEGRALHEIGHT | NOT 
+                    WS_BORDER | WS_VSCROLL | WS_TABSTOP,WS_EX_TRANSPARENT | 
+                    WS_EX_STATICEDGE
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,5,111,189,1
+    GROUPBOX        "color",IDC_STATIC,126,1,73,91
+    LTEXT           "forecolor",IDC_STATIC,135,15,43,9
+    LTEXT           "backcolor",IDC_STATIC,135,49,53,11
+END
+
+IDD_PHER DIALOG DISCARDABLE  0, 0, 245, 180
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif"
+BEGIN
+END
+
+
+#ifdef APSTUDIO_INVOKED
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include <windows.h>\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+ID_MAIN                 ICON    DISCARDABLE     "generic.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_COLOR_SPLITBAR       "Split bar"
+    ID_COLOR_CURLINE        "Current line"
+    IDS_DATAVIEW            "Data View"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_CODEVIEW            "Code View"
+    IDS_REGVIEW             "Register View"
+    IDS_STACKVIEW           "Stack View"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
