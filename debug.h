@@ -13,8 +13,6 @@
 #define REDIS_SERVER "192.168.1.9"
 #define REDIS_PORT   6379
 
-//define REDIS_SERVER "127.0.0.1"
-//define REDIS_PORT   9999
 
 #define ERR_NORMAL					0x0000
 #define ERR_CANNOT_CONNECTED		0X0001
@@ -45,33 +43,33 @@ public:
 	DumpMessage(long Err_Code);
 };
 
-class TcpClient{	
+class TcpClient{
     private:
     	char *Buff;
-    	
+
 		int socketid;
-    	
+
 		struct sockaddr_in serv_addr;
-    	
+
 		WSADATA wsa;
 
     	bool bconnect;
-    
+
     public:
 		Exception *excep;
-    	
+
     	TcpClient(Exception *excep);
-    	
+
     	~TcpClient();
-    	
+
     	int init();
-    	
+
     	int connect_to_server(HWND hwnd);
-    	
+
     	void close_connect();
-    	
+
     	int senddata(char *buff,size_t size,int flags);
-    	
+
     	int receivedata();
 
 		int getskid();
@@ -84,19 +82,6 @@ class TcpClient{
 
 };
 
-
-typedef struct{
-	HWND lastHwnd;
-
-	WNDPROC wndProc;
-
-	TcpClient * tcpClient;
-}Command;
-
-
-LRESULT CALLBACK DebugWindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
-
-BOOL CALLBACK SendBoxProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam);
 char * build_comment(const char * text,const char * pack);
 
 #endif

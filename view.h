@@ -6,8 +6,8 @@
 #include <windows.h>
 #include "include/smctrl.h"
 #include "resource.h"
-#include "common.h"
 #include "include/scintilla.h"
+#include "callbacks.h"
 
 #include <stdio.h>
 
@@ -45,6 +45,28 @@ typedef struct{
 	int downSize;
 }SouthSpliter;
 
+typedef struct{
+	HWND dataViewHwnd;
+	HWND exportBtnHwnd;
+	HWND saveBtnHwnd;
+	HWND viewTypeHwnd;
+
+	HWND reloadBtnHwnd;
+	HWND removeBtnHwnd;
+	HWND ttlBtnHwnd;
+	HWND renameBtnHwnd;
+	HWND keyEditHwnd;
+
+	WNDPROC ttlBtnProc;
+	WNDPROC exportBtnProc;
+}DataView;
+
+typedef struct{
+	HTREEITEM hItem;
+
+	int treeIndex;
+} TreeNode;
+
 class View{
 	private:
 		HWND _hwnd;
@@ -67,18 +89,12 @@ class View{
 	    VerticalSpliter vs;
 	    SouthSpliter southSpliter;
 
-		// 动态数据
-		//char * d1 = "AT98C51";
-		//char * d2 = "AT89C52";
-		//char * d3 = "AT89S51";
-		//char * d4 = "AT89S52";
-
 	public:
 		View(HWND hwnd):_hwnd(hwnd){
 		    connectionAreaWitdh = CONNECTION_AREA_WIDTH;
-
-
 		}
+
+		HWND getTreeHwnd(){return connectionHwnd;}
 
 		void CreateView();
 		void Size();

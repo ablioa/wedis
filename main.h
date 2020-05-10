@@ -1,23 +1,47 @@
 #ifndef _main_h
 #define _main_h
-//------------------------------------
-//  main.h
-//  Generic Windows Program
-//  (c) Reliable Software, 1997, 98
-//------------------------------------
 
 #include <windows.h>
 
-#include "control.h"
+#include "view.h"
 #include "resource.h"
 
 #include "debug.h"
 
-LRESULT CALLBACK MainWndProc
-   (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+typedef struct{
+	TcpClient * tcpClient;
 
-BOOL CALLBACK AboutDlgProc
-   (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+	View * view;
+
+	HMENU hDev;
+
+	HWND logHwnd;
+}MainModel;
+
+typedef struct{
+	HWND logHwnd;
+
+	HWND cmdHwnd;
+
+	WNDPROC defaultCmdProc;
+
+	MainModel * mainModel;
+}ConsoleView;
+
+LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+BOOL CALLBACK AboutDlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+BOOL CALLBACK GoToLineDlgProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam);
+
+void initpan();
+
+
+void command(HWND _hwnd,int cmd);
+
+LPTSTR mGetOpenFileName(HWND hwnd);
+
+LPTSTR mGetSaveFileName(HWND hwnd);
 
 #endif
 

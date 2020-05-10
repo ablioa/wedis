@@ -94,7 +94,7 @@ void View::Size()
 
 void View::buildToolBar(HWND parent){
     long oldstyle;
-    TBBUTTON tbtn[20] = {};
+    TBBUTTON tbtn[12] = {};
 	for(int ix = 0; ix < 12 ;ix++){
 		ZeroMemory(&tbtn[ix],sizeof(TBBUTTON));
 		tbtn[ix].idCommand = 0;//idCommand
@@ -119,11 +119,11 @@ void View::buildToolBar(HWND parent){
 	toolBarHwnd=CreateToolbarEx(_hwnd,
 		WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT,
 		1,
-		20,
+		12,
 		hInst,
 		IDB_TOOLBAR_MAIN,
 		tbtn,
-		20,
+		12,
 		16,16,16,16,sizeof(TBBUTTON));
 
 	oldstyle = GetWindowLong(toolBarHwnd,GWL_STYLE);
@@ -175,23 +175,60 @@ void View::initDataView(HWND _hdView){
     SendMessage(_hdView,SCI_SETREADONLY,true,0);
 }
 
-void View::buildDataView(HWND _hwnd){
-    RECT rt;
+//void View::buildDataView(HWND _hwnd){
+//    RECT rt;
+//    GetClientRect(_hwnd,&rt);
+//    HINSTANCE hinst = (HINSTANCE)GetWindowLong(_hwnd,GWL_HINSTANCE);
+//
+//    int dataAreaWidth = rt.right-rt.left - 200 -2;
+//    dataHwnd = CreateWindowEx(0,
+//			"Scintilla","",
+//			WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_CLIPCHILDREN | !WS_BORDER,
+//			connectionAreaWitdh,
+//			toolbarHeight,
+//			dataAreaWidth,
+//			rt.bottom-rt.left-toolbarHeight -getAttributeHeight(),
+//			_hwnd,NULL,hinst,NULL);
+//
+//    initDataView(dataHwnd);
+//}
+
+void View::buildDataView(HWND hwnd){
+	RECT rt;
     GetClientRect(_hwnd,&rt);
     HINSTANCE hinst = (HINSTANCE)GetWindowLong(_hwnd,GWL_HINSTANCE);
 
-    int dataAreaWidth = rt.right-rt.left - 200 -2;
-    dataHwnd = CreateWindowEx(0,
-			"Scintilla","",
-			WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_CLIPCHILDREN | !WS_BORDER,
-			connectionAreaWitdh,
-			toolbarHeight,
-			dataAreaWidth,
-			rt.bottom-rt.left-toolbarHeight -getAttributeHeight(),
-			_hwnd,NULL,hinst,NULL);
+	int dataAreaWidth = rt.right-rt.left - 200 -2;
 
-    initDataView(dataHwnd);
+    //dataHwnd=CreateWindowEx(0, "EDIT",
+    //           NULL, 
+    //           WS_CHILD | WS_VISIBLE | WS_VSCROLL | 
+    //           ES_LEFT | ES_MULTILINE | ES_AUTOVSCROLL,
+	//			connectionAreaWitdh,
+	//			toolbarHeight,
+	//			dataAreaWidth,
+	//			rt.bottom-rt.left-toolbarHeight -getAttributeHeight(),
+    //           hwnd,
+    //           0,
+    //           hinst,
+    //           NULL);
+
+	dataHwnd=CreateWindowEx(0, "wowowo",
+               NULL, 
+               WS_CHILD | WS_VISIBLE,
+				connectionAreaWitdh,
+				toolbarHeight,
+				dataAreaWidth,
+				rt.bottom-rt.left-toolbarHeight -getAttributeHeight(),
+               hwnd,
+               0,
+               hinst,
+               NULL);
+
+	initDataView(dataHwnd);
+
 }
+
 
 void View::initVerticalSpliter(HWND _parent,HWND _hwnd){
 	vs.hwnd = _hwnd;
@@ -312,13 +349,35 @@ void View::buildAttributeView(HWND parent){
 	GetClientRect(_hwnd,&rt);
 	getConnectionRect(&rt,&connctionRect);
 
-    attributeHwnd = CreateWindowEx(WS_EX_CLIENTEDGE, "SysListView32", NULL,
-                    WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS | LVS_SORTASCENDING,
+    //attributeHwnd = CreateWindowEx(WS_EX_CLIENTEDGE, "SysListView32", NULL,
+    //                WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS | LVS_SORTASCENDING,
+    //                connctionRect.right + getSpliterWidth(),
+    //                rt.bottom - rt.top - statusbarHeight - 200,
+    //                rt.right-rt.left - 202,
+    //                200,
+    //                parent, NULL, hinst, NULL);
+
+	//dataHwnd=CreateWindowEx(0, "wowowo",
+    //           NULL, 
+    //           WS_CHILD | WS_VISIBLE,
+	//			connectionAreaWitdh,
+	//			toolbarHeight,
+	//			dataAreaWidth,
+	//			rt.bottom-rt.left-toolbarHeight -getAttributeHeight(),
+    //           hwnd,
+    //           0,
+    //           hinst,
+    //           NULL);
+
+    attributeHwnd = CreateWindowEx(0, "CONSOLE_WINDOW", NULL,
+                    WS_CHILD | WS_VISIBLE,
                     connctionRect.right + getSpliterWidth(),
                     rt.bottom - rt.top - statusbarHeight - 200,
                     rt.right-rt.left - 202,
                     200,
                     parent, NULL, hinst, NULL);
+
+	//"CONSOLE_WINDOW"
 
 	//LV_COLUMN lvc;
 	//lvc.mask=LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM | LVCF_WIDTH | LVCF_FMT; //LVCF_FMT|LVCF_WIDTH|LVCF_TEXT|LVCF_SUBITEM
@@ -361,7 +420,7 @@ void View::buildConnectionView(HWND _hwnd){
 	GetWindowRect(_hwnd,&rt);
 
 	connectionHwnd = CreateWindowEx(0,"SysTreeView32",0,
-		WS_CHILD |WS_BORDER | WS_VISIBLE | !TVS_HASLINES | TVS_HASBUTTONS | TVS_LINESATROOT,
+		WS_CHILD |WS_BORDER | WS_VISIBLE | TVIF_TEXT | TVS_HASLINES  | TVS_LINESATROOT,
         	0,toolbarHeight,
 			connectionAreaWitdh,rt.bottom-rt.left-statusbarHeight - statusbarHeight,
         _hwnd,NULL,hinst,0);
@@ -371,22 +430,29 @@ void View::buildConnectionView(HWND _hwnd){
 	ImageList_Add(hImageList,hBitmap,NULL);
 	SendMessage(connectionHwnd,TVM_SETIMAGELIST,0,(LPARAM)hImageList);
 
+
+	//TreeNodeModel * model = buildTreeNodeModel();
+	//model->type =1;
+
 	tvinsert.hParent = NULL;
 	tvinsert.hInsertAfter=TVI_ROOT;
 	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE;
 	tvinsert.item.pszText = TEXT("CONNECTION->127.0.0.1:3389");
 	tvinsert.item.iImage=0;
 	tvinsert.item.iSelectedImage=0;
+//	tvinsert.item.lParam = (long)model;
 
 	HTREEITEM hpConn=(HTREEITEM)SendMessage(connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 	HTREEITEM hpDb;
-
 
 	char * dbname = (char *)malloc(sizeof(char)*128);
 	for(int ix =0; ix < 16;ix ++){
 		memset(dbname,0,sizeof(char) * 128);
 
 		sprintf(dbname,"db%d",ix);
+
+//		TreeNodeModel * model = buildTreeNodeModel();
+//		model->type =2;
 
 		tvinsert.item.iImage=1;
 		tvinsert.item.iSelectedImage=1;
@@ -404,7 +470,35 @@ void View::buildConnectionView(HWND _hwnd){
 		//	tvinsert.item.pszText=d4;
 		//	SendMessage(connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 		//}
+
+		//treeNodes[ix]->hItem = hpDb;
+		//treeNodes[ix]->treeIndex = ix;
 	}
 
 	free(dbname);
+}
+
+//extern TreeNode * treeNodes;
+//
+//TreeNodeModel * buildTreeNodeModel(){
+//    TreeNode * ret = (TreeNode*)malloc(sizeof(TreeNode));
+//	memset(ret,0,sizeof(TreeNode));
+//	return ret;
+//}
+//
+//void release(){
+//}
+
+
+void addTreeNode(HWND treeHwnd,HTREEITEM hParent,char * nodeName){
+	TV_INSERTSTRUCT tvinsert;
+
+	tvinsert.hParent = hParent;
+	tvinsert.hInsertAfter=TVI_LAST;
+	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE;
+	tvinsert.item.pszText = nodeName;
+	tvinsert.item.iImage=0;
+	tvinsert.item.iSelectedImage=0;
+
+	SendMessage(treeHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 }

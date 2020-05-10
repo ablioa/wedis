@@ -6,8 +6,6 @@ CFLAGS=-Wall -mwindows -Wreorder -Wwrite-strings -B include
 TARGET=output/wedis
 RESOURCE=output/main.res
 SRCS=callbacks.cpp \
-	common.cpp \
-	control.cpp \
 	main.cpp \
 	smconfig.cpp \
 	view.cpp \
