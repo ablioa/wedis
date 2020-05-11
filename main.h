@@ -16,6 +16,8 @@ typedef struct{
 	HMENU hDev;
 
 	HWND logHwnd;
+
+	HTREEITEM selectedNode;
 }MainModel;
 
 typedef struct{

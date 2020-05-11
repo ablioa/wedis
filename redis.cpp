@@ -1,5 +1,76 @@
 #include "redis.h"
 
+RedisReply * read_replay(char * text){
+	int cur = 0;
+	char ch = text[cur++];
+
+	RedisReply * rp = (RedisReply*)malloc(sizeof(RedisReply));
+	memset(rp,0,sizeof(RedisReply));
+    switch(ch){
+		case '+':{
+			rp->type=REPLY_STATUS;
+			rp->status=(char*)malloc(sizeof(char) * 256);
+			memset(rp->status,0,sizeof(char)*256);
+
+			int scur = 0;
+			while(text[cur] != 0x0d || text[cur+1] != 0x0a){
+			    rp->status[scur++] = text[cur];
+				cur++;
+			}
+			cur+=2;
+			break;
+		}
+		case '-':{
+			break;
+		}
+		case ':':{
+			break;
+		}
+		case '$':{
+			break;
+		}
+		case '*':{
+			rp->type=REPLY_MULTI;
+			char cnt[128]={0};
+			int scur = 0;
+			while(text[cur] >='0' && text[cur] <= '9'){
+			    cnt[scur++] = text[cur++];
+			}
+
+			cur+=3;
+			int count = atoi(cnt);
+
+			rp->bulkSize = count;
+			rp->bulks = (char **) malloc(sizeof(char*) * count);
+
+			int bulkCount=0;
+			for(int ix =0; ix < count; ix ++){
+				int scur = 0;
+				memset(cnt,0,128);
+			    while(text[cur] >='0' && text[cur] <= '9'){
+					cnt[scur++] = text[cur++];
+				}
+				cur+=2;
+				int mcount = atoi(cnt);
+
+				char * tup = (char *) malloc(sizeof(char)*mcount+1);
+				memset(tup,0,sizeof(char)*mcount+1);
+
+				for(int jx =0; jx < mcount; jx ++){
+					tup[jx]=text[cur++];
+				}
+
+				rp->bulks[bulkCount++] = tup;
+
+				cur+=3;
+			}
+			break;
+		}
+	}
+
+	return rp;
+}
+
 void init_command(CommandBlock * block){
     block->size = 0;
 	memset(block->list,0,sizeof(char *) * LENGTH_WORD);

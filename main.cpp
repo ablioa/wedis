@@ -6,8 +6,10 @@ TCHAR     szFrameClass[] = TEXT ("MdiFrame") ;
 
 #define WOWOWO "wowowo"
 #define CONSOLE_WINDOW "CONSOLE_WINDOW"
+
 BOOL CALLBACK exportBtnProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 	DataView * dataView = (DataView *)GetWindowLong(hwnd,GWL_USERDATA);
+	
 	switch(msg){
 		case WM_LBUTTONUP:{
 			char * fname = mGetOpenFileName(hwnd);
@@ -15,6 +17,7 @@ BOOL CALLBACK exportBtnProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 			break;
 		}
 	}
+
 	return CallWindowProc(dataView->exportBtnProc,hwnd,msg,wParam,lParam);;
 }
 
@@ -294,6 +297,8 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
     return msg.wParam;
 }
 
+
+
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
     //Controller * pCtrl = (Controller *)GetWindowLong(hwnd,GWL_USERDATA);
 	MainModel * mainModel = (MainModel *)GetWindowLong(hwnd,GWL_USERDATA);
@@ -341,50 +346,105 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 		}
 		case WM_NOTIFY:{
 			switch (((LPNMHDR) lParam)->code) {
+				case NM_DBLCLK:{
+					NM_TREEVIEW* lpnmh = (NM_TREEVIEW*) lParam;
+
+                    char * msg = (char*)malloc(128);
+                    memset(msg,0,128);
+
+					char * buf = (char*)malloc(128);
+                    memset(buf,0,128);
+					SetWindowText(hwnd,msg);
+
+					DWORD dwPos = GetMessagePos();
+					POINT pt;
+					pt.x = LOWORD(dwPos);
+					pt.y = HIWORD(dwPos);
+					ScreenToClient(mainModel->view->getTreeHwnd(), &pt);
+					TVHITTESTINFO ht = {0};
+					ht.pt = pt;
+					ht.flags = TVHT_ONITEM;
+					HTREEITEM hItem = TreeView_HitTest(mainModel->view->getTreeHwnd(), &ht);
+					TVITEM ti = {0};
+					ti.mask = TVIF_HANDLE | TVIF_TEXT | TVIF_PARAM;
+					ti.cchTextMax = 128;
+					ti.pszText = buf;
+					ti.hItem = hItem;
+					TreeView_GetItem(mainModel->view->getTreeHwnd(), &ti);
+
+					TreeNode * tn = (TreeNode*) ti.lParam;
+
+					if(tn->level == 2){
+					    char * scmds = (char*)malloc(sizeof(char)*128);
+					    memset(scmds,0,sizeof(char) * 128);
+					    sprintf(scmds,"select %d",tn->database);
+					    
+					    char * pppp = parse_command((char *)scmds,256);
+					    mainModel->tcpClient->senddata(pppp,strlen(pppp),0);
+					    
+					    memset(scmds,0,sizeof(char) * 128);
+					    sprintf(scmds,"keys *");
+					    pppp = parse_command((char *)scmds,256);
+					    mainModel->tcpClient->senddata(pppp,strlen(pppp),0);
+
+						mainModel->selectedNode = hItem;
+					}
+
+					if(tn->level == 3){
+						char * scmds = (char*)malloc(sizeof(char)*128);
+					    memset(scmds,0,sizeof(char) * 128);
+					    sprintf(scmds,"type %s",ti.pszText);
+
+						SetWindowText(hwnd,scmds);
+					    
+					    char * pppp = parse_command((char *)scmds,256);
+					    mainModel->tcpClient->senddata(pppp,strlen(pppp),0);
+					}
+
+
+					break;
+				}
 				case TVN_BEGINDRAG:
 				break;
 
 				case TVN_SELCHANGED:{
-
-					//TV_INSERTSTRUCT tvinsert;
+					//LPNMTREEVIEW pNMTreeView = (LPNMTREEVIEW)lParam;
+					//HTREEITEM treeNode = pNMTreeView->itemNew.hItem;
 					//
-					//HTREEITEM treeNode = (LPNMHDR) lParam;
-					//parent->pszText;
+					////char * buff = (char *)malloc(128);
+					/////memset(buff,0,128);
+					//
+					//TVITEM item ;
+					////item.pszText = buff;
+					//item.mask = TVIF_PARAM;
+					//item.cchTextMax = 128;
+					//item.hItem = treeNode;
+					//
+					//TreeView_GetItem(mainModel->view->getTreeHwnd(),&item);
+					//TreeNode * tn = (TreeNode*) item.lParam;
+					//
+					//if(tn->level=3){
+					//	SetWindowText(hwnd,"zxzx");
+					//}
 
-					LPNMTREEVIEW pNMTreeView = (LPNMTREEVIEW)lParam;
-					HTREEITEM treeNode = pNMTreeView->itemNew.hItem;
-
-					char * buff = (char *)malloc(128);
-					memset(buff,0,128);
-
-//					TreeNodeModel * nm = (TreeNodeModel*) malloc(sizeof(TreeNodeModel));
-//					memset(nm,0,sizeof(TreeNodeModel));
-//					TVM_GETITEM ;
-
-					TVITEM item ;
-					item.pszText = buff;
-					item.mask = TVIF_TEXT|TVIF_PARAM;
-					item.cchTextMax = 128;
-					item.hItem = treeNode;
-					//item.lParam = (long)nm;
-
-					//sendMessage(pCtrl->getTreeHwnd(),)
-					
-					TreeView_GetItem(mainModel->view->getTreeHwnd(),&item);
+                    //char * msg = (char*)malloc(128);
+                    //memset(msg,0,128);
+                    //sprintf(msg,"level:%d",tn->level);
+					//SetWindowText(hwnd,msg);
 
 //					TreeNodeModel * m = (TreeNodeModel *)(item.lParam);
-					if(strncmp("db",item.pszText,2) == 0){
-						TV_INSERTSTRUCT tvinsert;
-
-						tvinsert.hParent = treeNode;
-						tvinsert.hInsertAfter=TVI_LAST;
-						tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE;
-						tvinsert.item.pszText = ",,,,";
-						tvinsert.item.iImage=2;
-						tvinsert.item.iSelectedImage=2;
-
-						SendMessage(mainModel->view->getTreeHwnd(),TVM_INSERTITEM,0,(LPARAM)&tvinsert);
-					}
+					//if(strncmp("db",item.pszText,2) == 0){
+					//	TV_INSERTSTRUCT tvinsert;
+					//
+					//	tvinsert.hParent = treeNode;
+					//	tvinsert.hInsertAfter=TVI_LAST;
+					//	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE;
+					//	tvinsert.item.pszText = ",,,,";
+					//	tvinsert.item.iImage=2;
+					//	tvinsert.item.iSelectedImage=2;
+					//
+					//	SendMessage(mainModel->view->getTreeHwnd(),TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+					//}
 
 
 					/////////////////////////////////////////////////////
@@ -462,10 +522,37 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 					buff = mainModel->tcpClient->getbuff();
 					mainModel->tcpClient->receivedata();
 					
-					//hMsgDump = GetDlgItem(hwnd,IDC_OUTDUMP);
 					curLeng = GetWindowTextLength(mainModel->logHwnd);
 					SendMessage(mainModel->logHwnd,EM_SETSEL,curLeng,curLeng);
 					SendMessage(mainModel->logHwnd,EM_REPLACESEL,FALSE,(LONG)buff);
+
+					RedisReply * rp = read_replay(buff);
+
+					//char * buff1 = (char*) malloc(sizeof(char) * 128);
+					//memset(buff1,0,128);
+
+					//sprintf(buff1,"type: %d",rp->type);
+					//MessageBox(hwnd,buff1,"MW",MB_OK);
+
+					if(rp->type == REPLY_MULTI){
+						//TreeView_DeleteItem(mainModel->view->getTreeHwnd(),mainModel->selectedNode);
+						for(int ix =0;ix < rp->bulkSize; ix ++){
+					     	TV_INSERTSTRUCT tvinsert;
+					     
+					     	tvinsert.hParent = mainModel->selectedNode;
+					     	tvinsert.hInsertAfter=TVI_LAST;
+					     	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
+					     	tvinsert.item.pszText = rp->bulks[ix];
+					     	tvinsert.item.iImage=2;
+					     	tvinsert.item.iSelectedImage=2;
+
+							TreeNode * tn = buildTreeNode();
+							tn->level = 3;
+					        tvinsert.item.lParam= (LPARAM)tn;
+
+					     	SendMessage(mainModel->view->getTreeHwnd(),TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+					     }
+					}
 				}
 				break;
 

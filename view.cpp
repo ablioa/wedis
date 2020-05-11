@@ -436,10 +436,15 @@ void View::buildConnectionView(HWND _hwnd){
 
 	tvinsert.hParent = NULL;
 	tvinsert.hInsertAfter=TVI_ROOT;
-	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE;
+	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
 	tvinsert.item.pszText = TEXT("CONNECTION->127.0.0.1:3389");
 	tvinsert.item.iImage=0;
 	tvinsert.item.iSelectedImage=0;
+
+	TreeNode * tn = buildTreeNode();
+	tn->level = 1;
+	tvinsert.item.lParam=(LPARAM)tn;
+
 //	tvinsert.item.lParam = (long)model;
 
 	HTREEITEM hpConn=(HTREEITEM)SendMessage(connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
@@ -451,28 +456,18 @@ void View::buildConnectionView(HWND _hwnd){
 
 		sprintf(dbname,"db%d",ix);
 
-//		TreeNodeModel * model = buildTreeNodeModel();
-//		model->type =2;
-
 		tvinsert.item.iImage=1;
 		tvinsert.item.iSelectedImage=1;
 		tvinsert.hParent=hpConn;
 		tvinsert.hInsertAfter=TVI_LAST;
 		tvinsert.item.pszText= dbname;
-		hpDb=(HTREEITEM)SendMessage(connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+		TreeNode * tn = buildTreeNode();
+		tn->level = 2;
+		tn->database = ix;
+		tvinsert.item.lParam= (LPARAM)tn;
 
-		//for(int iy =0 ; iy < 8; iy ++){
-		//	tvinsert.hParent=hpDb;
-		//	tvinsert.item.iImage=2;
-		//	tvinsert.item.iSelectedImage=2;
-		//	tvinsert.item.pszText=d3;
-		//	SendMessage(connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
-		//	tvinsert.item.pszText=d4;
-		//	SendMessage(connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
-		//}
+		SendMessage(connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 
-		//treeNodes[ix]->hItem = hpDb;
-		//treeNodes[ix]->treeIndex = ix;
 	}
 
 	free(dbname);
@@ -501,4 +496,10 @@ void addTreeNode(HWND treeHwnd,HTREEITEM hParent,char * nodeName){
 	tvinsert.item.iSelectedImage=0;
 
 	SendMessage(treeHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+}
+
+TreeNode * buildTreeNode(){
+    TreeNode * node = (TreeNode *) malloc(sizeof(TreeNode));
+	memset(node,0,sizeof(TreeNode));
+	return node;
 }

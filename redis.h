@@ -18,6 +18,24 @@ typedef struct{
 	char * list[LENGTH_WORD];
 }CommandBlock;
 
+#define	REPLY_STATUS  0
+#define	REPLY_ERROR   1
+#define	REPLY_DIGITAL 2
+#define	REPLY_BULK    3
+#define	REPLY_MULTI   4
+
+typedef struct{
+	int     type;
+	char *  status;
+	char *  error;
+	int     digital;
+	char *  bulk;
+	char ** bulks;
+	int     bulkSize;
+}RedisReply;
+
+RedisReply * read_replay(char * text);
+
 void init_command(CommandBlock * block);
 
 void add_command(CommandBlock * block,char * word);

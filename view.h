@@ -62,10 +62,12 @@ typedef struct{
 }DataView;
 
 typedef struct{
-	HTREEITEM hItem;
+	int level;
+	int database;
+	char * key;
+}TreeNode;
 
-	int treeIndex;
-} TreeNode;
+TreeNode * buildTreeNode();
 
 class View{
 	private:
