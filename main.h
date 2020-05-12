@@ -6,13 +6,14 @@
 #include "view.h"
 #include "resource.h"
 
-#include "debug.h"
+#include "exception.h"
 #include "config.h"
+#include "connection.h"
 
 typedef struct{
-	TcpClient * tcpClient;
+	TcpConnection * connection;
 
-	View * view;
+	AppView * view;
 
 	HMENU hDev;
 
@@ -38,7 +39,6 @@ BOOL CALLBACK AboutDlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam
 BOOL CALLBACK GoToLineDlgProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam);
 
 void initpan();
-
 
 void command(HWND _hwnd,int cmd);
 

@@ -60,7 +60,8 @@ BOOL CALLBACK CmdBoxProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 					SendMessage(cmd->logHwnd,EM_SETSEL,curLeng,curLeng);
 					SendMessage(cmd->logHwnd,EM_REPLACESEL,FALSE,(LONG)comment);
 
-					cmd->mainModel->tcpClient->senddata(cmds,strlen(cmds),0);
+					//cmd->mainModel->tcpClient->senddata(cmds,strlen(cmds),0);
+                    connection_senddata(cmd->mainModel->connection,cmds,strlen(cmds),0);
 					//
 					//Command * pcmd = (Command *) GetWindowLong(hwnd,GWL_USERDATA);
 					//cmd->mainModel->tcpClient->senddata(cmds,strlen(cmds),0);
@@ -112,8 +113,8 @@ LRESULT CALLBACK consoleWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 
 		case WM_SIZE:{
 			GetClientRect(hwnd,&rect);
-			MoveWindow(consoleView->logHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top-24,true);
-			MoveWindow(consoleView->cmdHwnd,0,rect.bottom-rect.top-24,rect.right-rect.left,24,true);
+			MoveWindow(consoleView->logHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top-24,TRUE);
+			MoveWindow(consoleView->cmdHwnd,0,rect.bottom-rect.top-24,rect.right-rect.left,24,TRUE);
 			break;
 		}
 
@@ -187,15 +188,15 @@ LRESULT CALLBACK wowowProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam
 		case WM_SIZE:{
 			GetClientRect(dataHwnd,&rect);
 
-			MoveWindow(dataView->dataViewHwnd,5,34,rect.right-rect.left-5-5,rect.bottom-rect.top-68-5,true);
-			MoveWindow(dataView->exportBtnHwnd,rect.right-rect.left-60-5,rect.bottom-rect.top-24-5,60,24,true);
-			MoveWindow(dataView->saveBtnHwnd,rect.right-rect.left-125-5,rect.bottom-rect.top-24-5,60,24,true);
-			MoveWindow(dataView->viewTypeHwnd,rect.right-rect.left-120-5,5,120,24,true);
-			MoveWindow(dataView->reloadBtnHwnd,rect.right-rect.left-5-120-5-60,5,60,24,true);
-			MoveWindow(dataView->removeBtnHwnd,rect.right-rect.left-5-120-5-60-5-60,5,60,24,true);
-			MoveWindow(dataView->ttlBtnHwnd,rect.right-rect.left-5-120-5-60-5-60-5-60,5,60,24,true);
-			MoveWindow(dataView->renameBtnHwnd,rect.right-rect.left-5-120-5-60-5-60-5-60-5-60,5,60,24,true);
-			MoveWindow(dataView->keyEditHwnd,5,5,rect.right-rect.left-5-120-5-60-5-60-5-60-5-60-5-5,24,true);
+			MoveWindow(dataView->dataViewHwnd,5,34,rect.right-rect.left-5-5,rect.bottom-rect.top-68-5,TRUE);
+			MoveWindow(dataView->exportBtnHwnd,rect.right-rect.left-60-5,rect.bottom-rect.top-24-5,60,24,TRUE);
+			MoveWindow(dataView->saveBtnHwnd,rect.right-rect.left-125-5,rect.bottom-rect.top-24-5,60,24,TRUE);
+			MoveWindow(dataView->viewTypeHwnd,rect.right-rect.left-120-5,5,120,24,TRUE);
+			MoveWindow(dataView->reloadBtnHwnd,rect.right-rect.left-5-120-5-60,5,60,24,TRUE);
+			MoveWindow(dataView->removeBtnHwnd,rect.right-rect.left-5-120-5-60-5-60,5,60,24,TRUE);
+			MoveWindow(dataView->ttlBtnHwnd,rect.right-rect.left-5-120-5-60-5-60-5-60,5,60,24,TRUE);
+			MoveWindow(dataView->renameBtnHwnd,rect.right-rect.left-5-120-5-60-5-60-5-60-5-60,5,60,24,TRUE);
+			MoveWindow(dataView->keyEditHwnd,5,5,rect.right-rect.left-5-120-5-60-5-60-5-60-5-60-5-5,24,TRUE);
 
 			break;
 		}
@@ -299,8 +300,6 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
     return msg.wParam;
 }
 
-
-
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	MainModel * mainModel = (MainModel *)GetWindowLong(hwnd,GWL_USERDATA);
 
@@ -310,12 +309,11 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 			memset(mainModel,0,sizeof(MainModel));
             SetWindowLong(hwnd,GWL_USERDATA,(LONG)mainModel);
 
-			mainModel->view = new View(hwnd);
-			mainModel->view->CreateView();
+			mainModel->view = buildAppView(hwnd);//new View(hwnd);
+			CreateView(mainModel->view);
 
-			Exception * exception1 = new Exception(pp);
-			mainModel->tcpClient =  new TcpClient(exception1);
-			mainModel->tcpClient->connect_to_server(hwnd);
+			mainModel->connection =  build_connection();
+            connect_to_server(mainModel->connection,hwnd);
 
 			mainModel->hDev = CreatePopupMenu();
 
@@ -355,17 +353,17 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 					POINT pt;
 					pt.x = LOWORD(dwPos);
 					pt.y = HIWORD(dwPos);
-					ScreenToClient(mainModel->view->getTreeHwnd(), &pt);
+					ScreenToClient(mainModel->view->connectionHwnd, &pt);
 					TVHITTESTINFO ht = {0};
 					ht.pt = pt;
 					ht.flags = TVHT_ONITEM;
-					HTREEITEM hItem = TreeView_HitTest(mainModel->view->getTreeHwnd(), &ht);
+					HTREEITEM hItem = TreeView_HitTest(mainModel->view->connectionHwnd, &ht);
 					TVITEM ti = {0};
 					ti.mask = TVIF_HANDLE | TVIF_TEXT | TVIF_PARAM;
 					ti.cchTextMax = 128;
 					ti.pszText = buf;
 					ti.hItem = hItem;
-					TreeView_GetItem(mainModel->view->getTreeHwnd(), &ti);
+					TreeView_GetItem(mainModel->view->connectionHwnd, &ti);
 
 					TreeNode * tn = (TreeNode*) ti.lParam;
 
@@ -375,12 +373,14 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 					    sprintf(scmds,"select %d",tn->database);
 					    
 					    char * pppp = parse_command((char *)scmds,256);
-					    mainModel->tcpClient->senddata(pppp,strlen(pppp),0);
+					    //mainModel->tcpClient->senddata(pppp,strlen(pppp),0);
+                        connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
 					    
 					    memset(scmds,0,sizeof(char) * 128);
 					    sprintf(scmds,"keys *");
 					    pppp = parse_command((char *)scmds,256);
-					    mainModel->tcpClient->senddata(pppp,strlen(pppp),0);
+					    //mainModel->tcpClient->senddata(pppp,strlen(pppp),0);
+                        connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
 
 						mainModel->selectedNode = hItem;
 					}
@@ -393,7 +393,9 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 						SetWindowText(hwnd,scmds);
 					    
 					    char * pppp = parse_command((char *)scmds,256);
-					    mainModel->tcpClient->senddata(pppp,strlen(pppp),0);
+					    //mainModel->tcpClient->senddata(pppp,strlen(pppp),0);
+
+                        connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
 					}
 
 
@@ -414,14 +416,15 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 			return 0;
 		}
         case WM_SIZE:
-            mainModel->view->Size();
+            Size(mainModel->view);
 			UpdateWindow(hwnd);
             return 0;
 
-        case WM_PAINT:
+        case WM_PAINT:{
 			PAINTSTRUCT _paint;
 			BeginPaint(hwnd, &_paint);
 			EndPaint(hwnd, &_paint);
+        }
             return 0;
 
         case WM_COMMAND:
@@ -430,7 +433,8 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
             return 0;
 
         case WM_DESTROY:
-			mainModel->tcpClient->close_connect();
+			//mainModel->tcpClient->close_connect();
+            connection_close_connect(mainModel->connection);
             PostQuitMessage(0);
         return 0;
 
@@ -451,8 +455,9 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 					char *buff;
 //					HWND hMsgDump;
 					size_t curLeng;
-					buff = mainModel->tcpClient->getbuff();
-					mainModel->tcpClient->receivedata();
+					buff = connection_get_buffer(mainModel->connection);
+                    connection_receivedata(mainModel->connection);
+					//mainModel->tcpClient->receivedata();
 					
 					curLeng = GetWindowTextLength(mainModel->logHwnd);
 					SendMessage(mainModel->logHwnd,EM_SETSEL,curLeng,curLeng);
@@ -482,7 +487,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 							tn->level = 3;
 					        tvinsert.item.lParam= (LPARAM)tn;
 
-					     	SendMessage(mainModel->view->getTreeHwnd(),TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+					     	SendMessage(mainModel->view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 					     }
 					}
 				}
@@ -504,7 +509,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 		break;
     }
 
-    return ::DefWindowProc (hwnd, message, wParam, lParam);
+    return DefWindowProc (hwnd, message, wParam, lParam);
 }
 
 
@@ -560,7 +565,7 @@ void command(HWND _hwnd,int cmd){
 
 		case IDM_VIEW_GOTOLINE:
 				hInst= (HINSTANCE)GetWindowLong(_hwnd,GWL_HINSTANCE);
-				::DialogBox (hInst,
+				DialogBox (hInst,
 							 MAKEINTRESOURCE (IDD_GOTOLINE),
 							 _hwnd,
 							 GoToLineDlgProc);
@@ -569,8 +574,8 @@ void command(HWND _hwnd,int cmd){
 }
 
 LPTSTR mGetOpenFileName(HWND hwnd){
-	OPENFILENAME * ofn = new OPENFILENAME;
-	LPSTR fname = new char[MAX_PATH];
+    OPENFILENAME * ofn = (OPENFILENAME *)malloc(sizeof(OPENFILENAME));
+	LPSTR	fname = (LPSTR)malloc(sizeof(char) * MAX_PATH);
 	ZeroMemory(fname,MAX_PATH);
 
 	LPSTR retVal = NULL;
@@ -595,8 +600,8 @@ LPTSTR mGetOpenFileName(HWND hwnd){
 }
 
 LPTSTR mGetSaveFileName(HWND hwnd){
-	OPENFILENAME * ofn = new OPENFILENAME;
-	LPSTR	fname = new char[MAX_PATH];
+	OPENFILENAME * ofn = (OPENFILENAME *)malloc(sizeof(OPENFILENAME));
+	LPSTR	fname = (LPSTR)malloc(sizeof(char) * MAX_PATH);
 	ZeroMemory(fname,MAX_PATH);
 
 	LPSTR retVal = NULL;
@@ -634,7 +639,7 @@ BOOL CALLBACK AboutDlgProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam)
 				case IDOK:
 
 				case IDCANCEL:
-					::EndDialog (hwnd, 0);
+					EndDialog (hwnd, 0);
 				return TRUE;
 			}
 			break;
@@ -652,7 +657,7 @@ BOOL CALLBACK GoToLineDlgProc(HWND hwnd, UINT message, UINT wParam, LPARAM lPara
 			{
 				case IDC_BTN_OK:
 					GetDlgItemInt(hwnd,IDC_ADDRESS,&lineTogo,FALSE);
-					::EndDialog (hwnd, 0);
+					EndDialog (hwnd, 0);
 				break;
 			}
 		break;

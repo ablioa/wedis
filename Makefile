@@ -1,24 +1,25 @@
 APP      = main
 
-CC=g++
-CFLAGS=-Wall -mwindows -Wreorder -Wwrite-strings -B include
+CC=gcc
+CFLAGS=-Wall -mwindows -Wwrite-strings -B include
 
 TARGET=output/wedis
 RESOURCE=output/main.res
-SRCS=callbacks.cpp \
-	main.cpp \
-	config.cpp \
-	view.cpp \
-	debug.cpp \
-	redis.cpp
+SRCS=callbacks.c \
+	main.c \
+	config.c \
+	view.c \
+	exception.c \
+	redis.c \
+	connection.c
 
 OBJS = $(SRCS:.c=.o)
 
 $(TARGET):$(OBJS) $(RESOURCE)
-	$(CC) $(CFLAGS) -o $@ $^ -lcomctl32 libs/smctrl.lib -lwsock32
+	$(CC) $(CFLAGS) -o $@ $^ -lcomctl32 -lwsock32
 
 $(RESOURCE):resource/res.rc
 	windres -i resource/res.rc -O COFF -o $(RESOURCE)
 
 clean:
-	rm output/*.res output/*.exe 
+	rm output/*.res output/*.exe *.o

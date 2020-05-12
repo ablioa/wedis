@@ -3,14 +3,10 @@
 int tmp_break;
 int dest_line;
 
-LRESULT CALLBACK ColorProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lParam)
-{
-		//HWND hwnd;
+LRESULT CALLBACK ColorProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lParam){
 	HDC	hdc;
 	PAINTSTRUCT ps;
 	HWND hInst;
-	CHOOSECOLOR *lpChooseColor;
-	COLORREF		lpCust[16]={0xff};
 	RECT rt;
 	int cx,cy;
 	char			buff[MAX_PATH];
@@ -51,14 +47,14 @@ LRESULT CALLBACK ColorProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lParam)
 					EndDialog(hWin,0);
 				break;				
 				case IDC_MORE_COLOR:
-					lpChooseColor = new CHOOSECOLOR();
-					ZeroMemory(lpChooseColor,sizeof(CHOOSECOLOR));
-					lpChooseColor->hInstance = (HWND)GetWindowLong(hWin,GWL_HINSTANCE);
-					lpChooseColor->lStructSize = sizeof(CHOOSECOLOR);
-					lpChooseColor->hwndOwner = hWin;
-					lpChooseColor->lpCustColors=lpCust;
-					ChooseColor(lpChooseColor);
-					delete lpChooseColor;
+					//lpChooseColor = new CHOOSECOLOR();
+					//ZeroMemory(lpChooseColor,sizeof(CHOOSECOLOR));
+					//lpChooseColor->hInstance = (HWND)GetWindowLong(hWin,GWL_HINSTANCE);
+					//lpChooseColor->lStructSize = sizeof(CHOOSECOLOR);
+					//lpChooseColor->hwndOwner = hWin;
+					//lpChooseColor->lpCustColors=lpCust;
+					//ChooseColor(lpChooseColor);
+					//delete lpChooseColor;
 				break;
 			}
 			break;
