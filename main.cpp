@@ -214,7 +214,7 @@ void initpan(){
     hSplitClass.hInstance     = hInstance;
     hSplitClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     hSplitClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    hSplitClass.hbrBackground = (HBRUSH) GetStockObject (COLOR_BTNFACE + 1);//CreateSolidBrush(RGB(255,0,0));
+    hSplitClass.hbrBackground = (HBRUSH) GetStockObject (COLOR_BTNFACE + 1);
     hSplitClass.lpszMenuName  = 0;
     hSplitClass.lpszClassName = WOWOWO;
     hSplitClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
@@ -302,10 +302,8 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
 
 
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
-    //Controller * pCtrl = (Controller *)GetWindowLong(hwnd,GWL_USERDATA);
 	MainModel * mainModel = (MainModel *)GetWindowLong(hwnd,GWL_USERDATA);
-//	RECT rt;
-//	POINT pos;
+
     switch (message){
 		case WM_CREATE:{
 			mainModel = (MainModel * )malloc(sizeof(MainModel));
@@ -405,69 +403,6 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 				break;
 
 				case TVN_SELCHANGED:{
-					//LPNMTREEVIEW pNMTreeView = (LPNMTREEVIEW)lParam;
-					//HTREEITEM treeNode = pNMTreeView->itemNew.hItem;
-					//
-					////char * buff = (char *)malloc(128);
-					/////memset(buff,0,128);
-					//
-					//TVITEM item ;
-					////item.pszText = buff;
-					//item.mask = TVIF_PARAM;
-					//item.cchTextMax = 128;
-					//item.hItem = treeNode;
-					//
-					//TreeView_GetItem(mainModel->view->getTreeHwnd(),&item);
-					//TreeNode * tn = (TreeNode*) item.lParam;
-					//
-					//if(tn->level=3){
-					//	SetWindowText(hwnd,"zxzx");
-					//}
-
-                    //char * msg = (char*)malloc(128);
-                    //memset(msg,0,128);
-                    //sprintf(msg,"level:%d",tn->level);
-					//SetWindowText(hwnd,msg);
-
-//					TreeNodeModel * m = (TreeNodeModel *)(item.lParam);
-					//if(strncmp("db",item.pszText,2) == 0){
-					//	TV_INSERTSTRUCT tvinsert;
-					//
-					//	tvinsert.hParent = treeNode;
-					//	tvinsert.hInsertAfter=TVI_LAST;
-					//	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE;
-					//	tvinsert.item.pszText = ",,,,";
-					//	tvinsert.item.iImage=2;
-					//	tvinsert.item.iSelectedImage=2;
-					//
-					//	SendMessage(mainModel->view->getTreeHwnd(),TVM_INSERTITEM,0,(LPARAM)&tvinsert);
-					//}
-
-
-					/////////////////////////////////////////////////////
-
-	
-
-					///////////////////////////////////////////////////////
-
-					
-
-					//LPNMTREEVIEW pNMTreeView = (LPNMTREEVIEW)lParam;
-
-					//LPNMTREEVIEW pNMTreeView = (LPNMTREEVIEW)lParam;
-					//HTREEITEM treeNode = pNMTreeView->itemNew.hItem;
-
-					//MessageBox(hwnd,item.pszText,"Title",MB_OK);
-					//
-					//tvinsert.hParent = parent;
-					//tvinsert.hInsertAfter=TVI_ROOT;
-					//tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE;
-					//tvinsert.item.pszText = TEXT("CONNECTION->127.0.0.1:3389");
-					//tvinsert.item.iImage=0;
-					//tvinsert.item.iSelectedImage=0;
-					//
-					//SendMessage(connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
-
 					break;
 				}
 
@@ -580,8 +515,7 @@ void command(HWND _hwnd,int cmd){
 	RECT rt;
 	POINT pt;
 
-    switch (cmd)
-    {
+    switch (cmd){
 		//case IDM_FILE_OPEN:
 		//	fname = mGetOpenFileName(_hwnd);
 		//	break;
@@ -598,19 +532,6 @@ void command(HWND _hwnd,int cmd){
 			SendMessage (_hwnd, WM_CLOSE, 0, 0L);
 			break;
 
-		//case IDM_VIEW_COLOR:
-		//		hInst = (HINSTANCE)GetWindowLong(_hwnd,GWL_HINSTANCE);
-		//		::DialogBox (hInst,
-		//					 MAKEINTRESOURCE (IDD_COLOR),
-		//					 _hwnd,
-		//					 (DLGPROC)ColorProc);
-		//	break;
-
-		case IDM_PROTOCAL_DEBUG:
-//				hInst = (HINSTANCE)GetWindowLong(_hwnd,GWL_HINSTANCE);
-//			    DialogBox(hInst,MAKEINTRESOURCE(IDD_PROTOCAL_DEBUG),_hwnd,(DLGPROC)DebugWindowProc);
-			break;
-
 		case IDM_HELP:
 			break;
 
@@ -625,12 +546,6 @@ void command(HWND _hwnd,int cmd){
 			GetWindowRect(_hwnd,&rt);
 			GetCursorPos(&pt);
 			TrackPopupMenu(mainModel->hDev,TPM_RIGHTALIGN,pt.x,pt.y,0,_hwnd,NULL);
-			break;
-
-		case IDM_STAY:
-				// GetWindowRect(_hwnd,&rt);
-				//SetWindowPos(_hwnd,HWND_TOPMOST,rt.left,rt.top,rt.right-rt.left,rt.bottom-rt.top,SWP_NOMOVE);
-				//SetWindowPos(_hwnd,HWND_NOTOPMOST,rt.left,rt.top,rt.right-rt.left,rt.bottom-rt.top,SWP_NOMOVE);
 			break;
 
 		case IDM_ABOUT:
@@ -650,14 +565,6 @@ void command(HWND _hwnd,int cmd){
 							 _hwnd,
 							 GoToLineDlgProc);
 		break;
-
-		//case IDM_EMU_SETBREAK:
-		//		hInst= (HINSTANCE)GetWindowLong(_hwnd,GWL_HINSTANCE);//WinGetLong<HINSTANCE> (_hwnd, GWL_HINSTANCE);
-		//		::DialogBox (hInst,
-		//					 MAKEINTRESOURCE (IDD_BREAKPOINT),
-		//					 _hwnd,
-		//					 (DLGPROC)SetBrkProc);
-		//break;
 	}
 }
 
