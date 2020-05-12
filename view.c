@@ -35,36 +35,36 @@ void CreateView(AppView * view)
     buildDataView(view);
     
     buildConnectionView(view);
-    //getConnectionRect(view,&rt,&connctionRect);
-    //
-    //view->westSplitHwnd = CreateWindowEx(0,
-	//		"VSplitterCtrl","", WS_CHILD | WS_VISIBLE,
-	//		connctionRect.right,0+view->toolbarHeight,
-	//		2,rt.bottom-rt.top-view->toolbarHeight - view->statusbarHeight,
-	//		view->hwnd,NULL,hInst,NULL);
-    //
-    //
-    //
-	//// TODO 这里的200指的是属性窗口的高度,需要调整成动态的才可以
-	//view->southSplitWnd = CreateWindowEx(0,
-	//		"HSplitterCtrl","", WS_CHILD | WS_VISIBLE,
-	//		connctionRect.right + SPLITER_WIDTH,
-    //        rt.bottom - rt.top - view->statusbarHeight - 200 - SPLITER_WIDTH,
-	//		rt.right-rt.left - 202,
-	//		SPLITER_WIDTH,
-	//		view->hwnd,NULL,hInst,NULL);
-    //
-    //buildAttributeView(view);
-    //
-    //initVerticalSpliter(view,view->hwnd,view->westSplitHwnd);
-	//addWindow(view,view->connectionHwnd,view->dataHwnd);
-	//addWindow(view,view->connectionHwnd,view->attributeHwnd);
-	//addWindow(view,view->connectionHwnd,view->southSplitWnd);
-	//setVsplitHwnd(view);
-    //
-    //initSouthSpliter(view,view->hwnd,view->southSplitWnd);
-	//addWindowS(view,view->dataHwnd,view->attributeHwnd);
-	//setVsplitHwndS(view);
+    getConnectionRect(view,&rt,&connctionRect);
+    
+    view->westSplitHwnd = CreateWindowEx(0,
+			"VSplitterCtrl","", WS_CHILD | WS_VISIBLE,
+			connctionRect.right,0+view->toolbarHeight,
+			2,rt.bottom-rt.top-view->toolbarHeight - view->statusbarHeight,
+			view->hwnd,NULL,hInst,NULL);
+    
+    
+    
+	// TODO 这里的200指的是属性窗口的高度,需要调整成动态的才可以
+	view->southSplitWnd = CreateWindowEx(0,
+			"HSplitterCtrl","", WS_CHILD | WS_VISIBLE,
+			connctionRect.right + SPLITER_WIDTH,
+            rt.bottom - rt.top - view->statusbarHeight - 200 - SPLITER_WIDTH,
+			rt.right-rt.left - 202,
+			SPLITER_WIDTH,
+			view->hwnd,NULL,hInst,NULL);
+    
+    buildAttributeView(view);
+    
+    initVerticalSpliter(view,view->hwnd,view->westSplitHwnd);
+	addWindow(view,view->connectionHwnd,view->dataHwnd);
+	addWindow(view,view->connectionHwnd,view->attributeHwnd);
+	addWindow(view,view->connectionHwnd,view->southSplitWnd);
+	setVsplitHwnd(view);
+    
+    initSouthSpliter(view,view->hwnd,view->southSplitWnd);
+	addWindowS(view,view->dataHwnd,view->attributeHwnd);
+	setVsplitHwndS(view);
 }
 
 void buildDataView(AppView * view){

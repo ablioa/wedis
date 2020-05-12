@@ -138,7 +138,9 @@ LRESULT CALLBACK wowowProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam
             HWND ttlBtnHwnd  = CreateWindowEx(0, WC_BUTTON, ("TTL"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 315, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);
             HWND removeBtnHwnd  = CreateWindowEx(0, WC_BUTTON, ("Remove"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 380, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);
             HWND reloadBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Reload"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 445, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);
-            HWND viewTypeHwnd  = CreateWindowEx(0, WC_COMBOBOX, (""), WS_VISIBLE | WS_CHILD | CBS_DROPDOWN | CBS_HASSTRINGS, 510, 5, 120, 24, dataHwnd, (HMENU)0, hinst, 0);
+            HWND viewTypeHwnd  = CreateWindowEx(0, WC_COMBOBOX, (""), 
+                CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
+                510, 5, 120, 24, dataHwnd, (HMENU)0, hinst, 0);
             
             HWND dataViewHwnd  = CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 5, 34, 625, 240, dataHwnd, (HMENU)0, hinst, 0);
             
@@ -178,6 +180,27 @@ LRESULT CALLBACK wowowProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam
 			dataView->exportBtnProc = (WNDPROC)SetWindowLong(exportBtnHwnd,GWL_WNDPROC,(LONG)exportBtnProc);
 			SetWindowLong(exportBtnHwnd,GWL_USERDATA,(LONG)dataView);
 
+//////////////////////////////////////////////////////////
+TCHAR Planets[9][10] =  {
+    TEXT("Mercury"),
+    TEXT("Venus"), 
+    TEXT("Terra"), 
+    TEXT("Mars"), 
+    TEXT("Jupiter"), 
+    TEXT("Saturn"), 
+    TEXT("Uranus"), 
+    TEXT("Neptune"), 
+    TEXT("Pluto") 
+};
+       
+TCHAR A[16]; 
+memset(&A,0,sizeof(A));       
+for (int k = 0; k <= 8; k += 1){
+    wcscpy_s(A, sizeof(A)/sizeof(TCHAR),  (TCHAR*)Planets[k]);
+    SendMessage(viewTypeHwnd,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM) A); 
+}
+SendMessage(viewTypeHwnd, CB_SETCURSEL, (WPARAM)0, (LPARAM)0);
+//////////////////////////////////////////////////////////
 		    break;
 		}
 
@@ -237,21 +260,7 @@ void initpan(){
     RegisterClassEx(&consoleWinClass);
 }
 
-BOOL initApplication(){
-	HANDLE hmod = LoadLibrary("srcview.dll");
-    if (hmod==NULL){
-    	MessageBox(NULL,"The Scintilla DLL could not be loaded.","Error loading Scintilla",MB_OK | MB_ICONERROR);
-		return FALSE;
-    }
-
-	return TRUE;
-}
-
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cmdShow){
-    if(!initApplication()){
-	    return 0;
-	}
-
     save_all();
 
 	hInstance = hInst;
