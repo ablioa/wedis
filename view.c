@@ -7,7 +7,7 @@ AppView * buildAppView(HWND hwnd){
     view->hwnd = hwnd;
     view->connectionAreaWitdh = CONNECTION_AREA_WIDTH;
 
-    view->toolbarHeight = 20;
+    view->toolbarHeight = 16;
     view->statusbarHeight = 20;
     
     int connectionAreaWitdh;
@@ -158,7 +158,7 @@ void buildToolBar(AppView * view){
 		IDB_TOOLBAR_MAIN,
 		tbtn,
 		12,
-		16,16,16,16,sizeof(TBBUTTON));
+		14,14,16,16,sizeof(TBBUTTON));
 
 	oldstyle = GetWindowLong(view->toolBarHwnd,GWL_STYLE);
 	oldstyle = oldstyle  | TBSTYLE_WRAPABLE | TBSTYLE_FLAT;
@@ -319,7 +319,7 @@ void buildConnectionView(AppView * view){
             rt.bottom-rt.left-view->statusbarHeight - view->statusbarHeight,
             view->hwnd,NULL,hinst,0);
 
-	HIMAGELIST hImageList=ImageList_Create(16,16,ILC_COLOR16,2,10);
+	HIMAGELIST hImageList=ImageList_Create(14,14,ILC_COLOR16,2,10);
 	HBITMAP hBitmap = LoadBitmap(hinst,MAKEINTRESOURCE(IDB_CHIP));
 	ImageList_Add(hImageList,hBitmap,NULL);
 	SendMessage(view->connectionHwnd,TVM_SETIMAGELIST,0,(LPARAM)hImageList);

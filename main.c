@@ -144,7 +144,10 @@ LRESULT CALLBACK wowowProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam
             
             HWND dataViewHwnd  = CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 5, 34, 625, 240, dataHwnd, (HMENU)0, hinst, 0);
             
-            HWND saveBtnHwnd  = CreateWindowEx(0, WC_BUTTON, ("Save"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 570, 279, 60, 24, dataHwnd, (HMENU)0, hinst, 0);     
+            // STYLE DS_3DLOOK | DS_CENTER | DS_MODALFRAME | DS_SHELLFONT | WS_CAPTION | WS_VISIBLE | WS_POPUP | WS_SYSMENU
+            // HWND hCtrl0_1 = CreateWindowEx(0, WC_BUTTON, ("OK"), WS_VISIBLE | WS_CHILD | WS_TABSTOP | 0x00000001, 101, 60, 75, 23, hwnd, (HMENU)IDOK, hInst, 0);
+
+            HWND saveBtnHwnd  = CreateWindowEx(0, WC_BUTTON, ("Save"), WS_VISIBLE | WS_CHILD | WS_TABSTOP | 0x00000001, 570, 279, 60, 24, dataHwnd, (HMENU)0, hinst, 0);     
             HWND exportBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Export"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 505, 279, 60, 24, dataHwnd, (HMENU)0, hinst, 0); 
             
             HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
@@ -238,7 +241,7 @@ void initpan(){
     hSplitClass.hInstance     = hInstance;
     hSplitClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     hSplitClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    hSplitClass.hbrBackground = (HBRUSH) GetStockObject (COLOR_BTNFACE + 1);
+    hSplitClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));//(HBRUSH) GetStockObject (COLOR_BTNFACE + 1);
     hSplitClass.lpszMenuName  = 0;
     hSplitClass.lpszClassName = WOWOWO;
     hSplitClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
@@ -253,7 +256,7 @@ void initpan(){
     consoleWinClass.hInstance     = hInstance;
     consoleWinClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     consoleWinClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    consoleWinClass.hbrBackground = (HBRUSH) GetStockObject (COLOR_BTNFACE + 1);
+    consoleWinClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));//(HBRUSH) GetStockObject (COLOR_BTNFACE + 1);
     consoleWinClass.lpszMenuName  = 0;
     consoleWinClass.lpszClassName = CONSOLE_WINDOW;
     consoleWinClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
@@ -278,7 +281,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
 	mainClass.lpszMenuName = MAKEINTRESOURCE (ID_MAIN);
 	mainClass.cbClsExtra = 0;
 	mainClass.cbWndExtra = 0;
-	mainClass.hbrBackground = (HBRUSH) GetStockObject (COLOR_BTNFACE + 1);
+	mainClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));//(HBRUSH) GetStockObject (COLOR_BTNFACE + 1);
 	mainClass.hCursor = LoadCursor (0, IDC_ARROW);
 
     if (!RegisterClassEx (&mainClass)){
