@@ -437,7 +437,7 @@ void View::buildConnectionView(HWND _hwnd){
 	tvinsert.hParent = NULL;
 	tvinsert.hInsertAfter=TVI_ROOT;
 	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
-	tvinsert.item.pszText = TEXT("CONNECTION->127.0.0.1:3389");
+//	tvinsert.item.pszText = TEXT("CONNECTION->127.0.0.1:3389");
 	tvinsert.item.iImage=0;
 	tvinsert.item.iSelectedImage=0;
 
@@ -448,7 +448,7 @@ void View::buildConnectionView(HWND _hwnd){
 //	tvinsert.item.lParam = (long)model;
 
 	HTREEITEM hpConn=(HTREEITEM)SendMessage(connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
-	HTREEITEM hpDb;
+//	HTREEITEM hpDb;
 
 	char * dbname = (char *)malloc(sizeof(char)*128);
 	for(int ix =0; ix < 16;ix ++){

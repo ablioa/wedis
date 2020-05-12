@@ -87,8 +87,7 @@ LRESULT CALLBACK SetBrkProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lParam)
 		break;
 
 		case WM_COMMAND:
-			switch(wParam)
-			{
+			switch(wParam){
 				case IDOK:
 					tmp_break=GetDlgItemInt(hWin,IDC_BRKVALUE,NULL,FALSE);
 					EndDialog(hWin,0);

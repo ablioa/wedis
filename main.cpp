@@ -12,7 +12,7 @@ BOOL CALLBACK exportBtnProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 	
 	switch(msg){
 		case WM_LBUTTONUP:{
-			char * fname = mGetOpenFileName(hwnd);
+//			char * fname = mGetOpenFileName(hwnd);
 			// TODO 导出结构
 			break;
 		}
@@ -251,6 +251,8 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
 	    return 0;
 	}
 
+    save_all();
+
 	hInstance = hInst;
 
 	initpan();
@@ -308,10 +310,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 		case WM_CREATE:{
 			mainModel = (MainModel * )malloc(sizeof(MainModel));
 			memset(mainModel,0,sizeof(MainModel));
-
-            //pCtrl = new Controller (hwnd, reinterpret_cast<CREATESTRUCT *> (lParam));
             SetWindowLong(hwnd,GWL_USERDATA,(LONG)mainModel);
-            //pCtrl->LoadSourceView();
 
 			mainModel->view = new View(hwnd);
 			mainModel->view->CreateView();
@@ -324,13 +323,11 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 
 			AppendMenu(mainModel->hDev,MF_STRING,IDM_SET,"Connections");
 			AppendMenu(mainModel->hDev,MF_SEPARATOR,IDM_SET,"");
-			char * connections[]={
-				"192.168.1.7:6379",
-				"221.178.123.12:8080"
-			};
-
-			for(int ix =0 ;ix < 2 ; ix ++){
-			    AppendMenu(mainModel->hDev,MF_STRING,10000+ix,connections[ix]);
+			
+            int total = appConfig->total_host;
+			for(int ix =0 ;ix < total ; ix ++){
+                Host * host = appConfig->hosts[ix];
+			    AppendMenu(mainModel->hDev,MF_STRING,10000+ix,host->host);
 			}
 
             return 0;
@@ -347,7 +344,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 		case WM_NOTIFY:{
 			switch (((LPNMHDR) lParam)->code) {
 				case NM_DBLCLK:{
-					NM_TREEVIEW* lpnmh = (NM_TREEVIEW*) lParam;
+//					NM_TREEVIEW* lpnmh = (NM_TREEVIEW*) lParam;
 
                     char * msg = (char*)malloc(128);
                     memset(msg,0,128);
@@ -517,7 +514,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 				
 				case FD_READ:{
 					char *buff;
-					HWND hMsgDump;
+//					HWND hMsgDump;
 					size_t curLeng;
 					buff = mainModel->tcpClient->getbuff();
 					mainModel->tcpClient->receivedata();

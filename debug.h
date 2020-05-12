@@ -29,6 +29,18 @@ typedef struct err_info{
 	UINT Style;
 }eMsg;
 
+typedef struct {
+    char * buff;
+
+    int socketid;
+
+    struct sockaddr_in serv_addr;
+
+    WSADATA wsa;
+
+    BOOL bconnect;
+
+}TcpConnection;
 
 extern eMsg pp[];
 

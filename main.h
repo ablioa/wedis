@@ -7,6 +7,7 @@
 #include "resource.h"
 
 #include "debug.h"
+#include "config.h"
 
 typedef struct{
 	TcpClient * tcpClient;

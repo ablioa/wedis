@@ -7,7 +7,7 @@ TARGET=output/wedis
 RESOURCE=output/main.res
 SRCS=callbacks.cpp \
 	main.cpp \
-	smconfig.cpp \
+	config.cpp \
 	view.cpp \
 	debug.cpp \
 	redis.cpp
