@@ -4,9 +4,7 @@
 #define _WIN32_IE 0x0600
 
 #include <windows.h>
-#include "include/smctrl.h"
 #include "resource.h"
-#include "include/scintilla.h"
 #include "callbacks.h"
 
 #include <stdio.h>

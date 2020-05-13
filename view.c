@@ -223,15 +223,9 @@ void addWindowS(AppView * view,HWND hTop,HWND hDown){
 }
 
 void setVsplitHwndS(AppView * view){
-    SendMessage(view->southSpliter.hwnd,WM_SET_PANES_HWND,(long)view->southSpliter.hwnTop,(long)view->southSpliter.hwnDown);
-    SendMessage(view->southSpliter.hwnd,WM_SET_BORDERS_COL,RGB(255,240,240),0);
-	SendMessage(view->southSpliter.hwnd,WM_SET_BORDERS_MIN,22,33);
 }
 
 void setVsplitHwnd(AppView * view){
-    SendMessage(view->vs.hwnd,WM_SET_PANES_HWND,(long)view->vs.hwnLeft,(long)view->vs.hwnRight);
-    SendMessage(view->vs.hwnd,WM_SET_BORDERS_COL,RGB(240,240,240),0);
-	SendMessage(view->vs.hwnd,WM_SET_BORDERS_MIN,22,33);
 }
 
 void getConnectionRect(AppView * view,RECT * rt,RECT * rect){
