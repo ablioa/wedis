@@ -73,7 +73,7 @@ void buildDataView(AppView * view){
     HINSTANCE hinst = (HINSTANCE)GetWindowLong(view->hwnd,GWL_HINSTANCE);
 
 	int dataAreaWidth = rt.right-rt.left - 200 -2;
-	view->dataHwnd=CreateWindowEx(0, "wowowo",
+	view->dataHwnd=CreateWindowEx(0, DATAVIEW_WINDOW,
                NULL, 
                WS_CHILD | WS_VISIBLE,
 				view->connectionAreaWitdh,
@@ -303,9 +303,6 @@ void buildAttributeView(AppView * view){
 }
 
 void buildConnectionView(AppView * view){
-	//TV_INSERTSTRUCT tvinsert;
-	//HIMAGELIST      hImageList;
-	//HBITMAP         hBitmap;
 	RECT            rt;
 
 	HINSTANCE hinst = (HINSTANCE)GetWindowLong(view->hwnd,GWL_HINSTANCE);
@@ -331,6 +328,7 @@ void buildConnectionView(AppView * view){
 	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
 	tvinsert.item.iImage=0;
 	tvinsert.item.iSelectedImage=0;
+    tvinsert.item.pszText= "127.0.0.1:3879";
 
 	TreeNode * tn = buildTreeNode();
 	tn->level = 1;

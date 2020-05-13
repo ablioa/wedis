@@ -4,8 +4,7 @@
 HINSTANCE hInstance;
 TCHAR     szFrameClass[] = TEXT ("MdiFrame") ;
 
-#define WOWOWO "wowowo"
-#define CONSOLE_WINDOW "CONSOLE_WINDOW"
+
 
 BOOL CALLBACK exportBtnProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 	DataView * dataView = (DataView *)GetWindowLong(hwnd,GWL_USERDATA);
@@ -243,7 +242,7 @@ void initpan(){
     hSplitClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
     hSplitClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));//(HBRUSH) GetStockObject (COLOR_BTNFACE + 1);
     hSplitClass.lpszMenuName  = 0;
-    hSplitClass.lpszClassName = WOWOWO;
+    hSplitClass.lpszClassName = DATAVIEW_WINDOW;
     hSplitClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     RegisterClassEx(&hSplitClass);
 

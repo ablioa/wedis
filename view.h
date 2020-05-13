@@ -17,6 +17,9 @@
 #define CONNECTION_AREA_WIDTH 200
 #define SPLITER_WIDTH 2
 
+#define DATAVIEW_WINDOW "wowowo"
+#define CONSOLE_WINDOW  "CONSOLE_WINDOW"
+
 typedef struct{
 	HWND hwnd;
 	HWND parent;
