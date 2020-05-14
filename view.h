@@ -15,8 +15,9 @@
 #define CONNECTION_AREA_WIDTH 200
 #define SPLITER_WIDTH 2
 
-#define DATAVIEW_WINDOW "wowowo"
-#define CONSOLE_WINDOW  "CONSOLE_WINDOW"
+#define DATAVIEW_WINDOW     "wowowo"
+#define CONSOLE_WINDOW      "CONSOLE_WINDOW"
+#define DATA_RENDER_WINDOW  "DATA_RENDER_WINDOW"
 
 typedef struct{
 	HWND hwnd;
@@ -66,6 +67,9 @@ typedef struct{
 	int level;
 	int database;
 	char * key;
+
+    HTREEITEM subHandles[1024];
+    int  subHandleSize;
 }TreeNode;
 
 TreeNode * buildTreeNode();
@@ -93,19 +97,26 @@ typedef struct{
 }AppView;
 
 AppView * buildAppView(HWND hwnd);
+
 void buildToolBar(AppView * appView);
+
 void buildStatusBar(AppView * view);
+
 void buildDataView(AppView * view);
+
 void buildConnectionView(AppView * view);
 
 void getConnectionRect(AppView * view,RECT * rt,RECT * rect);
+
 int getConnectionWidth(AppView * view);
 
 void buildAttributeView(AppView * view);
-int getAttributeHeight(AppView * view);
-void CreateView(AppView * appView);
-void Size(AppView * appView);
 
+int getAttributeHeight(AppView * view);
+
+void CreateView(AppView * appView);
+
+void Size(AppView * appView);
 
 void getDataRect(AppView * view,RECT * rt,RECT * rect);
 
@@ -126,74 +137,5 @@ void addWindowS(AppView * view,HWND hTop,HWND hDown);
 void setVsplitHwndS(AppView * view);
 
 void setVsplitHwnd(AppView * view);
-//class View{
-//	private:
-//		HWND _hwnd;
-//
-//		HWND toolBarHwnd;
-//	    HWND statusBarHwnd;
-//
-//	    HWND connectionHwnd;
-//	    HWND dataHwnd;
-//	    HWND attributeHwnd;
-//
-//	    HWND westSplitHwnd;
-//	    HWND southSplitWnd;
-//
-//		int toolbarHeight;
-//	    int statusbarHeight;
-//
-//	    int connectionAreaWitdh;
-//
-//	    VerticalSpliter vs;
-//	    SouthSpliter southSpliter;
-//
-//	public:
-//		View(HWND hwnd):_hwnd(hwnd){
-//		    connectionAreaWitdh = CONNECTION_AREA_WIDTH;
-//		}
-//
-//		HWND getTreeHwnd(){return connectionHwnd;}
-//
-//		void CreateView();
-//		void Size();
-//
-//		void buildToolBar(HWND parent);
-//		void buildStatusBar(HWND parent);
-//
-//		void initDataView(HWND _hdView);
-//
-//		void buildConnectionView(HWND _hwnd);
-//
-//		void buildListView(HWND parent);
-//
-//		void buildDataView(HWND _hwnd);
-//
-//		void buildAttributeView(HWND _hwnd);
-//
-//		int getConnectionWidth();
-//
-//		int getSpliterWidth(){
-//		    return SPLITER_WIDTH;
-//	    };
-//
-//	    int getAttributeHeight();
-//
-//		void getConnectionRect(RECT * rt,RECT * rect);
-//
-//		void getDataRect(RECT * rt,RECT * rect);
-//		void getSpliterRect(RECT * rt,RECT * rect);
-//
-//		void initVerticalSpliter(HWND parent,HWND _hwnd);
-//	    void addWindow(HWND hLeft,HWND hRight);
-//	    void setVsplitHwnd();
-//
-//	    void initSouthSpliter(HWND parent,HWND _hwnd);
-//	    void addWindowS(HWND hLeft,HWND hRight);
-//	    void setVsplitHwndS();
-//
-//	    void getSouthSpliterRect(RECT * rt,RECT * rect);
-//	    void getAttributeRect(RECT * rt,RECT * rect);
-//};
 
 #endif

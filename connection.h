@@ -16,6 +16,11 @@
 
 #define WM_SOCKET WM_USER+100
 
+#define PT_SELECT 0
+#define PT_KEYS   1
+#define PT_TYPE   2
+#define PT_DATA   3
+
 typedef struct {
     char * Buff;
 
@@ -26,6 +31,8 @@ typedef struct {
     WSADATA wsa;
 
     BOOL bconnect;
+
+    int cmdType;
 
 }TcpConnection;
 

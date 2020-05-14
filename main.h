@@ -20,6 +20,8 @@ typedef struct{
 	HWND logHwnd;
 
 	HTREEITEM selectedNode;
+
+    int UI;
 }MainModel;
 
 typedef struct{

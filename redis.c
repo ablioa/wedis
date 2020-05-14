@@ -7,6 +7,7 @@ RedisReply * read_replay(char * text){
 	RedisReply * rp = (RedisReply*)malloc(sizeof(RedisReply));
 	memset(rp,0,sizeof(RedisReply));
     switch(ch){
+        /** information */
 		case '+':{
 			rp->type=REPLY_STATUS;
 			rp->status=(char*)malloc(sizeof(char) * 256);
@@ -20,15 +21,19 @@ RedisReply * read_replay(char * text){
 			cur+=2;
 			break;
 		}
+        /** error */
 		case '-':{
 			break;
 		}
+        /** number */
 		case ':':{
 			break;
 		}
+        /** bulk */
 		case '$':{
 			break;
 		}
+        /** multibulk */
 		case '*':{
 			rp->type=REPLY_MULTI;
 			char cnt[128]={0};
@@ -76,6 +81,7 @@ void init_command(CommandBlock * block){
 	memset(block->list,0,sizeof(char *) * LENGTH_WORD);
 }
 
+
 void add_command(CommandBlock * block,char * word){
 	block->list[block->size] = word;
 	block->size += 1;
@@ -83,10 +89,8 @@ void add_command(CommandBlock * block,char * word){
 
 char * put_command(CommandBlock * block){
 	char * buff = (char *) malloc(sizeof(char) * LENGTH_COMMAND);
-
 	char item[LENGTH_WORD]={0};
 
-//	int allSend = 0;
 	sprintf(item,"*%d%c%c",block->size,CHAR_CR,CHAR_LF);
 	strcpy(buff,item);
 	for(int ix = 0; ix < block->size; ix ++){

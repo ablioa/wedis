@@ -60,6 +60,7 @@ BOOL CALLBACK CmdBoxProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 					SendMessage(cmd->logHwnd,EM_REPLACESEL,FALSE,(LONG)comment);
 
 					//cmd->mainModel->tcpClient->senddata(cmds,strlen(cmds),0);
+                    cmd->mainModel->connection->cmdType = PT_DATA;
                     connection_senddata(cmd->mainModel->connection,cmds,strlen(cmds),0);
 					//
 					//Command * pcmd = (Command *) GetWindowLong(hwnd,GWL_USERDATA);
@@ -141,8 +142,8 @@ LRESULT CALLBACK wowowProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam
                 CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
                 510, 5, 120, 24, dataHwnd, (HMENU)0, hinst, 0);
             
-            HWND dataViewHwnd  = CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 5, 34, 625, 240, dataHwnd, (HMENU)0, hinst, 0);
-            
+            HWND dataViewHwnd  = CreateWindowEx(0, DATA_RENDER_WINDOW, (""), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 5, 34, 625, 240, dataHwnd, (HMENU)0, hinst, 0);
+            // 
             // STYLE DS_3DLOOK | DS_CENTER | DS_MODALFRAME | DS_SHELLFONT | WS_CAPTION | WS_VISIBLE | WS_POPUP | WS_SYSMENU
             // HWND hCtrl0_1 = CreateWindowEx(0, WC_BUTTON, ("OK"), WS_VISIBLE | WS_CHILD | WS_TABSTOP | 0x00000001, 101, 60, 75, 23, hwnd, (HMENU)IDOK, hInst, 0);
 
@@ -182,27 +183,27 @@ LRESULT CALLBACK wowowProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam
 			dataView->exportBtnProc = (WNDPROC)SetWindowLong(exportBtnHwnd,GWL_WNDPROC,(LONG)exportBtnProc);
 			SetWindowLong(exportBtnHwnd,GWL_USERDATA,(LONG)dataView);
 
-//////////////////////////////////////////////////////////
-TCHAR Planets[9][10] =  {
-    TEXT("Mercury"),
-    TEXT("Venus"), 
-    TEXT("Terra"), 
-    TEXT("Mars"), 
-    TEXT("Jupiter"), 
-    TEXT("Saturn"), 
-    TEXT("Uranus"), 
-    TEXT("Neptune"), 
-    TEXT("Pluto") 
-};
-       
-TCHAR A[16]; 
-memset(&A,0,sizeof(A));       
-for (int k = 0; k <= 8; k += 1){
-    wcscpy_s(A, sizeof(A)/sizeof(TCHAR),  (TCHAR*)Planets[k]);
-    SendMessage(viewTypeHwnd,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM) A); 
-}
-SendMessage(viewTypeHwnd, CB_SETCURSEL, (WPARAM)0, (LPARAM)0);
-//////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////
+            TCHAR Planets[9][10] =  {
+                TEXT("Mercury"),
+                TEXT("Venus"), 
+                TEXT("Terra"), 
+                TEXT("Mars"), 
+                TEXT("Jupiter"), 
+                TEXT("Saturn"), 
+                TEXT("Uranus"), 
+                TEXT("Neptune"), 
+                TEXT("Pluto") 
+            };
+                   
+            TCHAR A[16]; 
+            memset(&A,0,sizeof(A));       
+            for (int k = 0; k <= 8; k += 1){
+                wcscpy_s(A, sizeof(A)/sizeof(TCHAR),  (TCHAR*)Planets[k]);
+                SendMessage(viewTypeHwnd,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM) A); 
+            }
+            SendMessage(viewTypeHwnd, CB_SETCURSEL, (WPARAM)0, (LPARAM)0);
+            //////////////////////////////////////////////////////////
 		    break;
 		}
 
@@ -228,6 +229,10 @@ SendMessage(viewTypeHwnd, CB_SETCURSEL, (WPARAM)0, (LPARAM)0);
 	}
 
 	return DefWindowProc(dataHwnd, msg, wParam, lParam);
+}
+
+LRESULT CALLBACK dataRenderProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
+    return DefWindowProc (hwnd, message, wParam, lParam);
 }
 
 void initpan(){
@@ -260,6 +265,21 @@ void initpan(){
     consoleWinClass.lpszClassName = CONSOLE_WINDOW;
     consoleWinClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     RegisterClassEx(&consoleWinClass);
+
+    WNDCLASSEX dataRenderClass;
+    dataRenderClass.cbSize        = sizeof(dataRenderClass);
+    dataRenderClass.style         = 0;
+    dataRenderClass.lpfnWndProc   = dataRenderProc;
+    dataRenderClass.cbClsExtra    = 0;
+    dataRenderClass.cbWndExtra    = 0;
+    dataRenderClass.hInstance     = hInstance;
+    dataRenderClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
+    dataRenderClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
+    dataRenderClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));//(HBRUSH) GetStockObject (COLOR_BTNFACE + 1);
+    dataRenderClass.lpszMenuName  = 0;
+    dataRenderClass.lpszClassName = DATA_RENDER_WINDOW;
+    dataRenderClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
+    RegisterClassEx(&dataRenderClass);
 }
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cmdShow){
@@ -311,6 +331,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
     return msg.wParam;
 }
 
+
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	MainModel * mainModel = (MainModel *)GetWindowLong(hwnd,GWL_USERDATA);
 
@@ -320,7 +341,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 			memset(mainModel,0,sizeof(MainModel));
             SetWindowLong(hwnd,GWL_USERDATA,(LONG)mainModel);
 
-			mainModel->view = buildAppView(hwnd);//new View(hwnd);
+			mainModel->view = buildAppView(hwnd);
 			CreateView(mainModel->view);
 
 			mainModel->connection =  build_connection();
@@ -365,6 +386,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 					pt.x = LOWORD(dwPos);
 					pt.y = HIWORD(dwPos);
 					ScreenToClient(mainModel->view->connectionHwnd, &pt);
+
 					TVHITTESTINFO ht = {0};
 					ht.pt = pt;
 					ht.flags = TVHT_ONITEM;
@@ -384,13 +406,13 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 					    sprintf(scmds,"select %d",tn->database);
 					    
 					    char * pppp = parse_command((char *)scmds,256);
-					    //mainModel->tcpClient->senddata(pppp,strlen(pppp),0);
+                        mainModel->connection->cmdType = PT_SELECT;
                         connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
 					    
 					    memset(scmds,0,sizeof(char) * 128);
 					    sprintf(scmds,"keys *");
 					    pppp = parse_command((char *)scmds,256);
-					    //mainModel->tcpClient->senddata(pppp,strlen(pppp),0);
+                        mainModel->connection->cmdType = PT_KEYS;
                         connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
 
 						mainModel->selectedNode = hItem;
@@ -401,11 +423,8 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 					    memset(scmds,0,sizeof(char) * 128);
 					    sprintf(scmds,"type %s",ti.pszText);
 
-						SetWindowText(hwnd,scmds);
-					    
+                        mainModel->connection->cmdType = PT_TYPE;
 					    char * pppp = parse_command((char *)scmds,256);
-					    //mainModel->tcpClient->senddata(pppp,strlen(pppp),0);
-
                         connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
 					}
 
@@ -464,43 +483,53 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 				
 				case FD_READ:{
 					char *buff;
-//					HWND hMsgDump;
 					size_t curLeng;
 					buff = connection_get_buffer(mainModel->connection);
                     connection_receivedata(mainModel->connection);
-					//mainModel->tcpClient->receivedata();
-					
+
 					curLeng = GetWindowTextLength(mainModel->logHwnd);
 					SendMessage(mainModel->logHwnd,EM_SETSEL,curLeng,curLeng);
 					SendMessage(mainModel->logHwnd,EM_REPLACESEL,FALSE,(LONG)buff);
 
-					RedisReply * rp = read_replay(buff);
+                    RedisReply * rp = read_replay(buff);
+                    if(mainModel->connection->cmdType == PT_KEYS){
+                        if(rp->type == REPLY_MULTI){
+                            TVITEM ti = {0};
+                            ti.mask = TVIF_HANDLE | TVIF_PARAM;
+                            ti.cchTextMax = 128;
+                            ti.hItem = mainModel->selectedNode;
+                            TreeView_GetItem(mainModel->view->connectionHwnd, &ti);
+                        
+                            TreeNode * tnf = (TreeNode*) ti.lParam;
+                            for(int ix =0; ix < tnf->subHandleSize; ix ++){
+                                TreeView_DeleteItem(mainModel->view->connectionHwnd,tnf->subHandles[ix]);
+                            }
+                        
+                            tnf->subHandleSize= 0;
+                            
+                        
+					    	for(int ix =0;ix < rp->bulkSize; ix ++){
+					         	TV_INSERTSTRUCT tvinsert;
+					         
+					         	tvinsert.hParent = mainModel->selectedNode;
+					         	tvinsert.hInsertAfter=TVI_LAST;
+					         	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
+					         	tvinsert.item.pszText = rp->bulks[ix];
+					         	tvinsert.item.iImage=2;
+					         	tvinsert.item.iSelectedImage=2;
+                        
+					    		TreeNode * tn = buildTreeNode();
+					    		tn->level = 3;
+					            tvinsert.item.lParam= (LPARAM)tn;
+                                tnf->subHandleSize ++;
+                                tnf->subHandles[ix]=SendMessage(mainModel->view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+					         }
+					    }
+                    }
 
-					//char * buff1 = (char*) malloc(sizeof(char) * 128);
-					//memset(buff1,0,128);
-
-					//sprintf(buff1,"type: %d",rp->type);
-					//MessageBox(hwnd,buff1,"MW",MB_OK);
-
-					if(rp->type == REPLY_MULTI){
-						//TreeView_DeleteItem(mainModel->view->getTreeHwnd(),mainModel->selectedNode);
-						for(int ix =0;ix < rp->bulkSize; ix ++){
-					     	TV_INSERTSTRUCT tvinsert;
-					     
-					     	tvinsert.hParent = mainModel->selectedNode;
-					     	tvinsert.hInsertAfter=TVI_LAST;
-					     	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
-					     	tvinsert.item.pszText = rp->bulks[ix];
-					     	tvinsert.item.iImage=2;
-					     	tvinsert.item.iSelectedImage=2;
-
-							TreeNode * tn = buildTreeNode();
-							tn->level = 3;
-					        tvinsert.item.lParam= (LPARAM)tn;
-
-					     	SendMessage(mainModel->view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
-					     }
-					}
+                    if(mainModel->connection->cmdType == PT_TYPE){
+                        MessageBox(hwnd,rp->status,"asas",MB_OK);
+                    }
 				}
 				break;
 
@@ -522,7 +551,6 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 
     return DefWindowProc (hwnd, message, wParam, lParam);
 }
-
 
 void command(HWND _hwnd,int cmd){
 	MainModel * mainModel = (MainModel *)GetWindowLong(_hwnd,GWL_USERDATA);
