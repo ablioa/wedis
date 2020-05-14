@@ -110,7 +110,7 @@ IDA_RUN ACCELERATORS
 // Icon resources
 //
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDI_MAIN           ICON           "generic.ico"
+IDI_MAIN           ICON           "main.ico"
 
 
 
