@@ -1,7 +1,7 @@
 APP      = main
 
 CC=gcc
-CFLAGS=-Wall -mwindows -Wwrite-strings -B include
+CFLAGS=-Wall -mwindows -Wwrite-strings -Wincompatible-pointer-types -B include
 
 TARGET=output/wedis
 RESOURCE=output/main.res
@@ -12,7 +12,13 @@ SRCS=callbacks.c \
 	exception.c \
 	redis.c \
 	connection.c \
-	console.c
+	console.c \
+	dataview.c \
+	hashview.c \
+	stringview.c \
+	listview.c \
+	setview.c \
+	zsetview.c
 
 OBJS = $(SRCS:.c=.o)
 

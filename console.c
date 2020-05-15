@@ -28,11 +28,11 @@ LRESULT CALLBACK consoleWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 			consoleView->defaultCmdProc = (WNDPROC)SetWindowLong(cmdHwnd,GWL_WNDPROC,(LONG)CmdBoxProc);
 			SetWindowLong(cmdHwnd,GWL_USERDATA,(LONG)consoleView);
 
-			HWND hParent = GetParent(hwnd);
-			MainModel * mainModel = (MainModel *)GetWindowLong(hParent,GWL_USERDATA);
+			//HWND hParent = GetParent(hwnd);
+			//MainModel * mainModel = (MainModel *)GetWindowLong(hParent,GWL_USERDATA);
 			mainModel->logHwnd = logHwnd;
 
-			consoleView->mainModel = mainModel;
+			//consoleView->mainModel = mainModel;
 			break;
 		}
 
@@ -51,7 +51,8 @@ LRESULT CALLBACK consoleWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 }
 
 BOOL CALLBACK CmdBoxProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
-	ConsoleView * cmd = (ConsoleView *) GetWindowLong(hwnd,GWL_USERDATA);
+	ConsoleView * consoleView = (ConsoleView *) GetWindowLong(hwnd,GWL_USERDATA);
+
 	char buff[256];
 
 	switch(msg){
@@ -69,23 +70,18 @@ BOOL CALLBACK CmdBoxProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 
 				case VK_RETURN:
 					GetWindowText(hwnd,buff,256);
-					//HWND parent = GetParent(hwnd);
 
 					char * cmds = parse_command((char *)buff,256);
 					char * comment = build_comment((char *)buff,cmds);
-					int curLeng = GetWindowTextLength(cmd->logHwnd);
-					SendMessage(cmd->logHwnd,EM_SETSEL,curLeng,curLeng);
-					SendMessage(cmd->logHwnd,EM_REPLACESEL,FALSE,(LONG)comment);
+					int curLeng = GetWindowTextLength(consoleView->logHwnd);
+					SendMessage(consoleView->logHwnd,EM_SETSEL,curLeng,curLeng);
+					SendMessage(consoleView->logHwnd,EM_REPLACESEL,FALSE,(LONG)comment);
 
-					//cmd->mainModel->tcpClient->senddata(cmds,strlen(cmds),0);
-                    cmd->mainModel->connection->cmdType = PT_DATA;
-                    connection_senddata(cmd->mainModel->connection,cmds,strlen(cmds),0);
-					//
-					//Command * pcmd = (Command *) GetWindowLong(hwnd,GWL_USERDATA);
-					//cmd->mainModel->tcpClient->senddata(cmds,strlen(cmds),0);
-					//
+                    mainModel->connection->cmdType = PT_DATA;
+                    connection_senddata(mainModel->connection,cmds,strlen(cmds),0);
+					
 					SetWindowText(hwnd,NULL);
-					//
+					
 					free(cmds);
 					free(comment);
 				break;
@@ -93,5 +89,5 @@ BOOL CALLBACK CmdBoxProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 		break;
 	}
 
-	return CallWindowProc(cmd->defaultCmdProc,hwnd,msg,wParam,lParam);
+	return CallWindowProc(consoleView->defaultCmdProc,hwnd,msg,wParam,lParam);
 }

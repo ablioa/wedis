@@ -3,7 +3,16 @@
 
 #include <windows.h>
 
+#include "hashview.h"
+#include "stringview.h"
+#include "listview.h"
+#include "setview.h"
+#include "zsetview.h"
+
 #include "console.h"
+
+#include "dataview.h"
+
 #include "callbacks.h"
 
 #include "resource.h"
@@ -14,33 +23,39 @@
 
 #define szFrameClass "MdiFrame"
 
-typedef struct{
-	HWND hwnd;
-	HWND parent;
+#define DATAVIEW_WINDOW     "DATA_VIEW_WINDOW"
+#define CONSOLE_WINDOW      "CONSOLE_WINDOW"
+#define DATA_RENDER_WINDOW  "DATA_RENDER_WINDOW"
 
-	int  cntLeft;
-	int  cntRight;
+#define WM_DT WM_USER+200
 
-	HWND hwnLeft[20];
-	HWND hwnRight[20];
+//typedef struct{
+//	HWND hwnd;
+//	HWND parent;
+//
+//	int  cntLeft;
+//	int  cntRight;
+//
+//	HWND hwnLeft[20];
+//	HWND hwnRight[20];
+//
+//	int leftSize;
+//	int rightSize;
+//}VerticalSpliter;
 
-	int leftSize;
-	int rightSize;
-}VerticalSpliter;
-
-typedef struct{
-	HWND hwnd;
-	HWND parent;
-
-	int  cntTop;
-	int  cntDown;
-
-	HWND hwnTop[20];
-	HWND hwnDown[20];
-
-	int topSize;
-	int downSize;
-}SouthSpliter;
+//typedef struct{
+//	HWND hwnd;
+//	HWND parent;
+//
+//	int  cntTop;
+//	int  cntDown;
+//
+//	HWND hwnTop[20];
+//	HWND hwnDown[20];
+//
+//	int topSize;
+//	int downSize;
+//}SouthSpliter;
 
 typedef struct{
     HWND hwnd;
@@ -60,23 +75,10 @@ typedef struct{
     
     int connectionAreaWitdh;
     
-    VerticalSpliter vs;
-    SouthSpliter southSpliter;
+//    VerticalSpliter vs;
+
+//    SouthSpliter southSpliter;
 }AppView;
-
-typedef struct{
-	TcpConnection * connection;
-
-	AppView * view;
-
-	HMENU hDev;
-
-	HWND logHwnd;
-
-	HTREEITEM selectedNode;
-
-    int UI;
-}MainModel;
 
 typedef struct{
 	HWND logHwnd;
@@ -84,11 +86,7 @@ typedef struct{
 	HWND cmdHwnd;
 
 	WNDPROC defaultCmdProc;
-
-	MainModel * mainModel;
 }ConsoleView;
-
-
 
 typedef struct{
 	HWND dataViewHwnd;
@@ -104,7 +102,33 @@ typedef struct{
 
 	WNDPROC ttlBtnProc;
 	WNDPROC exportBtnProc;
+
+	//////////////////////
+	HWND hashViewHwnd;
+	HWND stringViewHwnd;
+	HWND listViewHwnd;
+	HWND setViewHwnd;
+    HWND zsetViewHwnd;
 }DataView;
+
+typedef struct{
+	TcpConnection * connection;
+
+	AppView * view;
+
+	HMENU hDev;
+
+	HWND logHwnd;
+
+	DataView    * dataView;
+
+	ConsoleView * consoleView;
+
+	/** 选中的树节点 */
+	HTREEITEM selectedNode;
+
+    int UI;
+}MainModel;
 
 typedef struct{
 	int level;
@@ -114,6 +138,8 @@ typedef struct{
     HTREEITEM subHandles[1024];
     int  subHandleSize;
 }TreeNode;
+
+extern MainModel * mainModel;
 
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -127,5 +153,6 @@ LPTSTR mGetOpenFileName(HWND hwnd);
 
 LPTSTR mGetSaveFileName(HWND hwnd);
 
+int check_type(char * type);
 #endif
 

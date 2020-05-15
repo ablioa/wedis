@@ -10,7 +10,7 @@ AppView * buildAppView(HWND hwnd){
     view->toolbarHeight = 16;
     view->statusbarHeight = 20;
     
-    int connectionAreaWitdh;
+//    int connectionAreaWitdh;
 
     return view;
 }
@@ -43,8 +43,6 @@ void CreateView(AppView * view)
 			2,rt.bottom-rt.top-view->toolbarHeight - view->statusbarHeight,
 			view->hwnd,NULL,hInst,NULL);
     
-    
-    
 	// TODO 这里的200指的是属性窗口的高度,需要调整成动态的才可以
 	view->southSplitWnd = CreateWindowEx(0,
 			"HSplitterCtrl","", WS_CHILD | WS_VISIBLE,
@@ -55,16 +53,6 @@ void CreateView(AppView * view)
 			view->hwnd,NULL,hInst,NULL);
     
     buildAttributeView(view);
-    
-    initVerticalSpliter(view,view->hwnd,view->westSplitHwnd);
-	addWindow(view,view->connectionHwnd,view->dataHwnd);
-	addWindow(view,view->connectionHwnd,view->attributeHwnd);
-	addWindow(view,view->connectionHwnd,view->southSplitWnd);
-	setVsplitHwnd(view);
-    
-    initSouthSpliter(view,view->hwnd,view->southSplitWnd);
-	addWindowS(view,view->dataHwnd,view->attributeHwnd);
-	setVsplitHwndS(view);
 }
 
 void buildDataView(AppView * view){
@@ -180,54 +168,6 @@ void buildStatusBar(AppView * view){
 	view->statusbarHeight = trt.bottom-trt.top;
 }
 
-void initVerticalSpliter(AppView * view,HWND _parent,HWND _hwnd){
-	view->vs.hwnd = _hwnd;
-	view->vs.parent = _parent;
-
-	view->vs.cntLeft  = 0;
-	view->vs.cntRight = 0;
-
-    for(int ix =0;ix < 20 ;ix ++){
-		view->vs.hwnLeft[ix]=NULL;
-		view->vs.hwnRight[ix]=NULL;
-	}
-}
-
-void initSouthSpliter(AppView * view,HWND _parent,HWND _hwnd){
-    view->southSpliter.hwnd = _hwnd;
-	view->southSpliter.parent = _parent;
-
-	view->southSpliter.cntTop  = 0;
-	view->southSpliter.cntDown = 0;
-
-    for(int ix =0;ix < 20 ;ix ++){
-		view->southSpliter.hwnTop[ix]=NULL;
-		view->southSpliter.hwnDown[ix]=NULL;
-	}
-}
-
-void addWindow(AppView * view,HWND hLeft,HWND hRight){
-    if(hLeft != NULL)
-		view->vs.hwnLeft[view->vs.cntLeft++]=hLeft;
-
-	if(hRight != NULL)
-		view->vs.hwnRight[view->vs.cntRight++]=hRight;
-}
-
-void addWindowS(AppView * view,HWND hTop,HWND hDown){
-    if(hTop != NULL)
-		view->southSpliter.hwnTop[view->southSpliter.cntTop++]=hTop;
-
-	if(hDown != NULL)
-		view->southSpliter.hwnDown[view->southSpliter.cntDown++]=hDown;
-}
-
-void setVsplitHwndS(AppView * view){
-}
-
-void setVsplitHwnd(AppView * view){
-}
-
 void getConnectionRect(AppView * view,RECT * rt,RECT * rect){
     rect->left=0;
     rect->top=view->toolbarHeight;
@@ -322,7 +262,7 @@ void buildConnectionView(AppView * view){
 	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
 	tvinsert.item.iImage=0;
 	tvinsert.item.iSelectedImage=0;
-    tvinsert.item.pszText= "127.0.0.1:3879";
+//    tvinsert.item.pszText= "127.0.0.1:3879";
 
 	TreeNode * tn = buildTreeNode();
 	tn->level = 1;

@@ -3,18 +3,20 @@
 
 #include <windows.h>
 #include <winsock.h>
+
 #include "redis.h"
 #include "exception.h"
 
 #define BUFF_SIZE 4096
 
-//define REDIS_SERVER "192.168.1.9"
-//define REDIS_PORT   6379
-
 #define REDIS_SERVER "139.224.207.71"
 #define REDIS_PORT   6379
 
 #define WM_SOCKET WM_USER+100
+
+#define WM_DT_STRING WM_USER+200
+#define WM_DT_LIST   WM_USER+200
+#define WM_DT_HASH   WM_USER+200
 
 #define PT_SELECT 0
 #define PT_KEYS   1
