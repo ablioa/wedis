@@ -1,10 +1,5 @@
 #include "main.h"
-
-
-HINSTANCE hInstance;
-TCHAR     szFrameClass[] = TEXT ("MdiFrame") ;
-
-
+#include "view.h"
 
 BOOL CALLBACK exportBtnProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 	DataView * dataView = (DataView *)GetWindowLong(hwnd,GWL_USERDATA);
@@ -25,108 +20,15 @@ BOOL CALLBACK ttlBtnProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 	switch(msg){
 		case WM_LBUTTONUP:{
 			HINSTANCE hInst= (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
-			DialogBox (hInst,MAKEINTRESOURCE (IDD_GOTOLINE),hwnd,GoToLineDlgProc);
+			DialogBox (hInst,MAKEINTRESOURCE (IDD_GOTOLINE),hwnd,SetTtlDlgProc);
 			break;
 		}
 	}
 	return CallWindowProc(dataView->ttlBtnProc,hwnd,msg,wParam,lParam);;
 }
 
-BOOL CALLBACK CmdBoxProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
-	ConsoleView * cmd = (ConsoleView *) GetWindowLong(hwnd,GWL_USERDATA);
-	char buff[256];
-
-	switch(msg){
-		case WM_KEYUP:
-			switch(wParam){
-				case VK_UP:
-					//model->cl->rollup();
-					//view->UpdateData(*model);
-				break;
-
-				case VK_DOWN:
-					//model->cl->rolldown();
-					//view->UpdateData(*model);
-				break;
-
-				case VK_RETURN:
-					GetWindowText(hwnd,buff,256);
-					//HWND parent = GetParent(hwnd);
-
-					char * cmds = parse_command((char *)buff,256);
-					char * comment = build_comment((char *)buff,cmds);
-					int curLeng = GetWindowTextLength(cmd->logHwnd);
-					SendMessage(cmd->logHwnd,EM_SETSEL,curLeng,curLeng);
-					SendMessage(cmd->logHwnd,EM_REPLACESEL,FALSE,(LONG)comment);
-
-					//cmd->mainModel->tcpClient->senddata(cmds,strlen(cmds),0);
-                    cmd->mainModel->connection->cmdType = PT_DATA;
-                    connection_senddata(cmd->mainModel->connection,cmds,strlen(cmds),0);
-					//
-					//Command * pcmd = (Command *) GetWindowLong(hwnd,GWL_USERDATA);
-					//cmd->mainModel->tcpClient->senddata(cmds,strlen(cmds),0);
-					//
-					SetWindowText(hwnd,NULL);
-					//
-					free(cmds);
-					free(comment);
-				break;
-			}
-		break;
-	}
-
-	return CallWindowProc(cmd->defaultCmdProc,hwnd,msg,wParam,lParam);
-}
-
-LRESULT CALLBACK consoleWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
-	HINSTANCE hinst = hInstance;
-	ConsoleView * consoleView = (ConsoleView *)GetWindowLong(hwnd,GWL_USERDATA);
-
-	RECT rect;
-
-    switch(msg){
-		case WM_CREATE:{
-			consoleView = (ConsoleView*)malloc(sizeof(ConsoleView));
-			memset(consoleView,0,sizeof(ConsoleView));
-			
-			HWND logHwnd  = CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | WS_VSCROLL  |ES_MULTILINE, 0, 0, 100, 100, hwnd, (HMENU)0, hinst, 0);
-            HWND cmdHwnd  = CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER , 0, 100, 100, 24, hwnd, (HMENU)0, hinst, 0);
-            
-			HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
-            SendMessage(logHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-            SendMessage(cmdHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-
-			consoleView->logHwnd = logHwnd;
-			consoleView->cmdHwnd = cmdHwnd;
-			SetWindowLong(hwnd,GWL_USERDATA,(LONG)consoleView);
-
-			consoleView->defaultCmdProc = (WNDPROC)SetWindowLong(cmdHwnd,GWL_WNDPROC,(LONG)CmdBoxProc);
-			SetWindowLong(cmdHwnd,GWL_USERDATA,(LONG)consoleView);
-
-			HWND hParent = GetParent(hwnd);
-			MainModel * mainModel = (MainModel *)GetWindowLong(hParent,GWL_USERDATA);
-			mainModel->logHwnd = logHwnd;
-
-			consoleView->mainModel = mainModel;
-			break;
-		}
-
-		case WM_SIZE:{
-			GetClientRect(hwnd,&rect);
-			MoveWindow(consoleView->logHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top-24,TRUE);
-			MoveWindow(consoleView->cmdHwnd,0,rect.bottom-rect.top-24,rect.right-rect.left,24,TRUE);
-			break;
-		}
-
-		case WM_LBUTTONDOWN:{
-			break;
-		}
-	}
-	return DefWindowProc(hwnd, msg, wParam, lParam);
-}
-
-LRESULT CALLBACK wowowProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam){
-	HINSTANCE hinst = hInstance;
+LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam){
+    HINSTANCE hinst = (HINSTANCE)GetWindowLong(dataHwnd,GWL_HINSTANCE);
 	DataView * dataView = (DataView *)GetWindowLong(dataHwnd,GWL_USERDATA);
 
 	RECT rect;
@@ -142,10 +44,10 @@ LRESULT CALLBACK wowowProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam
                 CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
                 510, 5, 120, 24, dataHwnd, (HMENU)0, hinst, 0);
             
-            HWND dataViewHwnd  = CreateWindowEx(0, DATA_RENDER_WINDOW, (""), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 5, 34, 625, 240, dataHwnd, (HMENU)0, hinst, 0);
-            // 
-            // STYLE DS_3DLOOK | DS_CENTER | DS_MODALFRAME | DS_SHELLFONT | WS_CAPTION | WS_VISIBLE | WS_POPUP | WS_SYSMENU
-            // HWND hCtrl0_1 = CreateWindowEx(0, WC_BUTTON, ("OK"), WS_VISIBLE | WS_CHILD | WS_TABSTOP | 0x00000001, 101, 60, 75, 23, hwnd, (HMENU)IDOK, hInst, 0);
+            HWND dataViewHwnd  = CreateWindowEx(0, DATA_RENDER_WINDOW, (""), 
+                WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
+                5, 34, 625, 240, 
+                dataHwnd, (HMENU)0, hinst, 0);
 
             HWND saveBtnHwnd  = CreateWindowEx(0, WC_BUTTON, ("Save"), WS_VISIBLE | WS_CHILD | WS_TABSTOP | 0x00000001, 570, 279, 60, 24, dataHwnd, (HMENU)0, hinst, 0);     
             HWND exportBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Export"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 505, 279, 60, 24, dataHwnd, (HMENU)0, hinst, 0); 
@@ -235,11 +137,11 @@ LRESULT CALLBACK dataRenderProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
     return DefWindowProc (hwnd, message, wParam, lParam);
 }
 
-void initpan(){
+void initpan(HINSTANCE hInstance){
     WNDCLASSEX hSplitClass;
     hSplitClass.cbSize        = sizeof(hSplitClass);
     hSplitClass.style         = 0;
-    hSplitClass.lpfnWndProc   = wowowProc;
+    hSplitClass.lpfnWndProc   = dataViewProc;
     hSplitClass.cbClsExtra    = 0;
     hSplitClass.cbWndExtra    = 0;
     hSplitClass.hInstance     = hInstance;
@@ -285,9 +187,7 @@ void initpan(){
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cmdShow){
     save_all();
 
-	hInstance = hInst;
-
-	initpan();
+	initpan(hInst);
 
 	WNDCLASSEX  mainClass;
 	mainClass.cbSize = sizeof (WNDCLASSEX);
@@ -529,6 +429,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 
                     if(mainModel->connection->cmdType == PT_TYPE){
                         MessageBox(hwnd,rp->status,"asas",MB_OK);
+                        //SendMessage(mainModel->dataViewHwnd)
                     }
 				}
 				break;
@@ -563,6 +464,12 @@ void command(HWND _hwnd,int cmd){
 		//case IDM_FILE_OPEN:
 		//	fname = mGetOpenFileName(_hwnd);
 		//	break;
+
+        case IDM_FILE_CLOSE:
+            hInst= (HINSTANCE)GetWindowLong(_hwnd,GWL_HINSTANCE);
+			DialogBox (hInst,MAKEINTRESOURCE (IDD_COLOR),_hwnd,SetPreferenceProc);
+        break;
+
 		case IDM_FILE_SAVESOURCE:
 
 			break;
@@ -599,16 +506,6 @@ void command(HWND _hwnd,int cmd){
 							 _hwnd,
 							 AboutDlgProc);
 			break;
-		case IDM_VIEW_FULLSCREEN:
-		break;
-
-		case IDM_VIEW_GOTOLINE:
-				hInst= (HINSTANCE)GetWindowLong(_hwnd,GWL_HINSTANCE);
-				DialogBox (hInst,
-							 MAKEINTRESOURCE (IDD_GOTOLINE),
-							 _hwnd,
-							 GoToLineDlgProc);
-		break;
 	}
 }
 
@@ -662,48 +559,4 @@ LPTSTR mGetSaveFileName(HWND hwnd){
 	}
 
 	return retVal;
-}
-
-BOOL CALLBACK AboutDlgProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam)
-{
-    switch (message)
-    {
-		case WM_INITDIALOG:
-
-			return TRUE;
-
-		case WM_COMMAND:
-			switch (LOWORD (wParam))
-			{
-				case IDOK:
-
-				case IDCANCEL:
-					EndDialog (hwnd, 0);
-				return TRUE;
-			}
-			break;
-    }
-    return FALSE;
-}
-
-BOOL CALLBACK GoToLineDlgProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam)
-{
-	int lineTogo =0 ;
-	switch(message)
-	{
-		case WM_COMMAND:
-			switch(LOWORD(wParam))
-			{
-				case IDC_BTN_OK:
-					GetDlgItemInt(hwnd,IDC_ADDRESS,&lineTogo,FALSE);
-					EndDialog (hwnd, 0);
-				break;
-			}
-		break;
-
-		case WM_INITDIALOG:
-
-		break;
-	}
-	return FALSE;
 }

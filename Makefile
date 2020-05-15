@@ -11,7 +11,8 @@ SRCS=callbacks.c \
 	view.c \
 	exception.c \
 	redis.c \
-	connection.c
+	connection.c \
+	console.c
 
 OBJS = $(SRCS:.c=.o)
 

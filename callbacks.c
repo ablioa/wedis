@@ -1,9 +1,6 @@
 #include "callbacks.h"
 
-int tmp_break;
-int dest_line;
-
-LRESULT CALLBACK ColorProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lParam){
+LRESULT CALLBACK SetPreferenceProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lParam){
 	HDC	hdc;
 	PAINTSTRUCT ps;
 	HWND hInst;
@@ -72,28 +69,46 @@ LRESULT CALLBACK ColorProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lParam){
 	return 0;
 }
 
-LRESULT CALLBACK SetBrkProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lParam)
+BOOL CALLBACK AboutDlgProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam)
 {
+    switch (message)
+    {
+		case WM_INITDIALOG:
 
-//	char buff[MAX_PATH];
-	switch(msg)
+			return TRUE;
+
+		case WM_COMMAND:
+			switch (LOWORD (wParam))
+			{
+				case IDOK:
+
+				case IDCANCEL:
+					EndDialog (hwnd, 0);
+				return TRUE;
+			}
+			break;
+    }
+    return FALSE;
+}
+
+BOOL CALLBACK SetTtlDlgProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam)
+{
+	int lineTogo =0 ;
+	switch(message)
 	{
+		case WM_COMMAND:
+			switch(LOWORD(wParam))
+			{
+				case IDC_BTN_OK:
+					GetDlgItemInt(hwnd,IDC_ADDRESS,&lineTogo,FALSE);
+					EndDialog (hwnd, 0);
+				break;
+			}
+		break;
+
 		case WM_INITDIALOG:
 
 		break;
-
-		case WM_COMMAND:
-			switch(wParam){
-				case IDOK:
-					tmp_break=GetDlgItemInt(hWin,IDC_BRKVALUE,NULL,FALSE);
-					EndDialog(hWin,0);
-				break;
-			}
-			break;
-		case WM_CLOSE:
-			EndDialog(hWin,0);
-		break;
 	}
-
-	return 0;
+	return FALSE;
 }
