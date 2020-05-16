@@ -1,5 +1,39 @@
 #include "listview.h"
 
+HWND listView;
+
+char * listColNames[2]={
+    "Row",
+	"Value"
+};
+
+BOOL InitListDViewColumns(HWND hWndListView) { 
+    char szText[10]={'A'};
+    LVCOLUMN lvc;
+    int iCol;
+
+    lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
+
+    for (iCol = 0; iCol < 2; iCol++){
+        lvc.iSubItem = iCol;
+        lvc.pszText = listColNames[iCol];
+        lvc.cx = 100;
+
+        if ( iCol < 2 ){
+            lvc.fmt = LVCFMT_LEFT;
+		}
+        else{
+            lvc.fmt = LVCFMT_RIGHT;
+		}
+
+        if (ListView_InsertColumn(hWndListView, iCol, &lvc) == -1){
+            return FALSE;
+		}
+    }
+    
+    return TRUE;
+}
+
 HWND buildListViewWindow(HWND parent){
 	HINSTANCE hinst = (HINSTANCE)GetWindowLong(parent,GWL_HINSTANCE);
 
@@ -25,9 +59,27 @@ HWND buildListViewWindow(HWND parent){
 }
 
 LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
+	RECT rect;
+
 	switch(message){
 	    case WM_CREATE:{
-            
+		    HINSTANCE hinst = (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
+            GetClientRect (hwnd, &rect); 
+
+	        listView = CreateWindowEx(WS_EX_CLIENTEDGE, "SysListView32", NULL,
+                          WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS | LVS_SORTASCENDING,
+                          0, 0,
+                          rect.right - rect.left,
+                          rect.bottom - rect.top,
+                          hwnd, NULL, hinst, NULL);
+
+			InitListDViewColumns(listView);            
+		    break;
+		}
+
+		case WM_SIZE:{
+			GetClientRect(hwnd,&rect);
+			MoveWindow(listView,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
 		    break;
 		}
 	}

@@ -1,5 +1,13 @@
 #include "hashview.h"
 
+HWND tableView;
+
+char * colNames[3]={
+    "Row",
+	"Key",
+	"Value"
+};
+
 BOOL InitListViewColumns(HWND hWndListView) { 
     char szText[10]={'A'};
     LVCOLUMN lvc;
@@ -7,9 +15,9 @@ BOOL InitListViewColumns(HWND hWndListView) {
 
     lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
-    for (iCol = 0; iCol < 5; iCol++){
+    for (iCol = 0; iCol < 3; iCol++){
         lvc.iSubItem = iCol;
-        lvc.pszText = szText;
+        lvc.pszText = colNames[iCol];
         lvc.cx = 100;
 
         if ( iCol < 2 ){
@@ -53,20 +61,27 @@ HWND buildHashViewWindow(HWND parent){
 
 LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	RECT rcClient;
+	RECT rect;
 
 	switch(message){
 	    case WM_CREATE:{
 			HINSTANCE hinst = (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
             GetClientRect (hwnd, &rcClient); 
 	        
-            HWND hWndListView = CreateWindowEx(WS_EX_CLIENTEDGE, "SysListView32", NULL,
+            tableView = CreateWindowEx(WS_EX_CLIENTEDGE, "SysListView32", NULL,
                           WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS | LVS_SORTASCENDING,
                           0, 0,
                           rcClient.right - rcClient.left,
                           rcClient.bottom - rcClient.top,
                           hwnd, NULL, hinst, NULL);
 
-			InitListViewColumns(hWndListView);
+			InitListViewColumns(tableView);
+		    break;
+		}
+
+		case WM_SIZE:{
+			GetClientRect(hwnd,&rect);
+			MoveWindow(tableView,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
 		    break;
 		}
 	}
