@@ -150,51 +150,51 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 	return DefWindowProc(dataHwnd, msg, wParam, lParam);
 }
 
+/**
+ * 这里目前只是得到数据的类型，并没有得到数据本身
+ * 
+ * 优化: 主窗口应该记录当前显示的窗口
+ * 
+ */ 
 void switchView(HWND hwnd,int type,RedisReply * reply){
 	DataView * dataView = mainModel->dataView;
 
+	ShowWindow(dataView->visibleHwnd,SW_HIDE);
+
+	
+
 	switch(type){
 		case 1:{
-			ShowWindow(dataView->listViewHwnd,SW_HIDE);
-			ShowWindow(dataView->hashViewHwnd,SW_HIDE);
-			ShowWindow(dataView->stringViewHwnd,SW_SHOW);
-			ShowWindow(dataView->setViewHwnd,SW_HIDE);
-			ShowWindow(dataView->zsetViewHwnd,SW_HIDE);
+			dataView->visibleHwnd = dataView->stringViewHwnd;
 			break;
 		}
 		case 2:{
-			ShowWindow(dataView->listViewHwnd,SW_SHOW);
-			ShowWindow(dataView->hashViewHwnd,SW_HIDE);
-			ShowWindow(dataView->stringViewHwnd,SW_HIDE);
-			ShowWindow(dataView->setViewHwnd,SW_HIDE);
-			ShowWindow(dataView->zsetViewHwnd,SW_HIDE);
+			/// 发送数据
+			int size = reply->bulkSize;
+			for(int ix = 0; ix < size; ix ++){
+				char buff[256] = {0};
+				wsprintf(buff,"size: %s %d -  %d",reply->bulks[ix],reply->bulkSize,type);
+				//MessageBox(hwnd,buff,buff,MB_OK);
+			}
+
+			dataView->visibleHwnd = dataView->listViewHwnd;
 			break;
 		}
 		case 3:{
-			ShowWindow(dataView->listViewHwnd,SW_HIDE);
-			ShowWindow(dataView->hashViewHwnd,SW_SHOW);
-			ShowWindow(dataView->stringViewHwnd,SW_HIDE);
-			ShowWindow(dataView->setViewHwnd,SW_HIDE);
-			ShowWindow(dataView->zsetViewHwnd,SW_HIDE);
+			dataView->visibleHwnd = dataView->hashViewHwnd;
 			break;
 		}
 		case 4:{
-			ShowWindow(dataView->listViewHwnd,SW_HIDE);
-			ShowWindow(dataView->hashViewHwnd,SW_HIDE);
-			ShowWindow(dataView->stringViewHwnd,SW_HIDE);
-			ShowWindow(dataView->setViewHwnd,SW_SHOW);
-			ShowWindow(dataView->zsetViewHwnd,SW_HIDE);
+			dataView->visibleHwnd = dataView->setViewHwnd;
 			break;
 		}
 		case 5:{
-			ShowWindow(dataView->listViewHwnd,SW_HIDE);
-			ShowWindow(dataView->hashViewHwnd,SW_HIDE);
-			ShowWindow(dataView->stringViewHwnd,SW_HIDE);
-			ShowWindow(dataView->setViewHwnd,SW_HIDE);
-			ShowWindow(dataView->zsetViewHwnd,SW_SHOW);
+			dataView->visibleHwnd = dataView->zsetViewHwnd;
 			break;
 		}
 	}
+
+	ShowWindow(dataView->visibleHwnd,SW_SHOW);
 }
 
 LRESULT CALLBACK dataRenderProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){

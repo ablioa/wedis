@@ -30,9 +30,20 @@ typedef struct{
 	char *  error;
 	int     digital;
 	char *  bulk;
+
 	char ** bulks;
 	int     bulkSize;
+
+	char * key;
 }RedisReply;
+
+/**
+ * redis 列表数据
+ */
+typedef struct{
+	int size;
+	char ** items;
+}ListModel;
 
 RedisReply * read_replay(char * text);
 

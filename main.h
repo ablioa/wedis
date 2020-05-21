@@ -29,6 +29,13 @@
 
 #define WM_DT WM_USER+200
 
+typedef struct{
+	int data_type;
+	void * model;
+}RenderModel;
+
+/** 用于提供给视图对象的数据传输对象 TODO 临时性的，要重构掉 */
+extern RenderModel * renderModel;
 //typedef struct{
 //	HWND hwnd;
 //	HWND parent;
@@ -109,6 +116,8 @@ typedef struct{
 	HWND listViewHwnd;
 	HWND setViewHwnd;
     HWND zsetViewHwnd;
+
+	HWND visibleHwnd;
 }DataView;
 
 typedef struct{
@@ -153,6 +162,6 @@ LPTSTR mGetOpenFileName(HWND hwnd);
 
 LPTSTR mGetSaveFileName(HWND hwnd);
 
-int check_type(char * type);
+int check_type(char * type,char * key);
 #endif
 

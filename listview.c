@@ -7,6 +7,27 @@ char * listColNames[2]={
 	"Value"
 };
 
+BOOL InsertListViewItems1(HWND hwnd, int cItems){
+    LVITEM lvI;
+
+    lvI.pszText   = LPSTR_TEXTCALLBACK;
+    lvI.mask      = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE;
+    lvI.stateMask = 0;
+    lvI.iSubItem  = 0;
+    lvI.state     = 0;
+
+    for (int index = 0; index < cItems; index++){
+        lvI.iItem  = index;
+        lvI.iImage = index;
+        lvI.pszText = "sdsd";
+    
+        if (ListView_InsertItem(hwnd, &lvI) == -1)
+            return FALSE;
+    }
+
+    return TRUE;
+}
+
 BOOL InitListDViewColumns(HWND hWndListView) { 
     LVCOLUMN lvc;
     int iCol;
@@ -36,16 +57,16 @@ BOOL InitListDViewColumns(HWND hWndListView) {
 HWND buildListViewWindow(HWND parent){
 	HINSTANCE hinst = (HINSTANCE)GetWindowLong(parent,GWL_HINSTANCE);
 
-	RECT containerRect;
-	GetClientRect (parent, &containerRect);
+	RECT rect;
+	GetClientRect (parent, &rect);
 	
 	HWND dataViewHwnd  = CreateWindowEx(0, 
 		LIST_VIEW_CLASS, (""), 
         WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
         0, 
 		0,
-        containerRect.right - containerRect.left,
-        containerRect.bottom - containerRect.top,
+        rect.right - rect.left,
+        rect.bottom - rect.top,
         parent, 
 	    (HMENU)0, 
 		hinst, 
@@ -71,8 +92,11 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                           rect.right - rect.left,
                           rect.bottom - rect.top,
                           hwnd, NULL, hinst, NULL);
+            
+            ListView_SetExtendedListViewStyle(listView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
 
-			InitListDViewColumns(listView);            
+			InitListDViewColumns(listView);
+            InsertListViewItems1(listView,3);        
 		    break;
 		}
 
@@ -81,6 +105,33 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 			MoveWindow(listView,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
 		    break;
 		}
+        
+        case WM_NOTIFY:{
+			switch (((LPNMHDR) lParam)->code) {
+                MessageBox(hwnd,"sss","sdsd",MB_OK);
+
+                case LVN_GETDISPINFO:{
+                     NMLVDISPINFO* plvdi;
+                     plvdi = (NMLVDISPINFO*)lParam;
+                 
+                     switch (plvdi->item.iSubItem){
+                        case 0:
+                            plvdi->item.pszText = "11111";
+                        break;
+                            
+                        case 1:
+                            plvdi->item.pszText = "22222";
+                        break;
+                        
+                        case 2:
+                            plvdi->item.pszText = "33333";
+                        break;
+                    }  
+               }
+            }
+
+            break;
+        }
 	}
 
 	return DefWindowProc (hwnd, message, wParam, lParam);

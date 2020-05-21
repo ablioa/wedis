@@ -29,3 +29,6 @@
    zadd name   2 redis
    zadd age    2 waht
    zadd times  3 addd
+  
+   ### 查看ZSET里的所有元素
+   zrange names 0 -1 withscores

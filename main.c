@@ -2,6 +2,7 @@
 #include "view.h"
 
 MainModel * mainModel;
+RenderModel * renderModel;
 
 void initpan(HINSTANCE hInstance){
 
@@ -64,8 +65,12 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
 
 	mainModel = (MainModel *)malloc(sizeof(MainModel));
 	memset(mainModel,0,sizeof(MainModel));
+
 	mainModel->dataView = (DataView *) malloc(sizeof(DataView));
 	memset(mainModel->dataView,0,sizeof(DataView));
+
+	renderModel = (RenderModel *) malloc(sizeof(RenderModel));
+	memset(renderModel,0,sizeof(RenderModel));
 
 	WNDCLASSEX  mainClass;
 	mainClass.cbSize = sizeof (WNDCLASSEX);
@@ -174,7 +179,14 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 					    memset(scmds,0,sizeof(char) * 128);
 					    sprintf(scmds,"type %s",ti.pszText);
 
+						memset(mainModel->connection->key,0,256);
+						sprintf(mainModel->connection->key,"%s",ti.pszText);
+						//strcpy(mainModel->connection->key,strlen(ti.pszText));
+
+						//MessageBox(hwnd,scmds,scmds,MB_OK);
+
                         mainModel->connection->cmdType = PT_TYPE;
+						//mainModel->connection->key = ti.pszText;
 					    char * pppp = parse_command((char *)scmds,256);
                         connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
 					}
@@ -288,7 +300,10 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 					SendMessage(mainModel->logHwnd,EM_SETSEL,curLeng,curLeng);
 					SendMessage(mainModel->logHwnd,EM_REPLACESEL,FALSE,(LONG)buff);
 
+					//MessageBox(hwnd,buff,buff,MB_OK);
+
                     RedisReply * rp = read_replay(buff);
+					rp->key = mainModel->connection->key;
                     if(mainModel->connection->cmdType == PT_KEYS){
                         if(rp->type == REPLY_MULTI){
                             TVITEM ti = {0};
@@ -325,12 +340,21 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
                     }
 
                     if(mainModel->connection->cmdType == PT_TYPE){
-						int dataType = check_type(rp->status);
-                        SendMessage(mainModel->view->dataHwnd,
-							WM_DT,
-							(WPARAM)rp,
-							(LPARAM)dataType);
+						int dataType = check_type(rp->status,rp->key);
+						renderModel->data_type = dataType;
+                        // SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)rp,(LPARAM)dataType);
                     }
+
+					if(mainModel->connection->cmdType == PT_DATA){
+						if(rp->type != 0){
+							char cmds[128] = {0};
+							sprintf(cmds,"got data,size: %d. %d",rp->bulkSize,rp->type);
+							MessageBox(hwnd,cmds,"sdsd",MB_OK);
+							renderModel->model = rp;
+
+							SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)rp,(LPARAM)(renderModel->data_type));
+						}
+					}
 				}
 				break;
 
@@ -364,12 +388,20 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 // 表格
 #define TYPE_ZSET   "zset"
 
-int check_type(char * type){
+int check_type(char * type,char * key){
 	if(strcmp(type,TYPE_STRING) == 0){
 		return 1;
 	}
 
 	if(strcmp(type,TYPE_LIST) == 0){
+		char * command = (char *) malloc(sizeof(char) * 256);
+		memset(command,0,sizeof(char) * 256);
+		sprintf(command,"lrange %s 0 -1",key);
+		//MessageBox(NULL,command,command,MB_OK);
+		// TODO 
+		mainModel->connection->cmdType = PT_DATA;
+		char * pppp = parse_command((char *)command,256);
+		connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
 		return 2;
 	}
 	
