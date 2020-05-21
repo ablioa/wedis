@@ -13,7 +13,7 @@ HWND buildStringViewWindow(HWND parent){
 	
 	HWND dataViewHwnd  = CreateWindowEx(0, 
 		STRING_VIEW_CLASS, (""), 
-        WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
+        WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 
         0, 
 		0,
         containerRect.right - containerRect.left,
@@ -39,7 +39,7 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
             GetClientRect (hwnd, &rcClient); 
 	        
 			textView = CreateWindowEx(0, WC_EDIT, (""), 
-				WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | WS_VSCROLL  |ES_MULTILINE, 
+				WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_VSCROLL  |ES_MULTILINE, 
 				0, 0, 100, 100, hwnd, (HMENU)0, hinst, 0);
             
 		    break;

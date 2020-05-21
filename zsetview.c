@@ -8,6 +8,42 @@ char * zsetColNames[3]={
 	"Score"
 };
 
+
+
+PETINFO rgPetInfo[] = 
+{
+    {TEXT("Dog"),  TEXT("Poodle"),     TEXT("$300.00")},
+    {TEXT("Cat"),  TEXT("Siamese"),    TEXT("$100.00")},
+    {TEXT("Fish"), TEXT("Angel Fish"), TEXT("$10.00")},
+    {TEXT("Bird"), TEXT("Parakeet"),   TEXT("$5.00")},
+    {TEXT("Toad"), TEXT("Woodhouse"),  TEXT("$0.25")},
+};
+
+BOOL InsertListViewItems(HWND hWndListView, int cItems)
+{
+    LVITEM lvI;
+
+    // Initialize LVITEM members that are common to all items.
+    lvI.pszText   = LPSTR_TEXTCALLBACK; // Sends an LVN_GETDISPINFO message.
+    lvI.mask      = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE;
+    lvI.stateMask = 0;
+    lvI.iSubItem  = 0;
+    lvI.state     = 0;
+
+    // Initialize LVITEM members that are different for each item.
+    for (int index = 0; index < cItems; index++)
+    {
+        lvI.iItem  = index;
+        lvI.iImage = index;
+    
+        // Insert items into the list.
+        if (ListView_InsertItem(hWndListView, &lvI) == -1)
+            return FALSE;
+    }
+
+    return TRUE;
+}
+
 BOOL InitZsetViewColumns(HWND hWndListView) { 
     LVCOLUMN lvc;
     int iCol;
@@ -42,7 +78,7 @@ HWND buildZsetViewWindow(HWND parent){
 	
 	HWND dataViewHwnd  = CreateWindowEx(0, 
 		ZSET_VIEW_CLASS, (""), 
-        WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
+        WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 
         0, 
 		0,
         containerRect.right - containerRect.left,
@@ -73,6 +109,7 @@ LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                           hwnd, NULL, hinst, NULL);
 
 			InitZsetViewColumns(zsetView);
+            InsertListViewItems(zsetView,3);
 		    break;
 		}
 		case WM_SIZE:{
@@ -80,6 +117,35 @@ LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 			MoveWindow(zsetView,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
 		    break;
 		}
+        //////////////////////////////////////////////////////////////
+		case WM_NOTIFY:{
+			switch (((LPNMHDR) lParam)->code) {
+                ////////////////////////////////////////////////////
+                case LVN_GETDISPINFO:{
+                 NMLVDISPINFO* plvdi;
+                 plvdi = (NMLVDISPINFO*)lParam;
+                 
+                 switch (plvdi->item.iSubItem){
+                     case 0:
+                         plvdi->item.pszText = rgPetInfo[plvdi->item.iItem].szKind;
+                     break;
+                           
+                     case 1:
+                         plvdi->item.pszText = rgPetInfo[plvdi->item.iItem].szBreed;
+                     break;
+                     
+                     case 2:
+                         plvdi->item.pszText = rgPetInfo[plvdi->item.iItem].szPrice;
+                     break;
+                     
+                     default:
+                         break;
+                 }
+             }
+         }
+         break;
+        }
+        //////////////////////////////////////////////////////////////
 	}
 
 	return DefWindowProc (hwnd, message, wParam, lParam);
