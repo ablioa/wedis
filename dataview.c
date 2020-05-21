@@ -198,21 +198,22 @@ void switchView(HWND hwnd,int type,RedisReply * reply){
 }
 
 LRESULT CALLBACK dataRenderProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
-    DataView * dataView = mainModel->dataView;
+
+	DataView * dataView = mainModel->dataView;
 	RECT rect;
 
-    switch(message){
-        case WM_SIZE:{
-	        GetClientRect (hwnd, &rect);
+	switch(message){
+	    case WM_SIZE:{
+			GetClientRect(hwnd,&rect);
 
-            MoveWindow(dataView->hashViewHwnd,0, 0, rect.right - rect.left,rect.bottom - rect.top,TRUE);
-            MoveWindow(dataView->stringViewHwnd,0, 0, rect.right - rect.left,rect.bottom - rect.top,TRUE);
-            MoveWindow(dataView->listViewHwnd,0, 0, rect.right - rect.left,rect.bottom - rect.top,TRUE);
-            MoveWindow(dataView->setViewHwnd,0, 0, rect.right - rect.left,rect.bottom - rect.top,TRUE);
-            MoveWindow(dataView->zsetViewHwnd,0, 0, rect.right - rect.left,rect.bottom - rect.top,TRUE);
-            break;
-        }
-    }
+			MoveWindow(dataView->hashViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
+			MoveWindow(dataView->stringViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
+			MoveWindow(dataView->listViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
+			MoveWindow(dataView->setViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
+			MoveWindow(dataView->zsetViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
+			break;
+	    }
+	}
 
     return DefWindowProc (hwnd, message, wParam, lParam);
 }

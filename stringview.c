@@ -3,6 +3,8 @@
 
 #include "stringview.h"
 
+HWND textView;
+
 HWND buildStringViewWindow(HWND parent){
 	HINSTANCE hinst = (HINSTANCE)GetWindowLong(parent,GWL_HINSTANCE);
 
@@ -29,16 +31,23 @@ HWND buildStringViewWindow(HWND parent){
 
 LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	RECT rcClient;
+	RECT rect;
 
 	switch(message){
 	    case WM_CREATE:{
 			HINSTANCE hinst = (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
             GetClientRect (hwnd, &rcClient); 
 	        
-			CreateWindowEx(0, WC_EDIT, (""), 
+			textView = CreateWindowEx(0, WC_EDIT, (""), 
 				WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | WS_VSCROLL  |ES_MULTILINE, 
 				0, 0, 100, 100, hwnd, (HMENU)0, hinst, 0);
             
+		    break;
+		}
+
+		case WM_SIZE:{
+			GetClientRect(hwnd,&rect);
+			MoveWindow(textView,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
 		    break;
 		}
 	}
