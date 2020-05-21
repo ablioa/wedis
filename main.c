@@ -182,8 +182,6 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 					break;
 				}
 				case NM_DBLCLK:{
-//					NM_TREEVIEW* lpnmh = (NM_TREEVIEW*) lParam;
-
                     char * msg = (char*)malloc(128);
                     memset(msg,0,128);
 
