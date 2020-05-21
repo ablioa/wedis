@@ -8,7 +8,6 @@ char * listColNames[2]={
 };
 
 BOOL InitListDViewColumns(HWND hWndListView) { 
-    char szText[10]={'A'};
     LVCOLUMN lvc;
     int iCol;
 

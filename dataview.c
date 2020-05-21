@@ -197,13 +197,8 @@ void switchView(HWND hwnd,int type,RedisReply * reply){
 	}
 }
 
-#define	REPLY_STATUS  0
-#define	REPLY_ERROR   1
-#define	REPLY_DIGITAL 2
-#define	REPLY_BULK    3
-#define	REPLY_MULTI   4
-
 LRESULT CALLBACK dataRenderProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
+
 	DataView * dataView = mainModel->dataView;
 	RECT rect;
 
