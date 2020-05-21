@@ -6,18 +6,20 @@
 HWND textView;
 
 HWND buildStringViewWindow(HWND parent){
+	RECT rect;
+
 	HINSTANCE hinst = (HINSTANCE)GetWindowLong(parent,GWL_HINSTANCE);
 
-	RECT containerRect;
-	GetClientRect (parent, &containerRect);
+	
+	GetClientRect (parent, &rect);
 	
 	HWND dataViewHwnd  = CreateWindowEx(0, 
 		STRING_VIEW_CLASS, (""), 
         WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 
         0, 
 		0,
-        containerRect.right - containerRect.left,
-        containerRect.bottom - containerRect.top,
+        rect.right - rect.left,
+        rect.bottom - rect.top,
         parent, 
 	    (HMENU)0, 
 		hinst, 

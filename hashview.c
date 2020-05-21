@@ -35,18 +35,18 @@ BOOL InitListViewColumns(HWND hWndListView) {
 }
 
 HWND buildHashViewWindow(HWND parent){
-	HINSTANCE hinst = (HINSTANCE)GetWindowLong(parent,GWL_HINSTANCE);
+	RECT rect;
 
-	RECT containerRect;
-	GetClientRect (parent, &containerRect);
+	HINSTANCE hinst = (HINSTANCE)GetWindowLong(parent,GWL_HINSTANCE);
+	GetClientRect (parent, &rect);
 	
 	HWND dataViewHwnd  = CreateWindowEx(0, 
 		HASH_VIEW_CLASS, (""), 
         WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
         0, 
 		0,
-        containerRect.right - containerRect.left,
-        containerRect.bottom - containerRect.top,
+        rect.right - rect.left,
+        rect.bottom - rect.top,
         parent, 
 	    (HMENU)0, 
 		hinst, 
@@ -59,19 +59,18 @@ HWND buildHashViewWindow(HWND parent){
 }
 
 LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
-	RECT rcClient;
 	RECT rect;
 
 	switch(message){
 	    case WM_CREATE:{
 			HINSTANCE hinst = (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
-            GetClientRect (hwnd, &rcClient); 
+            GetClientRect (hwnd, &rect); 
 	        
             tableView = CreateWindowEx(WS_EX_CLIENTEDGE, "SysListView32", NULL,
                           WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS | LVS_SORTASCENDING,
                           0, 0,
-                          rcClient.right - rcClient.left,
-                          rcClient.bottom - rcClient.top,
+                          rect.right - rect.left,
+                          rect.bottom - rect.top,
                           hwnd, NULL, hinst, NULL);
 
 			InitListViewColumns(tableView);

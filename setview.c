@@ -2,7 +2,7 @@
 
 HWND setView;
 
-char * setColNames[3]={
+char * setColNames[2]={
     "Row",
 	"Value"
 };
