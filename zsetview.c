@@ -9,7 +9,6 @@ char * zsetColNames[3]={
 };
 
 BOOL InitZsetViewColumns(HWND hWndListView) { 
-    char szText[10]={'A'};
     LVCOLUMN lvc;
     int iCol;
 

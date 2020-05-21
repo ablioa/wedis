@@ -2,13 +2,12 @@
 
 HWND setView;
 
-char * setColNames[3]={
+char * setColNames[2]={
     "Row",
 	"Value"
 };
 
 BOOL InitSetViewColumns(HWND hWndListView) { 
-    char szText[10]={'A'};
     LVCOLUMN lvc;
     int iCol;
 
