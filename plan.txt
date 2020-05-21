@@ -18,3 +18,14 @@
   13. 页面布局的动态适配，计算逻辑优化，现在都是通过硬编码进行布局计算的。
   14. 连接管理机制
   15. MDI的窗口机制引入
+
+
+## 关于redis被攻击后怎么恢复的问题
+
+## 关于redis的操作
+
+### zset的操作
+   zadd wangzh 1 redis
+   zadd name   2 redis
+   zadd age    2 waht
+   zadd times  3 addd
