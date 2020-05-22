@@ -1,32 +1,26 @@
-APP      = main
+APP      = output/wedis
 
 CC=gcc
-CFLAGS=-Wall -mwindows -Wwrite-strings -Wincompatible-pointer-types -B include
+CFLAGS=-Wall -Wwrite-strings -Wincompatible-pointer-types -B include
+LFLAGS=-mwindows
+SYSLIB=-lcomctl32 -lwsock32
 
-TARGET=output/wedis
 RESOURCE=output/main.res
-SRCS=callbacks.c \
-	main.c \
-	config.c \
-	view.c \
-	exception.c \
-	redis.c \
-	connection.c \
-	console.c \
-	dataview.c \
-	hashview.c \
-	stringview.c \
-	listview.c \
-	setview.c \
-	zsetview.c
 
-OBJS = $(SRCS:.c=.o)
+DIRM=./output
 
-$(TARGET):$(OBJS) $(RESOURCE)
-	$(CC) $(CFLAGS) -o $@ $^ -lcomctl32 -lwsock32
+SRCS=$(wildcard *.c)
+OBJS=$(SRCS:.c=.o)
+OBJS:=$(addprefix $(DIRM)/,$(OBJS))
+
+$(APP):$(OBJS) $(RESOURCE)
+	$(CC) $(LFLAGS) -o $@ $^ $(SYSLIB)
+
+$(DIRM)/%.o:%.c
+	$(CC) $(CFLAGS) -o $@ -c $^
 
 $(RESOURCE):resource/res.rc
 	windres -i resource/res.rc -O COFF -o $(RESOURCE)
 
 clean:
-	rm output/*.res output/*.exe *.o
+	rm output/*.res output/*.exe output/*.o

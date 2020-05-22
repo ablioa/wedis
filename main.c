@@ -83,7 +83,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
 	mainClass.lpszMenuName = MAKEINTRESOURCE (ID_MAIN);
 	mainClass.cbClsExtra = 0;
 	mainClass.cbWndExtra = 0;
-	mainClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));//(HBRUSH) GetStockObject (COLOR_BTNFACE + 1);
+	mainClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
 	mainClass.hCursor = LoadCursor (0, IDC_ARROW);
 
     if (!RegisterClassEx (&mainClass)){
@@ -153,7 +153,6 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 					char * buf = (char*)malloc(128);
                     memset(buf,0,128);
 
-					//MessageBox(hwnd,"sdsdfsdf","sdfsdf",MB_OK);
 					DWORD dwPos = GetMessagePos();
 					POINT pt;
 					pt.x = LOWORD(dwPos);
@@ -181,12 +180,8 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 
 						memset(mainModel->connection->key,0,256);
 						sprintf(mainModel->connection->key,"%s",ti.pszText);
-						//strcpy(mainModel->connection->key,strlen(ti.pszText));
-
-						//MessageBox(hwnd,scmds,scmds,MB_OK);
 
                         mainModel->connection->cmdType = PT_TYPE;
-						//mainModel->connection->key = ti.pszText;
 					    char * pppp = parse_command((char *)scmds,256);
                         connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
 					}
@@ -238,16 +233,6 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 						mainModel->selectedNode = hItem;
 					}
 
-					break;
-				}
-				case TVN_BEGINDRAG:
-				break;
-
-				case TVN_SELCHANGED:{
-					break;
-				}
-
-				case TVN_ITEMEXPANDING:{
 					break;
 				}
 			}
