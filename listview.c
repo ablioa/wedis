@@ -152,5 +152,6 @@ void init_listview(HINSTANCE hInstance){
     listViewClass.lpszMenuName  = 0;
     listViewClass.lpszClassName = LIST_VIEW_CLASS;
     listViewClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
+    
     RegisterClassEx(&listViewClass);
 }

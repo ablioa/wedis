@@ -159,7 +159,6 @@ char * buildWord(char * word,size_t length){
 	return buff;
 }
 
-
 char * build_comment(const char * text,const char * pack){
 	char * buff = (char *)malloc(sizeof(char) * 1024);
 	memset(buff,0,sizeof(char) * 1024);

@@ -9,7 +9,7 @@ TcpConnection * build_connection(){
 int connect_to_server(TcpConnection * connection,HWND hwnd){
     int retVal;
 
-    connection->Buff = (char *)malloc(BUFF_SIZE*sizeof(char));
+    connection->buff = (char *)malloc(BUFF_SIZE*sizeof(char));
 	connection->bconnect = FALSE;
 
 	WORD SysVer=MAKEWORD(2,0);
@@ -50,7 +50,7 @@ int connection_close_connect(TcpConnection * connection){
 	connection->bconnect = FALSE;
 
     WSACleanup();
-    free(connection->Buff);
+    free(connection->buff);
 
     return 0;
 }
@@ -68,9 +68,9 @@ int connection_senddata(TcpConnection * connection,char *buff,size_t size,int fl
 
 int connection_receivedata(TcpConnection * connection){
 	int size;
-	ZeroMemory(connection->Buff,BUFF_SIZE);
-	size = recv(connection->socketid,connection->Buff,BUFF_SIZE,0);
-	connection->Buff[size+1]=0x00;
+	ZeroMemory(connection->buff,BUFF_SIZE);
+	size = recv(connection->socketid,connection->buff,BUFF_SIZE,0);
+	connection->buff[size+1]=0x00;
 	return size;
 }
 
@@ -79,7 +79,7 @@ int connection_get_sockid(TcpConnection * connection){
 }
 
 char * connection_get_buffer(TcpConnection * connection){
-    return connection->Buff;
+    return connection->buff;
 }
 
 BOOL connection_get_status(TcpConnection * connection){
