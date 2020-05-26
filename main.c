@@ -4,8 +4,10 @@
 MainModel * mainModel;
 RenderModel * renderModel;
 
+/**
+ * 注册窗口类
+ */
 void initpan(HINSTANCE hInstance){
-
 	init_hashview(hInstance);
 	init_stringview(hInstance);
 	init_listview(hInstance);
@@ -56,13 +58,29 @@ void initpan(HINSTANCE hInstance){
     dataRenderClass.lpszClassName = DATA_RENDER_WINDOW;
     dataRenderClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     RegisterClassEx(&dataRenderClass);
+
+	WNDCLASSEX  mainClass;
+	mainClass.cbSize = sizeof (WNDCLASSEX);
+	mainClass.style = CS_HREDRAW | CS_VREDRAW | CS_BYTEALIGNWINDOW;
+	mainClass.lpfnWndProc=MainWndProc;
+	mainClass.lpszClassName = szFrameClass;
+	mainClass.hInstance = hInstance;
+	mainClass.hIcon = 0;
+	mainClass.hIconSm = 0;
+	mainClass.lpszMenuName = MAKEINTRESOURCE (ID_MAIN);
+	mainClass.cbClsExtra = 0;
+	mainClass.cbWndExtra = 0;
+	mainClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
+	mainClass.hCursor = LoadCursor (0, IDC_ARROW);
+	RegisterClassEx(&mainClass);
+
+	// MessageBox(NULL, TEXT ("This program requires Windows NT!"),TEXT("appName"), MB_ICONERROR) ;
 }
 
-int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cmdShow){
-    save_all();
-
-	initpan(hInst);
-
+/**
+ *  初始化数据模型
+ **/
+void initModel(){
 	mainModel = (MainModel *)malloc(sizeof(MainModel));
 	memset(mainModel,0,sizeof(MainModel));
 
@@ -71,28 +89,18 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
 
 	renderModel = (RenderModel *) malloc(sizeof(RenderModel));
 	memset(renderModel,0,sizeof(RenderModel));
+}
 
-	WNDCLASSEX  mainClass;
-	mainClass.cbSize = sizeof (WNDCLASSEX);
-	mainClass.style = CS_HREDRAW | CS_VREDRAW | CS_BYTEALIGNWINDOW;
-	mainClass.lpfnWndProc=MainWndProc;
-	mainClass.lpszClassName = szFrameClass;
-	mainClass.hInstance = hInst;
-	mainClass.hIcon = 0;
-	mainClass.hIconSm = 0;
-	mainClass.lpszMenuName = MAKEINTRESOURCE (ID_MAIN);
-	mainClass.cbClsExtra = 0;
-	mainClass.cbWndExtra = 0;
-	mainClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
-	mainClass.hCursor = LoadCursor (0, IDC_ARROW);
+int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cmdShow){
+	MSG  msg;
 
-    if (!RegisterClassEx (&mainClass)){
-         MessageBox (NULL, TEXT ("This program requires Windows NT!"),
-                     TEXT("appName"), MB_ICONERROR) ;
-         return 0 ;
-    }
+    save_all();
 
-	HWND hwndFrame = CreateWindowEx(WS_EX_LEFT,szFrameClass, TEXT ("MDI Demonstration"),
+	initpan(hInst);
+
+	initModel();
+
+	HWND hwndFrame = CreateWindowEx(WS_EX_LEFT,szFrameClass, TEXT ("wedis"),
                                WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
 							   CW_USEDEFAULT, 0,
 							   400, 300,
@@ -102,8 +110,6 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
     UpdateWindow (hwndFrame) ;
 
 	HANDLE hAccel = LoadAccelerators(hInst,MAKEINTRESOURCE(IDA_RUN));
-
-	MSG  msg;
 	while (GetMessage (&msg, 0, 0, 0)){
 		if(!TranslateAccelerator(msg.hwnd,(HACCEL)hAccel,&msg)){
 			TranslateMessage (&msg);
@@ -285,8 +291,6 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 					SendMessage(mainModel->logHwnd,EM_SETSEL,curLeng,curLeng);
 					SendMessage(mainModel->logHwnd,EM_REPLACESEL,FALSE,(LONG)buff);
 
-					//MessageBox(hwnd,buff,buff,MB_OK);
-
                     RedisReply * rp = read_replay(buff);
 					rp->key = mainModel->connection->key;
                     if(mainModel->connection->cmdType == PT_KEYS){
@@ -327,7 +331,6 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
                     if(mainModel->connection->cmdType == PT_TYPE){
 						int dataType = check_type(rp->status,rp->key);
 						renderModel->data_type = dataType;
-                        // SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)rp,(LPARAM)dataType);
                     }
 
 					if(mainModel->connection->cmdType == PT_DATA){
@@ -362,17 +365,6 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
     return DefWindowProc (hwnd, message, wParam, lParam);
 }
 
-// 文本框
-#define TYPE_STRING "string"
-// 表格单行
-#define TYPE_LIST   "list"
-// 表格双行
-#define TYPE_HASH   "hash"
-// 表格
-#define TYPE_SET    "set"
-// 表格
-#define TYPE_ZSET   "zset"
-
 int check_type(char * type,char * key){
 	if(strcmp(type,TYPE_STRING) == 0){
 		return 1;
@@ -382,7 +374,7 @@ int check_type(char * type,char * key){
 		char * command = (char *) malloc(sizeof(char) * 256);
 		memset(command,0,sizeof(char) * 256);
 		sprintf(command,"lrange %s 0 -1",key);
-		//MessageBox(NULL,command,command,MB_OK);
+
 		// TODO 
 		mainModel->connection->cmdType = PT_DATA;
 		char * pppp = parse_command((char *)command,256);
@@ -406,20 +398,17 @@ int check_type(char * type,char * key){
 }
 
 void command(HWND _hwnd,int cmd){
-	//MainModel * mainModel = (MainModel *)GetWindowLong(_hwnd,GWL_USERDATA);
 	HINSTANCE hInst;
-	//char *fname;
 	RECT rt;
 	POINT pt;
 
     switch (cmd){
-		//case IDM_FILE_OPEN:
-		//	fname = mGetOpenFileName(_hwnd);
-		//	break;
+		case IDM_SET:{
+			MessageBox(_hwnd,"Hello,to set the dtaat","text",MB_OK);
+			break;
+		}
 
         case IDM_FILE_CLOSE:
-           // hInst= (HINSTANCE)GetWindowLong(_hwnd,GWL_HINSTANCE);
-		   // DialogBox (hInst,MAKEINTRESOURCE (IDD_COLOR),_hwnd,SetPreferenceProc);
         break;
 
 		case IDM_FILE_SAVESOURCE:

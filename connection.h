@@ -25,20 +25,21 @@
 #define PT_DATA   3
 
 typedef struct {
-    char * Buff;
-
-    int socketid;
+     WSADATA wsa;
 
     struct sockaddr_in serv_addr;
 
-    WSADATA wsa;
+    int socketid;
 
     BOOL bconnect;
 
+    /** 数据交互缓冲区 */
+    char * buff;
+
+    /** 当前业务类型 */
     int cmdType;
 
     char key[256];
-
 }TcpConnection;
 
 TcpConnection * build_connection();

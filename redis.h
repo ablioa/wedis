@@ -24,6 +24,15 @@ typedef struct{
 #define	REPLY_BULK    3
 #define	REPLY_MULTI   4
 
+/**
+ * 数据类型
+ */ 
+#define TYPE_STRING "string"
+#define TYPE_LIST   "list"
+#define TYPE_HASH   "hash"
+#define TYPE_SET    "set"
+#define TYPE_ZSET   "zset"
+
 typedef struct{
 	int     type;
 	char *  status;

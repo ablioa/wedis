@@ -262,7 +262,7 @@ void buildConnectionView(AppView * view){
 	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
 	tvinsert.item.iImage=0;
 	tvinsert.item.iSelectedImage=0;
-//    tvinsert.item.pszText= "127.0.0.1:3879";
+    tvinsert.item.pszText= "127.0.0.1:3879";
 
 	TreeNode * tn = buildTreeNode();
 	tn->level = 1;
