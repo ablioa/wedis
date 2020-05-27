@@ -5,7 +5,7 @@
 
 #include "main.h"
 
-#include "resource.h"
+#include "resource/resource.h"
 
 #define STRING_VIEW_CLASS "STRING_VIEW_CLASS"
 

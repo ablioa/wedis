@@ -2,7 +2,7 @@
 
 #include "callbacks.h"
 
-#include "resource.h"
+#include "resource/resource.h"
 
 eMsg err_list[]={
 	{0X0000,"",0},

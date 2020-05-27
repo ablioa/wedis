@@ -5,7 +5,7 @@
 
 #include "main.h"
 
-#include "resource.h"
+#include "resource/resource.h"
 
 #define HASH_VIEW_CLASS "HASH_VIEW_CLASS"
 

@@ -41,3 +41,6 @@ RedisClient
    send
    receive
    dispatch
+
+@101
+   ShellExecute(_hwnd,"open","dev.exe","","",SW_NORMAL);

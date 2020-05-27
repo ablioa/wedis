@@ -15,7 +15,7 @@
 
 #include "callbacks.h"
 
-#include "resource.h"
+#include "resource/resource.h"
 
 #include "exception.h"
 #include "config.h"

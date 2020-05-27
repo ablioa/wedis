@@ -126,13 +126,13 @@ void buildToolBar(AppView * view){
 		tbtn[ix].fsStyle = TBSTYLE_BUTTON ;
 		tbtn[ix].dwData = 0;
 	}
-	tbtn[0].idCommand = IDM_DEV;
+	tbtn[0].idCommand = IDM_FILE_OPEN;
 	tbtn[1].idCommand = IDM_FILE_OPEN;
-	tbtn[3].idCommand = IDM_FILE_SAVESOURCE;
-	tbtn[3].idCommand = IDM_FILE_DUMP;
-	tbtn[6].idCommand=IDM_VIEW_FULLSCREEN;
+	tbtn[3].idCommand = IDM_FILE_OPEN;
+	tbtn[3].idCommand = IDM_FILE_OPEN;
+	tbtn[6].idCommand=IDM_FILE_OPEN;
 	tbtn[8].idCommand=IDM_EXE_RUN;
-	tbtn[5].idCommand = IDM_STAY;
+	tbtn[5].idCommand = IDM_FILE_OPEN;
 	tbtn[4].fsStyle=TBSTYLE_SEP;
 	tbtn[10].fsStyle=TBSTYLE_SEP;
 	tbtn[7].fsStyle=TBSTYLE_SEP;

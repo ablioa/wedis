@@ -5,7 +5,7 @@
 #define _WIN32_IE 0x0600
 #include "main.h"
 
-#include "resource.h"
+#include "resource/resource.h"
 
 typedef struct 
 {

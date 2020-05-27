@@ -5,7 +5,7 @@
 
 #include "main.h"
 
-#include "resource.h"
+#include "resource/resource.h"
 
 #define LIST_VIEW_CLASS "LIST_VIEW_CLASS"
 

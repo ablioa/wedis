@@ -26,3 +26,20 @@
 #define IDS_CODEVIEW                            40003
 #define IDS_REGVIEW                             40004
 #define IDS_STACKVIEW                           40005
+#define IDM_SET                                 01
+
+#define IDD_NETWORK         200
+#define IDC_BUTTON_OK       190
+#define IDM_NETWORK         191
+#define IDC_BUTTON_EXIT     201
+
+
+#define IDC_BUTTON_STRING  202
+#define IDC_BUTTON_HASH    203
+#define IDC_BUTTON_LIST    204
+#define IDC_BUTTON_SET     205
+#define IDC_BUTTON_ZSET    206
+#define IDC_BUTTON_CLOSE   207
+
+#define IDC_BUTTON_KEYS    208
+#define IDC_BUTTON_SELECT  209

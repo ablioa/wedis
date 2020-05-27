@@ -398,55 +398,32 @@ int check_type(char * type,char * key){
 }
 
 void command(HWND _hwnd,int cmd){
-	HINSTANCE hInst;
-	RECT rt;
-	POINT pt;
+	HINSTANCE hInst = (HINSTANCE)GetWindowLong(_hwnd,GWL_HINSTANCE);
 
     switch (cmd){
-		case IDM_SET:{
-			MessageBox(_hwnd,"Hello,to set the dtaat","text",MB_OK);
+		/** 测试网络基础设施 */
+        case IDM_NETWORK:{
+			hInst= (HINSTANCE)GetWindowLong(_hwnd,GWL_HINSTANCE);
+			DialogBox (hInst,MAKEINTRESOURCE (IDD_NETWORK),_hwnd,networkDlgProc);
+        	break;
+		}
+
+		case IDM_EXIT:{
+			SendMessage (_hwnd, WM_CLOSE, 0, 0L);
 			break;
 		}
 
-        case IDM_FILE_CLOSE:
-        break;
-
-		case IDM_FILE_SAVESOURCE:
-
-			break;
-		case IDM_FILE_DUMP:
-			break;
-		case IDM_PLG_DEV:
-			ShellExecute(_hwnd,"open","dev.exe","","",SW_NORMAL);
-			break;
-
-		case IDM_EXIT:
-			SendMessage (_hwnd, WM_CLOSE, 0, 0L);
-			break;
-
-		case IDM_HELP:
-			break;
-
-		case IDM_EXE_RUN:
-			break;
-
-		case IDM_EXE_BRK:
-			MessageBox(NULL,"cvcv","cvcvc",0);
-			break;
-
-		case IDM_DEV:
-			GetWindowRect(_hwnd,&rt);
+		case IDM_FILE_OPEN:{
+			POINT pt;
 			GetCursorPos(&pt);
 			TrackPopupMenu(mainModel->hDev,TPM_RIGHTALIGN,pt.x,pt.y,0,_hwnd,NULL);
 			break;
+		}
 
-		case IDM_ABOUT:
-				hInst= (HINSTANCE)GetWindowLong(_hwnd,GWL_HINSTANCE);
-				DialogBox (hInst,
-							 MAKEINTRESOURCE (IDD_ABOUT),
-							 _hwnd,
-							 AboutDlgProc);
+		case IDM_ABOUT:{
+			DialogBox (hInst,MAKEINTRESOURCE (IDD_ABOUT),_hwnd,AboutDlgProc);
 			break;
+		}
 	}
 }
 

@@ -42,16 +42,6 @@ LRESULT CALLBACK SetPreferenceProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lPara
 				break;
 				case IDCANCEL:
 					EndDialog(hWin,0);
-				break;				
-				case IDC_MORE_COLOR:
-					//lpChooseColor = new CHOOSECOLOR();
-					//ZeroMemory(lpChooseColor,sizeof(CHOOSECOLOR));
-					//lpChooseColor->hInstance = (HWND)GetWindowLong(hWin,GWL_HINSTANCE);
-					//lpChooseColor->lStructSize = sizeof(CHOOSECOLOR);
-					//lpChooseColor->hwndOwner = hWin;
-					//lpChooseColor->lpCustColors=lpCust;
-					//ChooseColor(lpChooseColor);
-					//delete lpChooseColor;
 				break;
 			}
 			break;
@@ -69,6 +59,72 @@ LRESULT CALLBACK SetPreferenceProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lPara
 	return 0;
 }
 
+BOOL CALLBACK networkDlgProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam){
+    
+	switch (message){
+		case WM_INITDIALOG:{
+			return TRUE;
+		}
+		
+		case WM_COMMAND:{
+			switch (LOWORD (wParam)){
+				case IDC_BUTTON_OK:{
+					MessageBox(hwnd,"send data","title",MB_OK);
+					return TRUE;
+				}
+
+				case IDC_BUTTON_STRING:{
+					MessageBox(hwnd,"string","title",MB_OK);
+					return TRUE;
+				}
+
+				case IDC_BUTTON_HASH:{
+					MessageBox(hwnd,"hash","title",MB_OK);
+					return TRUE;
+				}
+
+				case IDC_BUTTON_LIST:{
+					MessageBox(hwnd,"list","title",MB_OK);
+					return TRUE;
+				}
+
+				case IDC_BUTTON_SET:{
+					MessageBox(hwnd,"set","title",MB_OK);
+					return TRUE;
+				}
+
+				case IDC_BUTTON_KEYS:{
+					MessageBox(hwnd,"keys","title",MB_OK);
+					return TRUE;
+				}
+
+				case IDC_BUTTON_SELECT:{
+					MessageBox(hwnd,"select","title",MB_OK);
+					return TRUE;
+				}
+
+				case IDC_BUTTON_ZSET:{
+					MessageBox(hwnd,"zset","title",MB_OK);
+					return TRUE;
+				}
+
+				case IDC_BUTTON_CLOSE:{
+					MessageBox(hwnd,"close","title",MB_OK);
+					return TRUE;
+				}
+
+				case IDC_BUTTON_EXIT:{
+					EndDialog(hwnd,0);
+					return TRUE;
+				}
+			}
+			break;
+		}
+    }
+	
+    return FALSE;
+}
+
 BOOL CALLBACK AboutDlgProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam)
 {
     switch (message)
@@ -77,7 +133,7 @@ BOOL CALLBACK AboutDlgProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam)
 
 			return TRUE;
 
-		case WM_COMMAND:
+			case WM_COMMAND:
 			switch (LOWORD (wParam))
 			{
 				case IDOK:
