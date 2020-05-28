@@ -19,7 +19,7 @@ void DumpMessage(long Err_Code){
     lpBoxParam->cbSize      = sizeof(MSGBOXPARAMS);
     lpBoxParam->hInstance   = GetModuleHandle(NULL);
     lpBoxParam->hwndOwner   = NULL;
-    lpBoxParam->lpszCaption = "TCP_Client";
+    lpBoxParam->lpszCaption = "ERROR";
     lpBoxParam->lpszIcon    = MAKEINTRESOURCE(ID_MAIN);
     lpBoxParam->dwStyle     = MB_OKCANCEL;	
 

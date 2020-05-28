@@ -6,7 +6,7 @@
 #define IDD_ABOUT                               108
 #define ID_MAIN                                 109
 #define IDB_TOOLBAR_MAIN                        110
-#define IDD_COLOR                               113
+#define IDD_PREFERENCE                          113
 #define IDD_GOTOLINE                            114
 #define IDC_LST_COLORS                          1005
 #define IDC_ADDRESS                             1006
@@ -14,7 +14,6 @@
 #define IDM_EXIT                                4002
 #define IDM_ABOUT                               4004
 #define IDC_RS                                  4005
-#define IDM_FILE_OPEN                           4007
 #define IDA_RUN                                 4014
 #define IDM_EXE_RUN                             4014
 #define IDM_FILE_CLOSE                          4020
@@ -26,13 +25,19 @@
 #define IDS_CODEVIEW                            40003
 #define IDS_REGVIEW                             40004
 #define IDS_STACKVIEW                           40005
-#define IDM_SET                                 01
+
+#define IDM_TIMING  40006
+#define IDM_REMOVE  40007
+
+// 900 - 1000为自定义菜单Id
+#define IDM_CONNECTION_POOL                     899
+#define IDM_CONNECTION                          900
+#define IDM_CUSTOMER_HOST                       901
 
 #define IDD_NETWORK         200
 #define IDC_BUTTON_OK       190
 #define IDM_NETWORK         191
 #define IDC_BUTTON_EXIT     201
-
 
 #define IDC_BUTTON_STRING  202
 #define IDC_BUTTON_HASH    203

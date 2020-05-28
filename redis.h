@@ -33,6 +33,12 @@ typedef struct{
 #define TYPE_SET    "set"
 #define TYPE_ZSET   "zset"
 
+typedef struct {
+    int type;   // 类型
+
+	int status; // 解析中|解析完成
+}ReceiveSession;
+
 typedef struct{
 	int     type;
 	char *  status;

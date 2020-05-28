@@ -116,9 +116,10 @@ void Size(AppView * view){
 
 void buildToolBar(AppView * view){
     long oldstyle;
-    TBBUTTON tbtn[12] = {};
-	for(int ix = 0; ix < 12 ;ix++){
+    TBBUTTON tbtn[3] = {};
+	for(int ix = 0; ix < 3 ;ix++){
 		ZeroMemory(&tbtn[ix],sizeof(TBBUTTON));
+
 		tbtn[ix].idCommand = 0;
 		tbtn[ix].iBitmap = ix;
 		tbtn[ix].iString = 0;
@@ -126,27 +127,34 @@ void buildToolBar(AppView * view){
 		tbtn[ix].fsStyle = TBSTYLE_BUTTON ;
 		tbtn[ix].dwData = 0;
 	}
-	tbtn[0].idCommand = IDM_FILE_OPEN;
-	tbtn[1].idCommand = IDM_FILE_OPEN;
-	tbtn[3].idCommand = IDM_FILE_OPEN;
-	tbtn[3].idCommand = IDM_FILE_OPEN;
-	tbtn[6].idCommand=IDM_FILE_OPEN;
-	tbtn[8].idCommand=IDM_EXE_RUN;
-	tbtn[5].idCommand = IDM_FILE_OPEN;
-	tbtn[4].fsStyle=TBSTYLE_SEP;
-	tbtn[10].fsStyle=TBSTYLE_SEP;
-	tbtn[7].fsStyle=TBSTYLE_SEP;
+	tbtn[0].idCommand = IDM_CONNECTION;
+	tbtn[1].idCommand = IDM_TIMING;
+	tbtn[2].idCommand = IDM_REMOVE;
+	// tbtn[3].idCommand = IDM_FILE_OPEN;
+	// tbtn[3].idCommand = IDM_FILE_OPEN;
+	// tbtn[6].idCommand=IDM_FILE_OPEN;
+	// tbtn[8].idCommand=IDM_EXE_RUN;
+	// tbtn[5].idCommand = IDM_FILE_OPEN;
+	// tbtn[4].fsStyle=TBSTYLE_SEP;
+	// tbtn[10].fsStyle=TBSTYLE_SEP;
+	// tbtn[7].fsStyle=TBSTYLE_SEP;
 
 	HINSTANCE hInst = (HINSTANCE)GetWindowLong(view->hwnd,GWL_HINSTANCE);
-	view->toolBarHwnd=CreateToolbarEx(view->hwnd,
-		WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT,
-		1,
-		12,
-		hInst,
-		IDB_TOOLBAR_MAIN,
-		tbtn,
-		12,
-		14,14,16,16,sizeof(TBBUTTON));
+	view->toolBarHwnd=CreateToolbarEx(
+		view->hwnd,// parent window 
+		WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT, // style
+		1, // control identifier
+		3, // number of imagelist
+		hInst, // instance of exe file
+		IDB_TOOLBAR_MAIN, // idenfier of image resource
+		tbtn, // buttons
+		3, // number of buttons
+		14,  // width of button
+		14,  // height of button
+		14, // width of image
+		14, // hright of image
+		sizeof(TBBUTTON) // size of button structure
+		);
 
 	oldstyle = GetWindowLong(view->toolBarHwnd,GWL_STYLE);
 	oldstyle = oldstyle  | TBSTYLE_WRAPABLE | TBSTYLE_FLAT;
@@ -255,43 +263,48 @@ void buildConnectionView(AppView * view){
 	ImageList_Add(hImageList,hBitmap,NULL);
 	SendMessage(view->connectionHwnd,TVM_SETIMAGELIST,0,(LPARAM)hImageList);
 
-	TV_INSERTSTRUCT tvinsert;
-    memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
-    tvinsert.hParent = NULL;
-	tvinsert.hInsertAfter=TVI_ROOT;
-	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
-	tvinsert.item.iImage=0;
-	tvinsert.item.iSelectedImage=0;
-    tvinsert.item.pszText= "127.0.0.1:3879";
+	// HIMAGELIST hImageList=ImageList_Create(14,14,ILC_COLOR16,2,10);
+	// HBITMAP hBitmap = LoadBitmap(hinst,MAKEINTRESOURCE(IDB_CHIP));
+	// ImageList_Add(hImageList,hBitmap,NULL);
+	// SendMessage(view->connectionHwnd,TVM_SETIMAGELIST,0,(LPARAM)hImageList);
 
-	TreeNode * tn = buildTreeNode();
-	tn->level = 1;
-	tvinsert.item.lParam=(LPARAM)tn;
+	// TV_INSERTSTRUCT tvinsert;
+    // memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
+    // tvinsert.hParent = NULL;
+	// tvinsert.hInsertAfter=TVI_ROOT;
+	// tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
+	// tvinsert.item.iImage=0;
+	// tvinsert.item.iSelectedImage=0;
+    // tvinsert.item.pszText= "127.0.0.1:3879";
+
+	// TreeNode * tn = buildTreeNode();
+	// tn->level = 1;
+	// tvinsert.item.lParam=(LPARAM)tn;
     
-	HTREEITEM hpConn=(HTREEITEM)SendMessage(view->connectionHwnd,
-        TVM_INSERTITEM,
-        0,(LPARAM)&tvinsert);
+	// HTREEITEM hpConn=(HTREEITEM)SendMessage(view->connectionHwnd,
+    //     TVM_INSERTITEM,
+    //     0,(LPARAM)&tvinsert);
     
-	char * dbname = (char *)malloc(sizeof(char)*128);
-	for(int ix =0; ix < 16;ix ++){
-		memset(dbname,0,sizeof(char) * 128);
-		sprintf(dbname,"db%d",ix);
+	// char * dbname = (char *)malloc(sizeof(char)*128);
+	// for(int ix =0; ix < 16;ix ++){
+	// 	memset(dbname,0,sizeof(char) * 128);
+	// 	sprintf(dbname,"db%d",ix);
 
-		tvinsert.item.iImage=1;
-		tvinsert.item.iSelectedImage=1;
-		tvinsert.hParent=hpConn;
-		tvinsert.hInsertAfter=TVI_LAST;
-		tvinsert.item.pszText= dbname;
+	// 	tvinsert.item.iImage=1;
+	// 	tvinsert.item.iSelectedImage=1;
+	// 	tvinsert.hParent=hpConn;
+	// 	tvinsert.hInsertAfter=TVI_LAST;
+	// 	tvinsert.item.pszText= dbname;
 
-		TreeNode * tn = buildTreeNode();
-		tn->level = 2;
-		tn->database = ix;
-		tvinsert.item.lParam= (LPARAM)tn;
+	// 	TreeNode * tn = buildTreeNode();
+	// 	tn->level = 2;
+	// 	tn->database = ix;
+	// 	tvinsert.item.lParam= (LPARAM)tn;
     
-		SendMessage(view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
-	}
+	// 	SendMessage(view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+	// }
 
-	free(dbname);
+	// free(dbname);
 }
 
 void addTreeNode(HWND treeHwnd,HTREEITEM hParent,char * nodeName){

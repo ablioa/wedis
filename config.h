@@ -14,6 +14,8 @@
 typedef struct{
     char * host;
     int    port;
+
+    int    hostIndex;
 }Host;
 
 typedef struct{
@@ -24,5 +26,7 @@ typedef struct{
 extern Config * appConfig;
 
 void save_all();
+
+Host * getHostByIndex(Config * config,int hostIndex);
 
 #endif

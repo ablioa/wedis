@@ -11,32 +11,37 @@
  */
 typedef int CmdType;
 
+// typedef struct RedisRequest{
+//     char * command;
+
+//     CmdType cmdType;
+
+//     RedisRequest * next;
+// }RedisRequest;
+
 typedef struct{
-    char * command;
+    HWND hwnd;
 
-    CmdType cmdType;
+    char * address;
 
-    RedisRequest * next;
-}RedisRequest;
-
-typedef struct{
-    HWND handle;
+    int port;
 
     TcpConnection * connection;
-
-    RedisRequest * head;
-    RedisRequest * tail;
 }RedisClient;
 
 extern RedisClient * redisClent;
 
+RedisClient * buildRedisClient(HWND hwnd,const char * address,int port);
+
 //void addRequest(const RedisClient * redisClient,const char * cmd,const CmdType CmdType);
 
-void send(const RedisClient * redisClient,const char * cmd,const CmdType CmdType);
+// RedisRequest * buildRedisRequest1();
+
+void send1(const RedisClient * redisClient,const char * cmd,const CmdType CmdType);
 
 void receive();
 
-void dispatch();
+void dispatch1();
 
 void parse();
 

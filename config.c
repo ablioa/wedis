@@ -2,6 +2,22 @@
 
 Config * appConfig;
 
+Host * getHostByIndex(Config * config,int hostIndex){
+    int cur = 0;
+    Host * result = NULL;
+
+    for(int cur = 0; cur < config->total_host; cur++){
+        Host * host = config->hosts[cur];
+
+        if(host->hostIndex == hostIndex){
+            result = host;
+            break;
+        }
+    }
+
+    return result;
+}
+
 void load_all(){
     appConfig = (Config*)malloc(sizeof(Config));
     memset(appConfig,0,sizeof(Config));

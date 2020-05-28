@@ -4,6 +4,114 @@
 MainModel * mainModel;
 RenderModel * renderModel;
 
+void log_message(char * message){
+	MessageBox(NULL,message,"TITLE",MB_OK);
+}
+
+int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cmdShow){
+	MSG  msg;
+
+    save_all();
+
+	initpan(hInst);
+
+	initModel();
+
+	HWND hwndFrame = CreateWindowEx(WS_EX_LEFT,
+					szFrameClass, TEXT ("wedis"),
+                    WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
+					CW_USEDEFAULT, 0,
+					400, 300,
+                    NULL,NULL, hInst, NULL) ;
+
+    ShowWindow (hwndFrame, cmdShow) ;
+    UpdateWindow (hwndFrame) ;
+
+	HANDLE hAccel = LoadAccelerators(hInst,MAKEINTRESOURCE(IDA_RUN));
+	while (GetMessage (&msg, 0, 0, 0)){
+		if(!TranslateAccelerator(msg.hwnd,(HACCEL)hAccel,&msg)){
+			TranslateMessage (&msg);
+			DispatchMessage (&msg);
+		}
+    }
+
+    return msg.wParam;
+}
+
+LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
+    switch (message){
+		case WM_CREATE:{
+			onMainFrameCreate(hwnd);
+			break;
+		}
+
+		case WM_GETMINMAXINFO:{
+			MINMAXINFO * mminfo=(PMINMAXINFO)lParam;  
+			mminfo->ptMinTrackSize.x = 850;  
+			mminfo->ptMinTrackSize.y = 600;  
+			break;
+		}
+
+		case WM_NOTIFY:{
+			LPNMHDR msg = ((LPNMHDR) lParam);
+			switch (msg->code) {
+				case NM_CLICK:{
+					char buff[256] = {0};
+					sprintf(buff,"id-from: %d",msg->idFrom);
+					// log_message(buff);
+
+					// 其他组件的通知消息也会通知到主窗口，因此需要过滤一下
+					if(msg->idFrom == 0){
+                        onDataNodeSelection();
+					}
+					break;
+				}
+				case NM_DBLCLK:{
+					if(msg->idFrom == 0){
+                        onDataBaseSelect(hwnd);
+					}
+					break;
+				}
+			}
+
+			break;
+		}
+        case WM_SIZE:
+            Size(mainModel->view);
+			UpdateWindow(hwnd);
+            break;
+
+        // case WM_PAINT:{
+		// 	PAINTSTRUCT _paint;
+		// 	BeginPaint(hwnd, &_paint);
+		// 	EndPaint(hwnd, &_paint);
+		// 	break;
+        // }
+
+        case WM_COMMAND:{
+			//char buff[255]={0};
+			//sprintf(buff,"message: %d",LOWORD(wParam));
+			//MessageBox(hwnd,buff,buff,MB_OK);
+
+			command(hwnd,LOWORD (wParam));
+			return 0;
+		}
+
+        case WM_DESTROY:{
+			onExit();
+			connection_close_connect(mainModel->connection);
+            PostQuitMessage(0);
+		}
+
+		case WM_SOCKET:
+			networkHandle(LOWORD(lParam));
+		break;
+
+    }
+
+    return DefWindowProc (hwnd, message, wParam, lParam);
+}
+
 /**
  * 注册窗口类
  */
@@ -72,9 +180,8 @@ void initpan(HINSTANCE hInstance){
 	mainClass.cbWndExtra = 0;
 	mainClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
 	mainClass.hCursor = LoadCursor (0, IDC_ARROW);
+	
 	RegisterClassEx(&mainClass);
-
-	// MessageBox(NULL, TEXT ("This program requires Windows NT!"),TEXT("appName"), MB_ICONERROR) ;
 }
 
 /**
@@ -91,278 +198,207 @@ void initModel(){
 	memset(renderModel,0,sizeof(RenderModel));
 }
 
-int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cmdShow){
-	MSG  msg;
-
-    save_all();
-
-	initpan(hInst);
-
-	initModel();
-
-	HWND hwndFrame = CreateWindowEx(WS_EX_LEFT,szFrameClass, TEXT ("wedis"),
-                               WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
-							   CW_USEDEFAULT, 0,
-							   400, 300,
-                               NULL,NULL, hInst, NULL) ;
-
-    ShowWindow (hwndFrame, cmdShow) ;
-    UpdateWindow (hwndFrame) ;
-
-	HANDLE hAccel = LoadAccelerators(hInst,MAKEINTRESOURCE(IDA_RUN));
-	while (GetMessage (&msg, 0, 0, 0)){
-		if(!TranslateAccelerator(msg.hwnd,(HACCEL)hAccel,&msg)){
-			TranslateMessage (&msg);
-			DispatchMessage (&msg);
-		}
-    }
-
-    return msg.wParam;
+void onExit(){
+	// 退出时，在这里清场，保存配置文件。
+	// MessageBox(NULL,"Exiting the application.","TEST",MB_OK);
 }
 
+void onMainFrameCreate(HWND hwnd){
+	mainModel->view = buildAppView(hwnd);
+	CreateView(mainModel->view);
 
-LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
-    switch (message){
-		case WM_CREATE:{
-			mainModel->view = buildAppView(hwnd);
-			CreateView(mainModel->view);
+	mainModel->connection =  build_connection();
+    connect_to_server(mainModel->connection,hwnd);
 
-			mainModel->connection =  build_connection();
-            connect_to_server(mainModel->connection,hwnd);
+	mainModel->hDev = CreatePopupMenu();
 
-			mainModel->hDev = CreatePopupMenu();
-
-			AppendMenu(mainModel->hDev,MF_STRING,IDM_SET,"Connections");
-			AppendMenu(mainModel->hDev,MF_SEPARATOR,IDM_SET,"");
+	AppendMenu(mainModel->hDev,MF_STRING,IDM_CONNECTION_POOL,"Connections");
+	AppendMenu(mainModel->hDev,MF_SEPARATOR,NULL,"");
 			
-            int total = appConfig->total_host;
-			for(int ix =0 ;ix < total ; ix ++){
-                Host * host = appConfig->hosts[ix];
-			    AppendMenu(mainModel->hDev,MF_STRING,10000+ix,host->host);
-			}
+    int total = appConfig->total_host;
+	for(int ix =0 ;ix < total ; ix ++){
+        Host * host = appConfig->hosts[ix];
+		host->hostIndex = IDM_CUSTOMER_HOST + ix;
+		AppendMenu(mainModel->hDev,MF_STRING,(host->hostIndex),host->host);
+	}
+}
 
-            return 0;
-		}
+void onDataNodeSelection(){
+	char * buf = (char*)malloc(128);
+    memset(buf,0,128);
 
-		case WM_GETMINMAXINFO:{
-			MINMAXINFO * mminfo=(PMINMAXINFO)lParam;  
+	DWORD dwPos = GetMessagePos();
+	POINT pt;
+	pt.x = LOWORD(dwPos);
+	pt.y = HIWORD(dwPos);
+	ScreenToClient(mainModel->view->connectionHwnd, &pt);
+
+	TVHITTESTINFO ht = {0};
+	ht.pt = pt;
+	ht.flags = TVHT_ONITEM;
+	HTREEITEM hItem = TreeView_HitTest(mainModel->view->connectionHwnd, &ht);
+
+	TVITEM ti = {0};
+	ti.mask = TVIF_HANDLE | TVIF_TEXT | TVIF_PARAM;
+	ti.cchTextMax = 128;
+	ti.pszText = buf;
+	ti.hItem = hItem;
+	TreeView_GetItem(mainModel->view->connectionHwnd, &ti);
+
+	TreeNode * tn = (TreeNode*) ti.lParam;
+
+	// 这个代码本来不该是必要的，要整明白，清理掉
+	if(tn == NULL){
+		return;
+	}
+
+	if(tn->level == 3){
+		char * scmds = (char*)malloc(sizeof(char)*128);
+	    memset(scmds,0,sizeof(char) * 128);
+	    sprintf(scmds,"type %s",ti.pszText);
+
+		memset(mainModel->connection->key,0,256);
+		sprintf(mainModel->connection->key,"%s",ti.pszText);
+
+        mainModel->connection->cmdType = PT_TYPE;
+	    char * pppp = parse_command((char *)scmds,256);
+        connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
+	}	
+}
+
+/**
+ *  选中数据库节点
+ *  -------------
+ *  1. 装在数据库中的所有Key
+ *  2. 解析后渲染到下级树节点上
+ **/ 
+void onDataBaseSelect(HWND hwnd){
+    char * msg = (char*)malloc(128);
+    memset(msg,0,128);
     
-			mminfo->ptMinTrackSize.x = 850;  
-			mminfo->ptMinTrackSize.y = 600;  
-  
-			break;
-		}
-
-		case WM_NOTIFY:{
-			switch (((LPNMHDR) lParam)->code) {
-				case NM_CLICK:{
-					char * buf = (char*)malloc(128);
-                    memset(buf,0,128);
-
-					DWORD dwPos = GetMessagePos();
-					POINT pt;
-					pt.x = LOWORD(dwPos);
-					pt.y = HIWORD(dwPos);
-					ScreenToClient(mainModel->view->connectionHwnd, &pt);
-
-					TVHITTESTINFO ht = {0};
-					ht.pt = pt;
-					ht.flags = TVHT_ONITEM;
-					HTREEITEM hItem = TreeView_HitTest(mainModel->view->connectionHwnd, &ht);
-
-					TVITEM ti = {0};
-					ti.mask = TVIF_HANDLE | TVIF_TEXT | TVIF_PARAM;
-					ti.cchTextMax = 128;
-					ti.pszText = buf;
-					ti.hItem = hItem;
-					TreeView_GetItem(mainModel->view->connectionHwnd, &ti);
-
-					TreeNode * tn = (TreeNode*) ti.lParam;
-
-					if(tn->level == 3){
-						char * scmds = (char*)malloc(sizeof(char)*128);
-					    memset(scmds,0,sizeof(char) * 128);
-					    sprintf(scmds,"type %s",ti.pszText);
-
-						memset(mainModel->connection->key,0,256);
-						sprintf(mainModel->connection->key,"%s",ti.pszText);
-
-                        mainModel->connection->cmdType = PT_TYPE;
-					    char * pppp = parse_command((char *)scmds,256);
-                        connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
-					}
-
-					break;
-				}
-				case NM_DBLCLK:{
-                    char * msg = (char*)malloc(128);
-                    memset(msg,0,128);
-
-					char * buf = (char*)malloc(128);
-                    memset(buf,0,128);
-					SetWindowText(hwnd,msg);
-
-					DWORD dwPos = GetMessagePos();
-					POINT pt;
-					pt.x = LOWORD(dwPos);
-					pt.y = HIWORD(dwPos);
-					ScreenToClient(mainModel->view->connectionHwnd, &pt);
-
-					TVHITTESTINFO ht = {0};
-					ht.pt = pt;
-					ht.flags = TVHT_ONITEM;
-					HTREEITEM hItem = TreeView_HitTest(mainModel->view->connectionHwnd, &ht);
-					TVITEM ti = {0};
-					ti.mask = TVIF_HANDLE | TVIF_TEXT | TVIF_PARAM;
-					ti.cchTextMax = 128;
-					ti.pszText = buf;
-					ti.hItem = hItem;
-					TreeView_GetItem(mainModel->view->connectionHwnd, &ti);
-
-					TreeNode * tn = (TreeNode*) ti.lParam;
-
-					if(tn->level == 2){
-					    char * scmds = (char*)malloc(sizeof(char)*128);
-					    memset(scmds,0,sizeof(char) * 128);
-					    sprintf(scmds,"select %d",tn->database);
-					    
-					    char * pppp = parse_command((char *)scmds,256);
-                        mainModel->connection->cmdType = PT_SELECT;
-                        connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
-					    
-					    memset(scmds,0,sizeof(char) * 128);
-					    sprintf(scmds,"keys *");
-					    pppp = parse_command((char *)scmds,256);
-                        mainModel->connection->cmdType = PT_KEYS;
-                        connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
-
-						mainModel->selectedNode = hItem;
-					}
-
-					break;
-				}
-			}
-
-			return 0;
-		}
-        case WM_SIZE:
-            Size(mainModel->view);
-			UpdateWindow(hwnd);
-            return 0;
-
-        case WM_PAINT:{
-			PAINTSTRUCT _paint;
-			BeginPaint(hwnd, &_paint);
-			EndPaint(hwnd, &_paint);
-        }
-            return 0;
-
-        case WM_COMMAND:
-			 command(hwnd,LOWORD (wParam));
-                //pCtrl->Command (LOWORD (wParam));
-            return 0;
-
-        case WM_DESTROY:
-			//mainModel->tcpClient->close_connect();
-            connection_close_connect(mainModel->connection);
-            PostQuitMessage(0);
-        return 0;
-
-        case WM_RBUTTONDOWN:
-                //GetWindowRect(hwnd,&rt);
-                //pos.x= LOWORD(lParam);
-                //pos.y = HIWORD(lParam);
-                //TrackPopupMenu(pCtrl->hDev,TPM_RIGHTALIGN,rt.left+pos.x,rt.top+pos.y,0,hwnd,NULL);
-        return 0;
-
-		case WM_SOCKET:
-			switch(LOWORD(lParam)){
-				case FD_CONNECT:
-					// 连接创建成功
-				break;
-				
-				case FD_READ:{
-					char *buff;
-					size_t curLeng;
-					buff = connection_get_buffer(mainModel->connection);
-                    connection_receivedata(mainModel->connection);
-
-					curLeng = GetWindowTextLength(mainModel->logHwnd);
-					SendMessage(mainModel->logHwnd,EM_SETSEL,curLeng,curLeng);
-					SendMessage(mainModel->logHwnd,EM_REPLACESEL,FALSE,(LONG)buff);
-
-                    RedisReply * rp = read_replay(buff);
-					rp->key = mainModel->connection->key;
-                    if(mainModel->connection->cmdType == PT_KEYS){
-                        if(rp->type == REPLY_MULTI){
-                            TVITEM ti = {0};
-                            ti.mask = TVIF_HANDLE | TVIF_PARAM;
-                            ti.cchTextMax = 128;
-                            ti.hItem = mainModel->selectedNode;
-                            TreeView_GetItem(mainModel->view->connectionHwnd, &ti);
-                        
-                            TreeNode * tnf = (TreeNode*) ti.lParam;
-                            for(int ix =0; ix < tnf->subHandleSize; ix ++){
-                                TreeView_DeleteItem(mainModel->view->connectionHwnd,tnf->subHandles[ix]);
-                            }
-                        
-                            tnf->subHandleSize= 0;
-                            
-                        
-					    	for(int ix =0;ix < rp->bulkSize; ix ++){
-					         	TV_INSERTSTRUCT tvinsert;
-					         
-					         	tvinsert.hParent = mainModel->selectedNode;
-					         	tvinsert.hInsertAfter=TVI_LAST;
-					         	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
-					         	tvinsert.item.pszText = rp->bulks[ix];
-					         	tvinsert.item.iImage=2;
-					         	tvinsert.item.iSelectedImage=2;
-                        
-					    		TreeNode * tn = buildTreeNode();
-					    		tn->level = 3;
-					            tvinsert.item.lParam= (LPARAM)tn;
-                                tnf->subHandleSize ++;
-                                tnf->subHandles[ix]=(HTREEITEM)SendMessage(mainModel->view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
-					         }
-					    }
-                    }
-
-                    if(mainModel->connection->cmdType == PT_TYPE){
-						int dataType = check_type(rp->status,rp->key);
-						renderModel->data_type = dataType;
-                    }
-
-					if(mainModel->connection->cmdType == PT_DATA){
-						if(rp->type != 0){
-							char cmds[128] = {0};
-							sprintf(cmds,"got data,size: %d. %d",rp->bulkSize,rp->type);
-							MessageBox(hwnd,cmds,"sdsd",MB_OK);
-							renderModel->model = rp;
-
-							SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)rp,(LPARAM)(renderModel->data_type));
-						}
-					}
-				}
-				break;
-
-				case FD_WRITE:
-					//MessageBox(hwnd,"connected","cap",NULL);
-				break;
-
-				case FD_CLOSE:
-					MessageBox(hwnd,"connction closed","title",MB_OK);
-					//	model->excp->DumpMessage(ERR_LINK_BREAKDOWN);
-					//	model->clt->setStatue(false);
-					///	view->UpdateView(*model);
-					//	EnableWindow(GetDlgItem(hwnd,IDC_MSGSEND),FALSE);
-					//	EnableWindow(GetDlgItem(hwnd,IDC_SEND),FALSE);
-				break;
-			}
-		break;
+    char * buf = (char*)malloc(128);
+    memset(buf,0,128);
+    SetWindowText(hwnd,msg);
+    
+    DWORD dwPos = GetMessagePos();
+    POINT pt;
+    pt.x = LOWORD(dwPos);
+    pt.y = HIWORD(dwPos);
+    ScreenToClient(mainModel->view->connectionHwnd, &pt);
+    
+    TVHITTESTINFO ht = {0};
+    ht.pt = pt;
+    ht.flags = TVHT_ONITEM;
+    HTREEITEM hItem = TreeView_HitTest(mainModel->view->connectionHwnd, &ht);
+    TVITEM ti = {0};
+    ti.mask = TVIF_HANDLE | TVIF_TEXT | TVIF_PARAM;
+    ti.cchTextMax = 128;
+    ti.pszText = buf;
+    ti.hItem = hItem;
+    TreeView_GetItem(mainModel->view->connectionHwnd, &ti);
+    
+    TreeNode * tn = (TreeNode*) ti.lParam;
+    
+    if(tn->level == 2){
+        char * scmds = (char*)malloc(sizeof(char)*128);
+        memset(scmds,0,sizeof(char) * 128);
+        sprintf(scmds,"select %d",tn->database);
+        
+        char * pppp = parse_command((char *)scmds,256);
+        mainModel->connection->cmdType = PT_SELECT;
+        connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
+        
+        memset(scmds,0,sizeof(char) * 128);
+        sprintf(scmds,"keys *");
+        pppp = parse_command((char *)scmds,256);
+        mainModel->connection->cmdType = PT_KEYS;
+        connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
+    
+    	mainModel->selectedNode = hItem;
     }
+}
 
-    return DefWindowProc (hwnd, message, wParam, lParam);
+void networkHandle(LPARAM lParam){
+    switch(LOWORD(lParam)){
+	    case FD_CONNECT:
+	    break;
+	    
+	    case FD_READ:{
+	    	char *buff;
+	    	size_t curLeng;
+	    	buff = connection_get_buffer(mainModel->connection);
+            connection_receivedata(mainModel->connection);
+	    
+	    	curLeng = GetWindowTextLength(mainModel->logHwnd);
+	    	SendMessage(mainModel->logHwnd,EM_SETSEL,curLeng,curLeng);
+	    	SendMessage(mainModel->logHwnd,EM_REPLACESEL,FALSE,(LONG)buff);
+	    
+            RedisReply * rp = read_replay(buff);
+	    	rp->key = mainModel->connection->key;
+            if(mainModel->connection->cmdType == PT_KEYS){
+                if(rp->type == REPLY_MULTI){
+                    TVITEM ti = {0};
+                    ti.mask = TVIF_HANDLE | TVIF_PARAM;
+                    ti.cchTextMax = 128;
+                    ti.hItem = mainModel->selectedNode;
+                    TreeView_GetItem(mainModel->view->connectionHwnd, &ti);
+                
+                    TreeNode * tnf = (TreeNode*) ti.lParam;
+                    for(int ix =0; ix < tnf->subHandleSize; ix ++){
+                        TreeView_DeleteItem(mainModel->view->connectionHwnd,tnf->subHandles[ix]);
+                    }
+                
+                    tnf->subHandleSize= 0;
+                    
+                
+	    	    	for(int ix =0;ix < rp->bulkSize; ix ++){
+	    	         	TV_INSERTSTRUCT tvinsert;
+	    	         
+	    	         	tvinsert.hParent = mainModel->selectedNode;
+	    	         	tvinsert.hInsertAfter=TVI_LAST;
+	    	         	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
+	    	         	tvinsert.item.pszText = rp->bulks[ix];
+	    	         	tvinsert.item.iImage=2;
+	    	         	tvinsert.item.iSelectedImage=2;
+                
+	    	    		TreeNode * tn = buildTreeNode();
+	    	    		tn->level = 3;
+	    	            tvinsert.item.lParam= (LPARAM)tn;
+                        tnf->subHandleSize ++;
+                        tnf->subHandles[ix]=(HTREEITEM)SendMessage(mainModel->view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+	    	         }
+	    	    }
+            }
+	    
+            if(mainModel->connection->cmdType == PT_TYPE){
+	    		int dataType = check_type(rp->status,rp->key);
+	    		renderModel->data_type = dataType;
+            }
+	    
+	    	if(mainModel->connection->cmdType == PT_DATA){
+	    		if(rp->type != 0){
+	    			char cmds[128] = {0};
+	    			sprintf(cmds,"got data,size: %d. %d",rp->bulkSize,rp->type);
+	    			renderModel->model = rp;
+	    
+	    			SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)rp,(LPARAM)(renderModel->data_type));
+	    		}
+	    	}
+	    }
+	    break;
+	    
+	    case FD_WRITE:
+	    break;
+	    
+	    case FD_CLOSE:
+	    	//MessageBox(hwnd,"connction closed","title",MB_OK);
+	    	//	model->excp->DumpMessage(ERR_LINK_BREAKDOWN);
+	    	//	model->clt->setStatue(false);
+	    	///	view->UpdateView(*model);
+	    	//	EnableWindow(GetDlgItem(hwnd,IDC_MSGSEND),FALSE);
+	    	//	EnableWindow(GetDlgItem(hwnd,IDC_SEND),FALSE);
+	    break;
+	}
 }
 
 int check_type(char * type,char * key){
@@ -397,31 +433,107 @@ int check_type(char * type,char * key){
 	return 1;
 }
 
-void command(HWND _hwnd,int cmd){
-	HINSTANCE hInst = (HINSTANCE)GetWindowLong(_hwnd,GWL_HINSTANCE);
+void addConnection(char * connectionName){
+	AppView * view = mainModel->view;
+	
+	TV_INSERTSTRUCT tvinsert;
+    memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
+    tvinsert.hParent = NULL;
+	tvinsert.hInsertAfter=TVI_ROOT;
+	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
+	tvinsert.item.iImage=0;
+	tvinsert.item.iSelectedImage=0;
+    tvinsert.item.pszText= connectionName;
+
+	TreeNode * tn = buildTreeNode();
+	tn->level = 1;
+	tvinsert.item.lParam=(LPARAM)tn;
+    
+	HTREEITEM hpConn=(HTREEITEM)SendMessage(view->connectionHwnd,
+        TVM_INSERTITEM,
+        0,(LPARAM)&tvinsert);
+    
+	char * dbname = (char *)malloc(sizeof(char)*128);
+	for(int ix =0; ix < 16;ix ++){
+		memset(dbname,0,sizeof(char) * 128);
+		sprintf(dbname,"db%d",ix);
+
+		tvinsert.item.iImage=1;
+		tvinsert.item.iSelectedImage=1;
+		tvinsert.hParent=hpConn;
+		tvinsert.hInsertAfter=TVI_LAST;
+		tvinsert.item.pszText= dbname;
+
+		TreeNode * tn = buildTreeNode();
+		tn->level = 2;
+		tn->database = ix;
+		tvinsert.item.lParam= (LPARAM)tn;
+    
+		SendMessage(view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+	}
+
+	free(dbname);
+}
+
+void command(HWND hwnd,int cmd){
+	HINSTANCE hInst = (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
+
+	int connectionIndex = 0;
+	char buff[256] = {0};
+
+	/** 处理自定义的动态菜单 */
+	if(cmd > 900 && cmd < 1000){
+		char buff[255] = {0};
+
+		Host * host = getHostByIndex(appConfig,cmd);
+		if(host == NULL){
+			return;
+		}
+
+		sprintf(buff,"%d(%s:%d)",cmd,host->host,host->port);
+		addConnection(buff);
+
+		return;
+	}
 
     switch (cmd){
 		/** 测试网络基础设施 */
         case IDM_NETWORK:{
-			hInst= (HINSTANCE)GetWindowLong(_hwnd,GWL_HINSTANCE);
-			DialogBox (hInst,MAKEINTRESOURCE (IDD_NETWORK),_hwnd,networkDlgProc);
+			hInst= (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
+			DialogBox (hInst,MAKEINTRESOURCE (IDD_NETWORK),hwnd,networkDlgProc);
         	break;
 		}
 
-		case IDM_EXIT:{
-			SendMessage (_hwnd, WM_CLOSE, 0, 0L);
+		case IDM_FILE_CLOSE:{
+			hInst= (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
+			DialogBox (hInst,MAKEINTRESOURCE (IDD_PREFERENCE),hwnd,SetPreferenceProc);
 			break;
 		}
 
-		case IDM_FILE_OPEN:{
+		case IDM_EXIT:{
+			SendMessage (hwnd, WM_CLOSE, 0, 0L);
+			break;
+		}
+
+		case IDM_CONNECTION:{
 			POINT pt;
 			GetCursorPos(&pt);
-			TrackPopupMenu(mainModel->hDev,TPM_RIGHTALIGN,pt.x,pt.y,0,_hwnd,NULL);
+			TrackPopupMenu(mainModel->hDev,TPM_RIGHTALIGN,pt.x,pt.y,0,hwnd,NULL);
 			break;
 		}
 
+		case IDM_TIMING:{
+			log_message("timing");
+			break;
+		}
+
+		case IDM_REMOVE:{
+			log_message("remove");
+			break;
+		}
+		
 		case IDM_ABOUT:{
-			DialogBox (hInst,MAKEINTRESOURCE (IDD_ABOUT),_hwnd,AboutDlgProc);
+			DialogBox (hInst,MAKEINTRESOURCE (IDD_ABOUT),hwnd,AboutDlgProc);
 			break;
 		}
 	}

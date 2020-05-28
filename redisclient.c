@@ -1,57 +1,40 @@
-// #include "redisclient.h"
+#include "redisclient.h"
 
-// RedisClient * redisClient;
+RedisClient * redisClient;
 
-// void init(){
-//     redisClient = buildRedisClient();
-    
-//     RedisRequest * head = buildRedisRequest();
-//     head->next = NULL;
-    
-//     redisClient->head = head;
-//     redisClient->tail = head;
-// }
+/**
+ * 构建客户端
+ */
+RedisClient * buildRedisClient(HWND hwnd,const char * address,int port){
+    RedisClient * client = (RedisClient *) malloc(sizeof(RedisClient));
+    memset(client,0,sizeof(RedisClient));
 
-// void send(const RedisClient * redisClent,const char * command,const CmdType cmdType){
-//     RedisRequest * request = buildRedisRequest();
-//     request->cmdType = cmdType;
-//     request->command = command;
+    client->address = address;
+    client->port = port;
 
-//     redisClient->tail->next = request;
-//     redisClient->tail = request;
+    client->connection = build_connection();
+    client->hwnd = hwnd;
 
-//     char * cmd_data = parse_command((char *)command,256);
+    return client;
+}
 
-// 	connection_senddata(redisClent->connection,cmd_data,strlen(cmd_data),0);
-// }
+/**
+ * 连接到服务器
+ */
+void connect1(const RedisClient * redisClent){
+    connect_to_server(redisClient->connection,redisClient->hwnd);
+}
 
-// void dispatch(const RedisClient * redisClent){
-//     if(redisClient->head == redisClient->head){
-//         // empty request
-//     }
+/**
+ * 发送数据包
+ **/
+void send1(const RedisClient * redisClent,const char * command,const CmdType cmdType){
+    char * cmd_data = parse_command((char *)command,256);
+	connection_senddata(redisClent->connection,cmd_data,strlen(cmd_data),0);
+}
 
-//     RedisRequest * request = redisClient->head->next;
-//     redisClient->head = request->next;
-//     if(request->next == redisClient->tail){
-//         redisClient->tail = NULL;
-//     }
+void dispatch1(const RedisClient * redisClent){
 
-// }
-
-// RedisClient * buildRedisClient(){
-//     RedisClient * ret = (RedisClient *) malloc(sizeof(RedisClient));
-//     memset(ret,0,sizeof(RedisClient));
-
-//     return ret;
-// }
-
-// RedisRequest * buildRedisRequest(){
-//     RedisRequest * ret = (RedisRequest *) malloc(sizeof(RedisRequest));
-//     memset(ret,0,sizeof(RedisRequest));
-
-//     ret->next = NULL;
-
-//     return ret;
-// }
+}
 
 

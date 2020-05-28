@@ -156,12 +156,23 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 void initpan();
 
+void onMainFrameCreate(HWND hwnd);
+
+void onDataNodeSelection();
+
+void onDataBaseSelect(HWND hwnd);
+
+void networkHandle(LPARAM lParam);
+
 void command(HWND _hwnd,int cmd);
 
 LPTSTR mGetOpenFileName(HWND hwnd);
 
 LPTSTR mGetSaveFileName(HWND hwnd);
 
+
 int check_type(char * type,char * key);
+
+void log_message(char * message);
 #endif
 
