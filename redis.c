@@ -8,6 +8,8 @@ RedisReply * read_replay(char * text){
 
 	RedisReply * rp = (RedisReply*)malloc(sizeof(RedisReply));
 	memset(rp,0,sizeof(RedisReply));
+	rp->type = -1;
+	
     switch(ch){
         /** information */
 		case '+':{

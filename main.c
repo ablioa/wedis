@@ -363,7 +363,10 @@ void networkHandle(LPARAM lParam){
 	    	buff = connection_get_buffer(mainModel->connection);
             connection_receivedata(mainModel->connection);
 
+			// appendLog("------------");
 			appendLog(buff);
+			//log_message(buff);
+			// appendLog("------------");
 	    
             RedisReply * rp = read_replay(buff);
 	    	rp->key = mainModel->connection->key;
@@ -380,7 +383,11 @@ void networkHandle(LPARAM lParam){
 	    
 	    	if(mainModel->connection->cmdType == PT_DATA){
 	    		renderModel->model = rp;
-	    		SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)rp,(LPARAM)(renderModel->data_type));
+
+				if(rp->type != 0){
+					SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)rp,(LPARAM)(renderModel->data_type));
+					mainModel->connection->cmdType = -1;
+				}
 	    	}
 	    }
 	    break;

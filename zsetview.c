@@ -17,10 +17,8 @@ PETINFO rgPetInfo[] =
     {TEXT("Toad"), TEXT("Woodhouse"),  TEXT("$0.25")},
 };
 
-/**
- * 向列表中插入数据 
- */
-BOOL InsertListViewItems(HWND hwnd, int cItems){
+BOOL inertInto(HWND hwnd,RedisReply * reply){
+
     LVITEM lvI;
 
     lvI.pszText   = LPSTR_TEXTCALLBACK;
@@ -29,17 +27,27 @@ BOOL InsertListViewItems(HWND hwnd, int cItems){
     lvI.iSubItem  = 0;
     lvI.state     = 0;
 
-    for (int index = 0; index < cItems; index++){
+    for (int index = 0; index < (reply->bulkSize); index++){
         lvI.iItem  = index;
         lvI.iImage = index;
-        lvI.pszText = "sdsd";
+        lvI.iSubItem = 0;
+        lvI.pszText = reply->bulks[index];
     
-        if (ListView_InsertItem(hwnd, &lvI) == -1)
-            return FALSE;
+        ListView_InsertItem(hwnd, &lvI);
+
+        // lvI.iItem  = index;
+        // lvI.iImage = index;
+        // lvI.iSubItem = 1;
+        // lvI.pszText = reply->bulks[index];
+    
+        // ListView_InsertItem(hwnd, &lvI);
+        // if (ListView_InsertItem(hwnd, &lvI) == -1)
+        //     return FALSE;
     }
 
     return TRUE;
 }
+
 
 /**
  * 初始化列表表头 
@@ -102,50 +110,58 @@ LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
             GetClientRect (hwnd, &rect); 
 	        
             zsetView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
-                          WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS | LVS_SORTASCENDING,
+                          WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS,
                           0, 0,
                           rect.right - rect.left,
                           rect.bottom - rect.top,
                           hwnd, NULL, hinst, NULL);
 
 			InitZsetViewColumns(zsetView);
-            InsertListViewItems(zsetView,3);
+            //InsertListViewItems(zsetView,3);
 
 			ListView_SetExtendedListViewStyle(zsetView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
 		    break;
 		}
+
 		case WM_SIZE:{
 			GetClientRect(hwnd,&rect);
 			MoveWindow(zsetView,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
 		    break;
 		}
 
-		case WM_NOTIFY:{
-			switch (((LPNMHDR) lParam)->code) {
-                MessageBox(hwnd,"sss","sdsd",MB_OK);
+        case WM_DT:{
+            RedisReply * rp = (RedisReply *)wParam;
+            // InsertListViewItems(zsetView,3);
 
-                case LVN_GETDISPINFO:{
-                     NMLVDISPINFO* plvdi;
-                     plvdi = (NMLVDISPINFO*)lParam;
-                 
-                     switch (plvdi->item.iSubItem){
-                        case 0:
-                            plvdi->item.pszText = "11111";
-                        break;
-                            
-                        case 1:
-                            plvdi->item.pszText = "22222";
-                        break;
-                        
-                        case 2:
-                            plvdi->item.pszText = "33333";
-                        break;
-                    }  
-               }
-            }
+            inertInto(zsetView,rp);
 
             break;
         }
+
+		// case WM_NOTIFY:{
+		// 	switch (((LPNMHDR) lParam)->code) {
+        //         case LVN_GETDISPINFO:{
+        //              NMLVDISPINFO* plvdi;
+        //              plvdi = (NMLVDISPINFO*)lParam;
+                 
+        //              switch (plvdi->item.iSubItem){
+        //                 case 0:
+        //                     plvdi->item.pszText = "11111";
+        //                 break;
+                            
+        //                 case 1:
+        //                     plvdi->item.pszText = "22222";
+        //                 break;
+                        
+        //                 case 2:
+        //                     plvdi->item.pszText = "33333";
+        //                 break;
+        //             }  
+        //        }
+        //     }
+
+        //     break;
+        // }
 	}
 
 	return DefWindowProc (hwnd, message, wParam, lParam);

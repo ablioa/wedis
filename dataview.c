@@ -161,6 +161,10 @@ void switchView(HWND hwnd,int type,RedisReply * reply){
 
 	ShowWindow(dataView->visibleHwnd,SW_HIDE);
 
+	char buff[256] = {0};
+	
+	// MessageBox(hwnd,buff,"sdsds",MB_OK);
+
 	switch(type){
 		case 1:{
 			dataView->visibleHwnd = dataView->stringViewHwnd;
@@ -188,11 +192,17 @@ void switchView(HWND hwnd,int type,RedisReply * reply){
 		}
 		case 5:{
 			dataView->visibleHwnd = dataView->zsetViewHwnd;
+
+			// 会有重复的消息
+			// sprintf(buff,"data-type to send: %d,%d",type,reply->bulkSize);
+			// MessageBox(hwnd,buff,"sdsds",MB_OK);
+			
 			break;
 		}
 	}
 
 	ShowWindow(dataView->visibleHwnd,SW_SHOW);
+	SendMessage(dataView->visibleHwnd,WM_DT,(WPARAM)reply,NULL);
 }
 
 LRESULT CALLBACK dataRenderProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
