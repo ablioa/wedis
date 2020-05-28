@@ -173,8 +173,8 @@ void initpan(HINSTANCE hInstance){
 	mainClass.lpfnWndProc=MainWndProc;
 	mainClass.lpszClassName = szFrameClass;
 	mainClass.hInstance = hInstance;
-	mainClass.hIcon = 0;
-	mainClass.hIconSm = 0;
+	mainClass.hIcon = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
+	mainClass.hIconSm = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
 	mainClass.lpszMenuName = MAKEINTRESOURCE (ID_MAIN);
 	mainClass.cbClsExtra = 0;
 	mainClass.cbWndExtra = 0;
@@ -261,8 +261,8 @@ void onDataNodeSelection(){
 		sprintf(mainModel->connection->key,"%s",ti.pszText);
 
         mainModel->connection->cmdType = PT_TYPE;
-	    char * pppp = parse_command((char *)scmds,256);
-        connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
+	    char * encodedCmd = parse_command((char *)scmds,256);
+        connection_senddata(mainModel->connection,encodedCmd,strlen(encodedCmd),0);
 	}	
 }
 
@@ -273,12 +273,8 @@ void onDataNodeSelection(){
  *  2. 解析后渲染到下级树节点上
  **/ 
 void onDataBaseSelect(HWND hwnd){
-    char * msg = (char*)malloc(128);
-    memset(msg,0,128);
-    
     char * buf = (char*)malloc(128);
     memset(buf,0,128);
-    SetWindowText(hwnd,msg);
     
     DWORD dwPos = GetMessagePos();
     POINT pt;
@@ -318,6 +314,44 @@ void onDataBaseSelect(HWND hwnd){
     }
 }
 
+void appendLog(char * text){
+    size_t curLeng = GetWindowTextLength(mainModel->logHwnd);
+	SendMessage(mainModel->logHwnd,EM_SETSEL,curLeng,curLeng);
+	SendMessage(mainModel->logHwnd,EM_REPLACESEL,FALSE,(LONG)text);
+}
+
+void handleKeysReply(RedisReply * rp){
+    TVITEM ti = {0};
+    ti.mask = TVIF_HANDLE | TVIF_PARAM;
+    ti.cchTextMax = 128;
+    ti.hItem = mainModel->selectedNode;
+    TreeView_GetItem(mainModel->view->connectionHwnd, &ti);
+    
+    TreeNode * tnf = (TreeNode*) ti.lParam;
+    for(int ix =0; ix < tnf->subHandleSize; ix ++){
+        TreeView_DeleteItem(mainModel->view->connectionHwnd,tnf->subHandles[ix]);
+    }
+    
+    tnf->subHandleSize= 0;
+    
+    for(int ix =0;ix < rp->bulkSize; ix ++){
+        TV_INSERTSTRUCT tvinsert;
+        
+        tvinsert.hParent = mainModel->selectedNode;
+        tvinsert.hInsertAfter=TVI_LAST;
+        tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
+        tvinsert.item.pszText = rp->bulks[ix];
+        tvinsert.item.iImage=2;
+        tvinsert.item.iSelectedImage=2;
+        
+        TreeNode * tn = buildTreeNode();
+        tn->level = 3;
+        tvinsert.item.lParam= (LPARAM)tn;
+        tnf->subHandleSize ++;
+        tnf->subHandles[ix]=(HTREEITEM)SendMessage(mainModel->view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+    }
+}
+
 void networkHandle(LPARAM lParam){
     switch(LOWORD(lParam)){
 	    case FD_CONNECT:
@@ -328,45 +362,14 @@ void networkHandle(LPARAM lParam){
 	    	size_t curLeng;
 	    	buff = connection_get_buffer(mainModel->connection);
             connection_receivedata(mainModel->connection);
-	    
-	    	curLeng = GetWindowTextLength(mainModel->logHwnd);
-	    	SendMessage(mainModel->logHwnd,EM_SETSEL,curLeng,curLeng);
-	    	SendMessage(mainModel->logHwnd,EM_REPLACESEL,FALSE,(LONG)buff);
+
+			appendLog(buff);
 	    
             RedisReply * rp = read_replay(buff);
 	    	rp->key = mainModel->connection->key;
             if(mainModel->connection->cmdType == PT_KEYS){
                 if(rp->type == REPLY_MULTI){
-                    TVITEM ti = {0};
-                    ti.mask = TVIF_HANDLE | TVIF_PARAM;
-                    ti.cchTextMax = 128;
-                    ti.hItem = mainModel->selectedNode;
-                    TreeView_GetItem(mainModel->view->connectionHwnd, &ti);
-                
-                    TreeNode * tnf = (TreeNode*) ti.lParam;
-                    for(int ix =0; ix < tnf->subHandleSize; ix ++){
-                        TreeView_DeleteItem(mainModel->view->connectionHwnd,tnf->subHandles[ix]);
-                    }
-                
-                    tnf->subHandleSize= 0;
-                    
-                
-	    	    	for(int ix =0;ix < rp->bulkSize; ix ++){
-	    	         	TV_INSERTSTRUCT tvinsert;
-	    	         
-	    	         	tvinsert.hParent = mainModel->selectedNode;
-	    	         	tvinsert.hInsertAfter=TVI_LAST;
-	    	         	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
-	    	         	tvinsert.item.pszText = rp->bulks[ix];
-	    	         	tvinsert.item.iImage=2;
-	    	         	tvinsert.item.iSelectedImage=2;
-                
-	    	    		TreeNode * tn = buildTreeNode();
-	    	    		tn->level = 3;
-	    	            tvinsert.item.lParam= (LPARAM)tn;
-                        tnf->subHandleSize ++;
-                        tnf->subHandles[ix]=(HTREEITEM)SendMessage(mainModel->view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
-	    	         }
+                    handleKeysReply(rp);
 	    	    }
             }
 	    
@@ -376,13 +379,8 @@ void networkHandle(LPARAM lParam){
             }
 	    
 	    	if(mainModel->connection->cmdType == PT_DATA){
-	    		if(rp->type != 0){
-	    			char cmds[128] = {0};
-	    			sprintf(cmds,"got data,size: %d. %d",rp->bulkSize,rp->type);
-	    			renderModel->model = rp;
-	    
-	    			SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)rp,(LPARAM)(renderModel->data_type));
-	    		}
+	    		renderModel->model = rp;
+	    		SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)rp,(LPARAM)(renderModel->data_type));
 	    	}
 	    }
 	    break;
@@ -402,7 +400,17 @@ void networkHandle(LPARAM lParam){
 }
 
 int check_type(char * type,char * key){
+
 	if(strcmp(type,TYPE_STRING) == 0){
+		char * command = (char *) malloc(sizeof(char) * 256);
+		memset(command,0,sizeof(char) * 256);
+		sprintf(command,"get %s",key);
+
+		// TODO 
+		mainModel->connection->cmdType = PT_DATA;
+		char * pppp = parse_command((char *)command,256);
+		connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
+		
 		return 1;
 	}
 
@@ -419,25 +427,50 @@ int check_type(char * type,char * key){
 	}
 	
 	if(strcmp(type,TYPE_HASH) == 0){
+		char * command = (char *) malloc(sizeof(char) * 256);
+		memset(command,0,sizeof(char) * 256);
+		sprintf(command,"hgetall %s",key);
+
+		mainModel->connection->cmdType = PT_DATA;
+		char * pppp = parse_command((char *)command,256);
+		connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
+
 		return 3;
 	}
 
 	if(strcmp(type,TYPE_SET) == 0){
+		char * command = (char *) malloc(sizeof(char) * 256);
+		memset(command,0,sizeof(char) * 256);
+		sprintf(command,"smembers %s",key);
+
+		mainModel->connection->cmdType = PT_DATA;
+		char * pppp = parse_command((char *)command,256);
+		connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
+
 		return 4;
 	}
 
 	if(strcmp(type,TYPE_ZSET) == 0){
+		char * command = (char *) malloc(sizeof(char) * 256);
+		memset(command,0,sizeof(char) * 256);
+		sprintf(command,"zrange %s 0 -1 withscores",key);
+
+		mainModel->connection->cmdType = PT_DATA;
+		char * pppp = parse_command((char *)command,256);
+		connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
+
 		return 5;
 	}
 
 	return 1;
 }
 
-void addConnection(char * connectionName){
+HTREEITEM addHostNode(char * connectionName){
 	AppView * view = mainModel->view;
-	
+
 	TV_INSERTSTRUCT tvinsert;
     memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
+
     tvinsert.hParent = NULL;
 	tvinsert.hInsertAfter=TVI_ROOT;
 	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
@@ -445,14 +478,25 @@ void addConnection(char * connectionName){
 	tvinsert.item.iSelectedImage=0;
     tvinsert.item.pszText= connectionName;
 
-	TreeNode * tn = buildTreeNode();
-	tn->level = 1;
-	tvinsert.item.lParam=(LPARAM)tn;
-    
-	HTREEITEM hpConn=(HTREEITEM)SendMessage(view->connectionHwnd,
+	TreeNode * treeNode = buildTreeNode();
+	treeNode->level = 1;
+	tvinsert.item.lParam=(LPARAM)treeNode;
+
+	return (HTREEITEM)SendMessage(
+		view->connectionHwnd,
         TVM_INSERTITEM,
         0,(LPARAM)&tvinsert);
-    
+}
+
+void addDatabaseNode(HTREEITEM parentHandle){
+	AppView * view = mainModel->view;
+	
+	TV_INSERTSTRUCT tvinsert;
+    memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
+
+	tvinsert.hInsertAfter=TVI_ROOT;
+	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
+
 	char * dbname = (char *)malloc(sizeof(char)*128);
 	for(int ix =0; ix < 16;ix ++){
 		memset(dbname,0,sizeof(char) * 128);
@@ -460,7 +504,7 @@ void addConnection(char * connectionName){
 
 		tvinsert.item.iImage=1;
 		tvinsert.item.iSelectedImage=1;
-		tvinsert.hParent=hpConn;
+		tvinsert.hParent=parentHandle;
 		tvinsert.hInsertAfter=TVI_LAST;
 		tvinsert.item.pszText= dbname;
 
@@ -473,6 +517,14 @@ void addConnection(char * connectionName){
 	}
 
 	free(dbname);
+}
+
+void addConnection(char * connectionName){
+	AppView * view = mainModel->view;
+	
+	HTREEITEM parentHandle = addHostNode(connectionName);
+
+	addDatabaseNode(parentHandle);
 }
 
 void command(HWND hwnd,int cmd){
@@ -497,6 +549,11 @@ void command(HWND hwnd,int cmd){
 	}
 
     switch (cmd){
+		case IDM_CONNECTION_POOL:{
+			hInst= (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
+			DialogBox (hInst,MAKEINTRESOURCE (IDD_CONNECTION_CONFIG),hwnd,conectionConfigDlgProc);
+			break;
+		}
 		/** 测试网络基础设施 */
         case IDM_NETWORK:{
 			hInst= (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);

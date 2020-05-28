@@ -12,4 +12,5 @@ BOOL CALLBACK networkDlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 
 BOOL CALLBACK SetTtlDlgProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam);
 
+BOOL CALLBACK conectionConfigDlgProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam);
 #endif

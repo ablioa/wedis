@@ -168,3 +168,25 @@ BOOL CALLBACK SetTtlDlgProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam)
 	}
 	return FALSE;
 }
+
+BOOL CALLBACK conectionConfigDlgProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam)
+{
+	//int lineTogo =0 ;
+	switch(message)
+	{
+		case WM_COMMAND:
+			switch(LOWORD(wParam))
+			{
+				case IDC_CONFIG_DONE:
+					//GetDlgItemInt(hwnd,IDC_ADDRESS,&lineTogo,FALSE);
+					EndDialog (hwnd, 0);
+				break;
+			}
+		break;
+
+		case WM_INITDIALOG:
+
+		break;
+	}
+	return FALSE;
+}

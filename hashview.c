@@ -42,7 +42,7 @@ HWND buildHashViewWindow(HWND parent){
 	
 	HWND dataViewHwnd  = CreateWindowEx(0, 
 		HASH_VIEW_CLASS, (""), 
-        WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
+        WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 
         0, 
 		0,
         rect.right - rect.left,
@@ -66,7 +66,7 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 			HINSTANCE hinst = (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
             GetClientRect (hwnd, &rect); 
 	        
-            tableView = CreateWindowEx(WS_EX_CLIENTEDGE, "SysListView32", NULL,
+            tableView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
                           WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS | LVS_SORTASCENDING,
                           0, 0,
                           rect.right - rect.left,
@@ -102,6 +102,7 @@ void init_hashview(HINSTANCE hInstance){
     hashViewClass.lpszMenuName  = 0;
     hashViewClass.lpszClassName = HASH_VIEW_CLASS;
     hashViewClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
+    
     RegisterClassEx(&hashViewClass);
 }
 

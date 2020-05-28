@@ -41,7 +41,7 @@ HWND buildSetViewWindow(HWND parent){
 	
 	HWND dataViewHwnd  = CreateWindowEx(0, 
 		SET_VIEW_CLASS, (""), 
-        WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
+        WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL,
         0, 
 		0,
         containerRect.right - containerRect.left,
@@ -64,7 +64,7 @@ LRESULT CALLBACK SetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 		    HINSTANCE hinst = (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
             GetClientRect (hwnd, &rect); 
 
-	        setView = CreateWindowEx(WS_EX_CLIENTEDGE, "SysListView32", NULL,
+	        setView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
                           WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS | LVS_SORTASCENDING,
                           0, 0,
                           rect.right - rect.left,

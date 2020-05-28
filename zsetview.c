@@ -101,7 +101,7 @@ LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 			HINSTANCE hinst = (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
             GetClientRect (hwnd, &rect); 
 	        
-            zsetView = CreateWindowEx(WS_EX_CLIENTEDGE, "SysListView32", NULL,
+            zsetView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
                           WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS | LVS_SORTASCENDING,
                           0, 0,
                           rect.right - rect.left,

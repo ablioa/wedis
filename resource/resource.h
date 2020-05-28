@@ -48,3 +48,6 @@
 
 #define IDC_BUTTON_KEYS    208
 #define IDC_BUTTON_SELECT  209
+
+#define IDD_CONNECTION_CONFIG 400
+#define IDC_CONFIG_DONE       401
