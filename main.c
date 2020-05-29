@@ -199,8 +199,6 @@ void initModel(){
 }
 
 void onExit(){
-	// 退出时，在这里清场，保存配置文件。
-	// MessageBox(NULL,"Exiting the application.","TEST",MB_OK);
 }
 
 void onMainFrameCreate(HWND hwnd){
@@ -359,7 +357,6 @@ void networkHandle(LPARAM lParam){
 	    
 	    case FD_READ:{
 	    	char *buff;
-	    	size_t curLeng;
 	    	buff = connection_get_buffer(mainModel->connection);
             connection_receivedata(mainModel->connection);
 
@@ -537,10 +534,6 @@ void addConnection(char * connectionName){
 void command(HWND hwnd,int cmd){
 	HINSTANCE hInst = (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
 
-	int connectionIndex = 0;
-	char buff[256] = {0};
-
-	/** 处理自定义的动态菜单 */
 	if(cmd > 900 && cmd < 1000){
 		char buff[255] = {0};
 

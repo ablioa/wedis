@@ -174,5 +174,8 @@ LPTSTR mGetSaveFileName(HWND hwnd);
 int check_type(char * type,char * key);
 
 void log_message(char * message);
+
+void onExit();
+
 #endif
 
