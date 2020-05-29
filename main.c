@@ -4,7 +4,7 @@
 MainModel * mainModel;
 RenderModel * renderModel;
 
-void log_message(char * message){
+void log_message(const char * message){
 	MessageBox(NULL,message,"TITLE",MB_OK);
 }
 
@@ -211,7 +211,7 @@ void onMainFrameCreate(HWND hwnd){
 	mainModel->hDev = CreatePopupMenu();
 
 	AppendMenu(mainModel->hDev,MF_STRING,IDM_CONNECTION_POOL,"Connections");
-	AppendMenu(mainModel->hDev,MF_SEPARATOR,NULL,"");
+	AppendMenu(mainModel->hDev,MF_SEPARATOR,0,"");
 			
     int total = appConfig->total_host;
 	for(int ix =0 ;ix < total ; ix ++){
@@ -524,7 +524,7 @@ void addDatabaseNode(HTREEITEM parentHandle){
 }
 
 void addConnection(char * connectionName){
-	AppView * view = mainModel->view;
+//	AppView * view = mainModel->view;
 	
 	HTREEITEM parentHandle = addHostNode(connectionName);
 
@@ -563,7 +563,7 @@ void command(HWND hwnd,int cmd){
 
 		case IDM_FILE_CLOSE:{
 			hInst= (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
-			DialogBox (hInst,MAKEINTRESOURCE (IDD_PREFERENCE),hwnd,SetPreferenceProc);
+			DialogBox (hInst,MAKEINTRESOURCE (IDD_PREFERENCE),hwnd,(DLGPROC)SetPreferenceProc);
 			break;
 		}
 

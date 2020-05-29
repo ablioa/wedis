@@ -3,7 +3,7 @@
 Config * appConfig;
 
 Host * getHostByIndex(Config * config,int hostIndex){
-    int cur = 0;
+//    int cur = 0;
     Host * result = NULL;
 
     for(int cur = 0; cur < config->total_host; cur++){

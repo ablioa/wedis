@@ -2,7 +2,7 @@
 
 HWND listView;
 
-char * listColNames[2]={
+const char * listColNames[2]={
     "Row",
 	"Value"
 };
@@ -19,7 +19,6 @@ BOOL InsertListViewItems1(HWND hwnd, int cItems){
     for (int index = 0; index < cItems; index++){
         lvI.iItem  = index;
         lvI.iImage = index;
-        lvI.pszText = "sdsd";
     
         if (ListView_InsertItem(hwnd, &lvI) == -1)
             return FALSE;
@@ -31,12 +30,19 @@ BOOL InsertListViewItems1(HWND hwnd, int cItems){
 BOOL InitListDViewColumns(HWND hWndListView) { 
     LVCOLUMN lvc;
     int iCol;
+	char * valName;
 
     lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
     for (iCol = 0; iCol < 2; iCol++){
         lvc.iSubItem = iCol;
-        lvc.pszText = listColNames[iCol];
+
+		// 注意内存释放
+		valName = (char *) malloc(sizeof(char) * 128);
+		memset(valName,0,sizeof(char) * 128);
+		strcpy(valName,listColNames[iCol]);
+
+        lvc.pszText = valName;
         lvc.cx = 100;
 
         if ( iCol < 2 ){
@@ -105,33 +111,6 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 			MoveWindow(listView,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
 		    break;
 		}
-        
-        case WM_NOTIFY:{
-			switch (((LPNMHDR) lParam)->code) {
-                MessageBox(hwnd,"sss","sdsd",MB_OK);
-
-                case LVN_GETDISPINFO:{
-                     NMLVDISPINFO* plvdi;
-                     plvdi = (NMLVDISPINFO*)lParam;
-                 
-                     switch (plvdi->item.iSubItem){
-                        case 0:
-                            plvdi->item.pszText = "11111";
-                        break;
-                            
-                        case 1:
-                            plvdi->item.pszText = "22222";
-                        break;
-                        
-                        case 2:
-                            plvdi->item.pszText = "33333";
-                        break;
-                    }  
-               }
-            }
-
-            break;
-        }
 	}
 
 	return DefWindowProc (hwnd, message, wParam, lParam);

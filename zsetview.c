@@ -2,36 +2,27 @@
 
 HWND zsetView;
 
-char * zsetColNames[3]={
+const char * zsetColNames[3]={
     "Row",
 	"Value",
 	"Score"
 };
 
-PETINFO rgPetInfo[] = 
-{
-    {TEXT("Dog"),  TEXT("Poodle"),     TEXT("$300.00")},
-    {TEXT("Cat"),  TEXT("Siamese"),    TEXT("$100.00")},
-    {TEXT("Fish"), TEXT("Angel Fish"), TEXT("$10.00")},
-    {TEXT("Bird"), TEXT("Parakeet"),   TEXT("$5.00")},
-    {TEXT("Toad"), TEXT("Woodhouse"),  TEXT("$0.25")},
-};
-
-
-
-
-/**
- * 初始化列表表头 
- */
 BOOL InitZsetViewColumns(HWND hWndListView) { 
     LVCOLUMN lvc;
     int iCol;
 
+	char * valName;
+
     lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
     for (iCol = 0; iCol < 3; iCol++){
+		valName = (char *) malloc(sizeof(char) * 128);
+		memset(valName,0,sizeof(char) * 128);
+		strcpy(valName,zsetColNames[iCol]);
+
         lvc.iSubItem = iCol;
-        lvc.pszText = zsetColNames[iCol];
+        lvc.pszText = valName;//(LPWSTR)zsetColNames[iCol];
         lvc.cx = 100;
 
         if ( iCol < 2 ){
@@ -95,7 +86,7 @@ BOOL inertInto(HWND hwnd,RedisReply * reply){
     lvI.iSubItem  = 0;
     lvI.state     = 0;
 
-    SendMessage(hwnd,LVM_DELETEALLITEMS,NULL,NULL);
+    SendMessage(hwnd,LVM_DELETEALLITEMS,(WPARAM)NULL,(LPARAM)NULL);
     
     for (int index = 0; index < (reply->bulkSize/2); index++){
         lvI.iItem  = index;
@@ -110,11 +101,11 @@ BOOL inertInto(HWND hwnd,RedisReply * reply){
 
         lvI.pszText = reply->bulks[index * 2];
         lvI.iSubItem = 1;
-        SendMessage(hwnd,LVM_SETITEM,NULL,&lvI);
+        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
 
         lvI.pszText = reply->bulks[index *2+1];
         lvI.iSubItem = 2;
-        SendMessage(hwnd,LVM_SETITEM,NULL,&lvI);
+        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
     }
 
     return TRUE;

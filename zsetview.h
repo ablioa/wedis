@@ -5,6 +5,8 @@
 #define _WIN32_IE 0x0600
 #include "main.h"
 
+#include "redis.h"
+
 #include "resource/resource.h"
 
 typedef struct 
@@ -23,5 +25,7 @@ HWND buildZsetViewWindow(HWND parent);
 LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 void init_zsetview(HINSTANCE hInstance);
+
+BOOL inertInto(HWND hwnd,RedisReply * reply);
 
 #endif

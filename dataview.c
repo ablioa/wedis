@@ -161,7 +161,7 @@ void switchView(HWND hwnd,int type,RedisReply * reply){
 
 	ShowWindow(dataView->visibleHwnd,SW_HIDE);
 
-	char buff[256] = {0};
+//	char buff[256] = {0};
 	
 	// MessageBox(hwnd,buff,"sdsds",MB_OK);
 
@@ -202,7 +202,7 @@ void switchView(HWND hwnd,int type,RedisReply * reply){
 	}
 
 	ShowWindow(dataView->visibleHwnd,SW_SHOW);
-	SendMessage(dataView->visibleHwnd,WM_DT,(WPARAM)reply,NULL);
+	SendMessage(dataView->visibleHwnd,WM_DT,(WPARAM)reply,(LPARAM)NULL);
 }
 
 LRESULT CALLBACK dataRenderProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){

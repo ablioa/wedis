@@ -2,7 +2,7 @@
 
 HWND setView;
 
-char * setColNames[2]={
+const char * setColNames[2]={
     "Row",
 	"Value"
 };
@@ -11,11 +11,19 @@ BOOL InitSetViewColumns(HWND hWndListView) {
     LVCOLUMN lvc;
     int iCol;
 
+	char * valName;
+
     lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
     for (iCol = 0; iCol < 2; iCol++){
+
+        // 注意内存释放
+		valName = (char *) malloc(sizeof(char) * 128);
+		memset(valName,0,sizeof(char) * 128);
+		strcpy(valName,setColNames[iCol]);
+
         lvc.iSubItem = iCol;
-        lvc.pszText = setColNames[iCol];
+        lvc.pszText = valName;
         lvc.cx = 100;
 
         if ( iCol < 2 ){

@@ -156,6 +156,8 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 void initpan();
 
+void initModel();
+
 void onMainFrameCreate(HWND hwnd);
 
 void onDataNodeSelection();
@@ -173,7 +175,7 @@ LPTSTR mGetSaveFileName(HWND hwnd);
 
 int check_type(char * type,char * key);
 
-void log_message(char * message);
+void log_message(const char * message);
 
 void onExit();
 
