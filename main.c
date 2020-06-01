@@ -242,13 +242,17 @@ void onDataNodeSelection(){
 	}
 
 	if(tn->level == 3){
+		char * tc = (char*)malloc(sizeof(char)*128);
+        memset(tc,0,sizeof(char) * 128);
+        sprintf(tc,"select %d",tn->database);
+		sendRedisCommand(tc,"-",PT_SELECT);
+
 		char * scmds = (char*)malloc(sizeof(char)*128);
 	    memset(scmds,0,sizeof(char) * 128);
 	    sprintf(scmds,"type %s",ti.pszText);
 
-
 		char typelog[125] = {0};
-		sprintf(typelog,"typelog go: %s",scmds);
+		sprintf(typelog,"typelog go: %s database: %d",scmds,tn->database);
 		appendLog(typelog);
 
 		sendRedisCommand(scmds,ti.pszText,PT_TYPE);
@@ -336,6 +340,7 @@ void handleKeysReply(RedisReply * rp){
         
         TreeNode * tn = buildTreeNode();
         tn->level = 3;
+		tn->database = tnf->database;
         tvinsert.item.lParam= (LPARAM)tn;
         tnf->subHandleSize ++;
         tnf->subHandles[ix]=(HTREEITEM)SendMessage(mainModel->view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
