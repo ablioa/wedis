@@ -45,8 +45,6 @@ void addTask(TaskPool * pool,Task * task){
     }
 
     pool->size ++;
-
-    printf("task pool size: %d \n",pool->size);
 }
 
 /**
@@ -60,39 +58,12 @@ Task * getTask(TaskPool * pool){
     Task * ret = pool->head;
 
     pool->head = pool->head->next;
-    pool->size --;
+    
+    if(pool->head == NULL){
+        pool->tail = NULL;
+    }
 
-	printf("task pool size: %d \n",pool->size);
+    pool->size --;
 
     return ret;
 }
-
-
-// int main(){
-
-//     initTaskPool();
-
-//     for(int ix = 0; ix < 5; ix ++){
-//         Task * task = buildTask(ix*ix+4);
-//         addTask(pool,task);
-
-// 		printf("real-size: %d\n",pool->size);
-//     }
-
-// 	printf("final-size: %d\n",pool->size);
-
-//     for(int ix = 0; ix < 10; ix ++){
-//         Task * task = getTask(pool);
-
-// 		if(task == NULL){
-// 		    printf("EMPTY POOL!!!\n");
-// 			continue;
-// 		}
-
-// 		printf("real-size: %d : taskType: %d\n",pool->size,task->taskType);
-//     }
-
-// 	printf("final-size: %d\n",pool->size);
-
-//     return 0;
-// }
