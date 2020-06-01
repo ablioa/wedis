@@ -60,7 +60,41 @@ HWND buildHashViewWindow(HWND parent){
 	ShowWindow(dataViewHwnd,SW_HIDE);
 
 	return dataViewHwnd;
+}
+
+BOOL updateHashDataSet(HWND hwnd,RedisReply * reply){
+    char indexBuff[256] = {0};
+    LVITEM lvI;
+
+    lvI.pszText   = LPSTR_TEXTCALLBACK;
+    lvI.mask      = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE;
+    lvI.stateMask = 0;
+    lvI.iSubItem  = 0;
+    lvI.state     = 0;
+
+    SendMessage(hwnd,LVM_DELETEALLITEMS,(WPARAM)NULL,(LPARAM)NULL);
     
+    for (int index = 0; index < (reply->bulkSize/2); index++){
+        lvI.iItem  = index;
+        lvI.iImage = index;
+        lvI.iSubItem = 0;
+
+        memset(indexBuff,0,256);
+        sprintf(indexBuff,"%d",(index +1));
+
+        lvI.pszText = indexBuff; 
+        ListView_InsertItem(hwnd, &lvI);
+
+        lvI.pszText = reply->bulks[index * 2];
+        lvI.iSubItem = 1;
+        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+
+        lvI.pszText = reply->bulks[index *2+1];
+        lvI.iSubItem = 2;
+        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+    }
+
+    return TRUE;
 }
 
 LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
@@ -81,6 +115,12 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 			InitListViewColumns(tableView);
 		    break;
 		}
+
+        case WM_DT:{
+            RedisReply * rp = (RedisReply *)wParam;
+            updateHashDataSet(tableView,rp);
+            break;
+        }
 
 		case WM_SIZE:{
 			GetClientRect(hwnd,&rect);

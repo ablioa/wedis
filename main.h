@@ -136,15 +136,20 @@ typedef struct{
 	/** 选中的树节点 */
 	HTREEITEM selectedNode;
 
+	int database;
+
     int UI;
 }MainModel;
 
 typedef struct{
 	int level;
+	
 	int database;
+
 	char * key;
 
     HTREEITEM subHandles[1024];
+
     int  subHandleSize;
 }TreeNode;
 

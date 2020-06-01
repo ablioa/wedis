@@ -47,6 +47,13 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 		    break;
 		}
 
+		case WM_DT:{
+            RedisReply * rp = (RedisReply *)wParam;
+			SendMessage(textView,EM_REPLACESEL,FALSE,(LONG)rp->bulk);
+			SetWindowText(textView,rp->bulk);
+            break;
+        }
+
 		case WM_SIZE:{
 			GetClientRect(hwnd,&rect);
 			MoveWindow(textView,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);

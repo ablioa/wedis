@@ -44,3 +44,11 @@ RedisClient
 
 @101
    ShellExecute(_hwnd,"open","dev.exe","","",SW_NORMAL);
+
+
+        // case WM_PAINT:{
+		// 	PAINTSTRUCT _paint;
+		// 	BeginPaint(hwnd, &_paint);
+		// 	EndPaint(hwnd, &_paint);
+		// 	break;
+        // }

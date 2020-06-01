@@ -10,8 +10,6 @@ AppView * buildAppView(HWND hwnd){
     view->toolbarHeight = 16;
     view->statusbarHeight = 20;
     
-//    int connectionAreaWitdh;
-
     return view;
 }
 
@@ -21,8 +19,7 @@ int getAttributeHeight(AppView * view){
     return rect.bottom - rect.top;
 }
 
-void CreateView(AppView * view)
-{
+void CreateView(AppView * view){
 	RECT rt;
 	RECT connctionRect;
 	HINSTANCE hInst;

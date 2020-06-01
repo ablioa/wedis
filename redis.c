@@ -35,6 +35,23 @@ RedisReply * read_replay(char * text){
 		}
         /** bulk */
 		case '$':{
+			rp->type =REPLY_BULK;
+			char cnt[128]={0};
+			int scur = 0;
+			while(text[cur] >='0' && text[cur] <= '9'){
+			    cnt[scur++] = text[cur++];
+			}
+
+			cur+=2;
+			int count = atoi(cnt);
+			rp->bulk = (char *) malloc(sizeof(char) * count +1);
+			memset(rp->bulk,0,sizeof(char) * count+1);
+
+			for(int ix =0; ix < count; ix ++){
+				rp->bulk[ix] = text[cur++];
+			}
+
+			rp->bulk[count] = 0;
 			break;
 		}
         /** multibulk */

@@ -58,7 +58,6 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 				case NM_CLICK:{
 					char buff[256] = {0};
 					sprintf(buff,"id-from: %d",msg->idFrom);
-					// log_message(buff);
 
 					// 其他组件的通知消息也会通知到主窗口，因此需要过滤一下
 					if(msg->idFrom == 0){
@@ -81,18 +80,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 			UpdateWindow(hwnd);
             break;
 
-        // case WM_PAINT:{
-		// 	PAINTSTRUCT _paint;
-		// 	BeginPaint(hwnd, &_paint);
-		// 	EndPaint(hwnd, &_paint);
-		// 	break;
-        // }
-
         case WM_COMMAND:{
-			//char buff[255]={0};
-			//sprintf(buff,"message: %d",LOWORD(wParam));
-			//MessageBox(hwnd,buff,buff,MB_OK);
-
 			command(hwnd,LOWORD (wParam));
 			return 0;
 		}
@@ -251,6 +239,25 @@ void onDataNodeSelection(){
 	}
 
 	if(tn->level == 3){
+
+		char logmsg[255] = {0};
+		sprintf(logmsg,"database:%d",mainModel->database);
+		// SetWindowText(mai)
+////////////////////////
+
+        // char * scmds1 = (char*)malloc(sizeof(char)*128);
+        // memset(scmds1,0,sizeof(char) * 128);
+        // sprintf(scmds1,"select %d",mainModel->database);
+        
+        // char * pppp1 = parse_command((char *)scmds1,256);
+        // mainModel->connection->cmdType = PT_SELECT;
+        // connection_senddata(mainModel->connection,pppp1,strlen(pppp1),0);
+
+		/////////////////
+		// Sleep(1000);
+
+		// MessageBox(NULL,logmsg,"Title",MB_OK);
+
 		char * scmds = (char*)malloc(sizeof(char)*128);
 	    memset(scmds,0,sizeof(char) * 128);
 	    sprintf(scmds,"type %s",ti.pszText);
@@ -309,6 +316,7 @@ void onDataBaseSelect(HWND hwnd){
         connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
     
     	mainModel->selectedNode = hItem;
+		mainModel->database = tn->database;
     }
 }
 
@@ -331,6 +339,7 @@ void handleKeysReply(RedisReply * rp){
     }
     
     tnf->subHandleSize= 0;
+	tnf->database = mainModel->database;
     
     for(int ix =0;ix < rp->bulkSize; ix ++){
         TV_INSERTSTRUCT tvinsert;
@@ -360,10 +369,7 @@ void networkHandle(LPARAM lParam){
 	    	buff = connection_get_buffer(mainModel->connection);
             connection_receivedata(mainModel->connection);
 
-			// appendLog("------------");
 			appendLog(buff);
-			//log_message(buff);
-			// appendLog("------------");
 	    
             RedisReply * rp = read_replay(buff);
 	    	rp->key = mainModel->connection->key;
