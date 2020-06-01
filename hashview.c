@@ -111,6 +111,8 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                           rect.right - rect.left,
                           rect.bottom - rect.top,
                           hwnd, NULL, hinst, NULL);
+            
+            ListView_SetExtendedListViewStyle(tableView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
 
 			InitListViewColumns(tableView);
 		    break;

@@ -7,25 +7,25 @@ const char * listColNames[2]={
 	"Value"
 };
 
-BOOL InsertListViewItems1(HWND hwnd, int cItems){
-    LVITEM lvI;
+// BOOL InsertListViewItems1(HWND hwnd, int cItems){
+//     LVITEM lvI;
 
-    lvI.pszText   = LPSTR_TEXTCALLBACK;
-    lvI.mask      = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE;
-    lvI.stateMask = 0;
-    lvI.iSubItem  = 0;
-    lvI.state     = 0;
+//     lvI.pszText   = LPSTR_TEXTCALLBACK;
+//     lvI.mask      = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE;
+//     lvI.stateMask = 0;
+//     lvI.iSubItem  = 0;
+//     lvI.state     = 0;
 
-    for (int index = 0; index < cItems; index++){
-        lvI.iItem  = index;
-        lvI.iImage = index;
+//     for (int index = 0; index < cItems; index++){
+//         lvI.iItem  = index;
+//         lvI.iImage = index;
     
-        if (ListView_InsertItem(hwnd, &lvI) == -1)
-            return FALSE;
-    }
+//         if (ListView_InsertItem(hwnd, &lvI) == -1)
+//             return FALSE;
+//     }
 
-    return TRUE;
-}
+//     return TRUE;
+// }
 
 BOOL InitListDViewColumns(HWND hWndListView) { 
     LVCOLUMN lvc;
@@ -133,7 +133,7 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
             ListView_SetExtendedListViewStyle(listView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
 
 			InitListDViewColumns(listView);
-            InsertListViewItems1(listView,3);        
+            //InsertListViewItems1(listView,3);        
 		    break;
 		}
 
