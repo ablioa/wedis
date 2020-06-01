@@ -9,7 +9,7 @@
 
 #define BUFF_SIZE 4096
 
-#define REDIS_SERVER "192.168.223.128"
+#define REDIS_SERVER "139.224.207.71"
 //define REDIS_SERVER "192.168.1.9"
 #define REDIS_PORT   6379
 

@@ -110,6 +110,7 @@ LRESULT CALLBACK SetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
                           rect.bottom - rect.top,
                           hwnd, NULL, hinst, NULL);
 
+            ListView_SetExtendedListViewStyle(setView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
 			InitSetViewColumns(setView);
 		    break;
 		}

@@ -259,49 +259,6 @@ void buildConnectionView(AppView * view){
 	HBITMAP hBitmap = LoadBitmap(hinst,MAKEINTRESOURCE(IDB_CHIP));
 	ImageList_Add(hImageList,hBitmap,NULL);
 	SendMessage(view->connectionHwnd,TVM_SETIMAGELIST,0,(LPARAM)hImageList);
-
-	// HIMAGELIST hImageList=ImageList_Create(14,14,ILC_COLOR16,2,10);
-	// HBITMAP hBitmap = LoadBitmap(hinst,MAKEINTRESOURCE(IDB_CHIP));
-	// ImageList_Add(hImageList,hBitmap,NULL);
-	// SendMessage(view->connectionHwnd,TVM_SETIMAGELIST,0,(LPARAM)hImageList);
-
-	// TV_INSERTSTRUCT tvinsert;
-    // memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
-    // tvinsert.hParent = NULL;
-	// tvinsert.hInsertAfter=TVI_ROOT;
-	// tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
-	// tvinsert.item.iImage=0;
-	// tvinsert.item.iSelectedImage=0;
-    // tvinsert.item.pszText= "127.0.0.1:3879";
-
-	// TreeNode * tn = buildTreeNode();
-	// tn->level = 1;
-	// tvinsert.item.lParam=(LPARAM)tn;
-    
-	// HTREEITEM hpConn=(HTREEITEM)SendMessage(view->connectionHwnd,
-    //     TVM_INSERTITEM,
-    //     0,(LPARAM)&tvinsert);
-    
-	// char * dbname = (char *)malloc(sizeof(char)*128);
-	// for(int ix =0; ix < 16;ix ++){
-	// 	memset(dbname,0,sizeof(char) * 128);
-	// 	sprintf(dbname,"db%d",ix);
-
-	// 	tvinsert.item.iImage=1;
-	// 	tvinsert.item.iSelectedImage=1;
-	// 	tvinsert.hParent=hpConn;
-	// 	tvinsert.hInsertAfter=TVI_LAST;
-	// 	tvinsert.item.pszText= dbname;
-
-	// 	TreeNode * tn = buildTreeNode();
-	// 	tn->level = 2;
-	// 	tn->database = ix;
-	// 	tvinsert.item.lParam= (LPARAM)tn;
-    
-	// 	SendMessage(view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
-	// }
-
-	// free(dbname);
 }
 
 void addTreeNode(HWND treeHwnd,HTREEITEM hParent,char * nodeName){

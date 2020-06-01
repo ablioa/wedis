@@ -43,6 +43,9 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 			textView = CreateWindowEx(0, WC_EDIT, (""), 
 				WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_VSCROLL  |ES_MULTILINE, 
 				0, 0, 100, 100, hwnd, (HMENU)0, hinst, 0);
+			
+			HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
+            SendMessage(textView, WM_SETFONT, (WPARAM)hfont0, FALSE);
             
 		    break;
 		}
