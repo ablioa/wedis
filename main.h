@@ -23,6 +23,8 @@
 
 #include "queue.h"
 
+#include "dispatch.h"
+
 #define szFrameClass "MdiFrame"
 
 #define DATAVIEW_WINDOW     "DATA_VIEW_WINDOW"

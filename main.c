@@ -242,35 +242,16 @@ void onDataNodeSelection(){
 	}
 
 	if(tn->level == 3){
-
-		char logmsg[255] = {0};
-		sprintf(logmsg,"database:%d",mainModel->database);
-		// SetWindowText(mai)
-////////////////////////
-
-        // char * scmds1 = (char*)malloc(sizeof(char)*128);
-        // memset(scmds1,0,sizeof(char) * 128);
-        // sprintf(scmds1,"select %d",mainModel->database);
-        
-        // char * pppp1 = parse_command((char *)scmds1,256);
-        // mainModel->connection->cmdType = PT_SELECT;
-        // connection_senddata(mainModel->connection,pppp1,strlen(pppp1),0);
-
-		/////////////////
-		// Sleep(1000);
-
-		// MessageBox(NULL,logmsg,"Title",MB_OK);
-
 		char * scmds = (char*)malloc(sizeof(char)*128);
 	    memset(scmds,0,sizeof(char) * 128);
 	    sprintf(scmds,"type %s",ti.pszText);
 
-		memset(mainModel->connection->key,0,256);
-		sprintf(mainModel->connection->key,"%s",ti.pszText);
 
-        mainModel->connection->cmdType = PT_TYPE;
-	    char * encodedCmd = parse_command((char *)scmds,256);
-        connection_senddata(mainModel->connection,encodedCmd,strlen(encodedCmd),0);
+		char typelog[125] = {0};
+		sprintf(typelog,"typelog go: %s",scmds);
+		appendLog(typelog);
+
+		sendRedisCommand(scmds,ti.pszText,PT_TYPE);
 	}	
 }
 
@@ -308,16 +289,15 @@ void onDataBaseSelect(HWND hwnd){
         memset(scmds,0,sizeof(char) * 128);
         sprintf(scmds,"select %d",tn->database);
         
-        char * pppp = parse_command((char *)scmds,256);
-        mainModel->connection->cmdType = PT_SELECT;
-        connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
-        
-        memset(scmds,0,sizeof(char) * 128);
-        sprintf(scmds,"keys *");
-        pppp = parse_command((char *)scmds,256);
-        mainModel->connection->cmdType = PT_KEYS;
-        connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
-    
+		sendRedisCommand(scmds,"-",PT_SELECT);
+
+
+		char keycmd[256] = {0};
+        memset(keycmd,0,sizeof(char) * 256);
+        sprintf(keycmd,"keys *");
+		
+		sendRedisCommand(keycmd, "-",PT_KEYS);
+
     	mainModel->selectedNode = hItem;
 		mainModel->database = tn->database;
     }
@@ -368,32 +348,54 @@ void networkHandle(LPARAM lParam){
 	    break;
 	    
 	    case FD_READ:{
-	    	char *buff;
+	    	char * buff;
 	    	buff = connection_get_buffer(mainModel->connection);
             connection_receivedata(mainModel->connection);
-
 			appendLog(buff);
+
+			/////////////////////////
+			char cmdLog[256] = {0};
+			Task * task = getTask(pool);
+
+			
+
+			// TODO 为什么会空？
+			if(task == NULL){
+				break;
+			}
+
+			char bl[256]={0};
+			sprintf(bl,"task-num: %d\r\n",task->taskType);
+			appendLog(bl);
+
+			sprintf(cmdLog,"##############\r\ncmd: %d\r\n###############",task->taskType);
+			appendLog(cmdLog);
+			
+			/////////////////////////
 	    
             RedisReply * rp = read_replay(buff);
 	    	rp->key = mainModel->connection->key;
-            if(mainModel->connection->cmdType == PT_KEYS){
+            // if(mainModel->connection->cmdType == PT_KEYS){
+			if(task->taskType == PT_KEYS){
                 if(rp->type == REPLY_MULTI){
                     handleKeysReply(rp);
 	    	    }
             }
 	    
-            if(mainModel->connection->cmdType == PT_TYPE){
+            // if(mainModel->connection->cmdType == PT_TYPE){
+			if(task->taskType == PT_TYPE ){
 	    		int dataType = check_type(rp->status,rp->key);
 	    		renderModel->data_type = dataType;
             }
 	    
-	    	if(mainModel->connection->cmdType == PT_DATA){
+	    	// if(mainModel->connection->cmdType == PT_DATA){
+			if(task->taskType == PT_DATA){
 	    		renderModel->model = rp;
 
-				if(rp->type != 0){
+				// if(rp->type != 0){
 					SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)rp,(LPARAM)(renderModel->data_type));
-					mainModel->connection->cmdType = -1;
-				}
+					// mainModel->connection->cmdType = -1;
+				// }
 	    	}
 	    }
 	    break;
@@ -413,17 +415,15 @@ void networkHandle(LPARAM lParam){
 }
 
 int check_type(char * type,char * key){
+	appendLog("message send");
 
 	if(strcmp(type,TYPE_STRING) == 0){
 		char * command = (char *) malloc(sizeof(char) * 256);
 		memset(command,0,sizeof(char) * 256);
 		sprintf(command,"get %s",key);
 
-		// TODO 
-		mainModel->connection->cmdType = PT_DATA;
-		char * pppp = parse_command((char *)command,256);
-		connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
-		
+		sendRedisCommand(command,key,PT_DATA);
+
 		return 1;
 	}
 
@@ -432,10 +432,8 @@ int check_type(char * type,char * key){
 		memset(command,0,sizeof(char) * 256);
 		sprintf(command,"lrange %s 0 -1",key);
 
-		// TODO 
-		mainModel->connection->cmdType = PT_DATA;
-		char * pppp = parse_command((char *)command,256);
-		connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
+		sendRedisCommand(command,key, PT_DATA);
+
 		return 2;
 	}
 	
@@ -444,10 +442,7 @@ int check_type(char * type,char * key){
 		memset(command,0,sizeof(char) * 256);
 		sprintf(command,"hgetall %s",key);
 
-		mainModel->connection->cmdType = PT_DATA;
-		char * pppp = parse_command((char *)command,256);
-		connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
-
+		sendRedisCommand(command,key,PT_DATA);
 		return 3;
 	}
 
@@ -456,9 +451,7 @@ int check_type(char * type,char * key){
 		memset(command,0,sizeof(char) * 256);
 		sprintf(command,"smembers %s",key);
 
-		mainModel->connection->cmdType = PT_DATA;
-		char * pppp = parse_command((char *)command,256);
-		connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
+		sendRedisCommand(command,key,PT_DATA);
 
 		return 4;
 	}
@@ -468,10 +461,7 @@ int check_type(char * type,char * key){
 		memset(command,0,sizeof(char) * 256);
 		sprintf(command,"zrange %s 0 -1 withscores",key);
 
-		mainModel->connection->cmdType = PT_DATA;
-		char * pppp = parse_command((char *)command,256);
-		connection_senddata(mainModel->connection,pppp,strlen(pppp),0);
-
+		sendRedisCommand(command,key,PT_DATA);
 		return 5;
 	}
 
@@ -533,10 +523,7 @@ void addDatabaseNode(HTREEITEM parentHandle){
 }
 
 void addConnection(char * connectionName){
-//	AppView * view = mainModel->view;
-	
 	HTREEITEM parentHandle = addHostNode(connectionName);
-
 	addDatabaseNode(parentHandle);
 }
 

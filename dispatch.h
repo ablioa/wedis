@@ -7,4 +7,7 @@ typedef struct{
 
 void dispatch(RedisMessage * message);
 
+
+void sendRedisCommand(char * command,char * dataKey,int type);
+
 #endif

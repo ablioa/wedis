@@ -35,22 +35,24 @@ LRESULT CALLBACK SetPreferenceProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lPara
 		break;
 
 		case WM_COMMAND:
-			switch(wParam)
-			{
+			switch(wParam){
 				case IDOK:
 					EndDialog(hWin,0);
 				break;
+
 				case IDCANCEL:
 					EndDialog(hWin,0);
 				break;
 			}
 			break;
+
 			case WM_PAINT:
 				hdc = BeginPaint(hWin,&ps);
 				Rectangle(hdc,200,40,260,60);
 				Rectangle(hdc,200,100,260,120);
 				EndPaint(hWin,&ps);
 			break;
+
 		case WM_CLOSE:
 			EndDialog(hWin,0);
 		break;
@@ -64,6 +66,11 @@ BOOL CALLBACK networkDlgProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam
 	switch (message){
 		case WM_INITDIALOG:{
 			return TRUE;
+		}
+
+		case WM_CLOSE:{
+			EndDialog(hwnd,0);
+			break;
 		}
 		
 		case WM_COMMAND:{
