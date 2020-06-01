@@ -21,6 +21,8 @@
 #include "config.h"
 #include "connection.h"
 
+#include "queue.h"
+
 #define szFrameClass "MdiFrame"
 
 #define DATAVIEW_WINDOW     "DATA_VIEW_WINDOW"

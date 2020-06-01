@@ -184,6 +184,9 @@ void initModel(){
 
 	renderModel = (RenderModel *) malloc(sizeof(RenderModel));
 	memset(renderModel,0,sizeof(RenderModel));
+
+    // init message queue
+	initTaskPool();
 }
 
 void onExit(){
