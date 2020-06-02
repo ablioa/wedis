@@ -100,9 +100,6 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
     return DefWindowProc (hwnd, message, wParam, lParam);
 }
 
-/**
- * 注册窗口类
- */
 void initpan(HINSTANCE hInstance){
 	init_hashview(hInstance);
 	init_stringview(hInstance);
@@ -172,9 +169,6 @@ void initpan(HINSTANCE hInstance){
 	RegisterClassEx(&mainClass);
 }
 
-/**
- *  初始化数据模型
- **/
 void initModel(){
 	mainModel = (MainModel *)malloc(sizeof(MainModel));
 	memset(mainModel,0,sizeof(MainModel));
@@ -185,7 +179,6 @@ void initModel(){
 	renderModel = (RenderModel *) malloc(sizeof(RenderModel));
 	memset(renderModel,0,sizeof(RenderModel));
 
-    // init message queue
 	initTaskPool();
 }
 
@@ -235,36 +228,20 @@ void onDataNodeSelection(){
 	TreeView_GetItem(mainModel->view->connectionHwnd, &ti);
 
 	TreeNode * tn = (TreeNode*) ti.lParam;
-
-	// 这个代码本来不该是必要的，要整明白，清理掉
-	if(tn == NULL){
-		return;
-	}
-
 	if(tn->level == 3){
 		char * tc = (char*)malloc(sizeof(char)*128);
         memset(tc,0,sizeof(char) * 128);
         sprintf(tc,"select %d",tn->database);
-		sendRedisCommand(tc,"-",PT_SELECT);
+		sendRedisCommand(tc,NULL,PT_SELECT);
 
 		char * scmds = (char*)malloc(sizeof(char)*128);
 	    memset(scmds,0,sizeof(char) * 128);
 	    sprintf(scmds,"type %s",ti.pszText);
 
-		char typelog[125] = {0};
-		sprintf(typelog,"typelog go: %s database: %d",scmds,tn->database);
-		appendLog(typelog);
-
 		sendRedisCommand(scmds,ti.pszText,PT_TYPE);
 	}	
 }
 
-/**
- *  选中数据库节点
- *  -------------
- *  1. 装在数据库中的所有Key
- *  2. 解析后渲染到下级树节点上
- **/ 
 void onDataBaseSelect(HWND hwnd){
     char * buf = (char*)malloc(128);
     memset(buf,0,128);
@@ -293,14 +270,14 @@ void onDataBaseSelect(HWND hwnd){
         memset(scmds,0,sizeof(char) * 128);
         sprintf(scmds,"select %d",tn->database);
         
-		sendRedisCommand(scmds,"-",PT_SELECT);
+		sendRedisCommand(scmds,NULL,PT_SELECT);
 
 
 		char keycmd[256] = {0};
         memset(keycmd,0,sizeof(char) * 256);
         sprintf(keycmd,"keys *");
 		
-		sendRedisCommand(keycmd, "-",PT_KEYS);
+		sendRedisCommand(keycmd, NULL,PT_KEYS);
 
     	mainModel->selectedNode = hItem;
 		mainModel->database = tn->database;
@@ -358,49 +335,24 @@ void networkHandle(LPARAM lParam){
             connection_receivedata(mainModel->connection);
 			appendLog(buff);
 
-			/////////////////////////
-			char cmdLog[256] = {0};
+
 			Task * task = getTask(pool);
-
-			
-
-			// TODO 为什么会空？
-			if(task == NULL){
-				break;
-			}
-
-			char bl[256]={0};
-			sprintf(bl,"task-num: %d\r\n",task->taskType);
-			appendLog(bl);
-
-			sprintf(cmdLog,"##############\r\ncmd: %d\r\n###############",task->taskType);
-			appendLog(cmdLog);
-			
-			/////////////////////////
-	    
             RedisReply * rp = read_replay(buff);
 	    	rp->key = mainModel->connection->key;
-            // if(mainModel->connection->cmdType == PT_KEYS){
 			if(task->taskType == PT_KEYS){
                 if(rp->type == REPLY_MULTI){
                     handleKeysReply(rp);
 	    	    }
             }
 	    
-            // if(mainModel->connection->cmdType == PT_TYPE){
 			if(task->taskType == PT_TYPE ){
 	    		int dataType = check_type(rp->status,rp->key);
 	    		renderModel->data_type = dataType;
             }
 	    
-	    	// if(mainModel->connection->cmdType == PT_DATA){
 			if(task->taskType == PT_DATA){
 	    		renderModel->model = rp;
-
-				// if(rp->type != 0){
-					SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)rp,(LPARAM)(renderModel->data_type));
-					// mainModel->connection->cmdType = -1;
-				// }
+				SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)rp,(LPARAM)(renderModel->data_type));
 	    	}
 	    }
 	    break;
@@ -420,8 +372,6 @@ void networkHandle(LPARAM lParam){
 }
 
 int check_type(char * type,char * key){
-	appendLog("message send");
-
 	if(strcmp(type,TYPE_STRING) == 0){
 		char * command = (char *) malloc(sizeof(char) * 256);
 		memset(command,0,sizeof(char) * 256);

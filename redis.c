@@ -1,7 +1,5 @@
 #include "redis.h"
 
-// Receive Session
-
 RedisReply * read_replay(char * text){
 	int cur = 0;
 	char ch = text[cur++];

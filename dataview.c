@@ -2,11 +2,10 @@
 
 BOOL CALLBACK exportBtnProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 	DataView * dataView = mainModel->dataView;
-	
+	char * filename;
 	switch(msg){
 		case WM_LBUTTONUP:{
-//			char * fname = mGetOpenFileName(hwnd);
-			// TODO 导出结构
+			char * filename = mGetOpenFileName(hwnd);
 			break;
 		}
 	}
@@ -150,33 +149,20 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 	return DefWindowProc(dataHwnd, msg, wParam, lParam);
 }
 
-/**
- * 这里目前只是得到数据的类型，并没有得到数据本身
- * 
- * 优化: 主窗口应该记录当前显示的窗口
- * 
- */ 
 void switchView(HWND hwnd,int type,RedisReply * reply){
 	DataView * dataView = mainModel->dataView;
 
 	ShowWindow(dataView->visibleHwnd,SW_HIDE);
-
-//	char buff[256] = {0};
-	
-	// MessageBox(hwnd,buff,"sdsds",MB_OK);
-
 	switch(type){
 		case 1:{
 			dataView->visibleHwnd = dataView->stringViewHwnd;
 			break;
 		}
 		case 2:{
-			/// 发送数据
 			int size = reply->bulkSize;
 			for(int ix = 0; ix < size; ix ++){
 				char buff[256] = {0};
 				wsprintf(buff,"size: %s %d -  %d",reply->bulks[ix],reply->bulkSize,type);
-				//MessageBox(hwnd,buff,buff,MB_OK);
 			}
 
 			dataView->visibleHwnd = dataView->listViewHwnd;
@@ -192,11 +178,6 @@ void switchView(HWND hwnd,int type,RedisReply * reply){
 		}
 		case 5:{
 			dataView->visibleHwnd = dataView->zsetViewHwnd;
-
-			// 会有重复的消息
-			// sprintf(buff,"data-type to send: %d,%d",type,reply->bulkSize);
-			// MessageBox(hwnd,buff,"sdsds",MB_OK);
-			
 			break;
 		}
 	}
