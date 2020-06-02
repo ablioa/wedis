@@ -505,16 +505,10 @@ void command(HWND hwnd,int cmd){
     switch (cmd){
 		case IDM_CONNECTION_POOL:{
 			hInst= (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
-			DialogBox (hInst,MAKEINTRESOURCE (IDD_CONNECTION_CONFIG),hwnd,conectionConfigDlgProc);
+			DialogBox (hInst,MAKEINTRESOURCE (IDD_CONNECTION),hwnd,conectionConfigDlgProc);
 			break;
 		}
-		/** 测试网络基础设施 */
-        case IDM_NETWORK:{
-			hInst= (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
-			DialogBox (hInst,MAKEINTRESOURCE (IDD_NETWORK),hwnd,networkDlgProc);
-        	break;
-		}
-
+		
 		case IDM_FILE_CLOSE:{
 			hInst= (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
 			DialogBox (hInst,MAKEINTRESOURCE (IDD_PREFERENCE),hwnd,(DLGPROC)SetPreferenceProc);

@@ -29,25 +29,17 @@
 #define IDM_TIMING  40006
 #define IDM_REMOVE  40007
 
+#define IDC_ABOUT_OK           500
+#define IDC_ABOUT_URL          501
+#define IDC_ABOUT_NAME         502
+#define IDC_ABOUT_DESCRIPTION  503
+#define IDC_ABOUT_IMAGE        504
+
 // 900 - 1000为自定义菜单Id
 #define IDM_CONNECTION_POOL                     899
 #define IDM_CONNECTION                          900
 #define IDM_CUSTOMER_HOST                       901
 
-#define IDD_NETWORK         200
-#define IDC_BUTTON_OK       190
-#define IDM_NETWORK         191
-#define IDC_BUTTON_EXIT     201
-
-#define IDC_BUTTON_STRING  202
-#define IDC_BUTTON_HASH    203
-#define IDC_BUTTON_LIST    204
-#define IDC_BUTTON_SET     205
-#define IDC_BUTTON_ZSET    206
-#define IDC_BUTTON_CLOSE   207
-
-#define IDC_BUTTON_KEYS    208
-#define IDC_BUTTON_SELECT  209
-
-#define IDD_CONNECTION_CONFIG 400
-#define IDC_CONFIG_DONE       401
+#define IDD_CONNECTION     400
+#define IDC_CONFIG_DONE    401
+#define ID_CONFIG_CANCEL   402

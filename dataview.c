@@ -33,30 +33,23 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 		case WM_CREATE:{
 			HINSTANCE hinst = (HINSTANCE)GetWindowLong(dataHwnd,GWL_HINSTANCE);
 
-            HWND keyEditHwnd  = CreateWindowEx(0, WC_EDIT, ("11"), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 5, 5, 240, 24, dataHwnd, (HMENU)0, hinst, 0);    
-            HWND renameBtnHwnd  = CreateWindowEx(0, WC_BUTTON, ("Rename"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 250, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);     
-            HWND ttlBtnHwnd  = CreateWindowEx(0, WC_BUTTON, ("TTL"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 315, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);
-            HWND removeBtnHwnd  = CreateWindowEx(0, WC_BUTTON, ("Remove"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 380, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);
+            HWND keyEditHwnd   = CreateWindowEx(0, WC_EDIT, ("11"), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 5, 5, 240, 24, dataHwnd, (HMENU)0, hinst, 0);    
+            HWND renameBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Rename"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 250, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);     
+            HWND ttlBtnHwnd    = CreateWindowEx(0, WC_BUTTON, ("TTL"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 315, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);
+            HWND removeBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Remove"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 380, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);
             HWND reloadBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Reload"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 445, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);
-            HWND viewTypeHwnd  = CreateWindowEx(0, WC_COMBOBOX, (""), 
-                CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
-                510, 5, 120, 24, dataHwnd, (HMENU)0, hinst, 0);
+            HWND viewTypeHwnd  = CreateWindowEx(0, WC_COMBOBOX, (""), CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,510, 5, 120, 24, dataHwnd, (HMENU)0, hinst, 0);
             
             HWND dataViewHwnd  = CreateWindowEx(0, DATA_RENDER_WINDOW, (""), 
                 WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
                 5, 34, 625, 240, 
                 dataHwnd, (HMENU)0, hinst, 0);
 
-
-			///////////////////////////////////////////////////////////////////////
-
 			dataView->hashViewHwnd = buildHashViewWindow(dataViewHwnd);
 			dataView->stringViewHwnd = buildStringViewWindow(dataViewHwnd);
 			dataView->listViewHwnd = buildListViewWindow(dataViewHwnd);
 			dataView->setViewHwnd = buildSetViewWindow(dataViewHwnd);
 			dataView->zsetViewHwnd = buildZsetViewWindow(dataViewHwnd);
-
-			///////////////////////////////////////////////////////////////////////
 
             HWND saveBtnHwnd  = CreateWindowEx(0, WC_BUTTON, ("Save"), WS_VISIBLE | WS_CHILD | WS_TABSTOP | 0x00000001, 570, 279, 60, 24, dataHwnd, (HMENU)0, hinst, 0);     
             HWND exportBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Export"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 505, 279, 60, 24, dataHwnd, (HMENU)0, hinst, 0); 
@@ -72,13 +65,10 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
             SendMessage(removeBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
             SendMessage(reloadBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
 
-			//(DataView*)malloc(sizeof(DataView));
-			//memset(dataView,0,sizeof(DataView));
-
 			dataView->dataViewHwnd  = dataViewHwnd;
 			dataView->exportBtnHwnd = exportBtnHwnd;
 			dataView->saveBtnHwnd   = saveBtnHwnd;
-			dataView->viewTypeHwnd  =viewTypeHwnd;
+			dataView->viewTypeHwnd  = viewTypeHwnd;
 
 			dataView->reloadBtnHwnd = reloadBtnHwnd;
 			dataView->removeBtnHwnd = removeBtnHwnd;
