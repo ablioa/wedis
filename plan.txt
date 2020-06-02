@@ -89,3 +89,19 @@ RedisClient
 		// 	EndPaint(hwnd, &_paint);
 		// 	break;
         // }
+
+3. 关于redis的密码认证
+   -----------------------
+   1、初始化Redis密码,在配置文件中配置,重启生效。
+      requirepass test123；
+   redis的查询速度是非常快的，外部用户一秒内可以尝试多大150K个密码；所以密码要尽量长（对于DBA 没有必要必须记住密码）；
+
+   2、不重启Redis设置密码：
+   config set requirepass test123
+   config get requirepass
+   auth test123
+
+   3、登陆有密码的Redis：
+   redis-cli -p 6379 -a test123
+
+   -----------------------
