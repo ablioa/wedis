@@ -9,10 +9,6 @@
 
 #define BUFF_SIZE 4096
 
-#define REDIS_SERVER "139.224.207.71"
-//define REDIS_SERVER "192.168.1.9"
-#define REDIS_PORT   6379
-
 #define WM_SOCKET WM_USER+100
 
 #define WM_DT_STRING WM_USER+200
@@ -40,9 +36,13 @@ typedef struct {
     int cmdType;
 
     char key[256];
+
+    int port;
+
+    char host[128];
 }TcpConnection;
 
-TcpConnection * build_connection();
+TcpConnection * build_connection(char * host,int port);
 
 char * build_comment(const char * text,const char * pack);
 

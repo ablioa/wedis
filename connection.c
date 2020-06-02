@@ -1,8 +1,12 @@
 #include "connection.h"
 
-TcpConnection * build_connection(){
+TcpConnection * build_connection(char * host,int port){
     TcpConnection * connection = (TcpConnection *)malloc(sizeof(TcpConnection));
     ZeroMemory(connection,sizeof(TcpConnection));
+
+	strcpy(connection->host,host);
+	connection->port = port;
+
     return connection;
 }
 
@@ -24,8 +28,8 @@ int connect_to_server(TcpConnection * connection,HWND hwnd){
 
 	memset((void *)&(connection->serv_addr),0,sizeof(struct sockaddr_in));
 	connection->serv_addr.sin_family = AF_INET;
-	connection->serv_addr.sin_addr.S_un.S_addr=inet_addr(REDIS_SERVER);
-	connection->serv_addr.sin_port=htons(REDIS_PORT);
+	connection->serv_addr.sin_addr.S_un.S_addr=inet_addr(connection->host);
+	connection->serv_addr.sin_port=htons(connection->port);
 
 	retVal = connect(
 		connection->socketid,

@@ -189,8 +189,8 @@ void onMainFrameCreate(HWND hwnd){
 	mainModel->view = buildAppView(hwnd);
 	CreateView(mainModel->view);
 
-	mainModel->connection =  build_connection();
-    connect_to_server(mainModel->connection,hwnd);
+	//mainModel->connection =  build_connection();
+    //connect_to_server(mainModel->connection,hwnd);
 
 	mainModel->hDev = CreatePopupMenu();
 
@@ -492,6 +492,10 @@ void command(HWND hwnd,int cmd){
 		if(host == NULL){
 			return;
 		}
+
+		// TODO 判定连接创建结果
+		mainModel->connection =  build_connection(host->host,host->port);
+        connect_to_server(mainModel->connection,hwnd);
 
 		sprintf(buff,"%d(%s:%d)",cmd,host->host,host->port);
 		addConnection(buff);
