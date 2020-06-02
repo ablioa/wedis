@@ -351,6 +351,14 @@ void networkHandle(LPARAM lParam){
 	    
 			if(task->taskType == PT_DATA){
 	    		renderModel->model = rp;
+
+				if(task->dataKey != NULL){
+				    char * dataKey = (char *) malloc(sizeof(char) * 128);
+				    memset(dataKey,0,sizeof(char) * 128);
+				    strcpy(dataKey,task->dataKey);
+				    rp->key = dataKey;
+				}
+				
 				SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)rp,(LPARAM)(renderModel->data_type));
 	    	}
 	    }

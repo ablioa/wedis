@@ -7,7 +7,9 @@
 #include <string.h>
 
 struct task{
-    int taskType;
+    int    taskType;
+    char * dataKey;
+    
     struct task * next;
 };
 

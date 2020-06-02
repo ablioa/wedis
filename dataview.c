@@ -115,6 +115,9 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 		case WM_DT:{
 			RedisReply * rp = (RedisReply *)wParam;
 			int type = (int) lParam;
+
+			MessageBox(dataHwnd,rp->key,"key",MB_OK);
+
 			switchView(dataHwnd,type,rp);
 			break;
 		}
