@@ -4,7 +4,7 @@
 #include <windows.h>
 #include "resource/resource.h"
 
-LRESULT CALLBACK SetPreferenceProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lParam);
+BOOL CALLBACK SetPreferenceProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lParam);
 
 BOOL CALLBACK AboutDlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 

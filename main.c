@@ -56,9 +56,6 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 			LPNMHDR msg = ((LPNMHDR) lParam);
 			switch (msg->code) {
 				case NM_CLICK:{
-					char buff[256] = {0};
-					sprintf(buff,"id-from: %d",msg->idFrom);
-
 					// 其他组件的通知消息也会通知到主窗口，因此需要过滤一下
 					if(msg->idFrom == 0){
                         onDataNodeSelection();
@@ -189,14 +186,11 @@ void onMainFrameCreate(HWND hwnd){
 	mainModel->view = buildAppView(hwnd);
 	CreateView(mainModel->view);
 
-	//mainModel->connection =  build_connection();
-    //connect_to_server(mainModel->connection,hwnd);
-
 	mainModel->hDev = CreatePopupMenu();
 
 	AppendMenu(mainModel->hDev,MF_STRING,IDM_CONNECTION_POOL,"Connections");
 	AppendMenu(mainModel->hDev,MF_SEPARATOR,0,"");
-			
+
     int total = appConfig->total_host;
 	for(int ix =0 ;ix < total ; ix ++){
         Host * host = appConfig->hosts[ix];
@@ -326,15 +320,20 @@ void handleKeysReply(RedisReply * rp){
 
 void networkHandle(LPARAM lParam){
     switch(LOWORD(lParam)){
-	    case FD_CONNECT:
-	    break;
+	    case FD_CONNECT:{
+		    char * cmd = (char *) malloc(sizeof(char) * 256);
+		    memset(cmd,0,sizeof(char) * 256);
+		    sprintf(cmd,"auth %s",mainModel->connection->password);
+
+	        sendRedisCommand(cmd,NULL,PT_AUTH);
+	    	break;
+		}
 	    
 	    case FD_READ:{
 	    	char * buff;
 	    	buff = connection_get_buffer(mainModel->connection);
             connection_receivedata(mainModel->connection);
 			appendLog(buff);
-
 
 			Task * task = getTask(pool);
             RedisReply * rp = read_replay(buff);
@@ -494,10 +493,10 @@ void command(HWND hwnd,int cmd){
 		}
 
 		// TODO 判定连接创建结果
-		mainModel->connection =  build_connection(host->host,host->port);
+		mainModel->connection =  build_connection(host->host,host->port,host->password);
         connect_to_server(mainModel->connection,hwnd);
 
-		sprintf(buff,"%d(%s:%d)",cmd,host->host,host->port);
+		sprintf(buff,"%s:%d",host->host,host->port);
 		addConnection(buff);
 
 		return;

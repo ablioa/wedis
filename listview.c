@@ -7,26 +7,6 @@ const char * listColNames[2]={
 	"Value"
 };
 
-// BOOL InsertListViewItems1(HWND hwnd, int cItems){
-//     LVITEM lvI;
-
-//     lvI.pszText   = LPSTR_TEXTCALLBACK;
-//     lvI.mask      = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE;
-//     lvI.stateMask = 0;
-//     lvI.iSubItem  = 0;
-//     lvI.state     = 0;
-
-//     for (int index = 0; index < cItems; index++){
-//         lvI.iItem  = index;
-//         lvI.iImage = index;
-    
-//         if (ListView_InsertItem(hwnd, &lvI) == -1)
-//             return FALSE;
-//     }
-
-//     return TRUE;
-// }
-
 BOOL InitListDViewColumns(HWND hWndListView) { 
     LVCOLUMN lvc;
     int iCol;

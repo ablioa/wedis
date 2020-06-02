@@ -41,12 +41,24 @@ void load_all(){
         GetPrivateProfileString(section_name,CONFIG_HOST,"127.0.0.1",host_name,MAX_PATH,INI_NAME);
         host->host = host_name;
 
-        LONG host_port=GetPrivateProfileInt(section_name,CONFIG_PORT,7333,INI_NAME);
-        host->port=host_port;
+        LONG port=GetPrivateProfileInt(section_name,CONFIG_PORT,6379,INI_NAME);
+        host->port=port;
+
+        LONG requirepass=GetPrivateProfileInt(section_name,CONFIG_REQUIREPASS,0,INI_NAME);
+        host->requirepass=requirepass;
+
+        char * password = (char *)malloc(sizeof(char) * MAX_PATH);
+        memset(password,0,sizeof(char)*MAX_PATH);
+
+        GetPrivateProfileString(section_name,CONFIG_PASSWORD,"abc123",password,MAX_PATH,INI_NAME);
+        host->password=password;
 
         appConfig->hosts[ix] = host;
     }
 }
+
+#define CONFIG_REQUIREPASS "requirepass"
+#define CONFIG_PASSWORD    "password"
 
 void save_all(){
     load_all();

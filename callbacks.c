@@ -1,12 +1,12 @@
 #include "callbacks.h"
 
-LRESULT CALLBACK SetPreferenceProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lParam){
+BOOL CALLBACK conectionConfigDlgProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lParam){
 	HDC	hdc;
 	PAINTSTRUCT ps;
 	HWND hInst;
 	RECT rt;
 	int cx,cy;
-	char			buff[MAX_PATH];
+	char buff[MAX_PATH];
 
 	switch(msg)
 	{
@@ -14,24 +14,11 @@ LRESULT CALLBACK SetPreferenceProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lPara
 			hInst = (HWND)GetWindowLong(hWin,GWL_HINSTANCE);
 			LoadString((HINSTANCE)hInst,IDS_CODEVIEW,buff,MAX_PATH);
 			SendDlgItemMessage(hWin,IDC_LST_COLORS,LB_ADDSTRING,0,(LPARAM)buff);
-			LoadString((HINSTANCE)hInst,IDS_REGVIEW,buff,MAX_PATH);
-			SendDlgItemMessage(hWin,IDC_LST_COLORS,LB_ADDSTRING,0,(LPARAM)buff);
-			LoadString((HINSTANCE)hInst,IDS_DATAVIEW,buff,MAX_PATH);
-			SendDlgItemMessage(hWin,IDC_LST_COLORS,LB_ADDSTRING,0,(LPARAM)buff);
-			LoadString((HINSTANCE)hInst,IDS_STACKVIEW,buff,MAX_PATH);
-			SendDlgItemMessage(hWin,IDC_LST_COLORS,LB_ADDSTRING,0,(LPARAM)buff);
-			LoadString((HINSTANCE)hInst,ID_COLOR_CURLINE,buff,MAX_PATH);
-			SendDlgItemMessage(hWin,IDC_LST_COLORS,LB_ADDSTRING,0,(LPARAM)buff);
 			
-			LoadString((HINSTANCE)hInst,ID_COLOR_SPLITBAR,buff,MAX_PATH);
-			SendDlgItemMessage(hWin,IDC_LST_COLORS,LB_ADDSTRING,0,(LPARAM)buff);
-
 			cx = GetSystemMetrics(SM_CXSCREEN);
 			cy = GetSystemMetrics(SM_CYSCREEN);
 			GetWindowRect(hWin,&rt);
-			MoveWindow(hWin,(cx-rt.right+rt.left)>>1,
-				(cy-rt.bottom+rt.top)>>1,
-				rt.right-rt.left,rt.bottom-rt.top,TRUE);
+			MoveWindow(hWin,(cx-rt.right+rt.left)>>1,(cy-rt.bottom+rt.top)>>1,rt.right-rt.left,rt.bottom-rt.top,TRUE);
 		break;
 
 		case WM_COMMAND:
@@ -58,7 +45,7 @@ LRESULT CALLBACK SetPreferenceProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lPara
 		break;
 	}
 
-	return 0;
+	return FALSE;
 }
 
 BOOL CALLBACK networkDlgProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam){
@@ -176,7 +163,7 @@ BOOL CALLBACK SetTtlDlgProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam)
 	return FALSE;
 }
 
-BOOL CALLBACK conectionConfigDlgProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam)
+BOOL CALLBACK SetPreferenceProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam)
 {
 	//int lineTogo =0 ;
 	switch(message)

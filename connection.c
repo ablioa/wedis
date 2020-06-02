@@ -1,10 +1,11 @@
 #include "connection.h"
 
-TcpConnection * build_connection(char * host,int port){
+TcpConnection * build_connection(char * host,int port,char * password){
     TcpConnection * connection = (TcpConnection *)malloc(sizeof(TcpConnection));
     ZeroMemory(connection,sizeof(TcpConnection));
 
 	strcpy(connection->host,host);
+	strcpy(connection->password,password);
 	connection->port = port;
 
     return connection;

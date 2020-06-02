@@ -2,10 +2,10 @@
 
 BOOL CALLBACK exportBtnProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 	DataView * dataView = mainModel->dataView;
-	char * filename;
 	switch(msg){
 		case WM_LBUTTONUP:{
 			char * filename = mGetOpenFileName(hwnd);
+			MessageBox(hwnd,filename,"File get",MB_OK);
 			break;
 		}
 	}

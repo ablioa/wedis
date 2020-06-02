@@ -8,12 +8,16 @@
 #define GENERAL_CONFIG "General"
 #define TOTAL_HOST     "total_host"
 
-#define CONFIG_HOST     "host"
-#define CONFIG_PORT     "port"
+#define CONFIG_HOST        "host"
+#define CONFIG_PORT        "port"
+#define CONFIG_REQUIREPASS "requirepass"
+#define CONFIG_PASSWORD    "password"
 
 typedef struct{
     char * host;
     int    port;
+    int    requirepass;
+    char * password;
 
     int    hostIndex;
 }Host;

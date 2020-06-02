@@ -7,7 +7,7 @@
 #include "redis.h"
 #include "exception.h"
 
-#define BUFF_SIZE 4096
+#define BUFF_SIZE 1024*1024*5
 
 #define WM_SOCKET WM_USER+100
 
@@ -19,6 +19,7 @@
 #define PT_KEYS   1
 #define PT_TYPE   2
 #define PT_DATA   3
+#define PT_AUTH   3
 
 typedef struct {
      WSADATA wsa;
@@ -40,9 +41,11 @@ typedef struct {
     int port;
 
     char host[128];
+
+    char password[128];
 }TcpConnection;
 
-TcpConnection * build_connection(char * host,int port);
+TcpConnection * build_connection(char * host,int port,char * password);
 
 char * build_comment(const char * text,const char * pack);
 
