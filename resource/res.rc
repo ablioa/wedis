@@ -13,7 +13,7 @@ IDB_TOOLBAR_MAIN   BITMAP         "toolbar.bmp"
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 ID_MAIN MENU
 {
-    POPUP "File(&F)"
+    POPUP "&File"
     {
         MENUITEM "&Connction", IDM_CONNECTION_POOL
         MENUITEM SEPARATOR
@@ -21,11 +21,11 @@ ID_MAIN MENU
         MENUITEM SEPARATOR
         MENUITEM "&Exit", IDM_EXIT
     }
-    POPUP "&Debug(&D)"
+    POPUP "&Debug"
     {
        MENUITEM "Network", IDM_NETWORK 
     }
-    POPUP "&Help(&H)"
+    POPUP "&Help"
     {
         MENUITEM "&About...", IDM_ABOUT
     }
