@@ -33,11 +33,6 @@ typedef struct {
     /** 数据交互缓冲区 */
     char * buff;
 
-    /** 当前业务类型 */
-    int cmdType;
-
-    char key[256];
-
     int port;
 
     char host[128];

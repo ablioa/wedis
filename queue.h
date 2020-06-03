@@ -8,7 +8,10 @@
 
 struct task{
     int    taskType;
+
     char * dataKey;
+
+    char * dataType;
     
     struct task * next;
 };

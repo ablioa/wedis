@@ -3,18 +3,22 @@
 #include "main.h"
 #include "queue.h"
 
-void sendRedisCommand(char * command,char * dataKey,int type){
+void sendRedisCommand(char * command,char * dataKey,char * dataType,int type){
     Task * task = buildTask(type);
 
     task->dataKey = NULL;
     if(dataKey != NULL){
-        memset(mainModel->connection->key,0,256);
-	    sprintf(mainModel->connection->key,"%s",dataKey);
-
-        task->dataKey = dataKey;
+        task->dataKey = (char *) malloc(sizeof(char) * 256);
+        memset(task->dataKey,0,sizeof(char ) * 256);
+        sprintf(task->dataKey,"%s",dataKey);
     }
 
-    mainModel->connection->cmdType = type;
+    if(dataType != NULL){
+        task->dataType = (char *) malloc(sizeof(char) * 256);
+        memset(task->dataType,0,sizeof(char ) * 256);
+        sprintf(task->dataType,"%s",dataType);
+    }
+
 	char * encodedCmd = parse_command((char *)command,256);
     connection_senddata(mainModel->connection,encodedCmd,strlen(encodedCmd),0);
     

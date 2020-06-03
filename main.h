@@ -120,6 +120,7 @@ typedef struct{
 	HWND listViewHwnd;
 	HWND setViewHwnd;
     HWND zsetViewHwnd;
+	HWND keyNameHwnd;
 
 	HWND visibleHwnd;
 }DataView;

@@ -226,13 +226,13 @@ void onDataNodeSelection(){
 		char * tc = (char*)malloc(sizeof(char)*128);
         memset(tc,0,sizeof(char) * 128);
         sprintf(tc,"select %d",tn->database);
-		sendRedisCommand(tc,NULL,PT_SELECT);
+		sendRedisCommand(tc,NULL,NULL,PT_SELECT);
 
 		char * scmds = (char*)malloc(sizeof(char)*128);
 	    memset(scmds,0,sizeof(char) * 128);
 	    sprintf(scmds,"type %s",ti.pszText);
 
-		sendRedisCommand(scmds,ti.pszText,PT_TYPE);
+		sendRedisCommand(scmds,ti.pszText,NULL,PT_TYPE);
 	}	
 }
 
@@ -264,14 +264,14 @@ void onDataBaseSelect(HWND hwnd){
         memset(scmds,0,sizeof(char) * 128);
         sprintf(scmds,"select %d",tn->database);
         
-		sendRedisCommand(scmds,NULL,PT_SELECT);
+		sendRedisCommand(scmds,NULL,NULL,PT_SELECT);
 
 
 		char keycmd[256] = {0};
         memset(keycmd,0,sizeof(char) * 256);
         sprintf(keycmd,"keys *");
 		
-		sendRedisCommand(keycmd, NULL,PT_KEYS);
+		sendRedisCommand(keycmd, NULL,NULL,PT_KEYS);
 
     	mainModel->selectedNode = hItem;
 		mainModel->database = tn->database;
@@ -325,7 +325,7 @@ void networkHandle(LPARAM lParam){
 		    memset(cmd,0,sizeof(char) * 256);
 		    sprintf(cmd,"auth %s",mainModel->connection->password);
 
-	        sendRedisCommand(cmd,NULL,PT_AUTH);
+	        sendRedisCommand(cmd,NULL,NULL,PT_AUTH);
 	    	break;
 		}
 	    
@@ -337,29 +337,29 @@ void networkHandle(LPARAM lParam){
 
 			Task * task = getTask(pool);
             RedisReply * rp = read_replay(buff);
-	    	rp->key = mainModel->connection->key;
+			rp->key = task->dataKey;
 			if(task->taskType == PT_KEYS){
                 if(rp->type == REPLY_MULTI){
                     handleKeysReply(rp);
 	    	    }
             }
-	    
+
 			if(task->taskType == PT_TYPE ){
-	    		int dataType = check_type(rp->status,rp->key);
+	    		int dataType = check_type(rp->status,task->dataKey);
 	    		renderModel->data_type = dataType;
             }
 	    
 			if(task->taskType == PT_DATA){
 	    		renderModel->model = rp;
 
-				if(task->dataKey != NULL){
-				    char * dataKey = (char *) malloc(sizeof(char) * 128);
-				    memset(dataKey,0,sizeof(char) * 128);
-				    strcpy(dataKey,task->dataKey);
-				    rp->key = dataKey;
+				// TODO 这个判定不该有
+				if(task->dataType != NULL){
+					rp->dataType = (char*) malloc(sizeof(char) * 256);
+					memset(rp->dataType,0,sizeof(char) * 256);
+					sprintf(rp->dataType,"%s",task->dataType);
+
+					SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)rp,(LPARAM)(renderModel->data_type));
 				}
-				
-				SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)rp,(LPARAM)(renderModel->data_type));
 	    	}
 	    }
 	    break;
@@ -384,7 +384,7 @@ int check_type(char * type,char * key){
 		memset(command,0,sizeof(char) * 256);
 		sprintf(command,"get %s",key);
 
-		sendRedisCommand(command,key,PT_DATA);
+		sendRedisCommand(command,key,type,PT_DATA);
 
 		return 1;
 	}
@@ -394,7 +394,7 @@ int check_type(char * type,char * key){
 		memset(command,0,sizeof(char) * 256);
 		sprintf(command,"lrange %s 0 -1",key);
 
-		sendRedisCommand(command,key, PT_DATA);
+		sendRedisCommand(command,key, type,PT_DATA);
 
 		return 2;
 	}
@@ -404,7 +404,7 @@ int check_type(char * type,char * key){
 		memset(command,0,sizeof(char) * 256);
 		sprintf(command,"hgetall %s",key);
 
-		sendRedisCommand(command,key,PT_DATA);
+		sendRedisCommand(command,key,type,PT_DATA);
 		return 3;
 	}
 
@@ -413,7 +413,7 @@ int check_type(char * type,char * key){
 		memset(command,0,sizeof(char) * 256);
 		sprintf(command,"smembers %s",key);
 
-		sendRedisCommand(command,key,PT_DATA);
+		sendRedisCommand(command,key,type,PT_DATA);
 
 		return 4;
 	}
@@ -423,7 +423,7 @@ int check_type(char * type,char * key){
 		memset(command,0,sizeof(char) * 256);
 		sprintf(command,"zrange %s 0 -1 withscores",key);
 
-		sendRedisCommand(command,key,PT_DATA);
+		sendRedisCommand(command,key,type,PT_DATA);
 		return 5;
 	}
 

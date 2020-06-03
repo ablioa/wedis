@@ -33,7 +33,8 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 		case WM_CREATE:{
 			HINSTANCE hinst = (HINSTANCE)GetWindowLong(dataHwnd,GWL_HINSTANCE);
 
-            HWND keyEditHwnd   = CreateWindowEx(0, WC_EDIT, ("11"), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 5, 5, 240, 24, dataHwnd, (HMENU)0, hinst, 0);    
+            HWND keyNameHwnd   = CreateWindowEx(0, WC_STATIC, ("HASH"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT, 5, 5, 40, 24, dataHwnd, (HMENU)0, hinst, 0);
+            HWND keyEditHwnd   = CreateWindowEx(0, WC_EDIT, ("11"), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 55, 5, 190, 24, dataHwnd, (HMENU)0, hinst, 0);    
             HWND renameBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Rename"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 250, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);     
             HWND ttlBtnHwnd    = CreateWindowEx(0, WC_BUTTON, ("TTL"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 315, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);
             HWND removeBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Remove"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 380, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);
@@ -64,6 +65,7 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
             SendMessage(ttlBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
             SendMessage(removeBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
             SendMessage(reloadBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
+			SendMessage(keyNameHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
 
 			dataView->dataViewHwnd  = dataViewHwnd;
 			dataView->exportBtnHwnd = exportBtnHwnd;
@@ -75,6 +77,7 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 			dataView->renameBtnHwnd = renameBtnHwnd;
 			dataView->ttlBtnHwnd    = ttlBtnHwnd;
 			dataView->keyEditHwnd   = keyEditHwnd;
+			dataView->keyNameHwnd   = keyNameHwnd;
 
 			SetWindowLong(dataHwnd,GWL_USERDATA,(LONG)dataView);
 
@@ -116,7 +119,16 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 			RedisReply * rp = (RedisReply *)wParam;
 			int type = (int) lParam;
 
-			MessageBox(dataHwnd,rp->key,"key",MB_OK);
+			// TODO 这里不应该为空，为空的不能执行到这里!!!
+			if(rp->key == NULL){
+				break;
+			}
+
+			// MessageBox(dataHwnd,rp->d)
+			// MessageBox(NULL,rp->dataType,"title",MB_OK);
+
+			SendMessage(dataView->keyEditHwnd,WM_SETTEXT,0,(LPARAM)(rp->key));
+			SendMessage(dataView->keyNameHwnd,WM_SETTEXT,0,(LPARAM)(rp->dataType));
 
 			switchView(dataHwnd,type,rp);
 			break;
@@ -133,7 +145,7 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 			MoveWindow(dataView->removeBtnHwnd,rect.right-rect.left-5-120-5-60-5-60,5,60,24,TRUE);
 			MoveWindow(dataView->ttlBtnHwnd,rect.right-rect.left-5-120-5-60-5-60-5-60,5,60,24,TRUE);
 			MoveWindow(dataView->renameBtnHwnd,rect.right-rect.left-5-120-5-60-5-60-5-60-5-60,5,60,24,TRUE);
-			MoveWindow(dataView->keyEditHwnd,5,5,rect.right-rect.left-5-120-5-60-5-60-5-60-5-60-5-5,24,TRUE);
+			MoveWindow(dataView->keyEditHwnd,55,5,rect.right-rect.left-40-5-120-5-60-5-60-5-60-5-60-5-5,24,TRUE);
 
 			break;
 		}

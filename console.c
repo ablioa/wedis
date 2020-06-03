@@ -77,7 +77,6 @@ BOOL CALLBACK CmdBoxProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 					SendMessage(consoleView->logHwnd,EM_SETSEL,curLeng,curLeng);
 					SendMessage(consoleView->logHwnd,EM_REPLACESEL,FALSE,(LONG)comment);
 
-                    mainModel->connection->cmdType = PT_DATA;
                     connection_senddata(mainModel->connection,cmds,strlen(cmds),0);
 					
 					SetWindowText(hwnd,NULL);

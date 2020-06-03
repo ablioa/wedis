@@ -8,6 +8,6 @@ typedef struct{
 void dispatch(RedisMessage * message);
 
 
-void sendRedisCommand(char * command,char * dataKey,int type);
+void sendRedisCommand(char * command,char * dataKey,char * dataType,int type);
 
 #endif

@@ -50,6 +50,7 @@ typedef struct{
 	int     bulkSize;
 
 	char * key;
+	char * dataType;
 }RedisReply;
 
 /**
