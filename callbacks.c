@@ -10,7 +10,7 @@ void MoveToScreenCenter(HWND hwnd){
 	MoveWindow(hwnd,(cx-rt.right+rt.left)>>1,(cy-rt.bottom+rt.top)>>1,rt.right-rt.left,rt.bottom-rt.top,TRUE);
 }
 
-BOOL CALLBACK SetPreferenceProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam){
+BOOL CALLBACK SetPreferenceProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	switch(message){
 		case WM_COMMAND:
 			switch(LOWORD(wParam))
@@ -88,7 +88,7 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lPa
 	return FALSE;
 }
 
-BOOL CALLBACK AboutDlgProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam){
+BOOL CALLBACK AboutDlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
     switch (message){
 		case WM_INITDIALOG:{
 			MoveToScreenCenter(hwnd);
@@ -120,7 +120,7 @@ BOOL CALLBACK AboutDlgProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam){
     return FALSE;
 }
 
-BOOL CALLBACK SetTtlDlgProc(HWND hwnd, UINT message, UINT wParam, LPARAM lParam)
+BOOL CALLBACK SetTtlDlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	int lineTogo =0 ;
 	switch(message)

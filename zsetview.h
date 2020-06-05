@@ -2,7 +2,7 @@
 #define zsetview_h
 
 #include <windows.h>
-#define _WIN32_IE 0x0600
+//#define _WIN32_IE 0x0600
 #include "main.h"
 
 #include "redis.h"
