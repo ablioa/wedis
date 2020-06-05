@@ -17,7 +17,7 @@ BOOL CALLBACK ttlBtnProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 	DataView * dataView = mainModel->dataView;
 	switch(msg){
 		case WM_LBUTTONUP:{
-			HINSTANCE hInst= (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
+			HINSTANCE hInst= (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
 			DialogBox (hInst,MAKEINTRESOURCE (IDD_GOTOLINE),hwnd,SetTtlDlgProc);
 			break;
 		}
@@ -31,15 +31,16 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 
     switch(msg){
 		case WM_CREATE:{
-			HINSTANCE hinst = (HINSTANCE)GetWindowLong(dataHwnd,GWL_HINSTANCE);
+			LONG_PTR hinst = mainModel->hInstance;//(HINSTANCE)GetWindowLongPtr(dataHwnd,GWLP_HINSTANCE);
+            //HINSTANCE hinst = *pp;
 
 			////////////////////////////////
-    INITCOMMONCONTROLSEX icex;
-
-    icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
-    icex.dwICC = ICC_USEREX_CLASSES;
-
-    InitCommonControlsEx(&icex);
+            INITCOMMONCONTROLSEX icex;
+            
+            icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
+            icex.dwICC = ICC_USEREX_CLASSES;
+            
+            InitCommonControlsEx(&icex);
 			////////////////////////////////
 
             HWND keyNameHwnd   = CreateWindowEx(0, WC_STATIC, ("HASH"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT, 5, 5, 40, 24, dataHwnd, (HMENU)0, hinst, 0);
@@ -147,8 +148,14 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
     // Assign the existing image list to the ComboBoxEx control 
     // and return TRUE. 
     // g_himl is the handle to the existing image list
-	HIMAGELIST hImageList=ImageList_Create(14,14,ILC_COLOR16,2,10);
-	HBITMAP hBitmap = LoadBitmap(hinst,MAKEINTRESOURCE(IDB_CHIP));
+	HIMAGELIST hImageList=ImageList_Create(14,14,ILC_COLOR|ILC_MASK,2,10);
+	HBITMAP hBitmap = LoadBitmap(hinst,MAKEINTRESOURCE(IDB_CHIP)); //
+
+//DWORD GetLastError()
+   // char hbuff[255] = {0};
+    //sprintf(hbuff,"%ld,%ld - %ld",hinst,hBitmap,hImageList);
+    //MessageBox(NULL,hbuff,"title",MB_OK);
+
 	ImageList_Add(hImageList,hBitmap,NULL);
 
     SendMessage(viewTypeHwnd,CBEM_SETIMAGELIST,0,(LPARAM)hImageList);

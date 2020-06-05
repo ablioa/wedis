@@ -45,7 +45,7 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lPa
 	switch(msg)
 	{
 		case WM_INITDIALOG:{
-			HINSTANCE hInstance = (HINSTANCE)GetWindowLong(hWin,GWL_HINSTANCE);
+			HINSTANCE hInstance = (HINSTANCE)GetWindowLong(hWin,GWLP_HINSTANCE);
 			LoadString(hInstance,IDS_CODEVIEW,buff,MAX_PATH);
 			SendDlgItemMessage(hWin,IDC_LST_COLORS,LB_ADDSTRING,0,(LPARAM)buff);
 

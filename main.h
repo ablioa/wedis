@@ -26,7 +26,7 @@
 #include "dispatch.h"
 
 //#ifdef _WIN64 
-#define GWL_HINSTANCE GWLP_HINSTANCE
+//#define GWL_HINSTANCE GWLP_HINSTANCE
 #define GWL_WNDPROC   GWLP_WNDPROC
 #define GWL_USERDATA  GWLP_USERDATA
 //#endif
@@ -150,6 +150,8 @@ typedef struct{
 	int database;
 
     int UI;
+
+    HINSTANCE hInstance;
 }MainModel;
 
 typedef struct{

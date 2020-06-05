@@ -20,7 +20,7 @@ $(DIRM)/%.o:%.c
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 $(RESOURCE):resource/res.rc
-	windres -i resource/res.rc -O COFF -o $(RESOURCE)
+	windres --target=pe-x86-64 -D WX_CPU_AMD64 -i resource/res.rc -O COFF -o $(RESOURCE)
 
 clean:
 	rm output/*.res output/*.exe output/*.o

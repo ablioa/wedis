@@ -8,7 +8,7 @@ HWND textView;
 HWND buildStringViewWindow(HWND parent){
 	RECT rect;
 
-	HINSTANCE hinst = (HINSTANCE)GetWindowLong(parent,GWL_HINSTANCE);
+	HINSTANCE hinst = (HINSTANCE)GetWindowLong(parent,GWLP_HINSTANCE);
 
 	
 	GetClientRect (parent, &rect);
@@ -37,7 +37,7 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 
 	switch(message){
 	    case WM_CREATE:{
-			HINSTANCE hinst = (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
+			HINSTANCE hinst = (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
             GetClientRect (hwnd, &rcClient); 
 	        
 			textView = CreateWindowEx(0, WC_EDIT, (""), 

@@ -44,7 +44,7 @@ LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 	RECT rect;
 	switch(message){
 	    case WM_CREATE:{
-			HINSTANCE hinst = (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
+			HINSTANCE hinst = (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
             GetClientRect (hwnd, &rect); 
 	        
             zsetView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
@@ -112,7 +112,7 @@ BOOL inertInto(HWND hwnd,RedisReply * reply){
 }
 
 HWND buildZsetViewWindow(HWND parent){
-	HINSTANCE hinst = (HINSTANCE)GetWindowLong(parent,GWL_HINSTANCE);
+	HINSTANCE hinst = (HINSTANCE)GetWindowLong(parent,GWLP_HINSTANCE);
 
 	RECT containerRect;
 	GetClientRect (parent, &containerRect);

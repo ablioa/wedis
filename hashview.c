@@ -42,7 +42,7 @@ BOOL InitListViewColumns(HWND hWndListView) {
 HWND buildHashViewWindow(HWND parent){
 	RECT rect;
 
-	HINSTANCE hinst = (HINSTANCE)GetWindowLong(parent,GWL_HINSTANCE);
+	HINSTANCE hinst = (HINSTANCE)GetWindowLong(parent,GWLP_HINSTANCE);
 	GetClientRect (parent, &rect);
 	
 	HWND dataViewHwnd  = CreateWindowEx(0, 
@@ -102,7 +102,7 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
 	switch(message){
 	    case WM_CREATE:{
-			HINSTANCE hinst = (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
+			HINSTANCE hinst = (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
             GetClientRect (hwnd, &rect); 
 	        
             tableView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,

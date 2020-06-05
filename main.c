@@ -17,6 +17,9 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
 
 	initModel();
 
+    mainModel->hInstance = hInst;
+
+
 	HWND hwndFrame = CreateWindowEx(WS_EX_LEFT,
 					szFrameClass, TEXT ("wedis"),
                     WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
@@ -490,7 +493,7 @@ void addConnection(char * connectionName){
 }
 
 void command(HWND hwnd,int cmd){
-	HINSTANCE hInst = (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
+	HINSTANCE hInst = (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
 
 	if(cmd > 900 && cmd < 1000){
 		char buff[255] = {0};
@@ -512,13 +515,13 @@ void command(HWND hwnd,int cmd){
 
     switch (cmd){
 		case IDM_CONNECTION_POOL:{
-			hInst= (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
+			hInst= (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
 			DialogBox (hInst,MAKEINTRESOURCE (IDD_CONNECTION),hwnd,conectionConfigDlgProc);
 			break;
 		}
 		
 		case IDM_FILE_CLOSE:{
-			hInst= (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
+			hInst= (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
 			DialogBox (hInst,MAKEINTRESOURCE (IDD_PREFERENCE),hwnd,(DLGPROC)SetPreferenceProc);
 			break;
 		}
@@ -563,7 +566,7 @@ LPTSTR mGetOpenFileName(HWND hwnd){
 
 	ofn->lStructSize = sizeof(OPENFILENAME);
 	ofn->hwndOwner = hwnd;
-	ofn->hInstance = (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
+	ofn->hInstance = (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
 	ofn->lpstrFilter = "All Files\0*.*\0HexFiles\0*.hex\0\0";
 	ofn->lpstrFile = fname;
 	ofn->nMaxFile =MAX_PATH;
@@ -589,7 +592,7 @@ LPTSTR mGetSaveFileName(HWND hwnd){
 
 	ofn->lStructSize = sizeof(OPENFILENAME);
 	ofn->hwndOwner = hwnd;
-	ofn->hInstance = (HINSTANCE)GetWindowLong(hwnd,GWL_HINSTANCE);
+	ofn->hInstance = (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
 	ofn->lpstrFilter = "All Files\0*.*\0HexFiles\0*.hex\0\0";
 	ofn->lpstrFile = fname;
 	ofn->nMaxFile =MAX_PATH;

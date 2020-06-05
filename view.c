@@ -23,7 +23,7 @@ void CreateView(AppView * view){
 	RECT rt;
 	RECT connctionRect;
 	HINSTANCE hInst;
-	hInst = (HINSTANCE)GetWindowLong(view->hwnd,GWL_HINSTANCE);
+	hInst = (HINSTANCE)GetWindowLong(view->hwnd,GWLP_HINSTANCE);
 
 	buildToolBar(view);
 	buildStatusBar(view);
@@ -55,7 +55,7 @@ void CreateView(AppView * view){
 void buildDataView(AppView * view){
 	RECT rt;
     GetClientRect(view->hwnd,&rt);
-    HINSTANCE hinst = (HINSTANCE)GetWindowLong(view->hwnd,GWL_HINSTANCE);
+    HINSTANCE hinst = (HINSTANCE)GetWindowLong(view->hwnd,GWLP_HINSTANCE);
 
 	int dataAreaWidth = rt.right-rt.left - 200 -2;
 	view->dataHwnd=CreateWindowEx(0, DATAVIEW_WINDOW,
@@ -136,7 +136,7 @@ void buildToolBar(AppView * view){
 	// tbtn[10].fsStyle=TBSTYLE_SEP;
 	// tbtn[7].fsStyle=TBSTYLE_SEP;
 
-	HINSTANCE hInst = (HINSTANCE)GetWindowLong(view->hwnd,GWL_HINSTANCE);
+	HINSTANCE hInst = mainModel->hInstance;//(HINSTANCE)GetWindowLong(view->hwnd,GWLP_HINSTANCE);
 	view->toolBarHwnd=CreateToolbarEx(
 		view->hwnd,// parent window 
 		WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT, // style
@@ -227,7 +227,7 @@ void buildAttributeView(AppView * view){
     RECT rt;
     RECT connctionRect;
 
-    HINSTANCE hinst = (HINSTANCE)GetWindowLong(view->hwnd,GWL_HINSTANCE);
+    HINSTANCE hinst = (HINSTANCE)GetWindowLong(view->hwnd,GWLP_HINSTANCE);
 
 	GetClientRect(view->hwnd,&rt);
 	getConnectionRect(view,&rt,&connctionRect);
@@ -244,7 +244,7 @@ void buildAttributeView(AppView * view){
 void buildConnectionView(AppView * view){
 	RECT            rt;
 
-	HINSTANCE hinst = (HINSTANCE)GetWindowLong(view->hwnd,GWL_HINSTANCE);
+	HINSTANCE hinst = mainModel->hInstance;//(HINSTANCE)GetWindowLong(view->hwnd,GWLP_HINSTANCE);
 	GetWindowRect(view->hwnd,&rt);
 
 	view->connectionHwnd = CreateWindowEx(0,"SysTreeView32",0,
