@@ -1,5 +1,9 @@
 #include "dataview.h"
 
+#define WEDIS_PUSH_BUTTON_STYLE BS_FLAT|WS_VISIBLE|WS_CHILD|WS_TABSTOP
+#define WEDIS_COMBO_BOX_STYLE   CBS_DROPDOWNLIST|WS_CHILD|WS_VISIBLE
+#define WEDIS_EDIT_STYLE        WS_VISIBLE|WS_CHILD|WS_TABSTOP|WS_BORDER|ES_AUTOHSCROLL
+
 BOOL CALLBACK exportBtnProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 	DataView * dataView = mainModel->dataView;
 	switch(msg){
@@ -25,31 +29,69 @@ BOOL CALLBACK ttlBtnProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 	return CallWindowProc(dataView->ttlBtnProc,hwnd,msg,wParam,lParam);;
 }
 
+void initCombox(HWND viewTypeHwnd){
+    INITCOMMONCONTROLSEX icex;
+    icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
+    icex.dwICC = ICC_USEREX_CLASSES;
+    InitCommonControlsEx(&icex);
+
+    COMBOBOXEXITEM cbei;
+    int iCnt;
+    
+    typedef struct {
+        int iImage;
+        int iSelectedImage;
+        int iIndent;
+        LPTSTR pszText;
+    } ITEMINFO, *PITEMINFO;
+
+    ITEMINFO IInf[] = {
+        { 0, 0,  0, "Json"}, 
+        { 0, 0,  0, "Binary"},
+        { 0, 0,  0, "Text"}
+    };
+
+    // Set the mask common to all items.
+    cbei.mask = CBEIF_TEXT | CBEIF_INDENT |
+                CBEIF_IMAGE| CBEIF_SELECTEDIMAGE;
+
+    for(iCnt=0; iCnt<3; iCnt++){
+        cbei.iItem          = iCnt;
+        cbei.pszText        = IInf[iCnt].pszText;
+        cbei.cchTextMax     = sizeof(IInf[iCnt].pszText);
+        cbei.iImage         = IInf[iCnt].iImage;
+        cbei.iSelectedImage = IInf[iCnt].iSelectedImage;
+        cbei.iIndent        = IInf[iCnt].iIndent;
+        
+		SendMessage(viewTypeHwnd,CBEM_INSERTITEM,0,(LPARAM)&cbei);
+    }
+
+	HIMAGELIST hImageList=ImageList_Create(14,14,ILC_COLOR|ILC_MASK,2,10);
+	HBITMAP hBitmap = LoadBitmap(mainModel->hInstance,MAKEINTRESOURCE(IDB_CHIP)); //
+
+
+	ImageList_Add(hImageList,hBitmap,NULL);
+
+    SendMessage(viewTypeHwnd,CBEM_SETIMAGELIST,0,(LPARAM)hImageList);
+}
+
 LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam){
 	DataView * dataView = mainModel->dataView;
 	RECT rect;
 
     switch(msg){
 		case WM_CREATE:{
-			LONG_PTR hinst = mainModel->hInstance;//(HINSTANCE)GetWindowLongPtr(dataHwnd,GWLP_HINSTANCE);
-            //HINSTANCE hinst = *pp;
-
-			////////////////////////////////
-            INITCOMMONCONTROLSEX icex;
-            
-            icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
-            icex.dwICC = ICC_USEREX_CLASSES;
-            
-            InitCommonControlsEx(&icex);
-			////////////////////////////////
+			LONG_PTR hinst = mainModel->hInstance;
 
             HWND keyNameHwnd   = CreateWindowEx(0, WC_STATIC, ("HASH"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT, 5, 5, 40, 24, dataHwnd, (HMENU)0, hinst, 0);
-            HWND keyEditHwnd   = CreateWindowEx(0, WC_EDIT, ("11"), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 55, 5, 190, 24, dataHwnd, (HMENU)0, hinst, 0);    
-            HWND renameBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Rename"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 250, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);     
-            HWND ttlBtnHwnd    = CreateWindowEx(0, WC_BUTTON, ("TTL"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 315, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);
-            HWND removeBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Remove"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 380, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);
-            HWND reloadBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Reload"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 445, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);
-            HWND viewTypeHwnd  = CreateWindowEx(0, WC_COMBOBOXEX, (""), CBS_DROPDOWNLIST | WS_BORDER | WS_CHILD | WS_VISIBLE,510, 5, 120, 100, dataHwnd, (HMENU)0, hinst, 0);
+            HWND keyEditHwnd   = CreateWindowEx(0, WC_EDIT,   ("11"), WEDIS_EDIT_STYLE, 55, 5, 190, 24, dataHwnd, (HMENU)0, hinst, 0);    
+            HWND renameBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Rename"), WEDIS_PUSH_BUTTON_STYLE, 250, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);     
+            HWND ttlBtnHwnd    = CreateWindowEx(0, WC_BUTTON, ("TTL"), WEDIS_PUSH_BUTTON_STYLE, 315, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);
+            HWND removeBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Remove"), WEDIS_PUSH_BUTTON_STYLE, 380, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);
+            HWND reloadBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Reload"), WEDIS_PUSH_BUTTON_STYLE, 445, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);
+            HWND viewTypeHwnd  = CreateWindowEx(0, WC_COMBOBOXEX, (""), WEDIS_COMBO_BOX_STYLE,510, 5, 120, 100, dataHwnd, (HMENU)0, hinst, 0);
+
+			initCombox(viewTypeHwnd);
             
             HWND dataViewHwnd  = CreateWindowEx(0, DATA_RENDER_WINDOW, (""), 
                 WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
@@ -62,8 +104,8 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 			dataView->setViewHwnd = buildSetViewWindow(dataViewHwnd);
 			dataView->zsetViewHwnd = buildZsetViewWindow(dataViewHwnd);
 
-            HWND saveBtnHwnd  = CreateWindowEx(0, WC_BUTTON, ("Save"), WS_VISIBLE | WS_CHILD | WS_TABSTOP | 0x00000001, 570, 279, 60, 24, dataHwnd, (HMENU)0, hinst, 0);     
-            HWND exportBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Export"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 505, 279, 60, 24, dataHwnd, (HMENU)0, hinst, 0); 
+            HWND saveBtnHwnd  = CreateWindowEx(0, WC_BUTTON,  ("Save"), WEDIS_PUSH_BUTTON_STYLE, 570, 279, 60, 24, dataHwnd, (HMENU)0, hinst, 0);     
+            HWND exportBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Export"), WEDIS_PUSH_BUTTON_STYLE, 505, 279, 60, 24, dataHwnd, (HMENU)0, hinst, 0); 
             
             HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
             SendMessage(dataViewHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
@@ -96,94 +138,6 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 			dataView->exportBtnProc = (WNDPROC)SetWindowLong(exportBtnHwnd,GWL_WNDPROC,(LONG)exportBtnProc);
 			SetWindowLong(exportBtnHwnd,GWL_USERDATA,(LONG)dataView);
-
-			///////////////////////////////////////////////////////////////////////////////////////////////////
-    COMBOBOXEXITEM cbei;
-    int iCnt;
-    
-    typedef struct {
-        int iImage;
-        int iSelectedImage;
-        int iIndent;
-        LPTSTR pszText;
-    } ITEMINFO, *PITEMINFO;
-
-    ITEMINFO IInf[] = {
-        { 0, 3,  0, "first"}, 
-        { 1, 4,  1, "second"},
-        { 2, 5,  2, "third"},
-        { 0, 3,  0, "fourth"},
-        { 1, 4,  1, "fifth"},
-        { 2, 5,  2, "sixth"},
-        { 0, 3,  0, "seventh"},
-        { 1, 4,  1, "eighth"},
-        { 2, 5,  2, "ninth"},
-        { 0, 3,  0, "tenth"},
-        { 1, 4,  1, "eleventh"},
-        { 2, 5,  2, "twelfth"},
-        { 0, 3,  0, "thirteenth"},
-        { 1, 4,  1, "fourteenth"},
-        { 2, 5,  2, "fifteenth"}
-    };
-
-    // Set the mask common to all items.
-    cbei.mask = CBEIF_TEXT | CBEIF_INDENT |
-                CBEIF_IMAGE| CBEIF_SELECTEDIMAGE;
-
-    for(iCnt=0;iCnt<5;iCnt++){
-        // Initialize the COMBOBOXEXITEM struct.
-        cbei.iItem          = iCnt;
-        cbei.pszText        = IInf[iCnt].pszText;
-        cbei.cchTextMax     = sizeof(IInf[iCnt].pszText);
-        cbei.iImage         = 0;//IInf[iCnt].iImage;
-        cbei.iSelectedImage = 1;//IInf[iCnt].iSelectedImage;
-        cbei.iIndent        = IInf[iCnt].iIndent;
-    
-        
-        // Tell the ComboBoxEx to add the item. Return FALSE if 
-        // this fails.
-        if(SendMessage(viewTypeHwnd,CBEM_INSERTITEM,0,(LPARAM)&cbei) == -1)
-            return FALSE;
-    }
-    // Assign the existing image list to the ComboBoxEx control 
-    // and return TRUE. 
-    // g_himl is the handle to the existing image list
-	HIMAGELIST hImageList=ImageList_Create(14,14,ILC_COLOR|ILC_MASK,2,10);
-	HBITMAP hBitmap = LoadBitmap(hinst,MAKEINTRESOURCE(IDB_CHIP)); //
-
-//DWORD GetLastError()
-   // char hbuff[255] = {0};
-    //sprintf(hbuff,"%ld,%ld - %ld",hinst,hBitmap,hImageList);
-    //MessageBox(NULL,hbuff,"title",MB_OK);
-
-	ImageList_Add(hImageList,hBitmap,NULL);
-
-    SendMessage(viewTypeHwnd,CBEM_SETIMAGELIST,0,(LPARAM)hImageList);
-			///////////////////////////////////////////////////////////////////////////////////////////////////
-
-            //////////////////////////////////////////////////////////
-            // TCHAR Planets[9][10] =  {
-            //    TEXT("Mercury"),
-            //    TEXT("Venus"), 
-            //    TEXT("Terra"), 
-            //    TEXT("Mars"), 
-            //    TEXT("Jupiter"), 
-            //    TEXT("Saturn"), 
-            //    TEXT("Uranus"), 
-            //    TEXT("Neptune"), 
-            //    TEXT("Pluto") 
-            // };
-            // //       
-            // //TCHAR A[16]; 
-            // //memset(&A,0,sizeof(A));       
-            // for (int k = 0; k <= 8; k += 1){
-            // //    wcscpy_s(A, sizeof(A)/sizeof(TCHAR),  (TCHAR*)Planets[k]);
-            //    SendMessage(viewTypeHwnd,(UINT)CB_ADDSTRING,(WPARAM) 0,(LPARAM)Planets[k]); 
-            // }
-			// // TCHAR szMessage[20] = "Hello";
-			// // SendMessage(viewTypeHwnd , CB_ADDSTRING,0,(LPARAM)szMessage);
-            // SendMessage(viewTypeHwnd, CB_SETCURSEL, (WPARAM)0, (LPARAM)0);
-            //////////////////////////////////////////////////////////
 		    break;
 		}
 
@@ -199,9 +153,6 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 			if(rp->key == NULL){
 				break;
 			}
-
-			// MessageBox(dataHwnd,rp->d)
-			// MessageBox(NULL,rp->dataType,"title",MB_OK);
 
 			SendMessage(dataView->keyEditHwnd,WM_SETTEXT,0,(LPARAM)(rp->key));
 			SendMessage(dataView->keyNameHwnd,WM_SETTEXT,0,(LPARAM)(rp->dataType));

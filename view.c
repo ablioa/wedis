@@ -163,12 +163,12 @@ void buildToolBar(AppView * view){
 }
 
 void buildStatusBar(AppView * view){
+    RECT trt;
     int wd[]={130,210,330,0};
-	view->statusBarHwnd = CreateStatusWindow(WS_CHILD | WS_VISIBLE | SBS_SIZEGRIP,"TCP-Client",view->hwnd, 200);
+	view->statusBarHwnd = CreateStatusWindow(WS_CHILD | WS_VISIBLE | SBS_SIZEGRIP,"Wedis",view->hwnd, 200);
 	SendMessage(view->statusBarHwnd,SB_SETPARTS,4,(LPARAM)wd);
     SendMessage(view->statusBarHwnd,SB_SETMINHEIGHT,20,0);
 
-	RECT trt;
 	GetWindowRect(view->statusBarHwnd,&trt);
 	view->statusbarHeight = trt.bottom-trt.top;
 }
