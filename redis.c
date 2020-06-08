@@ -1,5 +1,11 @@
 #include "redis.h"
 
+#define WDEBUG
+
+#ifdef WDEBUG
+#include <windows.h>
+#endif
+
 RedisReply * read_replay(char * text){
 	int cur = 0;
 	char ch = text[cur++];
@@ -42,6 +48,14 @@ RedisReply * read_replay(char * text){
 
 			cur+=2;
 			int count = atoi(cnt);
+
+#ifdef WDEBUG
+char buff[255]={0};
+size_t len = strlen(text);
+sprintf(buff,"size:%d,len:%d",count,len);
+MessageBox(NULL,buff,"Title",MB_OK);
+#endif
+
 			rp->bulk = (char *) malloc(sizeof(char) * count +1);
 			memset(rp->bulk,0,sizeof(char) * count+1);
 

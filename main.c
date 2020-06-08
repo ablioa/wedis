@@ -116,7 +116,7 @@ void initpan(HINSTANCE hInstance){
     hSplitClass.hInstance     = hInstance;
     hSplitClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     hSplitClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    hSplitClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));//(HBRUSH) GetStockObject (COLOR_BTNFACE + 1);
+    hSplitClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
     hSplitClass.lpszMenuName  = 0;
     hSplitClass.lpszClassName = DATAVIEW_WINDOW;
     hSplitClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
@@ -131,7 +131,7 @@ void initpan(HINSTANCE hInstance){
     consoleWinClass.hInstance     = hInstance;
     consoleWinClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     consoleWinClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    consoleWinClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));//(HBRUSH) GetStockObject (COLOR_BTNFACE + 1);
+    consoleWinClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
     consoleWinClass.lpszMenuName  = 0;
     consoleWinClass.lpszClassName = CONSOLE_WINDOW;
     consoleWinClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
@@ -146,7 +146,7 @@ void initpan(HINSTANCE hInstance){
     dataRenderClass.hInstance     = hInstance;
     dataRenderClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     dataRenderClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    dataRenderClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));//(HBRUSH) GetStockObject (COLOR_BTNFACE + 1);
+    dataRenderClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
     dataRenderClass.lpszMenuName  = 0;
     dataRenderClass.lpszClassName = DATA_RENDER_WINDOW;
     dataRenderClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
