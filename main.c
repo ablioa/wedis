@@ -50,8 +50,8 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 
 		case WM_GETMINMAXINFO:{
 			MINMAXINFO * mminfo=(PMINMAXINFO)lParam;  
-			mminfo->ptMinTrackSize.x = 850;  
-			mminfo->ptMinTrackSize.y = 600;  
+			mminfo->ptMinTrackSize.x = 850;
+			mminfo->ptMinTrackSize.y = 600;
 			break;
 		}
 
@@ -216,6 +216,11 @@ void onDataNodeSelection(){
 	ht.pt = pt;
 	ht.flags = TVHT_ONITEM;
 	HTREEITEM hItem = TreeView_HitTest(mainModel->view->connectionHwnd, &ht);
+
+	/** 未选中任何节点 */
+	if(hItem == NULL){
+		return;
+	}
 
 	TVITEM ti = {0};
 	ti.mask = TVIF_HANDLE | TVIF_TEXT | TVIF_PARAM;
