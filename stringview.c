@@ -7,12 +7,9 @@ HWND textView;
 
 HWND buildStringViewWindow(HWND parent){
 	RECT rect;
+	HINSTANCE hinst = mainModel->hInstance;
 
-	HINSTANCE hinst = (HINSTANCE)GetWindowLong(parent,GWLP_HINSTANCE);
-
-	
 	GetClientRect (parent, &rect);
-	
 	HWND dataViewHwnd  = CreateWindowEx(0, 
 		STRING_VIEW_CLASS, (""), 
         WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 
@@ -37,11 +34,11 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 
 	switch(message){
 	    case WM_CREATE:{
-			HINSTANCE hinst = (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
+			HINSTANCE hinst = mainModel->hInstance;
             GetClientRect (hwnd, &rcClient); 
 	        
 			textView = CreateWindowEx(0, WC_EDIT, (""), 
-				WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_VSCROLL  |ES_MULTILINE, 
+				WS_VISIBLE | WS_BORDER | WS_CHILD | WS_TABSTOP | WS_VSCROLL  |ES_MULTILINE, 
 				0, 0, 100, 100, hwnd, (HMENU)0, hinst, 0);
 			
 			HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));

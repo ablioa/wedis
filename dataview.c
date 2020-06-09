@@ -94,7 +94,7 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 			initCombox(viewTypeHwnd);
             
             HWND dataViewHwnd  = CreateWindowEx(0, DATA_RENDER_WINDOW, (""), 
-                WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
+                WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 
                 5, 34, 625, 240, 
                 dataHwnd, (HMENU)0, hinst, 0);
 
@@ -131,17 +131,17 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 			dataView->keyEditHwnd   = keyEditHwnd;
 			dataView->keyNameHwnd   = keyNameHwnd;
 
-			SetWindowLong(dataHwnd,GWL_USERDATA,(LONG)dataView);
+			SetWindowLong(dataHwnd,GWLP_USERDATA,(LONG)dataView);
 
-			dataView->ttlBtnProc = (WNDPROC)SetWindowLong(ttlBtnHwnd,GWL_WNDPROC,(LONG)ttlBtnProc);
-			SetWindowLong(ttlBtnHwnd,GWL_USERDATA,(LONG)dataView);
+			dataView->ttlBtnProc = (WNDPROC)SetWindowLong(ttlBtnHwnd,GWLP_WNDPROC,(LONG)ttlBtnProc);
+			SetWindowLong(ttlBtnHwnd,GWLP_USERDATA,(LONG)dataView);
 
-			dataView->exportBtnProc = (WNDPROC)SetWindowLong(exportBtnHwnd,GWL_WNDPROC,(LONG)exportBtnProc);
-			SetWindowLong(exportBtnHwnd,GWL_USERDATA,(LONG)dataView);
+			dataView->exportBtnProc = (WNDPROC)SetWindowLong(exportBtnHwnd,GWLP_WNDPROC,(LONG)exportBtnProc);
+			SetWindowLong(exportBtnHwnd,GWLP_USERDATA,(LONG)dataView);
 		    break;
 		}
 
-        case WM_LBUTTONDOWN:{
+        case WM_COMMAND:{
 			break;
         }
 

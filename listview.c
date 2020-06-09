@@ -41,9 +41,7 @@ BOOL InitListDViewColumns(HWND hWndListView) {
 }
 
 HWND buildListViewWindow(HWND parent){
-	HINSTANCE hinst = (HINSTANCE)GetWindowLong(parent,GWLP_HINSTANCE);
-
-	RECT rect;
+    RECT rect;
 	GetClientRect (parent, &rect);
 	
 	HWND dataViewHwnd  = CreateWindowEx(0, 
@@ -55,7 +53,7 @@ HWND buildListViewWindow(HWND parent){
         rect.bottom - rect.top,
         parent, 
 	    (HMENU)0, 
-		hinst, 
+		mainModel->hInstance, 
 		0);
 
 	ShowWindow(dataViewHwnd,SW_HIDE);
@@ -95,27 +93,134 @@ BOOL updateListDataSet(HWND hwnd,RedisReply * reply){
     return TRUE;
 }
 
+void buildToolBar1(HWND hwnd){
+    long oldstyle;
+    TBBUTTON tbtn[3] = {};
+	for(int ix = 0; ix < 3 ;ix++){
+		ZeroMemory(&tbtn[ix],sizeof(TBBUTTON));
+
+		tbtn[ix].idCommand = 0;
+		tbtn[ix].iBitmap = ix;
+		tbtn[ix].iString = 0;
+		tbtn[ix].fsState = TBSTATE_ENABLED;
+		tbtn[ix].fsStyle = TBSTYLE_BUTTON | TBSTATE_WRAP;
+		tbtn[ix].dwData = 0;
+	}
+	tbtn[0].idCommand = IDM_CONNECTION;
+	tbtn[1].idCommand = IDM_TIMING;
+	tbtn[2].idCommand = IDM_REMOVE;
+
+	HINSTANCE hInst = mainModel->hInstance;
+	HWND toolBarHwnd=CreateToolbarEx(
+		hwnd,// parent window 
+		WS_CHILD | WS_VISIBLE | TBSTYLE_FLAT, // style
+		1, // control identifier
+		3, // number of imagelist
+		hInst, // instance of exe file
+		IDB_TOOLBAR_MAIN, // idenfier of image resource
+		tbtn, // buttons
+		3, // number of buttons
+		14,  // width of button
+		14,  // height of button
+		14, // width of image
+		14, // hright of image
+		sizeof(TBBUTTON) // size of button structure
+		);
+
+	oldstyle = oldstyle  | TBSTYLE_WRAPABLE | CCS_VERT;
+	SetWindowLong(toolBarHwnd,GWL_STYLE,oldstyle);
+}
+
+#define WEDIS_PUSH_BUTTON_STYLE BS_FLAT|WS_VISIBLE|WS_CHILD|WS_TABSTOP
+#define WEDIS_COMBO_BOX_STYLE   CBS_DROPDOWNLIST|WS_CHILD|WS_VISIBLE
+#define WEDIS_EDIT_STYLE        WS_VISIBLE|WS_CHILD|WS_TABSTOP|WS_BORDER|ES_AUTOHSCROLL
+
+#define LIST_INSERT_CMD 100
+#define LIST_EXPORT_CMD 101
+#define LIST_DELETE_CMD 102
+
 LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	RECT rect;
+	
+    switch(message){
+        case WM_INITDIALOG:{
+            MoveToScreenCenter(hwnd);
+            MessageBox(hwnd,"sdsd","sdds",MB_OK);
+            break;
+        }
+        case WM_NOTIFY:{
+            LPNMHDR msg = ((LPNMHDR) lParam);
+			switch (msg->code) {
+                case LVN_COLUMNCLICK:{
+                    break;
+                }
+                case NM_DBLCLK:{
+                    DialogBox(mainModel->hInstance,MAKEINTRESOURCE (IDD_LIST_ITEM),hwnd,ListItemEditProc);
+                    break;
+                }
+            }
+            break;
+        }
 
-	switch(message){
+        // case WM_COMMAND:{
+		// 	DialogBox(mainModel->hInstance,MAKEINTRESOURCE (IDD_LIST_ITEM),hwnd,ListItemEditProc);
+        //     break;
+        // }
+
 	    case WM_CREATE:{
-		    HINSTANCE hinst = (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
-            GetClientRect (hwnd, &rect); 
+		    
+            GetClientRect (hwnd, &rect);
 
 	        listView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
-                          WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS | LVS_SORTASCENDING,
+                          WS_CHILD | WS_VISIBLE| WS_BORDER | LVS_REPORT | LVS_SHAREIMAGELISTS,
                           0, 0,
-                          rect.right - rect.left,
+                          rect.right - rect.left -60,
                           rect.bottom - rect.top,
-                          hwnd, NULL, hinst, NULL);
+                          hwnd, NULL, mainModel->hInstance, NULL);
             
             ListView_SetExtendedListViewStyle(listView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
 
 			InitListDViewColumns(listView);
-            //InsertListViewItems1(listView,3);        
+
+            HWND btnInsert = CreateWindowEx(0, WC_BUTTON, ("Insert"), 
+            WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 0, 50, 24, hwnd, LIST_INSERT_CMD, 
+            mainModel->hInstance, 0);
+
+            HWND btnDelete = CreateWindowEx(0, WC_BUTTON, ("Delete"), 
+            WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 29, 50, 24, hwnd, LIST_DELETE_CMD, 
+            mainModel->hInstance, 0);
+
+            HWND btnExport = CreateWindowEx(0, WC_BUTTON, ("Export"), 
+            WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 58, 50, 24, hwnd, LIST_EXPORT_CMD, 
+            mainModel->hInstance, 0);
+
+            HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
+            SendMessage(btnInsert, WM_SETFONT, (WPARAM)hfont0, FALSE);
+            SendMessage(btnDelete, WM_SETFONT, (WPARAM)hfont0, FALSE);
+            SendMessage(btnExport, WM_SETFONT, (WPARAM)hfont0, FALSE);
+
 		    break;
 		}
+
+        case WM_COMMAND:{
+            switch(LOWORD (wParam)){
+                case LIST_INSERT_CMD:{
+                    MessageBox(hwnd,"insert list item right now!","title",MB_OK);
+                    break;
+                }
+
+                case LIST_EXPORT_CMD:{
+                    MessageBox(hwnd,"export list item right now!","title",MB_OK);
+                    break;
+                }
+
+                case LIST_DELETE_CMD:{
+                    MessageBox(hwnd,"delete list item right now!","title",MB_OK);
+                    break;
+                }
+            }
+            break;
+        }
 
         case WM_DT:{
             RedisReply * rp = (RedisReply *)wParam;
@@ -125,7 +230,7 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
 		case WM_SIZE:{
 			GetClientRect(hwnd,&rect);
-			MoveWindow(listView,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
+			MoveWindow(listView,0,0,rect.right-rect.left-60,rect.bottom-rect.top,TRUE);
 		    break;
 		}
 	}
@@ -144,7 +249,7 @@ void init_listview(HINSTANCE hInstance){
     listViewClass.hInstance     = hInstance;
     listViewClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     listViewClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    listViewClass.hbrBackground = CreateSolidBrush(RGB(0,0,240));
+    listViewClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
     listViewClass.lpszMenuName  = 0;
     listViewClass.lpszClassName = LIST_VIEW_CLASS;
     listViewClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));

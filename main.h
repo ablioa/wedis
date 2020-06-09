@@ -27,8 +27,8 @@
 
 //#ifdef _WIN64 
 //#define GWL_HINSTANCE GWLP_HINSTANCE
-#define GWL_WNDPROC   GWLP_WNDPROC
-#define GWL_USERDATA  GWLP_USERDATA
+// #define GWL_WNDPROC   GWLP_WNDPROC
+// #define GWL_USERDATA  GWLP_USERDATA
 //#endif
 
 #define szFrameClass "MdiFrame"

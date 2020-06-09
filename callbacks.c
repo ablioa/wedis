@@ -10,6 +10,31 @@ void MoveToScreenCenter(HWND hwnd){
 	MoveWindow(hwnd,(cx-rt.right+rt.left)>>1,(cy-rt.bottom+rt.top)>>1,rt.right-rt.left,rt.bottom-rt.top,TRUE);
 }
 
+BOOL CALLBACK ListItemEditProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
+	switch(message){
+		case WM_COMMAND:{
+			switch(LOWORD(wParam)){
+				case IDC_LIST_OK:{
+					EndDialog(hwnd,0);
+					break;
+				}
+
+				case IDC_LIST_CANCEL:{
+					EndDialog(hwnd,0);
+					break;
+				}
+			}
+			break;
+		}
+
+		case WM_CLOSE:{
+			EndDialog(hwnd,0);
+			break;
+		}
+	}
+
+	return FALSE;
+}
 BOOL CALLBACK SetPreferenceProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	switch(message){
 		case WM_COMMAND:
@@ -45,7 +70,7 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lPa
 	switch(msg)
 	{
 		case WM_INITDIALOG:{
-			HINSTANCE hInstance = (HINSTANCE)GetWindowLong(hWin,GWLP_HINSTANCE);
+			HINSTANCE hInstance = mainModel->hInstance;//(HINSTANCE)GetWindowLong(hWin,GWLP_HINSTANCE);
 			LoadString(hInstance,IDS_CODEVIEW,buff,MAX_PATH);
 			SendDlgItemMessage(hWin,IDC_LST_COLORS,LB_ADDSTRING,0,(LPARAM)buff);
 

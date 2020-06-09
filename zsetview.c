@@ -22,7 +22,7 @@ BOOL InitZsetViewColumns(HWND hWndListView) {
 		strcpy(valName,zsetColNames[iCol]);
 
         lvc.iSubItem = iCol;
-        lvc.pszText = valName;//(LPWSTR)zsetColNames[iCol];
+        lvc.pszText = valName;
         lvc.cx = 100;
 
         if ( iCol < 2 ){
@@ -40,29 +40,54 @@ BOOL InitZsetViewColumns(HWND hWndListView) {
     return TRUE;
 }
 
+#define WEDIS_PUSH_BUTTON_STYLE BS_FLAT|WS_VISIBLE|WS_CHILD|WS_TABSTOP
+#define WEDIS_COMBO_BOX_STYLE   CBS_DROPDOWNLIST|WS_CHILD|WS_VISIBLE
+#define WEDIS_EDIT_STYLE        WS_VISIBLE|WS_CHILD|WS_TABSTOP|WS_BORDER|ES_AUTOHSCROLL
+
+#define LIST_INSERT_CMD 100
+#define LIST_EXPORT_CMD 101
+#define LIST_DELETE_CMD 102
+
 LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	RECT rect;
 	switch(message){
 	    case WM_CREATE:{
-			HINSTANCE hinst = (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
+			HINSTANCE hinst = mainModel->hInstance;//(HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
             GetClientRect (hwnd, &rect); 
 	        
             zsetView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
-                          WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS,
+                          WS_CHILD | WS_BORDER | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS,
                           0, 0,
-                          rect.right - rect.left,
+                          rect.right - rect.left - 60,
                           rect.bottom - rect.top,
                           hwnd, NULL, hinst, NULL);
 
 			InitZsetViewColumns(zsetView);
             
 			ListView_SetExtendedListViewStyle(zsetView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
+
+            HWND btnInsert = CreateWindowEx(0, WC_BUTTON, ("Insert"), 
+            WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 0, 50, 24, hwnd, LIST_INSERT_CMD, 
+            mainModel->hInstance, 0);
+
+            HWND btnDelete = CreateWindowEx(0, WC_BUTTON, ("Delete"), 
+            WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 29, 50, 24, hwnd, LIST_DELETE_CMD, 
+            mainModel->hInstance, 0);
+
+            HWND btnExport = CreateWindowEx(0, WC_BUTTON, ("Export"), 
+            WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 58, 50, 24, hwnd, LIST_EXPORT_CMD, 
+            mainModel->hInstance, 0);
+
+            HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
+            SendMessage(btnInsert, WM_SETFONT, (WPARAM)hfont0, FALSE);
+            SendMessage(btnDelete, WM_SETFONT, (WPARAM)hfont0, FALSE);
+            SendMessage(btnExport, WM_SETFONT, (WPARAM)hfont0, FALSE);
 		    break;
 		}
 
 		case WM_SIZE:{
 			GetClientRect(hwnd,&rect);
-			MoveWindow(zsetView,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
+			MoveWindow(zsetView,0,0,rect.right-rect.left-60,rect.bottom-rect.top,TRUE);
 		    break;
 		}
 
@@ -112,7 +137,7 @@ BOOL inertInto(HWND hwnd,RedisReply * reply){
 }
 
 HWND buildZsetViewWindow(HWND parent){
-	HINSTANCE hinst = (HINSTANCE)GetWindowLong(parent,GWLP_HINSTANCE);
+	HINSTANCE hinst = mainModel->hInstance;
 
 	RECT containerRect;
 	GetClientRect (parent, &containerRect);
@@ -145,7 +170,7 @@ void init_zsetview(HINSTANCE hInstance){
     zsetViewClass.hInstance     = hInstance;
     zsetViewClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     zsetViewClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    zsetViewClass.hbrBackground = CreateSolidBrush(RGB(0,240,0));
+    zsetViewClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
     zsetViewClass.lpszMenuName  = 0;
     zsetViewClass.lpszClassName = ZSET_VIEW_CLASS;
     zsetViewClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));

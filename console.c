@@ -4,15 +4,15 @@
  * 命令控制窗口
  */
 LRESULT CALLBACK consoleWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
-    HINSTANCE hinst = (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
-	ConsoleView * consoleView = (ConsoleView *)GetWindowLong(hwnd,GWL_USERDATA);
+    HINSTANCE hinst = mainModel->hInstance;//(HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
+	ConsoleView * cview = (ConsoleView *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
 
 	RECT rect;
 
     switch(msg){
 		case WM_CREATE:{
-			consoleView = (ConsoleView*)malloc(sizeof(ConsoleView));
-			memset(consoleView,0,sizeof(ConsoleView));
+			cview = (ConsoleView*)malloc(sizeof(ConsoleView));
+			memset(cview,0,sizeof(ConsoleView));
 			
 			HWND logHwnd  = CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | WS_VSCROLL  |ES_MULTILINE, 0, 0, 100, 100, hwnd, (HMENU)0, hinst, 0);
             HWND cmdHwnd  = CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER , 0, 100, 100, 24, hwnd, (HMENU)0, hinst, 0);
@@ -21,25 +21,21 @@ LRESULT CALLBACK consoleWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
             SendMessage(logHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
             SendMessage(cmdHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
 
-			consoleView->logHwnd = logHwnd;
-			consoleView->cmdHwnd = cmdHwnd;
-			SetWindowLong(hwnd,GWL_USERDATA,(LONG)consoleView);
+			cview->logHwnd = logHwnd;
+			cview->cmdHwnd = cmdHwnd;
+			SetWindowLong(hwnd,GWLP_USERDATA,(LONG)cview);
 
-			consoleView->defaultCmdProc = (WNDPROC)SetWindowLong(cmdHwnd,GWL_WNDPROC,(LONG)CmdBoxProc);
-			SetWindowLong(cmdHwnd,GWL_USERDATA,(LONG)consoleView);
+			cview->defaultCmdProc = (WNDPROC)SetWindowLongPtr(cmdHwnd,GWLP_WNDPROC,(LONG)CmdBoxProc);
+			SetWindowLong(cmdHwnd,GWLP_USERDATA,(LONG)cview);
 
-			//HWND hParent = GetParent(hwnd);
-			//MainModel * mainModel = (MainModel *)GetWindowLong(hParent,GWL_USERDATA);
 			mainModel->logHwnd = logHwnd;
-
-			//consoleView->mainModel = mainModel;
 			break;
 		}
 
 		case WM_SIZE:{
 			GetClientRect(hwnd,&rect);
-			MoveWindow(consoleView->logHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top-24,TRUE);
-			MoveWindow(consoleView->cmdHwnd,0,rect.bottom-rect.top-24,rect.right-rect.left,24,TRUE);
+			MoveWindow(cview->logHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top-24,TRUE);
+			MoveWindow(cview->cmdHwnd,0,rect.bottom-rect.top-24,rect.right-rect.left,24,TRUE);
 			break;
 		}
 
@@ -51,7 +47,7 @@ LRESULT CALLBACK consoleWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 }
 
 BOOL CALLBACK CmdBoxProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
-	ConsoleView * consoleView = (ConsoleView *) GetWindowLong(hwnd,GWL_USERDATA);
+	ConsoleView * consoleView = (ConsoleView *) GetWindowLong(hwnd,GWLP_USERDATA);
 
 	char buff[256];
 

@@ -97,6 +97,10 @@ BOOL updateHashDataSet(HWND hwnd,RedisReply * reply){
     return TRUE;
 }
 
+#define WEDIS_PUSH_BUTTON_STYLE BS_FLAT|WS_VISIBLE|WS_CHILD|WS_TABSTOP
+#define WEDIS_COMBO_BOX_STYLE   CBS_DROPDOWNLIST|WS_CHILD|WS_VISIBLE
+#define WEDIS_EDIT_STYLE        WS_VISIBLE|WS_CHILD|WS_TABSTOP|WS_BORDER|ES_AUTOHSCROLL
+
 LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	RECT rect;
 
@@ -106,15 +110,32 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
             GetClientRect (hwnd, &rect); 
 	        
             tableView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
-                          WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS | LVS_SORTASCENDING,
+                          WS_CHILD | WS_BORDER | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS,
                           0, 0,
-                          rect.right - rect.left,
+                          rect.right - rect.left - 60,
                           rect.bottom - rect.top,
                           hwnd, NULL, hinst, NULL);
             
             ListView_SetExtendedListViewStyle(tableView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
 
 			InitListViewColumns(tableView);
+
+                        HWND btnInsert = CreateWindowEx(0, WC_BUTTON, ("Insert"), 
+            WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 0, 50, 24, hwnd, (HMENU)0, 
+            mainModel->hInstance, 0);
+
+            HWND btnDelete = CreateWindowEx(0, WC_BUTTON, ("Delete"), 
+            WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 29, 50, 24, hwnd, (HMENU)0, 
+            mainModel->hInstance, 0);
+
+            HWND btnExport = CreateWindowEx(0, WC_BUTTON, ("Export"), 
+            WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 58, 50, 24, hwnd, (HMENU)0, 
+            mainModel->hInstance, 0);
+
+            HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
+            SendMessage(btnInsert, WM_SETFONT, (WPARAM)hfont0, FALSE);
+            SendMessage(btnDelete, WM_SETFONT, (WPARAM)hfont0, FALSE);
+            SendMessage(btnExport, WM_SETFONT, (WPARAM)hfont0, FALSE);
 		    break;
 		}
 
@@ -126,7 +147,7 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
 		case WM_SIZE:{
 			GetClientRect(hwnd,&rect);
-			MoveWindow(tableView,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
+			MoveWindow(tableView,0,0,rect.right-rect.left - 60,rect.bottom-rect.top,TRUE);
 		    break;
 		}
 	}

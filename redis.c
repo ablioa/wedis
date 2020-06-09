@@ -49,12 +49,12 @@ RedisReply * read_replay(char * text){
 			cur+=2;
 			int count = atoi(cnt);
 
-#ifdef WDEBUG
-char buff[255]={0};
-size_t len = strlen(text);
-sprintf(buff,"size:%d,len:%d",count,len);
-MessageBox(NULL,buff,"Title",MB_OK);
-#endif
+// #ifdef WDEBUG
+// char buff[255]={0};
+// size_t len = strlen(text);
+// sprintf(buff,"size:%d,len:%d",count,len);
+// MessageBox(NULL,buff,"Title",MB_OK);
+// #endif
 
 			rp->bulk = (char *) malloc(sizeof(char) * count +1);
 			memset(rp->bulk,0,sizeof(char) * count+1);
@@ -130,7 +130,7 @@ char * put_command(CommandBlock * block){
 
 		memset(item,0,LENGTH_WORD);
 
-		sprintf(item,"$%d%c%c%s%c%c",
+		sprintf(item,"$%ld%c%c%s%c%c",
 			strlen(block->list[ix]),
 			CHAR_CR,CHAR_LF,
 			block->list[ix],

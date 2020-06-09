@@ -22,8 +22,8 @@ int getAttributeHeight(AppView * view){
 void CreateView(AppView * view){
 	RECT rt;
 	RECT connctionRect;
-	HINSTANCE hInst;
-	hInst = (HINSTANCE)GetWindowLong(view->hwnd,GWLP_HINSTANCE);
+
+	HINSTANCE hInst = mainModel->hInstance;
 
 	buildToolBar(view);
 	buildStatusBar(view);
@@ -55,11 +55,11 @@ void CreateView(AppView * view){
 void buildDataView(AppView * view){
 	RECT rt;
     GetClientRect(view->hwnd,&rt);
-    HINSTANCE hinst = (HINSTANCE)GetWindowLong(view->hwnd,GWLP_HINSTANCE);
+    HINSTANCE hinst = mainModel->hInstance;
 
 	int dataAreaWidth = rt.right-rt.left - 200 -2;
 	view->dataHwnd=CreateWindowEx(0, DATAVIEW_WINDOW,
-               NULL, 
+               NULL,
                WS_CHILD | WS_VISIBLE,
 				view->connectionAreaWitdh,
 				view->toolbarHeight,
@@ -227,7 +227,7 @@ void buildAttributeView(AppView * view){
     RECT rt;
     RECT connctionRect;
 
-    HINSTANCE hinst = (HINSTANCE)GetWindowLong(view->hwnd,GWLP_HINSTANCE);
+    HINSTANCE hinst = mainModel->hInstance;
 
 	GetClientRect(view->hwnd,&rt);
 	getConnectionRect(view,&rt,&connctionRect);
