@@ -293,7 +293,7 @@ void onDataBaseSelect(HWND hwnd){
 void appendLog(char * text){
     size_t curLeng = GetWindowTextLength(mainModel->logHwnd);
 	SendMessage(mainModel->logHwnd,EM_SETSEL,curLeng,curLeng);
-	SendMessage(mainModel->logHwnd,EM_REPLACESEL,FALSE,(LONG)text);
+	SendMessage(mainModel->logHwnd,EM_REPLACESEL,FALSE,(LPARAM)text);
 }
 
 void handleKeysReply(RedisReply * rp){
@@ -344,8 +344,11 @@ void networkHandle(LPARAM lParam){
 	    case FD_READ:{
 	    	char * buff;
 	    	buff = connection_get_buffer(mainModel->connection);
-            connection_receivedata(mainModel->connection);
+            int dr_size = connection_receivedata(mainModel->connection);
 			appendLog(buff);
+
+			char * binText = dumpText((char*)buff,dr_size);
+			appendLog(binText);
 
 			Task * task = getTask(pool);
             RedisReply * rp = read_replay(buff);
@@ -507,7 +510,7 @@ void addConnection(char * connectionName){
 }
 
 void command(HWND hwnd,int cmd){
-	HINSTANCE hInst = (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
+	HINSTANCE hInst = mainModel->hInstance;//(HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
 
 	if(cmd > 900 && cmd < 1000){
 		char buff[255] = {0};
@@ -529,13 +532,13 @@ void command(HWND hwnd,int cmd){
 
     switch (cmd){
 		case IDM_CONNECTION_POOL:{
-			hInst= (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
-			DialogBox (hInst,MAKEINTRESOURCE (IDD_CONNECTION),hwnd,conectionConfigDlgProc);
+			//hInst= (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
+			DialogBox (hInst,MAKEINTRESOURCE (IDD_CONNECTION),hwnd,(DLGPROC)conectionConfigDlgProc);
 			break;
 		}
 		
 		case IDM_FILE_CLOSE:{
-			hInst= (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
+			//hInst= (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
 			DialogBox (hInst,MAKEINTRESOURCE (IDD_PREFERENCE),hwnd,(DLGPROC)SetPreferenceProc);
 			break;
 		}
@@ -563,7 +566,7 @@ void command(HWND hwnd,int cmd){
 		}
 		
 		case IDM_ABOUT:{
-			DialogBox (hInst,MAKEINTRESOURCE (IDD_ABOUT),hwnd,AboutDlgProc);
+			DialogBox (hInst,MAKEINTRESOURCE (IDD_ABOUT),hwnd,(DLGPROC)AboutDlgProc);
 			break;
 		}
 	}
@@ -580,7 +583,7 @@ LPTSTR mGetOpenFileName(HWND hwnd){
 
 	ofn->lStructSize = sizeof(OPENFILENAME);
 	ofn->hwndOwner = hwnd;
-	ofn->hInstance = (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
+	ofn->hInstance = mainModel->hInstance;//(HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
 	ofn->lpstrFilter = "All Files\0*.*\0HexFiles\0*.hex\0\0";
 	ofn->lpstrFile = fname;
 	ofn->nMaxFile =MAX_PATH;
@@ -606,7 +609,7 @@ LPTSTR mGetSaveFileName(HWND hwnd){
 
 	ofn->lStructSize = sizeof(OPENFILENAME);
 	ofn->hwndOwner = hwnd;
-	ofn->hInstance = (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
+	ofn->hInstance = mainModel->hInstance;//(HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
 	ofn->lpstrFilter = "All Files\0*.*\0HexFiles\0*.hex\0\0";
 	ofn->lpstrFile = fname;
 	ofn->nMaxFile =MAX_PATH;
@@ -619,4 +622,34 @@ LPTSTR mGetSaveFileName(HWND hwnd){
 	}
 
 	return retVal;
+}
+
+char * getOutputBuffer(int size){
+    int bsize = (size/17+1) * 69;
+     char * buff = ( char *) malloc(sizeof( char) * bsize);
+    memset(buff,0,sizeof( char) * bsize);
+    return buff;
+}
+
+char * dumpText( char * text,int len){
+     char line[17]={0};
+     char * buff   = getOutputBuffer(len);
+     char * output =buff;
+
+    int offset =0;
+    for(int ix = 0; ix < len; ix ++){
+        sprintf(output,"%02X ",(unsigned char)(text[ix]));
+        output +=3;
+        line[offset++]= isprint(text[ix])?text[ix]:'.';
+
+        if(ix % 0x10 == 0x0f){
+            sprintf(output,"    %s\r\n",line);
+            offset=0;
+
+            output +=22;
+        }
+    }
+
+    printf("%s\n",buff);//
+	return buff;
 }

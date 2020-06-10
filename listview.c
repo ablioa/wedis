@@ -93,43 +93,43 @@ BOOL updateListDataSet(HWND hwnd,RedisReply * reply){
     return TRUE;
 }
 
-void buildToolBar1(HWND hwnd){
-    long oldstyle;
-    TBBUTTON tbtn[3] = {};
-	for(int ix = 0; ix < 3 ;ix++){
-		ZeroMemory(&tbtn[ix],sizeof(TBBUTTON));
-
-		tbtn[ix].idCommand = 0;
-		tbtn[ix].iBitmap = ix;
-		tbtn[ix].iString = 0;
-		tbtn[ix].fsState = TBSTATE_ENABLED;
-		tbtn[ix].fsStyle = TBSTYLE_BUTTON | TBSTATE_WRAP;
-		tbtn[ix].dwData = 0;
-	}
-	tbtn[0].idCommand = IDM_CONNECTION;
-	tbtn[1].idCommand = IDM_TIMING;
-	tbtn[2].idCommand = IDM_REMOVE;
-
-	HINSTANCE hInst = mainModel->hInstance;
-	HWND toolBarHwnd=CreateToolbarEx(
-		hwnd,// parent window 
-		WS_CHILD | WS_VISIBLE | TBSTYLE_FLAT, // style
-		1, // control identifier
-		3, // number of imagelist
-		hInst, // instance of exe file
-		IDB_TOOLBAR_MAIN, // idenfier of image resource
-		tbtn, // buttons
-		3, // number of buttons
-		14,  // width of button
-		14,  // height of button
-		14, // width of image
-		14, // hright of image
-		sizeof(TBBUTTON) // size of button structure
-		);
-
-	oldstyle = oldstyle  | TBSTYLE_WRAPABLE | CCS_VERT;
-	SetWindowLong(toolBarHwnd,GWL_STYLE,oldstyle);
-}
+//void buildToolBar1(HWND hwnd){
+//    long oldstyle;
+//    TBBUTTON tbtn[3] = {};
+//	for(int ix = 0; ix < 3 ;ix++){
+//		ZeroMemory(&tbtn[ix],sizeof(TBBUTTON));
+//
+//		tbtn[ix].idCommand = 0;
+//		tbtn[ix].iBitmap = ix;
+//		tbtn[ix].iString = 0;
+//		tbtn[ix].fsState = TBSTATE_ENABLED;
+//		tbtn[ix].fsStyle = TBSTYLE_BUTTON | TBSTATE_WRAP;
+//		tbtn[ix].dwData = 0;
+//	}
+//	tbtn[0].idCommand = IDM_CONNECTION;
+//	tbtn[1].idCommand = IDM_TIMING;
+//	tbtn[2].idCommand = IDM_REMOVE;
+//
+//	HINSTANCE hInst = mainModel->hInstance;
+//	HWND toolBarHwnd=CreateToolbarEx(
+//		hwnd,// parent window 
+//		WS_CHILD | WS_VISIBLE | TBSTYLE_FLAT, // style
+//		1, // control identifier
+//		3, // number of imagelist
+//		hInst, // instance of exe file
+//		IDB_TOOLBAR_MAIN, // idenfier of image resource
+//		tbtn, // buttons
+//		3, // number of buttons
+//		14,  // width of button
+//		14,  // height of button
+//		14, // width of image
+//		14, // hright of image
+//		sizeof(TBBUTTON) // size of button structure
+//		);
+//
+//	oldstyle = oldstyle  | TBSTYLE_WRAPABLE | CCS_VERT;
+//	SetWindowLong(toolBarHwnd,GWL_STYLE,oldstyle);
+//}
 
 #define WEDIS_PUSH_BUTTON_STYLE BS_FLAT|WS_VISIBLE|WS_CHILD|WS_TABSTOP
 #define WEDIS_COMBO_BOX_STYLE   CBS_DROPDOWNLIST|WS_CHILD|WS_VISIBLE

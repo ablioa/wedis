@@ -23,10 +23,10 @@ LRESULT CALLBACK consoleWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 
 			cview->logHwnd = logHwnd;
 			cview->cmdHwnd = cmdHwnd;
-			SetWindowLong(hwnd,GWLP_USERDATA,(LONG)cview);
+			SetWindowLong(hwnd,GWLP_USERDATA,(LONG_PTR)cview);
 
-			cview->defaultCmdProc = (WNDPROC)SetWindowLongPtr(cmdHwnd,GWLP_WNDPROC,(LONG)CmdBoxProc);
-			SetWindowLong(cmdHwnd,GWLP_USERDATA,(LONG)cview);
+			cview->defaultCmdProc = (WNDPROC)SetWindowLongPtr(cmdHwnd,GWLP_WNDPROC,(LONG_PTR)CmdBoxProc);
+			SetWindowLong(cmdHwnd,GWLP_USERDATA,(LONG_PTR)cview);
 
 			mainModel->logHwnd = logHwnd;
 			break;
@@ -71,7 +71,7 @@ BOOL CALLBACK CmdBoxProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 					char * comment = build_comment((char *)buff,cmds);
 					int curLeng = GetWindowTextLength(consoleView->logHwnd);
 					SendMessage(consoleView->logHwnd,EM_SETSEL,curLeng,curLeng);
-					SendMessage(consoleView->logHwnd,EM_REPLACESEL,FALSE,(LONG)comment);
+					SendMessage(consoleView->logHwnd,EM_REPLACESEL,FALSE,(LPARAM)comment);
 
                     connection_senddata(mainModel->connection,cmds,strlen(cmds),0);
 					
