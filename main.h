@@ -3,6 +3,10 @@
 
 #include <windows.h>
 
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
+
 #include "hashview.h"
 #include "stringview.h"
 #include "listview.h"
@@ -196,6 +200,10 @@ int check_type(char * type,char * key);
 void log_message(const char * message);
 
 void onExit();
+
+char * getOutputBuffer(int size);
+
+char * dumpText( char * text,int len);
 
 #endif
 

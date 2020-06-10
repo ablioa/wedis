@@ -1,7 +1,7 @@
 #ifndef _view_h
 #define _view_h
 
-#define _WIN32_IE 0x0600
+//#define _WIN32_IE 0x0600
 
 #include <windows.h>
 #include "resource/resource.h"

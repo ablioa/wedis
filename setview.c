@@ -42,7 +42,7 @@ BOOL InitSetViewColumns(HWND hWndListView) {
 }
 
 HWND buildSetViewWindow(HWND parent){
-	HINSTANCE hinst = (HINSTANCE)GetWindowLong(parent,GWLP_HINSTANCE);
+	HINSTANCE hinst = mainModel->hInstance;//(HINSTANCE)GetWindowLong(parent,GWLP_HINSTANCE);
 
 	RECT containerRect;
 	GetClientRect (parent, &containerRect);
@@ -104,7 +104,7 @@ LRESULT CALLBACK SetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 	RECT rect;
 	switch(message){
 	    case WM_CREATE:{
-		    HINSTANCE hinst = (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
+		    HINSTANCE hinst = mainModel->hInstance;//(HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
             GetClientRect (hwnd, &rect); 
 
 	        setView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,

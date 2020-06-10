@@ -130,7 +130,7 @@ char * put_command(CommandBlock * block){
 
 		memset(item,0,LENGTH_WORD);
 
-		sprintf(item,"$%ld%c%c%s%c%c",
+		sprintf(item,"$%I64d%c%c%s%c%c",
 			strlen(block->list[ix]),
 			CHAR_CR,CHAR_LF,
 			block->list[ix],

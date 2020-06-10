@@ -49,7 +49,7 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 
 		case WM_DT:{
             RedisReply * rp = (RedisReply *)wParam;
-			SendMessage(textView,EM_REPLACESEL,FALSE,(LONG)rp->bulk);
+			SendMessage(textView,EM_REPLACESEL,FALSE,(LPARAM)rp->bulk);
 			SetWindowText(textView,rp->bulk);
             break;
         }
