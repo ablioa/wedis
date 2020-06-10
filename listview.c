@@ -162,11 +162,6 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
             break;
         }
 
-        // case WM_COMMAND:{
-		// 	DialogBox(mainModel->hInstance,MAKEINTRESOURCE (IDD_LIST_ITEM),hwnd,ListItemEditProc);
-        //     break;
-        // }
-
 	    case WM_CREATE:{
 		    
             GetClientRect (hwnd, &rect);

@@ -1,33 +1,29 @@
 #include "dataview.h"
 
-#define WEDIS_PUSH_BUTTON_STYLE BS_FLAT|WS_VISIBLE|WS_CHILD|WS_TABSTOP
-#define WEDIS_COMBO_BOX_STYLE   CBS_DROPDOWNLIST|WS_CHILD|WS_VISIBLE
-#define WEDIS_EDIT_STYLE        WS_VISIBLE|WS_CHILD|WS_TABSTOP|WS_BORDER|ES_AUTOHSCROLL
+// BOOL CALLBACK exportBtnProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
+// 	DataView * dataView = mainModel->dataView;
+// 	switch(msg){
+// 		case WM_LBUTTONUP:{
+// 			char * filename = mGetOpenFileName(hwnd);
+// 			MessageBox(hwnd,filename,"File get",MB_OK);
+// 			break;
+// 		}
+// 	}
 
-BOOL CALLBACK exportBtnProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
-	DataView * dataView = mainModel->dataView;
-	switch(msg){
-		case WM_LBUTTONUP:{
-			char * filename = mGetOpenFileName(hwnd);
-			MessageBox(hwnd,filename,"File get",MB_OK);
-			break;
-		}
-	}
+// 	return CallWindowProc(dataView->exportBtnProc,hwnd,msg,wParam,lParam);
+// }
 
-	return CallWindowProc(dataView->exportBtnProc,hwnd,msg,wParam,lParam);
-}
-
-BOOL CALLBACK ttlBtnProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
-	DataView * dataView = mainModel->dataView;
-	switch(msg){
-		case WM_LBUTTONUP:{
-			HINSTANCE hInst= (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
-			DialogBox (hInst,MAKEINTRESOURCE (IDD_GOTOLINE),hwnd,SetTtlDlgProc);
-			break;
-		}
-	}
-	return CallWindowProc(dataView->ttlBtnProc,hwnd,msg,wParam,lParam);;
-}
+// BOOL CALLBACK ttlBtnProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
+// 	DataView * dataView = mainModel->dataView;
+// 	switch(msg){
+// 		case WM_LBUTTONUP:{
+// 			HINSTANCE hInst= (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
+// 			DialogBox (hInst,MAKEINTRESOURCE (IDD_GOTOLINE),hwnd,SetTtlDlgProc);
+// 			break;
+// 		}
+// 	}
+// 	return CallWindowProc(dataView->ttlBtnProc,hwnd,msg,wParam,lParam);;
+// }
 
 void initCombox(HWND viewTypeHwnd){
     INITCOMMONCONTROLSEX icex;
@@ -73,7 +69,7 @@ void initCombox(HWND viewTypeHwnd){
 	ImageList_Add(hImageList,hBitmap,NULL);
 
     SendMessage(viewTypeHwnd,CBEM_SETIMAGELIST,0,(LPARAM)hImageList);
-}
+} 
 
 LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam){
 	DataView * dataView = mainModel->dataView;
@@ -84,11 +80,11 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 			LONG_PTR hinst = mainModel->hInstance;
 
             HWND keyNameHwnd   = CreateWindowEx(0, WC_STATIC, ("HASH"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT, 5, 5, 40, 24, dataHwnd, (HMENU)0, hinst, 0);
-            HWND keyEditHwnd   = CreateWindowEx(0, WC_EDIT,   ("11"), WEDIS_EDIT_STYLE, 55, 5, 190, 24, dataHwnd, (HMENU)0, hinst, 0);    
-            HWND renameBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Rename"), WEDIS_PUSH_BUTTON_STYLE, 250, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);     
-            HWND ttlBtnHwnd    = CreateWindowEx(0, WC_BUTTON, ("TTL"), WEDIS_PUSH_BUTTON_STYLE, 315, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);
-            HWND removeBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Remove"), WEDIS_PUSH_BUTTON_STYLE, 380, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);
-            HWND reloadBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Reload"), WEDIS_PUSH_BUTTON_STYLE, 445, 5, 60, 24, dataHwnd, (HMENU)0, hinst, 0);
+            HWND keyEditHwnd   = CreateWindowEx(0, WC_EDIT,   (""), WEDIS_EDIT_STYLE, 55, 5, 190, 24, dataHwnd, (HMENU)0, hinst, 0);    
+            HWND renameBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Rename"), WEDIS_PUSH_BUTTON_STYLE, 250, 5, 60, 24, dataHwnd, GENERAL_CMD_RENAME, hinst, 0);     
+            HWND ttlBtnHwnd    = CreateWindowEx(0, WC_BUTTON, ("TTL"), WEDIS_PUSH_BUTTON_STYLE, 315, 5, 60, 24, dataHwnd, GENERAL_CMD_SETTTL, hinst, 0);
+            HWND removeBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Remove"), WEDIS_PUSH_BUTTON_STYLE, 380, 5, 60, 24, dataHwnd, GENERAL_CMD_REMOVE, hinst, 0);
+            HWND reloadBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Reload"), WEDIS_PUSH_BUTTON_STYLE, 445, 5, 60, 24, dataHwnd, GENERAL_CMD_RELOAD, hinst, 0);
             HWND viewTypeHwnd  = CreateWindowEx(0, WC_COMBOBOXEX, (""), WEDIS_COMBO_BOX_STYLE,510, 5, 120, 100, dataHwnd, (HMENU)0, hinst, 0);
 
 			initCombox(viewTypeHwnd);
@@ -133,15 +129,36 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 			SetWindowLong(dataHwnd,GWLP_USERDATA,(LONG)dataView);
 
-			dataView->ttlBtnProc = (WNDPROC)SetWindowLong(ttlBtnHwnd,GWLP_WNDPROC,(LONG)ttlBtnProc);
-			SetWindowLong(ttlBtnHwnd,GWLP_USERDATA,(LONG)dataView);
+			// dataView->ttlBtnProc = (WNDPROC)SetWindowLong(ttlBtnHwnd,GWLP_WNDPROC,(LONG)ttlBtnProc);
+			// SetWindowLong(ttlBtnHwnd,GWLP_USERDATA,(LONG)dataView);
 
-			dataView->exportBtnProc = (WNDPROC)SetWindowLong(exportBtnHwnd,GWLP_WNDPROC,(LONG)exportBtnProc);
-			SetWindowLong(exportBtnHwnd,GWLP_USERDATA,(LONG)dataView);
+			// dataView->exportBtnProc = (WNDPROC)SetWindowLong(exportBtnHwnd,GWLP_WNDPROC,(LONG)exportBtnProc);
+			// SetWindowLong(exportBtnHwnd,GWLP_USERDATA,(LONG)dataView);
 		    break;
 		}
 
         case WM_COMMAND:{
+			switch(LOWORD (wParam)){
+				case GENERAL_CMD_RENAME:{
+					MessageBox(dataHwnd,"rename the data","title",MB_OK);
+					break;
+				}
+				
+				case GENERAL_CMD_SETTTL:{
+					DialogBox (mainModel->hInstance,MAKEINTRESOURCE (IDD_GOTOLINE),dataHwnd,SetTtlDlgProc);
+					break;
+				}
+
+				case GENERAL_CMD_REMOVE:{
+					MessageBox(dataHwnd,"remove the data","title",MB_OK);
+					break;
+				}
+
+				case GENERAL_CMD_RELOAD:{
+					MessageBox(dataHwnd,"reload the data","title",MB_OK);
+					break;
+				}
+			}
 			break;
         }
 

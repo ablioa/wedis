@@ -271,6 +271,8 @@ void onDataBaseSelect(HWND hwnd){
         char * scmds = (char*)malloc(sizeof(char)*128);
         memset(scmds,0,sizeof(char) * 128);
         sprintf(scmds,"select %d",tn->database);
+
+		appendLog(scmds);
         
 		sendRedisCommand(scmds,NULL,NULL,PT_SELECT);
 
@@ -278,6 +280,8 @@ void onDataBaseSelect(HWND hwnd){
 		char keycmd[256] = {0};
         memset(keycmd,0,sizeof(char) * 256);
         sprintf(keycmd,"keys *");
+
+		appendLog(keycmd);
 		
 		sendRedisCommand(keycmd, NULL,NULL,PT_KEYS);
 
@@ -346,6 +350,11 @@ void networkHandle(LPARAM lParam){
 			Task * task = getTask(pool);
             RedisReply * rp = read_replay(buff);
 			rp->key = task->dataKey;
+
+			char msgbuff[256]={0};
+			sprintf(msgbuff,"rp->type: %d",rp->type);
+			MessageBox(NULL,msgbuff,"title",MB_OK);
+
 			if(task->taskType == PT_KEYS){
                 if(rp->type == REPLY_MULTI){
                     handleKeysReply(rp);

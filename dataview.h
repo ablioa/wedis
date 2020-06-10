@@ -1,6 +1,7 @@
 #ifndef dataview_h
 #define dataview_h
 
+#include "wedis.h"
 #include "main.h"
 #include "redis.h"
 
@@ -10,9 +11,9 @@
 #define	REPLY_BULK    3
 #define	REPLY_MULTI   4
 
-BOOL CALLBACK exportBtnProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam);
+// BOOL CALLBACK exportBtnProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam);
 
-BOOL CALLBACK ttlBtnProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam);
+// BOOL CALLBACK ttlBtnProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam);
 
 LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

@@ -105,3 +105,9 @@ RedisClient
    redis-cli -p 6379 -a test123
 
    -----------------------
+
+
+   gdb的操作
+   ---
+   1. 设置断点 b main.c:352
+   2. 下一步   n(next)
