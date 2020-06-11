@@ -26,24 +26,19 @@ HWND buildStringViewWindow(HWND parent){
 
 LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	RECT rect;
-    StringViewModel * stringViewModel = (StringViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
+    StringViewModel * model = (StringViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
 
 	switch(message){
 	    case WM_CREATE:{
-            stringViewModel = (StringViewModel*)malloc(sizeof(StringViewModel));
-            memset(stringViewModel,0,sizeof(StringViewModel));
-            SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)stringViewModel);
+            model = (StringViewModel*)malloc(sizeof(StringViewModel));
+            memset(model,0,sizeof(StringViewModel));
+            SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
 
-			stringViewModel->stringView = CreateWindowEx(0, WC_EDIT, (""), 
-				WS_VISIBLE | WS_BORDER | WS_CHILD | WS_TABSTOP | WS_VSCROLL  |ES_MULTILINE, 
-				0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_TEXT, mainModel->hInstance, 0);
-			
-            SendMessage(stringViewModel->stringView, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
+			model->stringView = CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | WS_BORDER | WS_CHILD | WS_TABSTOP | WS_VSCROLL  |ES_MULTILINE, 0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_TEXT, mainModel->hInstance, 0);
+            model->btnInsert  = CreateWindowEx(0, WC_BUTTON, ("Save"), WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_SAVE, mainModel->hInstance, 0);
 
-            stringViewModel->btnInsert = CreateWindowEx(0, WC_BUTTON, ("Save"), 
-            WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_SAVE, 
-            mainModel->hInstance, 0);
-            SendMessage(stringViewModel->btnInsert, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
+            SendMessage(model->btnInsert, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
+            SendMessage(model->stringView, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
             
 		    break;
 		}
@@ -55,7 +50,7 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                     GetDlgItemText(hwnd,IDC_STRING_VIEW_TEXT,name,sizeof(name));
 
                     TCHAR cmd[256];
-                    sprintf(cmd,"set %s \"%s\"",stringViewModel->data->key,name);
+                    sprintf(cmd,"set %s \"%s\"",model->data->key,name);
 
                     sendRedisCommand(cmd,NULL,NULL,PT_AUTH);
                     break;
@@ -67,19 +62,18 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 		case WM_DT:{
             RedisReply * rp = (RedisReply *)wParam;
 
-            stringViewModel->data = rp;
+            model->data = rp;
 
-			SendMessage(stringViewModel->stringView,EM_REPLACESEL,FALSE,(LPARAM)rp->bulk);
-			SetWindowText(stringViewModel->stringView,rp->bulk);
+			SendMessage(model->stringView,EM_REPLACESEL,FALSE,(LPARAM)rp->bulk);
+			SetWindowText(model->stringView,rp->bulk);
             break;
         }
 
 		case WM_SIZE:{
 			GetClientRect(hwnd,&rect);
-			MoveWindow(stringViewModel->stringView,0,0,rect.right-rect.left - 60,rect.bottom-rect.top,TRUE);
 
-            MoveWindow(stringViewModel->btnInsert,rect.right - rect.left - 55,0, 50,24,TRUE);
-            //MoveWindow(stringViewModel->btnInsert,0,0,rect.right-rect.left - 60,rect.bottom-rect.top,TRUE);
+			MoveWindow(model->stringView,0,0,rect.right-rect.left - 60,rect.bottom-rect.top,TRUE);
+            MoveWindow(model->btnInsert,rect.right - rect.left - 55,0, 50,24,TRUE);
 		    break;
 		}
 	}
