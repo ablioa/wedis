@@ -124,7 +124,6 @@ typedef struct{
 	WNDPROC ttlBtnProc;
 	WNDPROC exportBtnProc;
 
-	//////////////////////
 	HWND hashViewHwnd;
 	HWND stringViewHwnd;
 	HWND listViewHwnd;
@@ -133,6 +132,9 @@ typedef struct{
 	HWND keyNameHwnd;
 
 	HWND visibleHwnd;
+
+    RedisReply * data;// = (RedisReply *)wParam;
+	int type;       // = (int) lParam;
 }DataView;
 
 typedef struct{
@@ -204,6 +206,8 @@ void onExit();
 char * getOutputBuffer(int size);
 
 char * dumpText( char * text,int len);
+
+void appendLog(char * text);
 
 #endif
 

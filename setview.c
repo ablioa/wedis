@@ -1,6 +1,6 @@
 #include "setview.h"
 
-HWND setView;
+//HWND setView;
 
 const char * setColNames[2]={
     "Row",
@@ -102,50 +102,60 @@ BOOL updateSetDataSet(HWND hwnd,RedisReply * reply){
 
 LRESULT CALLBACK SetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	RECT rect;
+    SetViewModel * setViewModel = (SetViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
+
 	switch(message){
 	    case WM_CREATE:{
-		    HINSTANCE hinst = mainModel->hInstance;//(HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
+            setViewModel = (SetViewModel*)malloc(sizeof(SetViewModel));
+            memset(setViewModel,0,sizeof(SetViewModel));
+            SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)setViewModel);
+
+		    HINSTANCE hinst = mainModel->hInstance;
             GetClientRect (hwnd, &rect); 
 
-	        setView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
+	        setViewModel->setView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
                           WS_CHILD | WS_BORDER | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS,
                           0, 0,
                           rect.right - rect.left - 60,
                           rect.bottom - rect.top,
                           hwnd, NULL, hinst, NULL);
 
-            ListView_SetExtendedListViewStyle(setView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
-			InitSetViewColumns(setView);
+            ListView_SetExtendedListViewStyle(setViewModel->setView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
+			InitSetViewColumns(setViewModel->setView);
 
-            HWND btnInsert = CreateWindowEx(0, WC_BUTTON, ("Insert"), 
+            setViewModel->btnInsert = CreateWindowEx(0, WC_BUTTON, ("Insert"), 
             WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 0, 50, 24, hwnd, (HMENU)0, 
             mainModel->hInstance, 0);
 
-            HWND btnDelete = CreateWindowEx(0, WC_BUTTON, ("Delete"), 
+            setViewModel->btnDelete = CreateWindowEx(0, WC_BUTTON, ("Delete"), 
             WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 29, 50, 24, hwnd, (HMENU)0, 
             mainModel->hInstance, 0);
 
-            HWND btnExport = CreateWindowEx(0, WC_BUTTON, ("Export"), 
+            setViewModel->btnExport = CreateWindowEx(0, WC_BUTTON, ("Export"), 
             WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 58, 50, 24, hwnd, (HMENU)0, 
             mainModel->hInstance, 0);
 
             HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
-            SendMessage(btnInsert, WM_SETFONT, (WPARAM)hfont0, FALSE);
-            SendMessage(btnDelete, WM_SETFONT, (WPARAM)hfont0, FALSE);
-            SendMessage(btnExport, WM_SETFONT, (WPARAM)hfont0, FALSE);
+            SendMessage(setViewModel->btnInsert, WM_SETFONT, (WPARAM)hfont0, FALSE);
+            SendMessage(setViewModel->btnDelete, WM_SETFONT, (WPARAM)hfont0, FALSE);
+            SendMessage(setViewModel->btnExport, WM_SETFONT, (WPARAM)hfont0, FALSE);
 
 		    break;
 		}
 
         case WM_DT:{
             RedisReply * rp = (RedisReply *)wParam;
-            updateSetDataSet(setView,rp);
+            updateSetDataSet(setViewModel->setView,rp);
             break;
         }
 
 		case WM_SIZE:{
 			GetClientRect(hwnd,&rect);
-			MoveWindow(setView,0,0,rect.right-rect.left -60,rect.bottom-rect.top,TRUE);
+			MoveWindow(setViewModel->setView,0,0,rect.right-rect.left -60,rect.bottom-rect.top,TRUE);
+
+            MoveWindow(setViewModel->btnInsert,rect.right - rect.left - 55,0, 50,24,TRUE);
+            MoveWindow(setViewModel->btnDelete,rect.right - rect.left - 55,29,50,24,TRUE);
+            MoveWindow(setViewModel->btnExport,rect.right - rect.left - 55,58,50,24,TRUE);
 		    break;
 		}
 	}

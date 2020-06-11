@@ -9,6 +9,17 @@
 
 #define SET_VIEW_CLASS "SET_VIEW_CLASS"
 
+typedef struct{
+   HWND setView;
+
+   HWND btnInsert;
+
+   HWND btnDelete;
+
+   HWND btnExport;
+
+}SetViewModel;
+
 HWND buildSetViewWindow(HWND parent);
 
 LRESULT CALLBACK SetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);

@@ -1,30 +1,5 @@
 #include "dataview.h"
 
-// BOOL CALLBACK exportBtnProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
-// 	DataView * dataView = mainModel->dataView;
-// 	switch(msg){
-// 		case WM_LBUTTONUP:{
-// 			char * filename = mGetOpenFileName(hwnd);
-// 			MessageBox(hwnd,filename,"File get",MB_OK);
-// 			break;
-// 		}
-// 	}
-
-// 	return CallWindowProc(dataView->exportBtnProc,hwnd,msg,wParam,lParam);
-// }
-
-// BOOL CALLBACK ttlBtnProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
-// 	DataView * dataView = mainModel->dataView;
-// 	switch(msg){
-// 		case WM_LBUTTONUP:{
-// 			HINSTANCE hInst= (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
-// 			DialogBox (hInst,MAKEINTRESOURCE (IDD_GOTOLINE),hwnd,SetTtlDlgProc);
-// 			break;
-// 		}
-// 	}
-// 	return CallWindowProc(dataView->ttlBtnProc,hwnd,msg,wParam,lParam);;
-// }
-
 void initCombox(HWND viewTypeHwnd){
     INITCOMMONCONTROLSEX icex;
     icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
@@ -79,8 +54,8 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 		case WM_CREATE:{
 			LONG_PTR hinst = mainModel->hInstance;
 
-            HWND keyNameHwnd   = CreateWindowEx(0, WC_STATIC, ("HASH"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT, 5, 5, 40, 24, dataHwnd, (HMENU)0, hinst, 0);
-            HWND keyEditHwnd   = CreateWindowEx(0, WC_EDIT,   (""), WEDIS_EDIT_STYLE, 55, 5, 190, 24, dataHwnd, (HMENU)0, hinst, 0);    
+            HWND keyNameHwnd   = CreateWindowEx(0, WC_STATIC, (""), WS_VISIBLE | WS_BORDER | WS_CHILD | WS_GROUP | SS_LEFT, 5, 5, 40, 24, dataHwnd, (HMENU)0, hinst, 0);
+            HWND keyEditHwnd   = CreateWindowEx(0, WC_EDIT,   (""), WEDIS_EDIT_STYLE, 50, 5, 180, 24, dataHwnd, (HMENU)GENERAL_CMD_KEYEDIT, hinst, 0);    
             HWND renameBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Rename"), WEDIS_PUSH_BUTTON_STYLE, 250, 5, 60, 24, dataHwnd, GENERAL_CMD_RENAME, hinst, 0);     
             HWND ttlBtnHwnd    = CreateWindowEx(0, WC_BUTTON, ("TTL"), WEDIS_PUSH_BUTTON_STYLE, 315, 5, 60, 24, dataHwnd, GENERAL_CMD_SETTTL, hinst, 0);
             HWND removeBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Remove"), WEDIS_PUSH_BUTTON_STYLE, 380, 5, 60, 24, dataHwnd, GENERAL_CMD_REMOVE, hinst, 0);
@@ -128,19 +103,18 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 			dataView->keyNameHwnd   = keyNameHwnd;
 
 			SetWindowLong(dataHwnd,GWLP_USERDATA,(LONG)dataView);
-
-			// dataView->ttlBtnProc = (WNDPROC)SetWindowLong(ttlBtnHwnd,GWLP_WNDPROC,(LONG)ttlBtnProc);
-			// SetWindowLong(ttlBtnHwnd,GWLP_USERDATA,(LONG)dataView);
-
-			// dataView->exportBtnProc = (WNDPROC)SetWindowLong(exportBtnHwnd,GWLP_WNDPROC,(LONG)exportBtnProc);
-			// SetWindowLong(exportBtnHwnd,GWLP_USERDATA,(LONG)dataView);
 		    break;
 		}
 
         case WM_COMMAND:{
 			switch(LOWORD (wParam)){
 				case GENERAL_CMD_RENAME:{
-					MessageBox(dataHwnd,"rename the data","title",MB_OK);
+                    TCHAR name[256]={0};
+                    GetDlgItemText(dataHwnd,GENERAL_CMD_KEYEDIT,name,sizeof(name));
+
+                    TCHAR cmd[256];
+                    sprintf(cmd,"rename %s %s",dataView->data->key,name);
+                    sendRedisCommand(cmd,NULL,NULL,PT_AUTH);
 					break;
 				}
 				
@@ -174,6 +148,11 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 			SendMessage(dataView->keyEditHwnd,WM_SETTEXT,0,(LPARAM)(rp->key));
 			SendMessage(dataView->keyNameHwnd,WM_SETTEXT,0,(LPARAM)(rp->dataType));
 
+            dataView->data = rp;
+            dataView->type= type;
+
+            // 打开数据按钮状态
+
 			switchView(dataHwnd,type,rp);
 			break;
 		}
@@ -184,12 +163,13 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 			MoveWindow(dataView->dataViewHwnd,5,34,rect.right-rect.left-5-5,rect.bottom-rect.top-68-5,TRUE);
 			MoveWindow(dataView->exportBtnHwnd,rect.right-rect.left-60-5,rect.bottom-rect.top-24-5,60,24,TRUE);
 			MoveWindow(dataView->saveBtnHwnd,rect.right-rect.left-125-5,rect.bottom-rect.top-24-5,60,24,TRUE);
+
 			MoveWindow(dataView->viewTypeHwnd,rect.right-rect.left-120-5,5,120,100,TRUE);
 			MoveWindow(dataView->reloadBtnHwnd,rect.right-rect.left-5-120-5-60,5,60,24,TRUE);
 			MoveWindow(dataView->removeBtnHwnd,rect.right-rect.left-5-120-5-60-5-60,5,60,24,TRUE);
 			MoveWindow(dataView->ttlBtnHwnd,rect.right-rect.left-5-120-5-60-5-60-5-60,5,60,24,TRUE);
 			MoveWindow(dataView->renameBtnHwnd,rect.right-rect.left-5-120-5-60-5-60-5-60-5-60,5,60,24,TRUE);
-			MoveWindow(dataView->keyEditHwnd,55,5,rect.right-rect.left-40-5-120-5-60-5-60-5-60-5-60-5-5,24,TRUE);
+			MoveWindow(dataView->keyEditHwnd,50,5,rect.right-rect.left-40-5-120-5-60-5-60-5-60-5-60-5-5-5,24,TRUE);
 
 			break;
 		}

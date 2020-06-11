@@ -12,6 +12,15 @@ void MoveToScreenCenter(HWND hwnd){
 
 BOOL CALLBACK ListItemEditProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	switch(message){
+        case WM_INITDIALOG:{
+            MoveToScreenCenter(hwnd);
+
+            HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
+            SendMessage(GetDlgItem(hwnd,IDC_LIST_OK), WM_SETFONT, (WPARAM)hfont0, FALSE);
+            SendMessage(GetDlgItem(hwnd,IDC_LIST_CANCEL), WM_SETFONT, (WPARAM)hfont0, FALSE);
+            break;
+        }
+
 		case WM_COMMAND:{
 			switch(LOWORD(wParam)){
 				case IDC_LIST_OK:{
@@ -148,11 +157,9 @@ BOOL CALLBACK AboutDlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam
 BOOL CALLBACK SetTtlDlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	int lineTogo =0 ;
-	switch(message)
-	{
+	switch(message){
 		case WM_COMMAND:
-			switch(LOWORD(wParam))
-			{
+			switch(LOWORD(wParam)){
 				case IDC_BTN_OK:
 					GetDlgItemInt(hwnd,IDC_ADDRESS,&lineTogo,FALSE);
 					EndDialog (hwnd, 0);
@@ -160,9 +167,15 @@ BOOL CALLBACK SetTtlDlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 			}
 		break;
 
-		case WM_INITDIALOG:
+		case WM_INITDIALOG:{
+            
+		    break;
+        }
 
-		break;
+        case WM_CLOSE:{
+            EndDialog(hwnd,0);
+            break;
+        }
 	}
 	return FALSE;
 }

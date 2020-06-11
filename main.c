@@ -354,10 +354,6 @@ void networkHandle(LPARAM lParam){
             RedisReply * rp = read_replay(buff);
 			rp->key = task->dataKey;
 
-			char msgbuff[256]={0};
-			sprintf(msgbuff,"rp->type: %d",rp->type);
-			MessageBox(NULL,msgbuff,"title",MB_OK);
-
 			if(task->taskType == PT_KEYS){
                 if(rp->type == REPLY_MULTI){
                     handleKeysReply(rp);
@@ -510,7 +506,7 @@ void addConnection(char * connectionName){
 }
 
 void command(HWND hwnd,int cmd){
-	HINSTANCE hInst = mainModel->hInstance;//(HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
+	HINSTANCE hInst = mainModel->hInstance;
 
 	if(cmd > 900 && cmd < 1000){
 		char buff[255] = {0};
@@ -532,13 +528,11 @@ void command(HWND hwnd,int cmd){
 
     switch (cmd){
 		case IDM_CONNECTION_POOL:{
-			//hInst= (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
 			DialogBox (hInst,MAKEINTRESOURCE (IDD_CONNECTION),hwnd,(DLGPROC)conectionConfigDlgProc);
 			break;
 		}
 		
 		case IDM_FILE_CLOSE:{
-			//hInst= (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
 			DialogBox (hInst,MAKEINTRESOURCE (IDD_PREFERENCE),hwnd,(DLGPROC)SetPreferenceProc);
 			break;
 		}
@@ -583,7 +577,7 @@ LPTSTR mGetOpenFileName(HWND hwnd){
 
 	ofn->lStructSize = sizeof(OPENFILENAME);
 	ofn->hwndOwner = hwnd;
-	ofn->hInstance = mainModel->hInstance;//(HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
+	ofn->hInstance = mainModel->hInstance;
 	ofn->lpstrFilter = "All Files\0*.*\0HexFiles\0*.hex\0\0";
 	ofn->lpstrFile = fname;
 	ofn->nMaxFile =MAX_PATH;
@@ -609,7 +603,7 @@ LPTSTR mGetSaveFileName(HWND hwnd){
 
 	ofn->lStructSize = sizeof(OPENFILENAME);
 	ofn->hwndOwner = hwnd;
-	ofn->hInstance = mainModel->hInstance;//(HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
+	ofn->hInstance = mainModel->hInstance;
 	ofn->lpstrFilter = "All Files\0*.*\0HexFiles\0*.hex\0\0";
 	ofn->lpstrFile = fname;
 	ofn->nMaxFile =MAX_PATH;
@@ -625,16 +619,16 @@ LPTSTR mGetSaveFileName(HWND hwnd){
 }
 
 char * getOutputBuffer(int size){
-    int bsize = (size/17+1) * 69;
-     char * buff = ( char *) malloc(sizeof( char) * bsize);
+    int bsize = (size/16+1) * 70+1;
+    char * buff = ( char *) malloc(sizeof( char) * bsize);
     memset(buff,0,sizeof( char) * bsize);
     return buff;
 }
 
 char * dumpText( char * text,int len){
-     char line[17]={0};
-     char * buff   = getOutputBuffer(len);
-     char * output =buff;
+    char line[17]={0};
+    char * buff   = getOutputBuffer(len);
+    char * output =buff;
 
     int offset =0;
     for(int ix = 0; ix < len; ix ++){
@@ -650,6 +644,5 @@ char * dumpText( char * text,int len){
         }
     }
 
-    printf("%s\n",buff);//
 	return buff;
 }
