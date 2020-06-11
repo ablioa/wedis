@@ -48,3 +48,6 @@
 #define IDC_LIST_STATIC    601
 #define IDC_LIST_OK        602
 #define IDC_LIST_CANCEL    603
+
+#define IDC_STRING_VIEW_TEXT 2001
+#define IDC_STRING_VIEW_SAVE 2002

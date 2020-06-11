@@ -1,6 +1,8 @@
 #ifndef wedis_h
 #define wedis_h
 
+#include <windows.h>
+
 /**
  * 一般控件样式 
  */
@@ -17,6 +19,13 @@
 #define GENERAL_CMD_RELOAD  10004
 #define GENERAL_CMD_KEYEDIT 10005
 
+typedef struct{
+    HFONT ctrlFont;
+    HFONT fixedWidthFont;
+}SystemResource;
 
+extern SystemResource * resource;
+
+void initResource();
 
 #endif

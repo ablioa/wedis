@@ -168,7 +168,12 @@ BOOL CALLBACK SetTtlDlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 		break;
 
 		case WM_INITDIALOG:{
-            
+            MoveToScreenCenter(hwnd);
+
+            HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
+            SendMessage(GetDlgItem(hwnd,IDC_ADDRESS), WM_SETFONT, (WPARAM)hfont0, FALSE);
+			SendMessage(GetDlgItem(hwnd,IDC_BTN_OK), WM_SETFONT, (WPARAM)hfont0, FALSE);
+            SendMessage(GetDlgItem(hwnd,IDC_STATIC), WM_SETFONT, (WPARAM)hfont0, FALSE);
 		    break;
         }
 

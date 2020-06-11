@@ -1,9 +1,6 @@
 #include "stringview.h"
 
-
-#include "stringview.h"
-
-HWND textView;
+//HWND textView;
 
 HWND buildStringViewWindow(HWND parent){
 	RECT rect;
@@ -25,38 +22,64 @@ HWND buildStringViewWindow(HWND parent){
 	ShowWindow(dataViewHwnd,SW_HIDE);
 
 	return dataViewHwnd;
-    
 }
 
 LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
-	RECT rcClient;
 	RECT rect;
+    StringViewModel * stringViewModel = (StringViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
 
 	switch(message){
 	    case WM_CREATE:{
-			HINSTANCE hinst = mainModel->hInstance;
-            GetClientRect (hwnd, &rcClient); 
-	        
-			textView = CreateWindowEx(0, WC_EDIT, (""), 
+            stringViewModel = (StringViewModel*)malloc(sizeof(StringViewModel));
+            memset(stringViewModel,0,sizeof(StringViewModel));
+            SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)stringViewModel);
+
+			stringViewModel->stringView = CreateWindowEx(0, WC_EDIT, (""), 
 				WS_VISIBLE | WS_BORDER | WS_CHILD | WS_TABSTOP | WS_VSCROLL  |ES_MULTILINE, 
-				0, 0, 100, 100, hwnd, (HMENU)0, hinst, 0);
+				0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_TEXT, mainModel->hInstance, 0);
 			
-			HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
-            SendMessage(textView, WM_SETFONT, (WPARAM)hfont0, FALSE);
+            SendMessage(stringViewModel->stringView, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
+
+            stringViewModel->btnInsert = CreateWindowEx(0, WC_BUTTON, ("Save"), 
+            WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_SAVE, 
+            mainModel->hInstance, 0);
+            SendMessage(stringViewModel->btnInsert, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
             
 		    break;
 		}
+       
+        case WM_COMMAND:{
+            switch(LOWORD (wParam)){
+                case IDC_STRING_VIEW_SAVE:{
+                    TCHAR name[256]={0};
+                    GetDlgItemText(hwnd,IDC_STRING_VIEW_TEXT,name,sizeof(name));
+
+                    TCHAR cmd[256];
+                    sprintf(cmd,"set %s \"%s\"",stringViewModel->data->key,name);
+
+                    sendRedisCommand(cmd,NULL,NULL,PT_AUTH);
+                    break;
+                }
+            }
+            break;
+        }
 
 		case WM_DT:{
             RedisReply * rp = (RedisReply *)wParam;
-			SendMessage(textView,EM_REPLACESEL,FALSE,(LPARAM)rp->bulk);
-			SetWindowText(textView,rp->bulk);
+
+            stringViewModel->data = rp;
+
+			SendMessage(stringViewModel->stringView,EM_REPLACESEL,FALSE,(LPARAM)rp->bulk);
+			SetWindowText(stringViewModel->stringView,rp->bulk);
             break;
         }
 
 		case WM_SIZE:{
 			GetClientRect(hwnd,&rect);
-			MoveWindow(textView,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
+			MoveWindow(stringViewModel->stringView,0,0,rect.right-rect.left - 60,rect.bottom-rect.top,TRUE);
+
+            MoveWindow(stringViewModel->btnInsert,rect.right - rect.left - 55,0, 50,24,TRUE);
+            //MoveWindow(stringViewModel->btnInsert,0,0,rect.right-rect.left - 60,rect.bottom-rect.top,TRUE);
 		    break;
 		}
 	}

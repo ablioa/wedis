@@ -11,6 +11,8 @@ void log_message(const char * message){
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cmdShow){
 	MSG  msg;
 
+    initResource();
+
     save_all();
 
 	initpan(hInst);

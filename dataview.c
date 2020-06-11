@@ -124,7 +124,9 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 				}
 
 				case GENERAL_CMD_REMOVE:{
-					MessageBox(dataHwnd,"remove the data","title",MB_OK);
+                    TCHAR cmd[256];
+                    sprintf(cmd,"del %s",dataView->data->key);
+                    sendRedisCommand(cmd,NULL,NULL,PT_AUTH);
 					break;
 				}
 
