@@ -1,6 +1,11 @@
 #include "controller.h"
 
 void handleRedisData(Task * task,RedisReply * data){
+
+	data->dataKey = (char*) malloc(sizeof(char) * 256);
+	memset(data->dataKey,0,sizeof(char) * 256);
+	sprintf(data->dataKey,"%s",task->dataKey);
+
 	switch(task->dataType){
 		case REDIS_STRING:{
 			if(data->type == REPLY_BULK){
