@@ -40,6 +40,8 @@
 #define IDM_CONNECTION                          900
 #define IDM_CUSTOMER_HOST                       901
 
+#define IDM_SYSTEM_STAT                         1950
+
 #define IDD_CONNECTION     400
 #define IDC_CONFIG_DONE    401
 #define ID_CONFIG_CANCEL   402

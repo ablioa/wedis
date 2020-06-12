@@ -39,7 +39,8 @@ typedef enum{
 	CMD_DATABASE_COUNT,
 	CMD_DELETE_KEY,
 	CMD_RENAME_KEY,
-	CMD_INFO_KEYSPACE
+	CMD_INFO_KEYSPACE,
+	CMD_INFO_STATS
 }CommandType;
 
 typedef struct{

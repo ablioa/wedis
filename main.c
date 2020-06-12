@@ -118,6 +118,7 @@ void initpan(HINSTANCE hInstance){
 	init_listview(hInstance);
 	init_setview(hInstance);
 	init_zsetview(hInstance);
+	init_systemview(hInstance);
 
     WNDCLASSEX hSplitClass;
     hSplitClass.cbSize        = sizeof(hSplitClass);
@@ -214,9 +215,9 @@ void onMainFrameCreate(HWND hwnd){
 	}
 
 	mainModel->hServerInfoMenu = CreatePopupMenu();
-	AppendMenu(mainModel->hServerInfoMenu,MF_STRING,1001,"Server Status");
+	AppendMenu(mainModel->hServerInfoMenu,MF_STRING,IDM_SYSTEM_STAT,"Server Status");
 	AppendMenu(mainModel->hServerInfoMenu,MF_SEPARATOR,0,"");
-	AppendMenu(mainModel->hServerInfoMenu,MF_STRING,1002,"Commands");
+	AppendMenu(mainModel->hServerInfoMenu,MF_STRING,IDM_SYSTEM_STAT+1,"Commands");
 }
 
 void onDataNodeSelection(){
@@ -385,6 +386,7 @@ void command(HWND hwnd,int cmd){
 		case IDM_DEBUG_GET_DATABASES:{
 			// redis_key_space();
 			// redis_database_count();
+			redis_info_stats();
 			break;
 		}
 		case IDM_CONNECTION_POOL:{
@@ -421,6 +423,11 @@ void command(HWND hwnd,int cmd){
 		
 		case IDM_ABOUT:{
 			DialogBox (hInst,MAKEINTRESOURCE (IDD_ABOUT),hwnd,(DLGPROC)AboutDlgProc);
+			break;
+		}
+
+		case IDM_SYSTEM_STAT:{
+			log_message("server info");
 			break;
 		}
 	}

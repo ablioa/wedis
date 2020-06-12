@@ -297,20 +297,3 @@ Keyspace parseKeyspace(char * buffer){
 
     return head;
 }
-
-// char buff[256] = {0};
-// int main(int argc, char *argv[]){
-//     FILE * file = fopen("data.txt","r");
-//     fread(buff,sizeof(unsigned char),256,file);
-//     fclose(file);
-
-//     Keyspace space = parseKeyspace(buff);
-
-//     Keyspace inode = space->next;
-//     while(inode != NULL){
-//         printf("#####> %s,keys=%d,expires=%d,avg_ttl=%d\n",inode->name,inode->keys,inode->expires,inode->avg_ttl);
-//         inode = inode->next;
-//     }
-
-//     return 0;
-// }

@@ -18,6 +18,7 @@
 #include "console.h"
 
 #include "dataview.h"
+#include "system.h"
 
 #include "callbacks.h"
 
@@ -55,6 +56,7 @@ typedef struct{
     
     HWND connectionHwnd;
     HWND dataHwnd;
+	HWND systemViewHwnd;
     HWND attributeHwnd;
     
     HWND westSplitHwnd;

@@ -69,6 +69,18 @@ void buildDataView(AppView * view){
                0,
                hinst,
                NULL);
+    
+    view->systemViewHwnd=CreateWindowEx(0, SYSTEM_VIEW_CLASS,
+               NULL,
+               WS_CHILD | WS_VISIBLE,
+				view->connectionAreaWitdh,
+				view->toolbarHeight,
+				dataAreaWidth,
+				rt.bottom-rt.left-view->toolbarHeight -getAttributeHeight(view),
+               view->hwnd,
+               0,
+               hinst,
+               NULL);
 }
 
 void Size(AppView * view){
@@ -90,6 +102,7 @@ void Size(AppView * view){
     
     getDataRect(view,&rt,&dataRect);
     MoveWindow(view->dataHwnd,dataRect.left,dataRect.top,dataRect.right,dataRect.bottom,TRUE);
+    MoveWindow(view->systemViewHwnd,dataRect.left,dataRect.top,dataRect.right,dataRect.bottom,TRUE);
     
     getSpliterRect(view,&rt,&spliterRect);
     MoveWindow(view->westSplitHwnd,spliterRect.left,spliterRect.top,spliterRect.right,spliterRect.bottom,TRUE);

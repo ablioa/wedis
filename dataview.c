@@ -174,6 +174,7 @@ void switchView(HWND hwnd,int type,RedisReply * reply){
 	DataView * dataView = mainModel->dataView;
 
 	ShowWindow(dataView->visibleHwnd,SW_HIDE);
+	ShowWindow(mainModel->view->systemViewHwnd,SW_HIDE);
 	switch(type){
 		case REDIS_STRING:{
 			dataView->visibleHwnd = dataView->stringViewHwnd;

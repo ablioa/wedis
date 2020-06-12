@@ -90,6 +90,13 @@ void dispatch(Task * task,RedisReply * data){
             }
             break;
         }
+
+        case CMD_INFO_STATS:{
+            if(data->type == REPLY_BULK){
+                log_message(data->bulk);
+            }
+            break;
+        }
     }
     
 }

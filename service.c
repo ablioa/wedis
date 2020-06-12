@@ -97,6 +97,10 @@ void redis_key_space(){
     sendRedisRequest(CMD_INFO_KEYSPACE,"info keyspace",REDIS_UNDEFINED,NULL);
 }
 
+void redis_info_stats(){
+    sendRedisRequest(CMD_INFO_STATS,"info stats",REDIS_UNDEFINED,NULL);
+}
+
 void sendRedisRequest(CommandType cmdType,const char * cmd,const DataType dataType,const char * dataKey){
     Task * task = buildTask(cmdType);
 

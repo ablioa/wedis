@@ -163,6 +163,9 @@ void addDataNode(RedisReply * rp){
         tnf->subHandleSize ++;
         tnf->subHandles[ix]=(HTREEITEM)SendMessage(mainModel->view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
     }
+
+	// 触发消息，展开树节点
+	SendMessage(mainModel->view->connectionHwnd,TVM_EXPAND,(WPARAM)TVE_TOGGLE,(LPARAM)(mainModel->selectedNode));
 }
 
 Keyspace getKeyspaceInfo(char * dbname){
