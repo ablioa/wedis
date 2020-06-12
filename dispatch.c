@@ -24,7 +24,8 @@ void dispatch(Task * task,RedisReply * data){
                 MessageBox(NULL,data->error,"title",MB_OK);
             }else if(data->type == REPLY_STATUS){
                 if(strcmp("OK",data->status) == 0){
-                    redis_database_count();
+                    //redis_database_count();
+                    redis_key_space();
                 }
             }
             break;
@@ -79,6 +80,14 @@ void dispatch(Task * task,RedisReply * data){
         }
 
         case CMD_DELETE_KEY:{
+            break;
+        }
+
+        case CMD_INFO_KEYSPACE:{
+            if(data->type == REPLY_BULK){
+                Keyspace space = parseKeyspace(data->bulk);
+                handleKeyspace(space);
+            }
             break;
         }
     }

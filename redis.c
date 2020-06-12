@@ -223,3 +223,94 @@ char * build_comment(const char * text,const char * pack){
 	sprintf(buff,"# ---- %s ----\r\n%s",text,pack);
 	return buff;
 }
+
+Keyspace buildKeyspaceInfo(){
+    Keyspace info = (Keyspace)malloc(sizeof(KeyspaceInfo));
+    memset(info,0,sizeof(KeyspaceInfo));
+
+    info->tail  = NULL;
+    info->next  = NULL;
+    info->count = 0;
+    return info;
+}
+
+void setKeyspaceValue(Keyspace info,char * value){
+    char key[255] = {0};
+    char * vpos = strchr(value,'=');
+
+    strncpy(key,value,(vpos-value));
+
+    if(strcmp(key,"expires") == 0){
+        info->expires = atoi(vpos+1);
+    }
+
+    if(strcmp(key,"keys") == 0){
+        info->keys = atoi(vpos+1);
+    }
+
+    if(strcmp(key,"avg_ttl") == 0){
+        info->avg_ttl = atoi(vpos+1);
+    }
+}
+
+Keyspace parseKeyspace(char * buffer){
+    char *buf       = buffer;
+    char *outer_ptr = NULL;
+    char *inner_ptr = NULL;
+    char *pp_ptr    = NULL;
+
+    char * line;
+    char * dbitem;
+    char * vitem;
+
+    Keyspace head = buildKeyspaceInfo();
+    while ((line = strtok_r(buf, "\r\n", &outer_ptr)) != NULL){
+        if(strcmp("# Keyspace",line) == 0){
+            buf = NULL;
+            continue;
+        }
+
+        Keyspace node = buildKeyspaceInfo();
+        if(head->next == NULL){
+            head->next = node;
+            head->tail = node;
+        }else{
+            head->tail->next = node;
+            head->tail = node;
+        }
+
+        head->count ++;
+        while ((dbitem = strtok_r(line, ":", &inner_ptr)) != NULL){
+            if(strncmp("db",dbitem,2) == 0){
+                line = NULL;
+                strcpy(node->name,dbitem);
+                continue;
+            }
+
+            while ((vitem = strtok_r(dbitem, ",", &pp_ptr)) != NULL){
+               dbitem=NULL;
+               setKeyspaceValue(node,vitem);
+            }
+
+        }
+    }
+
+    return head;
+}
+
+// char buff[256] = {0};
+// int main(int argc, char *argv[]){
+//     FILE * file = fopen("data.txt","r");
+//     fread(buff,sizeof(unsigned char),256,file);
+//     fclose(file);
+
+//     Keyspace space = parseKeyspace(buff);
+
+//     Keyspace inode = space->next;
+//     while(inode != NULL){
+//         printf("#####> %s,keys=%d,expires=%d,avg_ttl=%d\n",inode->name,inode->keys,inode->expires,inode->avg_ttl);
+//         inode = inode->next;
+//     }
+
+//     return 0;
+// }

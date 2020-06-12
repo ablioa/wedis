@@ -22,11 +22,6 @@ typedef enum{
 	REDIS_ZSET
 }DataType;
 
-typedef struct{
-	int    size;
-	char * list[LENGTH_WORD];
-}CommandBlock;
-
 typedef enum{
 	REPLY_STATUS,
 	REPLY_ERROR,
@@ -36,23 +31,21 @@ typedef enum{
 }ReplyType;
 
 typedef enum{
-	/** 选中数据库 */
     CMD_SELECT,
-	/** 查看键值列表 */
     CMD_KEYS,
     CMD_TYPE,
     CMD_DATA,
     CMD_AUTH,
 	CMD_DATABASE_COUNT,
 	CMD_DELETE_KEY,
-	CMD_RENAME_KEY
+	CMD_RENAME_KEY,
+	CMD_INFO_KEYSPACE
 }CommandType;
 
-typedef struct {
-    int type;   // 类型
-
-	int status; // 解析中|解析完成
-}ReceiveSession;
+typedef struct{
+	int    size;
+	char * list[LENGTH_WORD];
+}CommandBlock;
 
 // TODO 结构要用union优化一下
 typedef struct{
@@ -78,6 +71,27 @@ typedef struct{
 	int size;
 	char ** items;
 }ListModel;
+
+struct keyspace_info{
+    char name[255];
+    int  keys;
+    int  expires;
+    int  avg_ttl;
+
+    struct keyspace_info * tail;
+    struct keyspace_info * next;
+
+    int count;
+};
+
+typedef struct keyspace_info KeyspaceInfo;
+typedef struct keyspace_info * Keyspace;
+
+Keyspace buildKeyspaceInfo();
+
+void setKeyspaceValue(Keyspace info,char * value);
+
+Keyspace parseKeyspace(char * buffer);
 
 RedisReply * read_replay(char * text);
 

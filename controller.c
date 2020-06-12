@@ -1,5 +1,24 @@
 #include "controller.h"
 
+/**
+ * TODO 注意内存释放
+ */
+void handleKeyspace(Keyspace keyspace){
+	Keyspace * spaces = (Keyspace*)malloc(sizeof(Keyspace *) * keyspace->count);
+    Keyspace inode    = keyspace->next;
+
+	int ix = 0;
+    while(inode != NULL){
+		spaces[ix++] = inode;
+        inode = inode->next;
+    }
+
+	mainModel->keyspaces  = spaces;
+	mainModel->spaceCount = keyspace->count;
+
+	redis_database_count();
+}
+
 void handleRedisData(Task * task,RedisReply * data){
 	data->dataKey = (char*) malloc(sizeof(char) * 256);
 	memset(data->dataKey,0,sizeof(char) * 256);
@@ -146,8 +165,24 @@ void addDataNode(RedisReply * rp){
     }
 }
 
+Keyspace getKeyspaceInfo(char * dbname){
+	Keyspace * spaces = mainModel->keyspaces;
+	if(spaces == NULL){
+		return NULL;
+	}
+
+	for(int ix = 0; ix< mainModel->spaceCount; ix ++){
+		if(strcmp(spaces[ix]->name,dbname) == 0){
+			return spaces[ix];
+		}
+	}
+
+	return NULL;
+}
+
 void addDatabaseNode(int dbCount){
     TV_INSERTSTRUCT tvinsert;
+	char dbname[128] = {0};
     
 	AppView * view = mainModel->view;
     HTREEITEM parentHandle = mainModel->connection->hostHandle;
@@ -156,16 +191,25 @@ void addDatabaseNode(int dbCount){
 	tvinsert.hInsertAfter=TVI_ROOT;
 	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
 
-	char * dbname = (char *)malloc(sizeof(char)*128);
+	char * showName = (char *)malloc(sizeof(char)*128);
 	for(int ix =0; ix < dbCount;ix ++){
 		memset(dbname,0,sizeof(char) * 128);
 		sprintf(dbname,"db%d",ix);
+
+		memset(showName,0,sizeof(char) * 128);
+		Keyspace space = getKeyspaceInfo(dbname);
+		int keyCount = 0;//space->keys;
+		if(space != NULL){
+			keyCount = space->keys;
+		}
+
+		sprintf(showName,"%s(%d)",dbname,keyCount);
 
 		tvinsert.item.iImage=1;
 		tvinsert.item.iSelectedImage=1;
 		tvinsert.hParent=parentHandle;
 		tvinsert.hInsertAfter=TVI_LAST;
-		tvinsert.item.pszText= dbname;
+		tvinsert.item.pszText= showName;
 
 		TreeNode * tn = buildTreeNode();
 		tn->level = 2;
@@ -174,6 +218,5 @@ void addDatabaseNode(int dbCount){
     
 		SendMessage(view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 	}
-
-	free(dbname);
 }
+

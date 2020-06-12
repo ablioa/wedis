@@ -93,6 +93,10 @@ void redis_rename_key(char * dataKey,char * newKey){
     sendRedisRequest(CMD_RENAME_KEY,cmd,REDIS_UNDEFINED,dataKey);
 }
 
+void redis_key_space(){
+    sendRedisRequest(CMD_INFO_KEYSPACE,"info keyspace",REDIS_UNDEFINED,NULL);
+}
+
 void sendRedisRequest(CommandType cmdType,const char * cmd,const DataType dataType,const char * dataKey){
     Task * task = buildTask(cmdType);
 

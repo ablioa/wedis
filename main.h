@@ -29,8 +29,6 @@
 
 #include "queue.h"
 
-//#include "dispatch.h"
-
 #include "service.h"
 
 #define szFrameClass "MdiFrame"
@@ -125,6 +123,9 @@ typedef struct{
     int UI;
 
     HINSTANCE hInstance;
+
+    Keyspace * keyspaces;
+	int spaceCount;
 }MainModel;
 
 typedef struct{

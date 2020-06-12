@@ -441,7 +441,8 @@ void command(HWND hwnd,int cmd){
 
     switch (cmd){
 		case IDM_DEBUG_GET_DATABASES:{
-			redis_database_count();
+			// redis_key_space();
+			// redis_database_count();
 			break;
 		}
 		case IDM_CONNECTION_POOL:{

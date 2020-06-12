@@ -29,4 +29,6 @@ void redis_delete_key(char * dataKey);
 
 void redis_rename_key(char * dataKey,char * newKey);
 
+void redis_key_space();
+
 #endif
