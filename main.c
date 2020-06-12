@@ -291,8 +291,6 @@ void appendLog(char * text){
 	SendMessage(mainModel->logHwnd,EM_REPLACESEL,FALSE,(LPARAM)text);
 }
 
-
-
 void networkHandle(LPARAM lParam){
     switch(LOWORD(lParam)){
 	    case FD_CONNECT:{
