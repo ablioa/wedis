@@ -1,6 +1,7 @@
 #include "controller.h"
 
 void handleRedisData(Task * task,RedisReply * data){
+
 	switch(task->dataType){
 		case REDIS_STRING:{
 			if(data->type == REPLY_BULK){

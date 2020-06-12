@@ -40,12 +40,12 @@ void redis_data_type(char * dataKey){
     sendRedisRequest(CMD_TYPE,cmd,REDIS_UNDEFINED,dataKey);
 }
 
-void redis_get_string(char * key){
+void redis_get_string(char * dataKey){
     const char * cmd = (char *) malloc(sizeof(char) * 256);
 	memset(cmd,0,sizeof(char) * 256);
-	sprintf(cmd,"get %s",key);
+	sprintf(cmd,"get %s",dataKey);
     
-	sendRedisRequest(CMD_DATA,cmd,REDIS_STRING,key);
+	sendRedisRequest(CMD_DATA,cmd,REDIS_STRING,dataKey);
 }
 
 void redis_get_list(char * dataKey){
@@ -91,7 +91,6 @@ void sendRedisRequest(CommandType cmdType,const char * cmd,const DataType dataTy
         sprintf(task->dataKey,"%s",dataKey);
     }
    
-
 	char * encodedCmd = parse_command((char *)cmd,256);
     connection_senddata(mainModel->connection,encodedCmd,strlen(encodedCmd),0);
 

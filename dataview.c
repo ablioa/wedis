@@ -142,6 +142,8 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 			RedisReply * data = (RedisReply *)wParam;
 			// int type = (int) lParam;
 
+			log_message(data->dataKey);
+
 			// TODO 这里不应该为空，为空的不能执行到这里!!!
 			if(data->dataKey == NULL){
 				break;

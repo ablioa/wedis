@@ -74,7 +74,7 @@ void dispatch(Task * task,RedisReply * data){
                 break;
             }
 
-            log_message(task->dataKey);
+            // log_message(task->dataKey);
 
             handleRedisData(task,data);
             break;
