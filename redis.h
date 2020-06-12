@@ -44,6 +44,8 @@ typedef enum{
     CMD_DATA,
     CMD_AUTH,
 	CMD_DATABASE_COUNT,
+	CMD_DELETE_KEY,
+	CMD_RENAME_KEY
 }CommandType;
 
 typedef struct {

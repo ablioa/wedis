@@ -25,4 +25,8 @@ void redis_get_set(char * dataKey);
 
 void redis_get_zset(char * dataKey);
 
+void redis_delete_key(char * dataKey);
+
+void redis_rename_key(char * dataKey,char * newKey);
+
 #endif

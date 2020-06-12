@@ -77,6 +77,10 @@ void dispatch(Task * task,RedisReply * data){
             handleRedisData(task,data);
             break;
         }
+
+        case CMD_DELETE_KEY:{
+            break;
+        }
     }
     
 }

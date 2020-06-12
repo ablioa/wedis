@@ -80,6 +80,19 @@ void redis_get_zset(char * dataKey){
     sendRedisRequest(CMD_DATA,cmd, REDIS_ZSET,dataKey);
 }
 
+void redis_delete_key(char * dataKey){
+    TCHAR cmd[256];
+    sprintf(cmd,"del %s",dataKey);
+
+    sendRedisRequest(CMD_DELETE_KEY,cmd, REDIS_UNDEFINED,NULL);
+}
+
+void redis_rename_key(char * dataKey,char * newKey){
+    TCHAR cmd[256];
+    sprintf(cmd,"rename %s %s",dataKey,newKey);
+    sendRedisRequest(CMD_RENAME_KEY,cmd,REDIS_UNDEFINED,dataKey);
+}
+
 void sendRedisRequest(CommandType cmdType,const char * cmd,const DataType dataType,const char * dataKey){
     Task * task = buildTask(cmdType);
 

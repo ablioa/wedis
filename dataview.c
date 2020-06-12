@@ -109,12 +109,10 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
         case WM_COMMAND:{
 			switch(LOWORD (wParam)){
 				case GENERAL_CMD_RENAME:{
-                    // TCHAR name[256]={0};
-                    // GetDlgItemText(dataHwnd,GENERAL_CMD_KEYEDIT,name,sizeof(name));
-
-                    // TCHAR cmd[256];
-                    // sprintf(cmd,"rename %s %s",dataView->data->key,name);
-                    // sendRedisCommand(cmd,NULL,NULL,CMD_AUTH);
+                    TCHAR newKey[256]={0};
+                    GetDlgItemText(dataHwnd,GENERAL_CMD_KEYEDIT,newKey,sizeof(newKey));
+					
+					redis_rename_key(dataView->data->dataKey,newKey);
 					break;
 				}
 				
@@ -124,9 +122,7 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 				}
 
 				case GENERAL_CMD_REMOVE:{
-                    // TCHAR cmd[256];
-                    // sprintf(cmd,"del %s",dataView->data->key);
-                    // sendRedisCommand(cmd,NULL,NULL,CMD_AUTH);
+					redis_delete_key(dataView->data->dataKey);
 					break;
 				}
 
