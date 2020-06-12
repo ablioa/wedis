@@ -20,6 +20,10 @@ ID_MAIN MENU
         MENUITEM SEPARATOR
         MENUITEM "&Exit", IDM_EXIT
     }
+    POPUP "&Debug"
+    {
+        MENUITEM "&Get Databases", IDM_DEBUG_GET_DATABASES
+    }
     POPUP "&Help"
     {
         MENUITEM "&About...", IDM_ABOUT

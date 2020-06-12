@@ -1,7 +1,32 @@
 #include "dispatch.h"
 
-#include "main.h"
-#include "queue.h"
+
+
+void dispatch(Task * task,RedisReply * data){
+        char msg[255] = {0};
+
+
+    if(task == NULL){
+        appendLog("EMPTY TASK");
+        return;
+    }
+
+    if(data == NULL){
+        appendLog("EMPTY DATA");
+        return;
+    }
+
+    sprintf(msg,"taskType: %d",task->taskType);
+    appendLog(msg);
+
+
+
+    // switch(task->taskType){
+    //     case 1:{
+    //         break;
+    //     }
+    // }
+}
 
 void sendRedisCommand(char * command,char * dataKey,char * dataType,int type){
     Task * task = buildTask(type);

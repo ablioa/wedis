@@ -33,6 +33,11 @@ typedef struct{
 #define TYPE_SET    "set"
 #define TYPE_ZSET   "zset"
 
+typedef enum{
+	/** 查询数据库总数 */
+	DATABASE_COUNT,
+}CommandType;
+
 typedef struct {
     int type;   // 类型
 

@@ -350,12 +350,17 @@ void networkHandle(LPARAM lParam){
 			appendLog(buff);
 
 			char * binText = dumpText((char*)buff,dr_size);
+			appendLog("\r\n-------------\r\n");
 			appendLog(binText);
+			appendLog("\r\n-------------\r\n");
 
 			Task * task = getTask(pool);
             RedisReply * rp = read_replay(buff);
 			rp->key = task->dataKey;
 
+			dispatch(task,rp);
+
+			/*
 			if(task->taskType == PT_KEYS){
                 if(rp->type == REPLY_MULTI){
                     handleKeysReply(rp);
@@ -378,7 +383,7 @@ void networkHandle(LPARAM lParam){
 
 					SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)rp,(LPARAM)(renderModel->data_type));
 				}
-	    	}
+	    	}*/
 	    }
 	    break;
 	    
@@ -529,6 +534,11 @@ void command(HWND hwnd,int cmd){
 	}
 
     switch (cmd){
+		case IDM_DEBUG_GET_DATABASES:{
+			//log_message("get database count");
+			sendRedisCommand("config get databases",NULL,NULL,PT_AUTH);
+			break;
+		}
 		case IDM_CONNECTION_POOL:{
 			DialogBox (hInst,MAKEINTRESOURCE (IDD_CONNECTION),hwnd,(DLGPROC)conectionConfigDlgProc);
 			break;
