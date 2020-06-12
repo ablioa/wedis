@@ -67,9 +67,19 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 					}
 					break;
 				}
+
 				case NM_DBLCLK:{
 					if(msg->idFrom == 0){
                         onDataBaseSelect(hwnd);
+					}
+					break;
+				}
+
+				case NM_RCLICK:{
+					if(msg->idFrom == 0){
+						POINT pt;
+						GetCursorPos(&pt);
+						TrackPopupMenu(mainModel->hServerInfoMenu,TPM_LEFTALIGN,pt.x,pt.y,0,hwnd,NULL);
 					}
 					break;
 				}
@@ -202,6 +212,11 @@ void onMainFrameCreate(HWND hwnd){
 		host->hostIndex = IDM_CUSTOMER_HOST + ix;
 		AppendMenu(mainModel->hDev,MF_STRING,(host->hostIndex),host->host);
 	}
+
+	mainModel->hServerInfoMenu = CreatePopupMenu();
+	AppendMenu(mainModel->hServerInfoMenu,MF_STRING,1001,"Server Status");
+	AppendMenu(mainModel->hServerInfoMenu,MF_SEPARATOR,0,"");
+	AppendMenu(mainModel->hServerInfoMenu,MF_STRING,1002,"Commands");
 }
 
 void onDataNodeSelection(){
@@ -298,31 +313,6 @@ void networkHandle(LPARAM lParam){
 			Task * task = getTask(pool);
             RedisReply * rp = read_replay(buff);
 			dispatch(task,rp);
-
-			/*
-			if(task->taskType == PT_KEYS){
-                if(rp->type == REPLY_MULTI){
-                    handleKeysReply(rp);
-	    	    }
-            }
-
-			if(task->taskType == PT_TYPE ){
-	    		int dataType = check_type(rp->status,task->dataKey);
-	    		renderModel->data_type = dataType;
-            }
-	    
-			if(task->taskType == PT_DATA){
-	    		renderModel->model = rp;
-
-				// TODO 这个判定不该有
-				if(task->dataType != NULL){
-					rp->dataType = (char*) malloc(sizeof(char) * 256);
-					memset(rp->dataType,0,sizeof(char) * 256);
-					sprintf(rp->dataType,"%s",task->dataType);
-
-					SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)rp,(LPARAM)(renderModel->data_type));
-				}
-	    	}*/
 	    }
 	    break;
 	    
@@ -341,54 +331,6 @@ void networkHandle(LPARAM lParam){
 }
 
 int check_type(char * type,char * key){
-	// if(strcmp(type,TYPE_STRING) == 0){
-	// 	char * command = (char *) malloc(sizeof(char) * 256);
-	// 	memset(command,0,sizeof(char) * 256);
-	// 	sprintf(command,"get %s",key);
-
-	// 	sendRedisCommand(command,key,type,CMD_DATA);
-
-	// 	return 1;
-	// }
-
-	// if(strcmp(type,TYPE_LIST) == 0){
-	// 	char * command = (char *) malloc(sizeof(char) * 256);
-	// 	memset(command,0,sizeof(char) * 256);
-	// 	sprintf(command,"lrange %s 0 -1",key);
-
-	// 	sendRedisCommand(command,key, type,CMD_DATA);
-
-	// 	return 2;
-	// }
-	
-	// if(strcmp(type,TYPE_HASH) == 0){
-	// 	char * command = (char *) malloc(sizeof(char) * 256);
-	// 	memset(command,0,sizeof(char) * 256);
-	// 	sprintf(command,"hgetall %s",key);
-
-	// 	sendRedisCommand(command,key,type,CMD_DATA);
-	// 	return 3;
-	// }
-
-	// if(strcmp(type,TYPE_SET) == 0){
-	// 	char * command = (char *) malloc(sizeof(char) * 256);
-	// 	memset(command,0,sizeof(char) * 256);
-	// 	sprintf(command,"smembers %s",key);
-
-	// 	sendRedisCommand(command,key,type,CMD_DATA);
-
-	// 	return 4;
-	// }
-
-	// if(strcmp(type,TYPE_ZSET) == 0){
-	// 	char * command = (char *) malloc(sizeof(char) * 256);
-	// 	memset(command,0,sizeof(char) * 256);
-	// 	sprintf(command,"zrange %s 0 -1 withscores",key);
-
-	// 	sendRedisCommand(command,key,type,CMD_DATA);
-	// 	return 5;
-	// }
-
 	return 1;
 }
 
@@ -463,7 +405,7 @@ void command(HWND hwnd,int cmd){
 		case IDM_CONNECTION:{
 			POINT pt;
 			GetCursorPos(&pt);
-			TrackPopupMenu(mainModel->hDev,TPM_RIGHTALIGN,pt.x,pt.y,0,hwnd,NULL);
+			TrackPopupMenu(mainModel->hDev,TPM_LEFTALIGN,pt.x,pt.y,0,hwnd,NULL);
 			break;
 		}
 

@@ -109,6 +109,8 @@ typedef struct{
 
 	HMENU hDev;
 
+	HMENU hServerInfoMenu;
+
 	HWND logHwnd;
 
 	DataView    * dataView;
