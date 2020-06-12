@@ -13,29 +13,37 @@
 #define LENGTH_WORD     256
 #define LENGTH_COMMAND  1024
 
+typedef enum{
+	REDIS_UNDEFINED,
+	REDIS_STRING,
+	REDIS_LIST,
+	REDIS_HASH,
+	REDIS_SET,
+	REDIS_ZSET
+}DataType;
+
 typedef struct{
 	int    size;
 	char * list[LENGTH_WORD];
 }CommandBlock;
 
-#define	REPLY_STATUS  0
-#define	REPLY_ERROR   1
-#define	REPLY_DIGITAL 2
-#define	REPLY_BULK    3
-#define	REPLY_MULTI   4
-
-/**
- * 数据类型
- */ 
-#define TYPE_STRING "string"
-#define TYPE_LIST   "list"
-#define TYPE_HASH   "hash"
-#define TYPE_SET    "set"
-#define TYPE_ZSET   "zset"
+typedef enum{
+	REPLY_STATUS,
+	REPLY_ERROR,
+	REPLY_DIGITAL,
+	REPLY_BULK,
+	REPLY_MULTI
+}ReplyType;
 
 typedef enum{
-	/** 查询数据库总数 */
-	DATABASE_COUNT,
+	/** 选中数据库 */
+    CMD_SELECT,
+	/** 查看键值列表 */
+    CMD_KEYS,
+    CMD_TYPE,
+    CMD_DATA,
+    CMD_AUTH,
+	CMD_DATABASE_COUNT,
 }CommandType;
 
 typedef struct {
@@ -44,6 +52,7 @@ typedef struct {
 	int status; // 解析中|解析完成
 }ReceiveSession;
 
+// TODO 结构要用union优化一下
 typedef struct{
 	int     type;
 	char *  status;
@@ -54,8 +63,10 @@ typedef struct{
 	char ** bulks;
 	int     bulkSize;
 
-	char * key;
-	char * dataType;
+    /** 业务数据 */
+	char *   dataKey;
+	char *   dataTypeName;
+	DataType dataType;
 }RedisReply;
 
 /**
@@ -81,5 +92,7 @@ char * buildWord(char * word,size_t length);
 int isSpace(char ch);
 
 char  * parse_command(char * text,const size_t size);
+
+DataType checkDataType(char * type);
 
 #endif

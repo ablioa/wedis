@@ -5,15 +5,13 @@
 #include "queue.h"
 #include "redis.h"
 
+#include "controller.h"
+#include "service.h"
+
 typedef struct{
     int type;
 } RedisMessage;
 
-//void dispatch(RedisMessage * message);
-
-
 void dispatch(Task * task,RedisReply * data);
-
-void sendRedisCommand(char * command,char * dataKey,char * dataType,int type);
 
 #endif

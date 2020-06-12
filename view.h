@@ -1,13 +1,13 @@
 #ifndef _view_h
 #define _view_h
 
-//#define _WIN32_IE 0x0600
+#include "main.h"
 
-#include <windows.h>
+//#include <windows.h>
 #include "resource/resource.h"
 #include "callbacks.h"
 
-#include "main.h"
+
 
 #include <stdio.h>
 

@@ -15,11 +15,11 @@
 #define WM_DT_LIST   WM_USER+200
 #define WM_DT_HASH   WM_USER+200
 
-#define PT_SELECT 0
-#define PT_KEYS   1
-#define PT_TYPE   2
-#define PT_DATA   3
-#define PT_AUTH   3
+// #define PT_SELECT 0
+// #define PT_KEYS   1
+// #define PT_TYPE   2
+// #define PT_DATA   3
+// #define PT_AUTH   3
 
 typedef struct {
      WSADATA wsa;
@@ -38,6 +38,8 @@ typedef struct {
     char host[128];
 
     char password[128];
+
+    HTREEITEM hostHandle;
 }TcpConnection;
 
 TcpConnection * build_connection(char * host,int port,char * password);

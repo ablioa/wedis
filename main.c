@@ -233,17 +233,9 @@ void onDataNodeSelection(){
 
 	TreeNode * tn = (TreeNode*) ti.lParam;
 	if(tn->level == 3){
-		char * tc = (char*)malloc(sizeof(char)*128);
-        memset(tc,0,sizeof(char) * 128);
-        sprintf(tc,"select %d",tn->database);
-		sendRedisCommand(tc,NULL,NULL,PT_SELECT);
-
-		char * scmds = (char*)malloc(sizeof(char)*128);
-	    memset(scmds,0,sizeof(char) * 128);
-	    sprintf(scmds,"type %s",ti.pszText);
-
-		sendRedisCommand(scmds,ti.pszText,NULL,PT_TYPE);
-	}	
+		redis_select(tn->database);
+		redis_data_type(ti.pszText);
+	}
 }
 
 void onDataBaseSelect(HWND hwnd){
@@ -270,23 +262,8 @@ void onDataBaseSelect(HWND hwnd){
     TreeNode * tn = (TreeNode*) ti.lParam;
     
     if(tn->level == 2){
-        char * scmds = (char*)malloc(sizeof(char)*128);
-        memset(scmds,0,sizeof(char) * 128);
-        sprintf(scmds,"select %d",tn->database);
-
-		appendLog(scmds);
-        
-		sendRedisCommand(scmds,NULL,NULL,PT_SELECT);
-
-
-		char keycmd[256] = {0};
-        memset(keycmd,0,sizeof(char) * 256);
-        sprintf(keycmd,"keys *");
-
-		appendLog(keycmd);
-		
-		sendRedisCommand(keycmd, NULL,NULL,PT_KEYS);
-
+		redis_select(tn->database);
+		redis_keys();
     	mainModel->selectedNode = hItem;
 		mainModel->database = tn->database;
     }
@@ -298,48 +275,12 @@ void appendLog(char * text){
 	SendMessage(mainModel->logHwnd,EM_REPLACESEL,FALSE,(LPARAM)text);
 }
 
-void handleKeysReply(RedisReply * rp){
-    TVITEM ti = {0};
-    ti.mask = TVIF_HANDLE | TVIF_PARAM;
-    ti.cchTextMax = 128;
-    ti.hItem = mainModel->selectedNode;
-    TreeView_GetItem(mainModel->view->connectionHwnd, &ti);
-    
-    TreeNode * tnf = (TreeNode*) ti.lParam;
-    for(int ix =0; ix < tnf->subHandleSize; ix ++){
-        TreeView_DeleteItem(mainModel->view->connectionHwnd,tnf->subHandles[ix]);
-    }
-    
-    tnf->subHandleSize= 0;
-	tnf->database = mainModel->database;
-    
-    for(int ix =0;ix < rp->bulkSize; ix ++){
-        TV_INSERTSTRUCT tvinsert;
-        
-        tvinsert.hParent = mainModel->selectedNode;
-        tvinsert.hInsertAfter=TVI_LAST;
-        tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
-        tvinsert.item.pszText = rp->bulks[ix];
-        tvinsert.item.iImage=2;
-        tvinsert.item.iSelectedImage=2;
-        
-        TreeNode * tn = buildTreeNode();
-        tn->level = 3;
-		tn->database = tnf->database;
-        tvinsert.item.lParam= (LPARAM)tn;
-        tnf->subHandleSize ++;
-        tnf->subHandles[ix]=(HTREEITEM)SendMessage(mainModel->view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
-    }
-}
+
 
 void networkHandle(LPARAM lParam){
     switch(LOWORD(lParam)){
 	    case FD_CONNECT:{
-		    char * cmd = (char *) malloc(sizeof(char) * 256);
-		    memset(cmd,0,sizeof(char) * 256);
-		    sprintf(cmd,"auth %s",mainModel->connection->password);
-
-	        sendRedisCommand(cmd,NULL,NULL,PT_AUTH);
+			redis_auth(mainModel->connection->password);
 	    	break;
 		}
 	    
@@ -402,53 +343,53 @@ void networkHandle(LPARAM lParam){
 }
 
 int check_type(char * type,char * key){
-	if(strcmp(type,TYPE_STRING) == 0){
-		char * command = (char *) malloc(sizeof(char) * 256);
-		memset(command,0,sizeof(char) * 256);
-		sprintf(command,"get %s",key);
+	// if(strcmp(type,TYPE_STRING) == 0){
+	// 	char * command = (char *) malloc(sizeof(char) * 256);
+	// 	memset(command,0,sizeof(char) * 256);
+	// 	sprintf(command,"get %s",key);
 
-		sendRedisCommand(command,key,type,PT_DATA);
+	// 	sendRedisCommand(command,key,type,CMD_DATA);
 
-		return 1;
-	}
+	// 	return 1;
+	// }
 
-	if(strcmp(type,TYPE_LIST) == 0){
-		char * command = (char *) malloc(sizeof(char) * 256);
-		memset(command,0,sizeof(char) * 256);
-		sprintf(command,"lrange %s 0 -1",key);
+	// if(strcmp(type,TYPE_LIST) == 0){
+	// 	char * command = (char *) malloc(sizeof(char) * 256);
+	// 	memset(command,0,sizeof(char) * 256);
+	// 	sprintf(command,"lrange %s 0 -1",key);
 
-		sendRedisCommand(command,key, type,PT_DATA);
+	// 	sendRedisCommand(command,key, type,CMD_DATA);
 
-		return 2;
-	}
+	// 	return 2;
+	// }
 	
-	if(strcmp(type,TYPE_HASH) == 0){
-		char * command = (char *) malloc(sizeof(char) * 256);
-		memset(command,0,sizeof(char) * 256);
-		sprintf(command,"hgetall %s",key);
+	// if(strcmp(type,TYPE_HASH) == 0){
+	// 	char * command = (char *) malloc(sizeof(char) * 256);
+	// 	memset(command,0,sizeof(char) * 256);
+	// 	sprintf(command,"hgetall %s",key);
 
-		sendRedisCommand(command,key,type,PT_DATA);
-		return 3;
-	}
+	// 	sendRedisCommand(command,key,type,CMD_DATA);
+	// 	return 3;
+	// }
 
-	if(strcmp(type,TYPE_SET) == 0){
-		char * command = (char *) malloc(sizeof(char) * 256);
-		memset(command,0,sizeof(char) * 256);
-		sprintf(command,"smembers %s",key);
+	// if(strcmp(type,TYPE_SET) == 0){
+	// 	char * command = (char *) malloc(sizeof(char) * 256);
+	// 	memset(command,0,sizeof(char) * 256);
+	// 	sprintf(command,"smembers %s",key);
 
-		sendRedisCommand(command,key,type,PT_DATA);
+	// 	sendRedisCommand(command,key,type,CMD_DATA);
 
-		return 4;
-	}
+	// 	return 4;
+	// }
 
-	if(strcmp(type,TYPE_ZSET) == 0){
-		char * command = (char *) malloc(sizeof(char) * 256);
-		memset(command,0,sizeof(char) * 256);
-		sprintf(command,"zrange %s 0 -1 withscores",key);
+	// if(strcmp(type,TYPE_ZSET) == 0){
+	// 	char * command = (char *) malloc(sizeof(char) * 256);
+	// 	memset(command,0,sizeof(char) * 256);
+	// 	sprintf(command,"zrange %s 0 -1 withscores",key);
 
-		sendRedisCommand(command,key,type,PT_DATA);
-		return 5;
-	}
+	// 	sendRedisCommand(command,key,type,CMD_DATA);
+	// 	return 5;
+	// }
 
 	return 1;
 }
@@ -476,47 +417,11 @@ HTREEITEM addHostNode(char * connectionName){
         0,(LPARAM)&tvinsert);
 }
 
-void addDatabaseNode(HTREEITEM parentHandle){
-	AppView * view = mainModel->view;
-	
-	TV_INSERTSTRUCT tvinsert;
-    memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
-
-	tvinsert.hInsertAfter=TVI_ROOT;
-	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
-
-	char * dbname = (char *)malloc(sizeof(char)*128);
-	for(int ix =0; ix < 16;ix ++){
-		memset(dbname,0,sizeof(char) * 128);
-		sprintf(dbname,"db%d",ix);
-
-		tvinsert.item.iImage=1;
-		tvinsert.item.iSelectedImage=1;
-		tvinsert.hParent=parentHandle;
-		tvinsert.hInsertAfter=TVI_LAST;
-		tvinsert.item.pszText= dbname;
-
-		TreeNode * tn = buildTreeNode();
-		tn->level = 2;
-		tn->database = ix;
-		tvinsert.item.lParam= (LPARAM)tn;
-    
-		SendMessage(view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
-	}
-
-	free(dbname);
-}
-
-void addConnection(char * connectionName){
-	HTREEITEM parentHandle = addHostNode(connectionName);
-	addDatabaseNode(parentHandle);
-}
-
 void command(HWND hwnd,int cmd){
 	HINSTANCE hInst = mainModel->hInstance;
 
 	if(cmd > 900 && cmd < 1000){
-		char buff[255] = {0};
+		
 
 		Host * host = getHostByIndex(appConfig,cmd);
 		if(host == NULL){
@@ -527,16 +432,18 @@ void command(HWND hwnd,int cmd){
 		mainModel->connection =  build_connection(host->host,host->port,host->password);
         connect_to_server(mainModel->connection,hwnd);
 
-		sprintf(buff,"%s:%d",host->host,host->port);
-		addConnection(buff);
+		// TODO 封装一下
+		char connName[255] = {0};
+		sprintf(connName,"%s:%d",host->host,host->port);
+		HTREEITEM parentHandle = addHostNode(connName);
+		mainModel->connection->hostHandle = parentHandle;
 
 		return;
 	}
 
     switch (cmd){
 		case IDM_DEBUG_GET_DATABASES:{
-			//log_message("get database count");
-			sendRedisCommand("config get databases",NULL,NULL,PT_AUTH);
+			redis_database_count();
 			break;
 		}
 		case IDM_CONNECTION_POOL:{

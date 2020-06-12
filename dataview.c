@@ -109,12 +109,12 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
         case WM_COMMAND:{
 			switch(LOWORD (wParam)){
 				case GENERAL_CMD_RENAME:{
-                    TCHAR name[256]={0};
-                    GetDlgItemText(dataHwnd,GENERAL_CMD_KEYEDIT,name,sizeof(name));
+                    // TCHAR name[256]={0};
+                    // GetDlgItemText(dataHwnd,GENERAL_CMD_KEYEDIT,name,sizeof(name));
 
-                    TCHAR cmd[256];
-                    sprintf(cmd,"rename %s %s",dataView->data->key,name);
-                    sendRedisCommand(cmd,NULL,NULL,PT_AUTH);
+                    // TCHAR cmd[256];
+                    // sprintf(cmd,"rename %s %s",dataView->data->key,name);
+                    // sendRedisCommand(cmd,NULL,NULL,CMD_AUTH);
 					break;
 				}
 				
@@ -124,9 +124,9 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 				}
 
 				case GENERAL_CMD_REMOVE:{
-                    TCHAR cmd[256];
-                    sprintf(cmd,"del %s",dataView->data->key);
-                    sendRedisCommand(cmd,NULL,NULL,PT_AUTH);
+                    // TCHAR cmd[256];
+                    // sprintf(cmd,"del %s",dataView->data->key);
+                    // sendRedisCommand(cmd,NULL,NULL,CMD_AUTH);
 					break;
 				}
 
@@ -139,23 +139,23 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
         }
 
 		case WM_DT:{
-			RedisReply * rp = (RedisReply *)wParam;
-			int type = (int) lParam;
+			RedisReply * data = (RedisReply *)wParam;
+			// int type = (int) lParam;
 
 			// TODO 这里不应该为空，为空的不能执行到这里!!!
-			if(rp->key == NULL){
+			if(data->dataKey == NULL){
 				break;
 			}
 
-			SendMessage(dataView->keyEditHwnd,WM_SETTEXT,0,(LPARAM)(rp->key));
-			SendMessage(dataView->keyNameHwnd,WM_SETTEXT,0,(LPARAM)(rp->dataType));
+			SendMessage(dataView->keyEditHwnd,WM_SETTEXT,0,(LPARAM)(data->dataKey));
+			SendMessage(dataView->keyNameHwnd,WM_SETTEXT,0,(LPARAM)(data->dataTypeName));
 
-            dataView->data = rp;
-            dataView->type= type;
+            dataView->data = data;
+            dataView->type =  data->dataType;
 
             // 打开数据按钮状态
 
-			switchView(dataHwnd,type,rp);
+			switchView(dataHwnd,data->dataType,data);
 			break;
 		}
 
@@ -185,29 +185,27 @@ void switchView(HWND hwnd,int type,RedisReply * reply){
 
 	ShowWindow(dataView->visibleHwnd,SW_HIDE);
 	switch(type){
-		case 1:{
+		case REDIS_STRING:{
 			dataView->visibleHwnd = dataView->stringViewHwnd;
 			break;
 		}
-		case 2:{
-			int size = reply->bulkSize;
-			for(int ix = 0; ix < size; ix ++){
-				char buff[256] = {0};
-				wsprintf(buff,"size: %s %d -  %d",reply->bulks[ix],reply->bulkSize,type);
-			}
 
+		case REDIS_LIST:{
 			dataView->visibleHwnd = dataView->listViewHwnd;
 			break;
 		}
-		case 3:{
+		
+		case REDIS_HASH:{
 			dataView->visibleHwnd = dataView->hashViewHwnd;
 			break;
 		}
-		case 4:{
+
+		case REDIS_SET:{
 			dataView->visibleHwnd = dataView->setViewHwnd;
 			break;
 		}
-		case 5:{
+		
+		case REDIS_ZSET:{
 			dataView->visibleHwnd = dataView->zsetViewHwnd;
 			break;
 		}

@@ -46,13 +46,13 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
         case WM_COMMAND:{
             switch(LOWORD (wParam)){
                 case IDC_STRING_VIEW_SAVE:{
-                    TCHAR name[256]={0};
-                    GetDlgItemText(hwnd,IDC_STRING_VIEW_TEXT,name,sizeof(name));
+                    // TCHAR name[256]={0};
+                    // GetDlgItemText(hwnd,IDC_STRING_VIEW_TEXT,name,sizeof(name));
 
-                    TCHAR cmd[256];
-                    sprintf(cmd,"set %s \"%s\"",model->data->key,name);
+                    // TCHAR cmd[256];
+                    // sprintf(cmd,"set %s \"%s\"",model->data->key,name);
 
-                    sendRedisCommand(cmd,NULL,NULL,PT_AUTH);
+                    // sendRedisCommand(cmd,NULL,NULL,CMD_AUTH);
                     break;
                 }
             }

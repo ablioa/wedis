@@ -1,10 +1,32 @@
 #include "redis.h"
 
-#define WDEBUG
+DataType checkDataType(char * type){
+	if(type == NULL){
+		return REDIS_UNDEFINED;
+	}
 
-#ifdef WDEBUG
-#include <windows.h>
-#endif
+	if(strcmp("string",type) == 0){
+		return REDIS_STRING;
+	}
+
+	if(strcmp("list",type) == 0){
+		return REDIS_LIST;
+	}
+
+	if(strcmp("hash",type) == 0){
+		return REDIS_HASH;
+	}
+
+	if(strcmp("set",type) == 0){
+		return REDIS_SET;
+	}
+
+	if(strcmp("zet",type) == 0){
+		return REDIS_ZSET;
+	}
+
+	return REDIS_UNDEFINED;
+}
 
 RedisReply * read_replay(char * text){
 	int cur = 0;
@@ -31,6 +53,16 @@ RedisReply * read_replay(char * text){
 		}
         /** error */
 		case '-':{
+			rp->type=REPLY_ERROR;
+			rp->error=(char*)malloc(sizeof(char) * 256);
+			memset(rp->error,0,sizeof(char)*256);
+
+			int scur = 0;
+			while(text[cur] != 0x0d || text[cur+1] != 0x0a){
+			    rp->error[scur++] = text[cur];
+				cur++;
+			}
+			cur+=2;
 			break;
 		}
         /** number */
@@ -48,13 +80,6 @@ RedisReply * read_replay(char * text){
 
 			cur+=2;
 			int count = atoi(cnt);
-
-// #ifdef WDEBUG
-// char buff[255]={0};
-// size_t len = strlen(text);
-// sprintf(buff,"size:%d,len:%d",count,len);
-// MessageBox(NULL,buff,"Title",MB_OK);
-// #endif
 
 			rp->bulk = (char *) malloc(sizeof(char) * count +1);
 			memset(rp->bulk,0,sizeof(char) * count+1);

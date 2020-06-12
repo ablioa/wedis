@@ -6,12 +6,14 @@
 
 #include <string.h>
 
+#include "redis.h"
+
 struct task{
     int    taskType;
 
     char * dataKey;
 
-    char * dataType;
+    DataType dataType;
     
     struct task * next;
 };

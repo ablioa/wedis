@@ -29,13 +29,9 @@
 
 #include "queue.h"
 
-#include "dispatch.h"
+//#include "dispatch.h"
 
-//#ifdef _WIN64 
-//#define GWL_HINSTANCE GWLP_HINSTANCE
-// #define GWL_WNDPROC   GWLP_WNDPROC
-// #define GWL_USERDATA  GWLP_USERDATA
-//#endif
+#include "service.h"
 
 #define szFrameClass "MdiFrame"
 
@@ -52,33 +48,6 @@ typedef struct{
 
 /** 用于提供给视图对象的数据传输对象 TODO 临时性的，要重构掉 */
 extern RenderModel * renderModel;
-//typedef struct{
-//	HWND hwnd;
-//	HWND parent;
-//
-//	int  cntLeft;
-//	int  cntRight;
-//
-//	HWND hwnLeft[20];
-//	HWND hwnRight[20];
-//
-//	int leftSize;
-//	int rightSize;
-//}VerticalSpliter;
-
-//typedef struct{
-//	HWND hwnd;
-//	HWND parent;
-//
-//	int  cntTop;
-//	int  cntDown;
-//
-//	HWND hwnTop[20];
-//	HWND hwnDown[20];
-//
-//	int topSize;
-//	int downSize;
-//}SouthSpliter;
 
 typedef struct{
     HWND hwnd;
@@ -97,10 +66,6 @@ typedef struct{
     int statusbarHeight;
     
     int connectionAreaWitdh;
-    
-//    VerticalSpliter vs;
-
-//    SouthSpliter southSpliter;
 }AppView;
 
 typedef struct{
