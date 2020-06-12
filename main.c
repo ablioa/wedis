@@ -297,8 +297,6 @@ void networkHandle(LPARAM lParam){
 
 			Task * task = getTask(pool);
             RedisReply * rp = read_replay(buff);
-			rp->key = task->dataKey;
-
 			dispatch(task,rp);
 
 			/*
