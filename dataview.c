@@ -173,6 +173,7 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 void switchView(HWND hwnd,int type,RedisReply * reply){
 	DataView * dataView = mainModel->dataView;
 
+	ShowWindow(mainModel->view->dataHwnd,SW_SHOW);
 	ShowWindow(dataView->visibleHwnd,SW_HIDE);
 	ShowWindow(mainModel->view->systemViewHwnd,SW_HIDE);
 	switch(type){

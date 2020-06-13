@@ -88,6 +88,31 @@ struct keyspace_info{
 typedef struct keyspace_info KeyspaceInfo;
 typedef struct keyspace_info * Keyspace;
 
+struct key_value_pair{
+    char key[256];
+    int  value;
+
+    struct key_value_pair * tail;
+    struct key_value_pair * next;
+
+    int count;
+
+    struct key_value_pair * * array;
+};
+
+typedef struct key_value_pair KeyValuePair;
+typedef struct key_value_pair * KVPair;
+
+
+////////////////////////////
+KVPair buildKVPair();
+
+void destroyKVPair(KVPair kv);
+
+void setKVPair(KVPair kv,const char * text);
+
+KVPair parseKVPair(char * buffer);
+
 Keyspace buildKeyspaceInfo();
 
 void setKeyspaceValue(Keyspace info,char * value);

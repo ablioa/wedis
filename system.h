@@ -2,6 +2,7 @@
 #define _system_h
 
 #include <windows.h>
+#include "main.h"
 #include "redis.h"
 
 #define SYSTEM_VIEW_CLASS "SystemViewClass"

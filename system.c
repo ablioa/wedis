@@ -1,55 +1,103 @@
 #include "system.h"
 
+HWND listViewHwnd;
+
+const char * cfgColNames[2]={
+    "Property",
+	"Value"
+};
+
+BOOL InitSetViewColumns1(HWND hWndListView) { 
+    LVCOLUMN lvc;
+    int iCol;
+
+	char * valName;
+
+    lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
+
+    for (iCol = 0; iCol < 2; iCol++){
+
+        // 注意内存释放
+		valName = (char *) malloc(sizeof(char) * 128);
+		memset(valName,0,sizeof(char) * 128);
+		strcpy(valName,cfgColNames[iCol]);
+
+        lvc.iSubItem = iCol;
+        lvc.pszText = valName;
+        lvc.cx = 100;
+
+        if ( iCol < 2 ){
+            lvc.fmt = LVCFMT_LEFT;
+		}
+        else{
+            lvc.fmt = LVCFMT_RIGHT;
+		}
+
+        if (ListView_InsertColumn(hWndListView, iCol, &lvc) == -1){
+            return FALSE;
+		}
+    }
+    
+    return TRUE;
+}
+
+BOOL updateConfigDataSet(HWND hwnd,KVPair kv){
+    char value[256] = {0};
+    LVITEM lvI;
+
+    lvI.pszText   = LPSTR_TEXTCALLBACK;
+    lvI.mask      = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE;
+    lvI.stateMask = 0;
+    lvI.iSubItem  = 0;
+    lvI.state     = 0;
+
+    SendMessage(hwnd,LVM_DELETEALLITEMS,(WPARAM)NULL,(LPARAM)NULL);
+    
+    for (int index = 0; index < kv->count; index++){
+        lvI.iItem  = index;
+        lvI.iImage = index;
+        lvI.iSubItem = 0;
+
+        memset(value,0,256);
+        sprintf(value,"%d",kv->array[index]->value);
+
+        lvI.pszText = kv->array[index]->key;//indexBuff; 
+        ListView_InsertItem(hwnd, &lvI);
+
+        lvI.pszText = value;//reply->bulks[index];
+        lvI.iSubItem = 1;
+        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+    }
+
+    return TRUE;
+}
+
 LRESULT CALLBACK SystemViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	RECT rect;
-    // StringViewModel * model = (StringViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
 
 	switch(message){
 	    case WM_CREATE:{
-            // model = (StringViewModel*)malloc(sizeof(StringViewModel));
-            // memset(model,0,sizeof(StringViewModel));
-            // SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
+           GetClientRect (hwnd, &rect); 
 
-			// model->stringView = CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | WS_BORDER | WS_CHILD | WS_TABSTOP | WS_VSCROLL  |ES_MULTILINE, 0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_TEXT, mainModel->hInstance, 0);
-            // model->btnInsert  = CreateWindowEx(0, WC_BUTTON, ("Save"), WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_SAVE, mainModel->hInstance, 0);
-
-            // SendMessage(model->btnInsert, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
-            // SendMessage(model->stringView, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
+	        listViewHwnd = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
+                          WS_CHILD | WS_BORDER | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS,
+                          0, 0,0,0,
+                          hwnd, NULL, mainModel->hInstance, NULL);
             
+            ListView_SetExtendedListViewStyle(listViewHwnd,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
+			InitSetViewColumns1(listViewHwnd);
 		    break;
 		}
-       
-        case WM_COMMAND:{
-            // switch(LOWORD (wParam)){
-            //     case IDC_STRING_VIEW_SAVE:{
-            //         // TCHAR name[256]={0};
-            //         // GetDlgItemText(hwnd,IDC_STRING_VIEW_TEXT,name,sizeof(name));
 
-            //         // TCHAR cmd[256];
-            //         // sprintf(cmd,"set %s \"%s\"",model->data->key,name);
-
-            //         // sendRedisCommand(cmd,NULL,NULL,CMD_AUTH);
-            //         break;
-            //     }
-            // }
+        case WM_DT:{
+            KVPair kv = (KVPair *)wParam;
+            updateConfigDataSet(listViewHwnd,kv);
             break;
         }
-
-		// case WM_DT:{
-        //     RedisReply * rp = (RedisReply *)wParam;
-
-        //     model->data = rp;
-
-		// 	SendMessage(model->stringView,EM_REPLACESEL,FALSE,(LPARAM)rp->bulk);
-		// 	SetWindowText(model->stringView,rp->bulk);
-        //     break;
-        // }
-
+       
 		case WM_SIZE:{
-			// GetClientRect(hwnd,&rect);
-
-			// MoveWindow(model->stringView,0,0,rect.right-rect.left - 60,rect.bottom-rect.top,TRUE);
-            // MoveWindow(model->btnInsert,rect.right - rect.left - 55,0, 50,24,TRUE);
+			GetClientRect(hwnd,&rect);
+			MoveWindow(listViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
 		    break;
 		}
 	}
@@ -68,7 +116,7 @@ void init_systemview(HINSTANCE hInstance){
     stringViewClass.hInstance     = hInstance;
     stringViewClass.hIcon         = NULL;
     stringViewClass.hCursor       = NULL;
-    stringViewClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
+    stringViewClass.hbrBackground = CreateSolidBrush(RGB(0,240,0));
     stringViewClass.lpszMenuName  = 0;
     stringViewClass.lpszClassName = SYSTEM_VIEW_CLASS;
     stringViewClass.hIconSm       = NULL;

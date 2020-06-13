@@ -384,7 +384,7 @@ void command(HWND hwnd,int cmd){
 		case IDM_DEBUG_GET_DATABASES:{
 			// redis_key_space();
 			// redis_database_count();
-			redis_info_stats();
+			//redis_info_stats();
 			break;
 		}
 		case IDM_CONNECTION_POOL:{
@@ -425,7 +425,7 @@ void command(HWND hwnd,int cmd){
 		}
 
 		case IDM_SYSTEM_STAT:{
-			log_message("server info");
+			redis_info_stats();
 			break;
 		}
 	}

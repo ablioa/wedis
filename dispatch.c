@@ -91,9 +91,13 @@ void dispatch(Task * task,RedisReply * data){
             break;
         }
 
+        // TODO 重构到控制层
         case CMD_INFO_STATS:{
             if(data->type == REPLY_BULK){
-                log_message(data->bulk);
+                KVPair kv = parseKVPair(data->bulk);
+                ShowWindow(mainModel->view->dataHwnd,SW_HIDE);
+			    ShowWindow(mainModel->view->systemViewHwnd,SW_SHOW);
+                SendMessage(mainModel->view->systemViewHwnd,WM_DT,(WPARAM)kv,(LPARAM)NULL);
             }
             break;
         }

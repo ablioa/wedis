@@ -1,7 +1,5 @@
 #include "setview.h"
 
-//HWND setView;
-
 const char * setColNames[2]={
     "Row",
 	"Value"
@@ -42,7 +40,7 @@ BOOL InitSetViewColumns(HWND hWndListView) {
 }
 
 HWND buildSetViewWindow(HWND parent){
-	HINSTANCE hinst = mainModel->hInstance;//(HINSTANCE)GetWindowLong(parent,GWLP_HINSTANCE);
+	HINSTANCE hinst = mainModel->hInstance;
 
 	RECT containerRect;
 	GetClientRect (parent, &containerRect);

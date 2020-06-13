@@ -297,3 +297,64 @@ Keyspace parseKeyspace(char * buffer){
 
     return head;
 }
+
+KVPair buildKVPair(){
+    KVPair kv = (KVPair)malloc(sizeof(KeyValuePair));
+    memset(kv,0,sizeof(KeyValuePair));
+    return kv;
+}
+
+void destroyKVPair(KVPair kv){
+	// TODO 释放数据
+	// TODO 释放数据索引
+	// TODO 释放自己
+}
+
+void setKVPair(KVPair kv,const char * text){
+    char key[255] = {0};
+    char * vpos = strchr(text,':');
+
+    strncpy(kv->key,text,(vpos-text));
+    kv->value = atoi(vpos+1);
+}
+
+KVPair parseKVPair(char * buffer){
+    char *buf       = buffer;
+    char *outer_ptr = NULL;
+    char *inner_ptr = NULL;
+    char *pp_ptr    = NULL;
+
+    char * line;
+    char * dbitem;
+    char * vitem;
+
+    KVPair head = buildKVPair();
+    while ((line = strtok_r(buf, "\r\n", &outer_ptr)) != NULL){
+        if(strncmp("#",line,1) == 0){
+            buf = NULL;
+            continue;
+        }
+
+        KVPair node = buildKVPair();
+        if(head->next == NULL){
+            head->next = node;
+            head->tail = node;
+        }else{
+            head->tail->next = node;
+            head->tail = node;
+        }
+
+        head->count ++;
+        setKVPair(node,line);
+    }
+
+    head->array=(KVPair *) malloc(sizeof(KVPair*) * head->count);
+    KVPair inode = head->next;
+    int idx = 0;
+    while(inode != NULL){
+        head->array[idx++] = inode;
+        inode = inode->next;
+    }
+    
+    return head;
+}

@@ -1,13 +1,11 @@
 #include "stringview.h"
 
-//HWND textView;
-
 HWND buildStringViewWindow(HWND parent){
 	RECT rect;
 	HINSTANCE hinst = mainModel->hInstance;
 
 	GetClientRect (parent, &rect);
-	HWND dataViewHwnd  = CreateWindowEx(0, 
+	HWND dataViewHwnd  = CreateWindowEx(0,
 		STRING_VIEW_CLASS, (""), 
         WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 
         0, 
