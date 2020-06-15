@@ -155,29 +155,54 @@ BOOL CALLBACK AboutDlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam
 }
 
 BOOL CALLBACK SetTtlDlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
-	int lineTogo =0 ;
+	BOOL lineTogo =0 ;
+	RECT rect;
+	int mresult =0;
+
 	switch(message){
 		case WM_COMMAND:
 			switch(LOWORD(wParam)){
-				case IDC_BTN_OK:
-					GetDlgItemInt(hwnd,IDC_ADDRESS,&lineTogo,FALSE);
+				case IDC_TTL_OK:
+					mresult = GetDlgItemInt(hwnd,IDC_TTL_EDIT,&lineTogo,TRUE);
+
+					if(lineTogo){
+						wchar_t buff[256]={0};
+						wsprintf(buff,"size:%d",mresult);
+						// MessageBox(hwnd,buff,"title",MB_OK);
+					}else{
+						break;
+					}
+					
+
 					EndDialog (hwnd, 0);
 				break;
+
+				case IDC_TTL_CANCEL:{
+					EndDialog (hwnd, 0);
+					break;
+				}
 			}
 		break;
 
 		case WM_INITDIALOG:{
             MoveToScreenCenter(hwnd);
-            HWND styledd       = CreateWindowEx(0, WC_STATIC, ("ss"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT, 5, 5, 40, 22, hwnd, (HMENU)0, mainModel->hInstance, 0);
-			HWND keyEditHwnd   = CreateWindowEx(0, WC_EDIT,   (""), WEDIS_EDIT_STYLE, 50, 5, 180, 22, hwnd, (HMENU)GENERAL_CMD_KEYEDIT, mainModel->hInstance, 0);    
-            HWND renameBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("OK"), WEDIS_PUSH_BUTTON_STYLE, 250, 5, 60, 24, hwnd, GENERAL_CMD_RENAME, mainModel->hInstance, 0);  
-            HWND cancelBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Cancel"), WEDIS_PUSH_BUTTON_STYLE, 250, 34, 60, 24, hwnd, GENERAL_CMD_RENAME, mainModel->hInstance, 0); 
+            HWND styledd   = CreateWindowEx(0, WC_STATIC, ("TTL:"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT, 5, 5, 40, 24, hwnd, (HMENU)0, mainModel->hInstance, 0);
+			HWND ttlEdit   = CreateWindowEx(0, WC_EDIT,   ("-1"), WEDIS_EDIT_STYLE, 0, 0, 0, 0, hwnd, (HMENU)IDC_TTL_EDIT, mainModel->hInstance, 0);    
+            HWND okBtn     = CreateWindowEx(0, WC_BUTTON, ("OK"), WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, hwnd, (HMENU)IDC_TTL_OK, mainModel->hInstance, 0);  
+            HWND cancelBtn = CreateWindowEx(0, WC_BUTTON, ("Cancel"), WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, hwnd, (HMENU)IDC_TTL_OK, mainModel->hInstance, 0); 
 
             HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
 			SendMessage(styledd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-            SendMessage(keyEditHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-			SendMessage(cancelBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-            SendMessage(renameBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
+            SendMessage(ttlEdit, WM_SETFONT, (WPARAM)hfont0, FALSE);
+			SendMessage(cancelBtn, WM_SETFONT, (WPARAM)hfont0, FALSE);
+            SendMessage(okBtn, WM_SETFONT, (WPARAM)hfont0, FALSE);
+
+			GetWindowRect(hwnd,&rect);
+			
+			int width = rect.right-rect.left;
+			MoveWindow(ttlEdit,40+5+5,5, width-5-40-5-5-5,24,FALSE);
+			MoveWindow(cancelBtn,width - 60 -5 -5 ,34,60,24,FALSE);
+			MoveWindow(okBtn,width - 5 - 60 -5 - 60 -5,34,60,24,FALSE);
 		    break;
         }
 

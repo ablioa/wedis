@@ -51,6 +51,11 @@
 #define IDC_LIST_OK        602
 #define IDC_LIST_CANCEL    603
 
+
+#define IDC_TTL_OK     100
+#define IDC_TTL_CANCEL 101
+#define IDC_TTL_EDIT   102
+
 #define IDC_STRING_VIEW_TEXT 2001
 #define IDC_STRING_VIEW_SAVE 2002
 
