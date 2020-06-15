@@ -1,22 +1,15 @@
 #include "dispatch.h"
 
 void dispatch(Task * task,RedisReply * data){
-    char msg[255] = {0};
-
     if(task == NULL){
-        appendLog("EMPTY TASK");
+        log_message("EMPTY TASK");
         return;
     }
 
     if(data == NULL){
-        appendLog("EMPTY DATA");
+        log_message("EMPTY DATA");
         return;
     }
-
-    // TODO 这里要校验返回数据的类型，保证没有出错，能够正常处理
-
-    sprintf(msg,"taskType: %d",task->taskType);
-    appendLog(msg);
 
     switch(task->taskType){
         case CMD_AUTH:{

@@ -1,10 +1,5 @@
 #include "queue.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <string.h>
-
 TaskPool * pool;
 
 /**
@@ -24,8 +19,7 @@ Task * buildTask(int taskType){
  * initialize task pool
  */
 void initTaskPool(){
-    pool = (TaskPool *) malloc(sizeof(TaskPool));
-    memset(pool,0,sizeof(TaskPool));
+    pool = (TaskPool *) calloc(1,sizeof(TaskPool));
 
     pool->head = NULL;
     pool->tail = NULL;

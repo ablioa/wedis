@@ -42,7 +42,7 @@ BOOL InitListViewColumns(HWND hWndListView) {
 HWND buildHashViewWindow(HWND parent){
 	RECT rect;
 
-	HINSTANCE hinst = (HINSTANCE)GetWindowLong(parent,GWLP_HINSTANCE);
+	HINSTANCE hinst = mainModel->hInstance;//(HINSTANCE)GetWindowLong(parent,GWLP_HINSTANCE);
 	GetClientRect (parent, &rect);
 	
 	HWND dataViewHwnd  = CreateWindowEx(0, 
@@ -97,9 +97,6 @@ BOOL updateHashDataSet(HWND hwnd,RedisReply * reply){
     return TRUE;
 }
 
-#define WEDIS_PUSH_BUTTON_STYLE BS_FLAT|WS_VISIBLE|WS_CHILD|WS_TABSTOP
-#define WEDIS_COMBO_BOX_STYLE   CBS_DROPDOWNLIST|WS_CHILD|WS_VISIBLE
-#define WEDIS_EDIT_STYLE        WS_VISIBLE|WS_CHILD|WS_TABSTOP|WS_BORDER|ES_AUTOHSCROLL
 
 LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	RECT rect;
@@ -107,7 +104,7 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
 	switch(message){
 	    case WM_CREATE:{
-			HINSTANCE hinst = (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
+			HINSTANCE hinst = mainModel->hInstance;
             GetClientRect (hwnd, &rect); 
 
             hashViewModel = (HashViewModel*)malloc(sizeof(HashViewModel));

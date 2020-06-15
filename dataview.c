@@ -14,7 +14,7 @@ void initCombox(HWND viewTypeHwnd){
         int iSelectedImage;
         int iIndent;
         LPTSTR pszText;
-    } ITEMINFO, *PITEMINFO;
+    } ITEMINFO;
 
     ITEMINFO IInf[] = {
         { 0, 0,  0, "Json"}, 
@@ -52,14 +52,14 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 
     switch(msg){
 		case WM_CREATE:{
-			LONG_PTR hinst = mainModel->hInstance;
+			HINSTANCE hinst = mainModel->hInstance;
 
             HWND keyNameHwnd   = CreateWindowEx(0, WC_STATIC, (""), WS_VISIBLE | WS_BORDER | WS_CHILD | WS_GROUP | SS_LEFT, 5, 5, 40, 24, dataHwnd, (HMENU)0, hinst, 0);
             HWND keyEditHwnd   = CreateWindowEx(0, WC_EDIT,   (""), WEDIS_EDIT_STYLE, 50, 5, 180, 24, dataHwnd, (HMENU)GENERAL_CMD_KEYEDIT, hinst, 0);    
-            HWND renameBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Rename"), WEDIS_PUSH_BUTTON_STYLE, 250, 5, 60, 24, dataHwnd, GENERAL_CMD_RENAME, hinst, 0);     
-            HWND ttlBtnHwnd    = CreateWindowEx(0, WC_BUTTON, ("TTL"), WEDIS_PUSH_BUTTON_STYLE, 315, 5, 60, 24, dataHwnd, GENERAL_CMD_SETTTL, hinst, 0);
-            HWND removeBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Remove"), WEDIS_PUSH_BUTTON_STYLE, 380, 5, 60, 24, dataHwnd, GENERAL_CMD_REMOVE, hinst, 0);
-            HWND reloadBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Reload"), WEDIS_PUSH_BUTTON_STYLE, 445, 5, 60, 24, dataHwnd, GENERAL_CMD_RELOAD, hinst, 0);
+            HWND renameBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Rename"), WEDIS_PUSH_BUTTON_STYLE, 250, 5, 60, 24, dataHwnd, (HMENU)GENERAL_CMD_RENAME, hinst, 0);     
+            HWND ttlBtnHwnd    = CreateWindowEx(0, WC_BUTTON, ("TTL"), WEDIS_PUSH_BUTTON_STYLE, 315, 5, 60, 24, dataHwnd, (HMENU)GENERAL_CMD_SETTTL, hinst, 0);
+            HWND removeBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Remove"), WEDIS_PUSH_BUTTON_STYLE, 380, 5, 60, 24, dataHwnd, (HMENU)GENERAL_CMD_REMOVE, hinst, 0);
+            HWND reloadBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Reload"), WEDIS_PUSH_BUTTON_STYLE, 445, 5, 60, 24, dataHwnd, (HMENU)GENERAL_CMD_RELOAD, hinst, 0);
             HWND viewTypeHwnd  = CreateWindowEx(0, WC_COMBOBOXEX, (""), WEDIS_COMBO_BOX_STYLE,510, 5, 120, 100, dataHwnd, (HMENU)0, hinst, 0);
 
 			initCombox(viewTypeHwnd);
@@ -102,7 +102,7 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 			dataView->keyEditHwnd   = keyEditHwnd;
 			dataView->keyNameHwnd   = keyNameHwnd;
 
-			SetWindowLong(dataHwnd,GWLP_USERDATA,(LONG)dataView);
+			SetWindowLongPtr(dataHwnd,GWLP_USERDATA,(LONG_PTR)dataView);
 		    break;
 		}
 

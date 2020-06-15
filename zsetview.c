@@ -15,8 +15,7 @@ BOOL InitZsetViewColumns(HWND hWndListView) {
     lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
     for (iCol = 0; iCol < 3; iCol++){
-		valName = (char *) malloc(sizeof(char) * 128);
-		memset(valName,0,sizeof(char) * 128);
+		valName = (char *) calloc(128,sizeof(char));
 		strcpy(valName,zsetColNames[iCol]);
 
         lvc.iSubItem = iCol;
@@ -43,8 +42,7 @@ LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
     ZsetViewModel * zsetViewModel = (ZsetViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
 	switch(message){
 	    case WM_CREATE:{
-            zsetViewModel = (ZsetViewModel*)malloc(sizeof(ZsetViewModel));
-            memset(zsetViewModel,0,sizeof(ZsetViewModel));
+            zsetViewModel = (ZsetViewModel*)calloc(1,sizeof(ZsetViewModel));
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)zsetViewModel);
 
 			HINSTANCE hinst = mainModel->hInstance;

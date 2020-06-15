@@ -170,8 +170,8 @@ BOOL CALLBACK SetTtlDlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
             MoveToScreenCenter(hwnd);
             HWND styledd       = CreateWindowEx(0, WC_STATIC, ("ss"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT, 5, 5, 40, 22, hwnd, (HMENU)0, mainModel->hInstance, 0);
 			HWND keyEditHwnd   = CreateWindowEx(0, WC_EDIT,   (""), WEDIS_EDIT_STYLE, 50, 5, 180, 22, hwnd, (HMENU)GENERAL_CMD_KEYEDIT, mainModel->hInstance, 0);    
-            HWND renameBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("OK"), WEDIS_PUSH_BUTTON_STYLE, 250, 5, 60, 24, hwnd, GENERAL_CMD_RENAME, mainModel->hInstance, 0);  
-            HWND cancelBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Cancel"), WEDIS_PUSH_BUTTON_STYLE, 250, 34, 60, 24, hwnd, GENERAL_CMD_RENAME, mainModel->hInstance, 0); 
+            HWND renameBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("OK"), WEDIS_PUSH_BUTTON_STYLE, 250, 5, 60, 24, hwnd, (HMENU)GENERAL_CMD_RENAME, mainModel->hInstance, 0);  
+            HWND cancelBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Cancel"), WEDIS_PUSH_BUTTON_STYLE, 250, 34, 60, 24, hwnd, (HMENU)GENERAL_CMD_RENAME, mainModel->hInstance, 0); 
 
             HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
 			SendMessage(styledd, WM_SETFONT, (WPARAM)hfont0, FALSE);

@@ -1,8 +1,7 @@
 #include "connection.h"
 
 TcpConnection * build_connection(char * host,int port,char * password){
-    TcpConnection * connection = (TcpConnection *)malloc(sizeof(TcpConnection));
-    ZeroMemory(connection,sizeof(TcpConnection));
+    TcpConnection * connection = (TcpConnection *)calloc(1,sizeof(TcpConnection));
 
 	strcpy(connection->host,host);
 	strcpy(connection->password,password);
@@ -14,7 +13,7 @@ TcpConnection * build_connection(char * host,int port,char * password){
 int connect_to_server(TcpConnection * connection,HWND hwnd){
     int retVal;
 
-    connection->buff = (char *)malloc(BUFF_SIZE*sizeof(char));
+    connection->buff = (char *)calloc(BUFF_SIZE,sizeof(char));
 	connection->bconnect = FALSE;
 
 	WORD SysVer=MAKEWORD(2,0);

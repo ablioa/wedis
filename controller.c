@@ -1,10 +1,7 @@
 #include "controller.h"
 
-/**
- * TODO 注意内存释放
- */
 void handleKeyspace(Keyspace keyspace){
-	Keyspace * spaces = (Keyspace*)malloc(sizeof(Keyspace *) * keyspace->count);
+	Keyspace * spaces = (Keyspace*)calloc(keyspace->count,sizeof(Keyspace *));
     Keyspace inode    = keyspace->next;
 
 	int ix = 0;
@@ -20,8 +17,7 @@ void handleKeyspace(Keyspace keyspace){
 }
 
 void handleRedisData(Task * task,RedisReply * data){
-	data->dataKey = (char*) malloc(sizeof(char) * 256);
-	memset(data->dataKey,0,sizeof(char) * 256);
+	data->dataKey = (char*) calloc(256,sizeof(char));
 	sprintf(data->dataKey,"%s",task->dataKey);
 
 	switch(task->dataType){
@@ -93,6 +89,11 @@ void handleRedisData(Task * task,RedisReply * data){
 				log_message("wrong hash data format");
 			}
 			break;			
+		}
+
+		case REDIS_UNDEFINED:{
+			log_message("undefined data type");
+			break;
 		}
 	}
 }

@@ -299,9 +299,7 @@ Keyspace parseKeyspace(char * buffer){
 }
 
 KVPair buildKVPair(){
-    KVPair kv = (KVPair)malloc(sizeof(KeyValuePair));
-    memset(kv,0,sizeof(KeyValuePair));
-    return kv;
+    return (KVPair)calloc(1,sizeof(KeyValuePair));
 }
 
 void destroyKVPair(KVPair kv){
@@ -311,7 +309,6 @@ void destroyKVPair(KVPair kv){
 }
 
 void setKVPair(KVPair kv,const char * text){
-    char key[255] = {0};
     char * vpos = strchr(text,':');
 
     strncpy(kv->key,text,(vpos-text));
@@ -321,12 +318,7 @@ void setKVPair(KVPair kv,const char * text){
 KVPair parseKVPair(char * buffer){
     char *buf       = buffer;
     char *outer_ptr = NULL;
-    char *inner_ptr = NULL;
-    char *pp_ptr    = NULL;
-
     char * line;
-    char * dbitem;
-    char * vitem;
 
     KVPair head = buildKVPair();
     while ((line = strtok_r(buf, "\r\n", &outer_ptr)) != NULL){
