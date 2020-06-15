@@ -11,8 +11,7 @@ LRESULT CALLBACK consoleWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 
     switch(msg){
 		case WM_CREATE:{
-			cview = (ConsoleView*)malloc(sizeof(ConsoleView));
-			memset(cview,0,sizeof(ConsoleView));
+			cview = (ConsoleView*)calloc(1,sizeof(ConsoleView));
 			
 			HWND logHwnd  = CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | WS_VSCROLL  |ES_MULTILINE, 0, 0, 100, 100, hwnd, (HMENU)0, hinst, 0);
             HWND cmdHwnd  = CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER , 0, 100, 100, 24, hwnd, (HMENU)0, hinst, 0);
@@ -48,7 +47,7 @@ LRESULT CALLBACK consoleWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 }
 
 BOOL CALLBACK CmdBoxProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
-	ConsoleView * consoleView = (ConsoleView *) GetWindowLong(hwnd,GWLP_USERDATA);
+	ConsoleView * consoleView = (ConsoleView *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
 
 	char buff[256];
 

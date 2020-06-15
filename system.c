@@ -90,8 +90,7 @@ LRESULT CALLBACK SystemViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 		}
 
         case WM_DT:{
-            KVPair kv = (KVPair *)wParam;
-            updateConfigDataSet(listViewHwnd,kv);
+            updateConfigDataSet(listViewHwnd,(KVPair)wParam);
             break;
         }
        

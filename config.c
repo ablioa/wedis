@@ -1,9 +1,11 @@
 #include "config.h"
 
+#define CONFIG_REQUIREPASS "requirepass"
+#define CONFIG_PASSWORD    "password"
+
 Config * appConfig;
 
 Host * getHostByIndex(Config * config,int hostIndex){
-//    int cur = 0;
     Host * result = NULL;
 
     for(int cur = 0; cur < config->total_host; cur++){
@@ -19,24 +21,19 @@ Host * getHostByIndex(Config * config,int hostIndex){
 }
 
 void load_all(){
-    appConfig = (Config*)malloc(sizeof(Config));
-    memset(appConfig,0,sizeof(Config));
+    appConfig = (Config*)calloc(1,sizeof(Config));
 
     LONG total=GetPrivateProfileInt(GENERAL_CONFIG,TOTAL_HOST,0,INI_NAME);
     appConfig->total_host = total;
-
-    appConfig->hosts=(Host**)malloc(sizeof(Host*)*total);
-    memset(appConfig->hosts,0,sizeof(Host*)*total);
+    appConfig->hosts=(Host**)calloc(total,sizeof(Host*));
 
     for(int ix=0;ix < total; ix ++){
-        Host * host = (Host *)malloc(sizeof(Host));
-        memset(host,0,sizeof(Host));
+        Host * host = (Host *)calloc(1,sizeof(Host));
 
         char section_name[MAX_PATH]={0};
         wsprintf(section_name,"host/%d",ix);
 
-        char * host_name = (char *)malloc(sizeof(char) * MAX_PATH);
-        memset(host_name,0,sizeof(char)*MAX_PATH);
+        char * host_name = (char *)calloc(MAX_PATH,sizeof(char));
 
         GetPrivateProfileString(section_name,CONFIG_HOST,"127.0.0.1",host_name,MAX_PATH,INI_NAME);
         host->host = host_name;
@@ -47,8 +44,7 @@ void load_all(){
         LONG requirepass=GetPrivateProfileInt(section_name,CONFIG_REQUIREPASS,0,INI_NAME);
         host->requirepass=requirepass;
 
-        char * password = (char *)malloc(sizeof(char) * MAX_PATH);
-        memset(password,0,sizeof(char)*MAX_PATH);
+        char * password = (char *)calloc(MAX_PATH,sizeof(char));
 
         GetPrivateProfileString(section_name,CONFIG_PASSWORD,"abc123",password,MAX_PATH,INI_NAME);
         host->password=password;
@@ -57,8 +53,7 @@ void load_all(){
     }
 }
 
-#define CONFIG_REQUIREPASS "requirepass"
-#define CONFIG_PASSWORD    "password"
+
 
 void save_all(){
     load_all();

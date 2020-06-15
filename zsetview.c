@@ -15,8 +15,7 @@ BOOL InitZsetViewColumns(HWND hWndListView) {
     lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
     for (iCol = 0; iCol < 3; iCol++){
-		valName = (char *) malloc(sizeof(char) * 128);
-		memset(valName,0,sizeof(char) * 128);
+		valName = (char *) calloc(128,sizeof(char));
 		strcpy(valName,zsetColNames[iCol]);
 
         lvc.iSubItem = iCol;
@@ -43,8 +42,7 @@ LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
     ZsetViewModel * zsetViewModel = (ZsetViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
 	switch(message){
 	    case WM_CREATE:{
-            zsetViewModel = (ZsetViewModel*)malloc(sizeof(ZsetViewModel));
-            memset(zsetViewModel,0,sizeof(ZsetViewModel));
+            zsetViewModel = (ZsetViewModel*)calloc(1,sizeof(ZsetViewModel));
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)zsetViewModel);
 
 			HINSTANCE hinst = mainModel->hInstance;
@@ -112,25 +110,25 @@ BOOL inertInto(HWND hwnd,RedisReply * reply){
 
     SendMessage(hwnd,LVM_DELETEALLITEMS,(WPARAM)NULL,(LPARAM)NULL);
     
-    for (int index = 0; index < (reply->bulkSize/2); index++){
-        lvI.iItem  = index;
-        lvI.iImage = index;
-        lvI.iSubItem = 0;
+    // for (int index = 0; index < (reply->bulkSize/2); index++){
+    //     lvI.iItem  = index;
+    //     lvI.iImage = index;
+    //     lvI.iSubItem = 0;
 
-        memset(indexBuff,0,256);
-        sprintf(indexBuff,"%d",(index +1));
+    //     memset(indexBuff,0,256);
+    //     sprintf(indexBuff,"%d",(index +1));
 
-        lvI.pszText = indexBuff; 
-        ListView_InsertItem(hwnd, &lvI);
+    //     lvI.pszText = indexBuff; 
+    //     ListView_InsertItem(hwnd, &lvI);
 
-        lvI.pszText = reply->bulks[index * 2];
-        lvI.iSubItem = 1;
-        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+    //     lvI.pszText = reply->bulks[index * 2];
+    //     lvI.iSubItem = 1;
+    //     SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
 
-        lvI.pszText = reply->bulks[index *2+1];
-        lvI.iSubItem = 2;
-        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
-    }
+    //     lvI.pszText = reply->bulks[index *2+1];
+    //     lvI.iSubItem = 2;
+    //     SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+    // }
 
     return TRUE;
 }

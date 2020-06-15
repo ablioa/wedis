@@ -13,8 +13,7 @@ eMsg err_list[]={
 };
 
 void DumpMessage(long Err_Code){
-    MSGBOXPARAMS *lpBoxParam = (MSGBOXPARAMS *)malloc(sizeof(MSGBOXPARAMS));
-    ZeroMemory(lpBoxParam,sizeof(MSGBOXPARAMS));
+    MSGBOXPARAMS *lpBoxParam = (MSGBOXPARAMS *)calloc(1,sizeof(MSGBOXPARAMS));
 
     lpBoxParam->cbSize      = sizeof(MSGBOXPARAMS);
     lpBoxParam->hInstance   = GetModuleHandle(NULL);

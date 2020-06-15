@@ -2,6 +2,7 @@
 #define wedis_h
 
 #include <windows.h>
+#include <stdio.h>
 
 /**
  * 一般控件样式 
@@ -27,5 +28,11 @@ typedef struct{
 extern SystemResource * resource;
 
 void initResource();
+
+void log_message(const char * message);
+
+char * getOutputBuffer(int size);
+
+char * dumpText( char * text,int len);
 
 #endif

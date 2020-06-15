@@ -41,24 +41,21 @@ void redis_data_type(char * dataKey){
 }
 
 void redis_get_string(char * dataKey){
-    const char * cmd = (char *) malloc(sizeof(char) * 256);
-	memset(cmd,0,sizeof(char) * 256);
+    char * cmd = (char *) calloc(256,sizeof(char));
 	sprintf(cmd,"get %s",dataKey);
     
 	sendRedisRequest(CMD_DATA,cmd,REDIS_STRING,dataKey);
 }
 
 void redis_get_list(char * dataKey){
-	char * cmd = (char *) malloc(sizeof(char) * 256);
-	memset(cmd,0,sizeof(char) * 256);
+	char * cmd = (char *) calloc(256,sizeof(char));
 	sprintf(cmd,"lrange %s 0 -1",dataKey);
 
 	sendRedisRequest(CMD_DATA,cmd, REDIS_LIST,dataKey);
 }
 
 void redis_get_hash(char * dataKey){
-    char * cmd = (char *) malloc(sizeof(char) * 256);
-	memset(cmd,0,sizeof(char) * 256);
+    char * cmd = (char *) calloc(256,sizeof(char));
 	sprintf(cmd,"hgetall %s",dataKey);
 
     sendRedisRequest(CMD_DATA,cmd, REDIS_HASH,dataKey);
@@ -81,14 +78,14 @@ void redis_get_zset(char * dataKey){
 }
 
 void redis_delete_key(char * dataKey){
-    TCHAR cmd[256];
+    char cmd[256];
     sprintf(cmd,"del %s",dataKey);
 
     sendRedisRequest(CMD_DELETE_KEY,cmd, REDIS_UNDEFINED,NULL);
 }
 
 void redis_rename_key(char * dataKey,char * newKey){
-    TCHAR cmd[256];
+    char cmd[256];
     sprintf(cmd,"rename %s %s",dataKey,newKey);
     sendRedisRequest(CMD_RENAME_KEY,cmd,REDIS_UNDEFINED,dataKey);
 }

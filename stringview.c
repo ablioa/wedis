@@ -58,7 +58,7 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
         }
 
 		case WM_DT:{
-            RedisReply * rp = (RedisReply *)wParam;
+            RedisReply rp = (RedisReply *)wParam;
 
             model->data = rp;
 

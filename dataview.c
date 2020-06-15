@@ -14,7 +14,7 @@ void initCombox(HWND viewTypeHwnd){
         int iSelectedImage;
         int iIndent;
         LPTSTR pszText;
-    } ITEMINFO, *PITEMINFO;
+    } ITEMINFO;
 
     ITEMINFO IInf[] = {
         { 0, 0,  0, "Json"}, 
@@ -52,7 +52,7 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 
     switch(msg){
 		case WM_CREATE:{
-			LONG_PTR hinst = mainModel->hInstance;
+			HINSTANCE hinst = mainModel->hInstance;
 
             HWND keyNameHwnd   = CreateWindowEx(0, WC_STATIC, (""), WS_VISIBLE | WS_BORDER | WS_CHILD | WS_GROUP | SS_LEFT, 5, 5, 40, 24, dataHwnd, (HMENU)0, hinst, 0);
             HWND keyEditHwnd   = CreateWindowEx(0, WC_EDIT,   (""), WEDIS_EDIT_STYLE, 0, 0, 0, 0, dataHwnd, (HMENU)GENERAL_CMD_KEYEDIT, hinst, 0);    
@@ -102,29 +102,29 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 			dataView->keyEditHwnd   = keyEditHwnd;
 			dataView->keyNameHwnd   = keyNameHwnd;
 
-			SetWindowLong(dataHwnd,GWLP_USERDATA,(LONG)dataView);
+			SetWindowLongPtr(dataHwnd,GWLP_USERDATA,(LONG_PTR)dataView);
 		    break;
 		}
 
         case WM_COMMAND:{
 			switch(LOWORD (wParam)){
-				case GENERAL_CMD_RENAME:{
-                    TCHAR newKey[256]={0};
-                    GetDlgItemText(dataHwnd,GENERAL_CMD_KEYEDIT,newKey,sizeof(newKey));
+				// case GENERAL_CMD_RENAME:{
+                //     TCHAR newKey[256]={0};
+                //     GetDlgItemText(dataHwnd,GENERAL_CMD_KEYEDIT,newKey,sizeof(newKey));
 					
-					redis_rename_key(dataView->data->dataKey,newKey);
-					break;
-				}
+				// 	redis_rename_key(dataView->data->dataKey,newKey);
+				// 	break;
+				// }
 				
 				case GENERAL_CMD_SETTTL:{
 					DialogBox (mainModel->hInstance,MAKEINTRESOURCE (IDD_GOTOLINE),dataHwnd,(DLGPROC)SetTtlDlgProc);
 					break;
 				}
 
-				case GENERAL_CMD_REMOVE:{
-					redis_delete_key(dataView->data->dataKey);
-					break;
-				}
+				// case GENERAL_CMD_REMOVE:{
+				// 	redis_delete_key(dataView->data->dataKey);
+				// 	break;
+				// }
 
 				case GENERAL_CMD_RELOAD:{
 					MessageBox(dataHwnd,"reload the data","title",MB_OK);
@@ -134,20 +134,20 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 			break;
         }
 
-		case WM_DT:{
-			RedisReply * data = (RedisReply *)wParam;
+		// case WM_DT:{
+		// 	RedisReply * data = (RedisReply *)wParam;
 
-			SendMessage(dataView->keyEditHwnd,WM_SETTEXT,0,(LPARAM)(data->dataKey));
-			SendMessage(dataView->keyNameHwnd,WM_SETTEXT,0,(LPARAM)(data->dataTypeName));
+		// 	SendMessage(dataView->keyEditHwnd,WM_SETTEXT,0,(LPARAM)(data->dataKey));
+		// 	SendMessage(dataView->keyNameHwnd,WM_SETTEXT,0,(LPARAM)(data->dataTypeName));
 
-            dataView->data = data;
-            dataView->type =  data->dataType;
+        //     dataView->data = data;
+        //     dataView->type =  data->dataType;
 
-            // 打开数据按钮状态
+        //     // 打开数据按钮状态
 
-			switchView(dataHwnd,data->dataType,data);
-			break;
-		}
+		// 	switchView(dataHwnd,data->dataType,data);
+		// 	break;
+		// }
 
 		case WM_SIZE:{
 			GetClientRect(dataHwnd,&rect);

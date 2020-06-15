@@ -1,10 +1,7 @@
 #include "controller.h"
 
-/**
- * TODO 注意内存释放
- */
 void handleKeyspace(Keyspace keyspace){
-	Keyspace * spaces = (Keyspace*)malloc(sizeof(Keyspace *) * keyspace->count);
+	Keyspace * spaces = (Keyspace*)calloc(keyspace->count,sizeof(Keyspace *));
     Keyspace inode    = keyspace->next;
 
 	int ix = 0;
@@ -19,9 +16,8 @@ void handleKeyspace(Keyspace keyspace){
 	redis_database_count();
 }
 
-void handleRedisData(Task * task,RedisReply * data){
-	data->dataKey = (char*) malloc(sizeof(char) * 256);
-	memset(data->dataKey,0,sizeof(char) * 256);
+void handleRedisData(Task * task,RedisReply data){
+	data->dataKey = (char*) calloc(256,sizeof(char));
 	sprintf(data->dataKey,"%s",task->dataKey);
 
 	switch(task->dataType){
@@ -94,6 +90,11 @@ void handleRedisData(Task * task,RedisReply * data){
 			}
 			break;			
 		}
+
+		case REDIS_UNDEFINED:{
+			log_message("undefined data type");
+			break;
+		}
 	}
 }
 
@@ -131,7 +132,7 @@ void handleDataType(Task * task,DataType dataType){
 	}
 }
 
-void addDataNode(RedisReply * rp){
+void addDataNode(RedisReply rp){
     TVITEM ti = {0};
     ti.mask = TVIF_HANDLE | TVIF_PARAM;
     ti.cchTextMax = 128;
@@ -146,23 +147,23 @@ void addDataNode(RedisReply * rp){
     tnf->subHandleSize= 0;
 	tnf->database = mainModel->database;
     
-    for(int ix =0;ix < rp->bulkSize; ix ++){
-        TV_INSERTSTRUCT tvinsert;
+    // for(int ix =0;ix < rp->bulkSize; ix ++){
+    //     TV_INSERTSTRUCT tvinsert;
         
-        tvinsert.hParent = mainModel->selectedNode;
-        tvinsert.hInsertAfter=TVI_LAST;
-        tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
-        tvinsert.item.pszText = rp->bulks[ix];
-        tvinsert.item.iImage=2;
-        tvinsert.item.iSelectedImage=2;
+    //     tvinsert.hParent = mainModel->selectedNode;
+    //     tvinsert.hInsertAfter=TVI_LAST;
+    //     tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
+    //     tvinsert.item.pszText = rp->bulks[ix];
+    //     tvinsert.item.iImage=2;
+    //     tvinsert.item.iSelectedImage=2;
         
-        TreeNode * tn = buildTreeNode();
-        tn->level = 3;
-		tn->database = tnf->database;
-        tvinsert.item.lParam= (LPARAM)tn;
-        tnf->subHandleSize ++;
-        tnf->subHandles[ix]=(HTREEITEM)SendMessage(mainModel->view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
-    }
+    //     TreeNode * tn = buildTreeNode();
+    //     tn->level = 3;
+	// 	tn->database = tnf->database;
+    //     tvinsert.item.lParam= (LPARAM)tn;
+    //     tnf->subHandleSize ++;
+    //     tnf->subHandles[ix]=(HTREEITEM)SendMessage(mainModel->view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+    // }
 
 	// 触发消息，展开树节点
 	SendMessage(mainModel->view->connectionHwnd,TVM_EXPAND,(WPARAM)TVE_TOGGLE,(LPARAM)(mainModel->selectedNode));

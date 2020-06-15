@@ -49,21 +49,55 @@ typedef struct{
 }CommandBlock;
 
 // TODO 结构要用union优化一下
-typedef struct{
-	int     type;
-	char *  status;
-	char *  error;
-	int     digital;
-	char *  bulk;
+// typedef struct{
+// 	int     type;
+// 	char *  status;
+// 	char *  error;
+// 	int     digital;
+// 	char *  bulk;
 
-	char ** bulks;
-	int     bulkSize;
+// 	char ** bulks;
+// 	int     bulkSize;
 
-    /** 业务数据 */
-	char *   dataKey;
-	char *   dataTypeName;
-	DataType dataType;
-}RedisReply;
+//     /** 业务数据 */
+// 	char *   dataKey;
+// 	char *   dataTypeName;
+// 	DataType dataType;
+// }RedisReply;
+
+
+struct redis_bulk{
+	char  * bulk;
+	int     length;
+};
+
+//typedef struct redis_bulk RedisBulk;
+typedef struct redis_bulk * RedisBulk;
+
+struct redis_bulks{
+	int count;
+	RedisBulk * bulks;
+};
+typedef struct redis_bulks * RedisBulks;
+
+struct redis_reply_info{
+	int type;
+
+union{
+		RedisBulk    bulk;
+		RedisBulks   bulks;
+		RedisBulk    error;
+		RedisBulk    status;
+		int          integer;
+	};
+
+    char *   dataKey;
+    char *   dataTypeName;
+    DataType dataType;
+};
+
+typedef struct redis_reply_info   RedisReplyInfo;
+typedef struct redis_reply_info * RedisReply;
 
 /**
  * redis 列表数据

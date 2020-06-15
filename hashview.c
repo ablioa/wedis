@@ -42,7 +42,7 @@ BOOL InitListViewColumns(HWND hWndListView) {
 HWND buildHashViewWindow(HWND parent){
 	RECT rect;
 
-	HINSTANCE hinst = (HINSTANCE)GetWindowLong(parent,GWLP_HINSTANCE);
+	HINSTANCE hinst = mainModel->hInstance;//(HINSTANCE)GetWindowLong(parent,GWLP_HINSTANCE);
 	GetClientRect (parent, &rect);
 	
 	HWND dataViewHwnd  = CreateWindowEx(0, 
@@ -74,32 +74,29 @@ BOOL updateHashDataSet(HWND hwnd,RedisReply * reply){
 
     SendMessage(hwnd,LVM_DELETEALLITEMS,(WPARAM)NULL,(LPARAM)NULL);
     
-    for (int index = 0; index < (reply->bulkSize/2); index++){
-        lvI.iItem  = index;
-        lvI.iImage = index;
-        lvI.iSubItem = 0;
+    // for (int index = 0; index < (reply->bulkSize/2); index++){
+    //     lvI.iItem  = index;
+    //     lvI.iImage = index;
+    //     lvI.iSubItem = 0;
 
-        memset(indexBuff,0,256);
-        sprintf(indexBuff,"%d",(index +1));
+    //     memset(indexBuff,0,256);
+    //     sprintf(indexBuff,"%d",(index +1));
 
-        lvI.pszText = indexBuff; 
-        ListView_InsertItem(hwnd, &lvI);
+    //     lvI.pszText = indexBuff; 
+    //     ListView_InsertItem(hwnd, &lvI);
 
-        lvI.pszText = reply->bulks[index * 2];
-        lvI.iSubItem = 1;
-        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+    //     lvI.pszText = reply->bulks[index * 2];
+    //     lvI.iSubItem = 1;
+    //     SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
 
-        lvI.pszText = reply->bulks[index *2+1];
-        lvI.iSubItem = 2;
-        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
-    }
+    //     lvI.pszText = reply->bulks[index *2+1];
+    //     lvI.iSubItem = 2;
+    //     SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+    // }
 
     return TRUE;
 }
 
-#define WEDIS_PUSH_BUTTON_STYLE BS_FLAT|WS_VISIBLE|WS_CHILD|WS_TABSTOP
-#define WEDIS_COMBO_BOX_STYLE   CBS_DROPDOWNLIST|WS_CHILD|WS_VISIBLE
-#define WEDIS_EDIT_STYLE        WS_VISIBLE|WS_CHILD|WS_TABSTOP|WS_BORDER|ES_AUTOHSCROLL
 
 LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	RECT rect;
@@ -107,7 +104,7 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
 	switch(message){
 	    case WM_CREATE:{
-			HINSTANCE hinst = (HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
+			HINSTANCE hinst = mainModel->hInstance;
             GetClientRect (hwnd, &rect); 
 
             hashViewModel = (HashViewModel*)malloc(sizeof(HashViewModel));
