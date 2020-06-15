@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #define CHAR_SPACE ' '
 #define CHAR_TAB   '\t'

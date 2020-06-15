@@ -13,13 +13,8 @@ void dispatch(Task * task,RedisReply data){
 
     switch(task->taskType){
         case CMD_AUTH:{
-            log_message(data->status->bulk);
-            log_int_message(data->type);
-
             if(data->type == REPLY_STATUS){
-                log_message("auth ok");
                 if(strcmp("OK",data->status->bulk) == 0){
-                    
                     redis_key_space();
                 }
             }else if(data->type == REPLY_ERROR){
@@ -28,14 +23,17 @@ void dispatch(Task * task,RedisReply data){
             break;
         }
 
-        // case CMD_DATABASE_COUNT:{
-        //     int dbCount = atoi(data->bulks[1]);
-        //     addDatabaseNode(dbCount);
-        //     break;
-        // }
+        case CMD_DATABASE_COUNT:{
+            int dbCount = atoi(data->bulks->bulks[1]->bulk);
+            // data->bulks->bulks
+            // log_message(data->bulks->bulks[0]->bulk);
+            // log_int_message(dbCount);
+            addDatabaseNode(dbCount);
+            break;
+        }
 
         case CMD_SELECT:{
-            if(data->type != REPLY_STATUS || strcmp("OK",data->status) != 0){
+            if(data->type != REPLY_STATUS || strcmp("OK",data->status->bulk) != 0){
                 log_message("database select error");
             }
             break;
@@ -52,7 +50,7 @@ void dispatch(Task * task,RedisReply data){
 
         case CMD_TYPE:{
             if(data->type == REPLY_STATUS){
-                DataType dataType = checkDataType(data->status);
+                DataType dataType = checkDataType(data->status->bulk);
                 if(dataType == REDIS_UNDEFINED){
                     log_message("undefined data type");
                     break;
@@ -81,8 +79,10 @@ void dispatch(Task * task,RedisReply data){
         }
 
         case CMD_INFO_KEYSPACE:{
+            
             if(data->type == REPLY_BULK){
-                Keyspace space = parseKeyspace(data->bulk);
+                // log_message("dispatch");
+                Keyspace space = parseKeyspace(data->bulk->bulk);
                 handleKeyspace(space);
             }
             break;
@@ -91,7 +91,7 @@ void dispatch(Task * task,RedisReply data){
         // TODO 重构到控制层
         case CMD_INFO_STATS:{
             if(data->type == REPLY_BULK){
-                KVPair kv = parseKVPair(data->bulk);
+                KVPair kv = parseKVPair(data->bulk->bulk);
                 ShowWindow(mainModel->view->dataHwnd,SW_HIDE);
 			    ShowWindow(mainModel->view->systemViewHwnd,SW_SHOW);
                 SendMessage(mainModel->view->systemViewHwnd,WM_DT,(WPARAM)kv,(LPARAM)NULL);

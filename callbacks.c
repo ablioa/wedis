@@ -167,7 +167,7 @@ BOOL CALLBACK SetTtlDlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 
 					if(lineTogo){
 						wchar_t buff[256]={0};
-						wsprintf(buff,"size:%d",mresult);
+						sprintf(buff,"size:%d",mresult);
 						// MessageBox(hwnd,buff,"title",MB_OK);
 					}else{
 						break;
