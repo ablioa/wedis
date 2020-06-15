@@ -5,11 +5,11 @@
 #include "main.h"
 #include "redis.h"
 
-#define	REPLY_STATUS  0
-#define	REPLY_ERROR   1
-#define	REPLY_DIGITAL 2
-#define	REPLY_BULK    3
-#define	REPLY_MULTI   4
+// #define	REPLY_STATUS  0
+// #define	REPLY_ERROR   1
+// #define	REPLY_DIGITAL 2
+// #define	REPLY_BULK    3
+// #define	REPLY_MULTI   4
 
 LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

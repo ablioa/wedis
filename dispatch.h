@@ -6,6 +6,6 @@
 #include "controller.h"
 #include "service.h"
 
-void dispatch(Task * task,RedisReply * data);
+void dispatch(Task * task,RedisReply data);
 
 #endif

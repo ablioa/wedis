@@ -1,6 +1,6 @@
 #include "dispatch.h"
 
-void dispatch(Task * task,RedisReply * data){
+void dispatch(Task * task,RedisReply data){
     if(task == NULL){
         log_message("EMPTY TASK");
         return;
@@ -13,22 +13,26 @@ void dispatch(Task * task,RedisReply * data){
 
     switch(task->taskType){
         case CMD_AUTH:{
-            if(data->type == REPLY_ERROR){
-                MessageBox(NULL,data->error,"title",MB_OK);
-            }else if(data->type == REPLY_STATUS){
-                if(strcmp("OK",data->status) == 0){
-                    //redis_database_count();
+            log_message(data->status->bulk);
+            log_int_message(data->type);
+
+            if(data->type == REPLY_STATUS){
+                log_message("auth ok");
+                if(strcmp("OK",data->status->bulk) == 0){
+                    
                     redis_key_space();
                 }
+            }else if(data->type == REPLY_ERROR){
+                MessageBox(NULL,data->error->bulk,"title",MB_OK);
             }
             break;
         }
 
-        case CMD_DATABASE_COUNT:{
-            int dbCount = atoi(data->bulks[1]);
-            addDatabaseNode(dbCount);
-            break;
-        }
+        // case CMD_DATABASE_COUNT:{
+        //     int dbCount = atoi(data->bulks[1]);
+        //     addDatabaseNode(dbCount);
+        //     break;
+        // }
 
         case CMD_SELECT:{
             if(data->type != REPLY_STATUS || strcmp("OK",data->status) != 0){

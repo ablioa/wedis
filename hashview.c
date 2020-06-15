@@ -74,25 +74,25 @@ BOOL updateHashDataSet(HWND hwnd,RedisReply * reply){
 
     SendMessage(hwnd,LVM_DELETEALLITEMS,(WPARAM)NULL,(LPARAM)NULL);
     
-    for (int index = 0; index < (reply->bulkSize/2); index++){
-        lvI.iItem  = index;
-        lvI.iImage = index;
-        lvI.iSubItem = 0;
+    // for (int index = 0; index < (reply->bulkSize/2); index++){
+    //     lvI.iItem  = index;
+    //     lvI.iImage = index;
+    //     lvI.iSubItem = 0;
 
-        memset(indexBuff,0,256);
-        sprintf(indexBuff,"%d",(index +1));
+    //     memset(indexBuff,0,256);
+    //     sprintf(indexBuff,"%d",(index +1));
 
-        lvI.pszText = indexBuff; 
-        ListView_InsertItem(hwnd, &lvI);
+    //     lvI.pszText = indexBuff; 
+    //     ListView_InsertItem(hwnd, &lvI);
 
-        lvI.pszText = reply->bulks[index * 2];
-        lvI.iSubItem = 1;
-        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+    //     lvI.pszText = reply->bulks[index * 2];
+    //     lvI.iSubItem = 1;
+    //     SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
 
-        lvI.pszText = reply->bulks[index *2+1];
-        lvI.iSubItem = 2;
-        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
-    }
+    //     lvI.pszText = reply->bulks[index *2+1];
+    //     lvI.iSubItem = 2;
+    //     SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+    // }
 
     return TRUE;
 }

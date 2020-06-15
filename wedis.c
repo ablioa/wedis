@@ -11,7 +11,15 @@ void initResource(){
 }
 
 void log_message(const char * message){
-	MessageBox(NULL,message,"TITLE",MB_OK);
+    char buff[256] = {0};
+    sprintf(buff,"value: |%s|",message);
+	MessageBox(NULL,buff,"TITLE",MB_OK);
+}
+
+void log_int_message(int value){
+    char buff[256] = {0};
+    sprintf(buff,"value: %d",value);
+    MessageBox(NULL,buff,"TITLE",MB_OK);
 }
 
 char * getOutputBuffer(int size){

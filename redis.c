@@ -1,68 +1,55 @@
 #include "redis.h"
 
-DataType checkDataType(char * type){
-	if(type == NULL){
-		return REDIS_UNDEFINED;
-	}
+int getStatusReplyLength(char * text){
+	int  cur = 0;
 
-	if(strcmp("string",type) == 0){
-		return REDIS_STRING;
-	}
+    int length = 0;
+    while(text[cur] != 0x0d || text[cur+1] != 0x0a){
+    	cur++;
+    	length++;
+    }
 
-	if(strcmp("list",type) == 0){
-		return REDIS_LIST;
-	}
+	return length-1;
+}
 
-	if(strcmp("hash",type) == 0){
-		return REDIS_HASH;
-	}
+RedisBulk buildRedisBulk(int length){
+	RedisBulk bulk = (RedisBulk)calloc(1,sizeof(struct redis_bulk));
+	bulk->bulk = (char*) calloc(length+1,sizeof(char));
+	bulk->length = length;
+	return bulk;
+}
 
-	if(strcmp("set",type) == 0){
-		return REDIS_SET;
-	}
-
-	if(strcmp("zet",type) == 0){
-		return REDIS_ZSET;
-	}
-
-	return REDIS_UNDEFINED;
+RedisBulks buildRedisBulks(int count){
+	RedisBulks bulks = (RedisBulks)calloc(1,sizeof(struct redis_bulks));
+	bulks->bulks = (RedisBulk*) calloc(count,sizeof(RedisBulk));
+	bulks->count = count;
+	return bulks;
 }
 
 RedisReply * read_replay(char * text){
-	int cur = 0;
-	char ch = text[cur++];
+	int  cur = 0;
+	char ch  = text[cur++];
 
-	RedisReply * rp = (RedisReply*)malloc(sizeof(RedisReply));
-	memset(rp,0,sizeof(RedisReply));
-	rp->type = -1;
-	
+	RedisReply reply = (RedisReply*)calloc(1,sizeof(RedisReplyInfo));
     switch(ch){
-        /** information */
+        /** status */
 		case '+':{
-			rp->type=REPLY_STATUS;
-			rp->status=(char*)malloc(sizeof(char) * 256);
-			memset(rp->status,0,sizeof(char)*256);
+			reply->type=REPLY_STATUS;
+			int length = getStatusReplyLength(text);
 
-			int scur = 0;
-			while(text[cur] != 0x0d || text[cur+1] != 0x0a){
-			    rp->status[scur++] = text[cur];
-				cur++;
-			}
-			cur+=2;
+			RedisBulk status = buildRedisBulk(length);
+			memcpy(status->bulk,(text+1),length);
+			reply->status = status;
 			break;
 		}
         /** error */
 		case '-':{
-			rp->type=REPLY_ERROR;
-			rp->error=(char*)malloc(sizeof(char) * 256);
-			memset(rp->error,0,sizeof(char)*256);
-
-			int scur = 0;
-			while(text[cur] != 0x0d || text[cur+1] != 0x0a){
-			    rp->error[scur++] = text[cur];
-				cur++;
-			}
-			cur+=2;
+			reply->type = REPLY_ERROR;
+			int length = getStatusReplyLength(text);
+			
+			RedisBulk error = buildRedisBulk(length);
+			memcpy(error->bulk,(text+1),length);
+			reply->error = error;
 			break;
 		}
         /** number */
@@ -71,7 +58,7 @@ RedisReply * read_replay(char * text){
 		}
         /** bulk */
 		case '$':{
-			rp->type =REPLY_BULK;
+			reply->type =REPLY_BULK;
 			char cnt[128]={0};
 			int scur = 0;
 			while(text[cur] >='0' && text[cur] <= '9'){
@@ -81,19 +68,15 @@ RedisReply * read_replay(char * text){
 			cur+=2;
 			int count = atoi(cnt);
 
-			rp->bulk = (char *) malloc(sizeof(char) * count +1);
-			memset(rp->bulk,0,sizeof(char) * count+1);
+			RedisBulk bulk = buildRedisBulk(count);
+			reply->bulk = bulk;
+			memcpy(bulk->bulk,(cur+1),count);
 
-			for(int ix =0; ix < count; ix ++){
-				rp->bulk[ix] = text[cur++];
-			}
-
-			rp->bulk[count] = 0;
 			break;
 		}
         /** multibulk */
 		case '*':{
-			rp->type=REPLY_MULTI;
+			reply->type=REPLY_MULTI;
 			char cnt[128]={0};
 			int scur = 0;
 			while(text[cur] >='0' && text[cur] <= '9'){
@@ -103,8 +86,11 @@ RedisReply * read_replay(char * text){
 			cur+=3;
 			int count = atoi(cnt);
 
-			rp->bulkSize = count;
-			rp->bulks = (char **) malloc(sizeof(char*) * count);
+			RedisBulks bulks = buildRedisBulks(count);
+			reply->bulks = bulks;
+
+			//rp->bulkSize = count;
+			//rp->bulks = (char **) malloc(sizeof(char*) * count);
 
 			int bulkCount=0;
 			for(int ix =0; ix < count; ix ++){
@@ -116,14 +102,19 @@ RedisReply * read_replay(char * text){
 				cur+=2;
 				int mcount = atoi(cnt);
 
-				char * tup = (char *) malloc(sizeof(char)*mcount+1);
-				memset(tup,0,sizeof(char)*mcount+1);
+				RedisBulk bulk = buildRedisBulk(count);
+				reply->bulks->bulks[ix] = bulk;
+				
+				memcpy(bulk->bulk,(cur+1),count);
 
-				for(int jx =0; jx < mcount; jx ++){
-					tup[jx]=text[cur++];
-				}
+				//char * tup = (char *) malloc(sizeof(char)*mcount+1);
+				//memset(tup,0,sizeof(char)*mcount+1);
 
-				rp->bulks[bulkCount++] = tup;
+				//for(int jx =0; jx < mcount; jx ++){
+				//	tup[jx]=text[cur++];
+				////}
+
+				//rp->bulks[bulkCount++] = tup;
 
 				cur+=3;
 			}
@@ -131,7 +122,7 @@ RedisReply * read_replay(char * text){
 		}
 	}
 
-	return rp;
+	return reply;
 }
 
 void init_command(CommandBlock * block){
@@ -349,4 +340,32 @@ KVPair parseKVPair(char * buffer){
     }
     
     return head;
+}
+
+DataType checkDataType(char * type){
+	if(type == NULL){
+		return REDIS_UNDEFINED;
+	}
+
+	if(strcmp("string",type) == 0){
+		return REDIS_STRING;
+	}
+
+	if(strcmp("list",type) == 0){
+		return REDIS_LIST;
+	}
+
+	if(strcmp("hash",type) == 0){
+		return REDIS_HASH;
+	}
+
+	if(strcmp("set",type) == 0){
+		return REDIS_SET;
+	}
+
+	if(strcmp("zet",type) == 0){
+		return REDIS_ZSET;
+	}
+
+	return REDIS_UNDEFINED;
 }

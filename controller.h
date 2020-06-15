@@ -6,11 +6,11 @@
 
 void addDatabaseNode(int dbCount);
 
-void addDataNode(RedisReply * rp);
+void addDataNode(RedisReply rp);
 
 void handleDataType(Task * task,DataType dataType);
 
-void handleRedisData(Task * task,RedisReply * data);
+void handleRedisData(Task * task,RedisReply data);
 
 void handleKeyspace(Keyspace keyspace);
 
