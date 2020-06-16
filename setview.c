@@ -63,7 +63,7 @@ HWND buildSetViewWindow(HWND parent){
     
 }
 
-BOOL updateSetDataSet(HWND hwnd,RedisReply * reply){
+BOOL updateSetDataSet(HWND hwnd,RedisReply reply){
     char indexBuff[256] = {0};
     LVITEM lvI;
 
@@ -74,29 +74,26 @@ BOOL updateSetDataSet(HWND hwnd,RedisReply * reply){
     lvI.state     = 0;
 
     SendMessage(hwnd,LVM_DELETEALLITEMS,(WPARAM)NULL,(LPARAM)NULL);
-    
-    // for (int index = 0; index < (reply->bulkSize); index++){
-    //     lvI.iItem  = index;
-    //     lvI.iImage = index;
-    //     lvI.iSubItem = 0;
 
-    //     memset(indexBuff,0,256);
-    //     sprintf(indexBuff,"%d",(index +1));
+    RedisBulks bulks = reply->bulks;
+    for (int index = 0; index < (bulks->count); index++){
+        lvI.iItem  = index;
+        lvI.iImage = index;
+        lvI.iSubItem = 0;
 
-    //     lvI.pszText = indexBuff; 
-    //     ListView_InsertItem(hwnd, &lvI);
+        memset(indexBuff,0,256);
+        sprintf(indexBuff,"%d",(index +1));
 
-    //     lvI.pszText = reply->bulks[index];
-    //     lvI.iSubItem = 1;
-    //     SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
-    // }
+        lvI.pszText = indexBuff; 
+        ListView_InsertItem(hwnd, &lvI);
+
+        lvI.pszText = bulks->items[index]->content;
+        lvI.iSubItem = 1;
+        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+    }
 
     return TRUE;
 }
-
-#define WEDIS_PUSH_BUTTON_STYLE BS_FLAT|WS_VISIBLE|WS_CHILD|WS_TABSTOP
-#define WEDIS_COMBO_BOX_STYLE   CBS_DROPDOWNLIST|WS_CHILD|WS_VISIBLE
-#define WEDIS_EDIT_STYLE        WS_VISIBLE|WS_CHILD|WS_TABSTOP|WS_BORDER|ES_AUTOHSCROLL
 
 LRESULT CALLBACK SetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	RECT rect;
@@ -142,7 +139,7 @@ LRESULT CALLBACK SetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 		}
 
         case WM_DT:{
-            RedisReply * rp = (RedisReply *)wParam;
+            RedisReply rp = (RedisReply)wParam;
             updateSetDataSet(setViewModel->setView,rp);
             break;
         }
@@ -172,7 +169,7 @@ void init_setview(HINSTANCE hInstance){
     setViewClass.hInstance     = hInstance;
     setViewClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     setViewClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    setViewClass.hbrBackground = CreateSolidBrush(RGB(240,244,244));
+    setViewClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
     setViewClass.lpszMenuName  = 0;
     setViewClass.lpszClassName = SET_VIEW_CLASS;
     setViewClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));

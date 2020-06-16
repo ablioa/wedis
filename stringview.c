@@ -58,12 +58,12 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
         }
 
 		case WM_DT:{
-            RedisReply rp = (RedisReply *)wParam;
+            RedisReply data = (RedisReply)wParam;
 
-            model->data = rp;
+            model->data = data;
 
-			SendMessage(model->stringView,EM_REPLACESEL,FALSE,(LPARAM)rp->bulk);
-			SetWindowText(model->stringView,rp->bulk);
+			SendMessage(model->stringView,EM_REPLACESEL,FALSE,(LPARAM)data->bulk->content);
+			SetWindowText(model->stringView,data->bulk->content);
             break;
         }
 

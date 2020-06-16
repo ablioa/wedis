@@ -49,42 +49,22 @@ typedef struct{
 	char * list[LENGTH_WORD];
 }CommandBlock;
 
-// TODO 结构要用union优化一下
-// typedef struct{
-// 	int     type;
-// 	char *  status;
-// 	char *  error;
-// 	int     digital;
-// 	char *  bulk;
-
-// 	char ** bulks;
-// 	int     bulkSize;
-
-//     /** 业务数据 */
-// 	char *   dataKey;
-// 	char *   dataTypeName;
-// 	DataType dataType;
-// }RedisReply;
-
-
 struct redis_bulk{
-	char  * bulk;
+	char  * content;
 	int     length;
 };
-
-//typedef struct redis_bulk RedisBulk;
 typedef struct redis_bulk * RedisBulk;
 
 struct redis_bulks{
 	int count;
-	RedisBulk * bulks;
+	RedisBulk * items;
 };
 typedef struct redis_bulks * RedisBulks;
 
 struct redis_reply_info{
 	int type;
 
-union{
+    union{
 		RedisBulk    bulk;
 		RedisBulks   bulks;
 		RedisBulk    error;
@@ -138,8 +118,6 @@ struct key_value_pair{
 typedef struct key_value_pair KeyValuePair;
 typedef struct key_value_pair * KVPair;
 
-
-////////////////////////////
 KVPair buildKVPair();
 
 void destroyKVPair(KVPair kv);
@@ -154,7 +132,7 @@ void setKeyspaceValue(Keyspace info,char * value);
 
 Keyspace parseKeyspace(char * buffer);
 
-RedisReply * read_replay(char * text);
+RedisReply read_replay(char * text);
 
 void init_command(CommandBlock * block);
 
@@ -165,8 +143,6 @@ char * put_command(CommandBlock * block);
 void free_command(CommandBlock * block);
 
 char * buildWord(char * word,size_t length);
-
-int isSpace(char ch);
 
 char  * parse_command(char * text,const size_t size);
 

@@ -48,83 +48,32 @@ void initCombox(HWND viewTypeHwnd){
 
 LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam){
 	DataView * dataView = mainModel->dataView;
-	RECT rect;
 
     switch(msg){
 		case WM_CREATE:{
-			HINSTANCE hinst = mainModel->hInstance;
-
-            HWND keyNameHwnd   = CreateWindowEx(0, WC_STATIC, (""), WS_VISIBLE | WS_BORDER | WS_CHILD | WS_GROUP | SS_LEFT, 5, 5, 40, 24, dataHwnd, (HMENU)0, hinst, 0);
-            HWND keyEditHwnd   = CreateWindowEx(0, WC_EDIT,   (""), WEDIS_EDIT_STYLE, 0, 0, 0, 0, dataHwnd, (HMENU)GENERAL_CMD_KEYEDIT, hinst, 0);    
-            HWND renameBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Rename"), WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, dataHwnd, GENERAL_CMD_RENAME, hinst, 0);     
-            HWND ttlBtnHwnd    = CreateWindowEx(0, WC_BUTTON, ("TTL"), WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, dataHwnd, GENERAL_CMD_SETTTL, hinst, 0);
-            HWND removeBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Remove"), WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, dataHwnd, GENERAL_CMD_REMOVE, hinst, 0);
-            HWND reloadBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Reload"), WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, dataHwnd, GENERAL_CMD_RELOAD, hinst, 0);
-            HWND viewTypeHwnd  = CreateWindowEx(0, WC_COMBOBOXEX, (""), WEDIS_COMBO_BOX_STYLE,0, 0, 0, 0, dataHwnd, (HMENU)0, hinst, 0);
-
-			initCombox(viewTypeHwnd);
-            
-            HWND dataViewHwnd  = CreateWindowEx(0, DATA_RENDER_WINDOW, (""), 
-                WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 
-                5, 34, 625, 240, 
-                dataHwnd, (HMENU)0, hinst, 0);
-
-			dataView->hashViewHwnd = buildHashViewWindow(dataViewHwnd);
-			dataView->stringViewHwnd = buildStringViewWindow(dataViewHwnd);
-			dataView->listViewHwnd = buildListViewWindow(dataViewHwnd);
-			dataView->setViewHwnd = buildSetViewWindow(dataViewHwnd);
-			dataView->zsetViewHwnd = buildZsetViewWindow(dataViewHwnd);
-
-            HWND saveBtnHwnd  = CreateWindowEx(0, WC_BUTTON,  ("Save"), WEDIS_PUSH_BUTTON_STYLE, 570, 279, 60, 24, dataHwnd, (HMENU)0, hinst, 0);     
-            HWND exportBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Export"), WEDIS_PUSH_BUTTON_STYLE, 505, 279, 60, 24, dataHwnd, (HMENU)0, hinst, 0); 
-            
-            HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
-            SendMessage(dataViewHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-            SendMessage(saveBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-            SendMessage(exportBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-            SendMessage(keyEditHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-            SendMessage(renameBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-            SendMessage(viewTypeHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-            SendMessage(ttlBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-            SendMessage(removeBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-            SendMessage(reloadBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-			SendMessage(keyNameHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-
-			dataView->dataViewHwnd  = dataViewHwnd;
-			dataView->exportBtnHwnd = exportBtnHwnd;
-			dataView->saveBtnHwnd   = saveBtnHwnd;
-			dataView->viewTypeHwnd  = viewTypeHwnd;
-
-			dataView->reloadBtnHwnd = reloadBtnHwnd;
-			dataView->removeBtnHwnd = removeBtnHwnd;
-			dataView->renameBtnHwnd = renameBtnHwnd;
-			dataView->ttlBtnHwnd    = ttlBtnHwnd;
-			dataView->keyEditHwnd   = keyEditHwnd;
-			dataView->keyNameHwnd   = keyNameHwnd;
-
-			SetWindowLongPtr(dataHwnd,GWLP_USERDATA,(LONG_PTR)dataView);
+			createDataViewWindow(dataHwnd);
 		    break;
 		}
 
         case WM_COMMAND:{
 			switch(LOWORD (wParam)){
-				// case GENERAL_CMD_RENAME:{
-                //     TCHAR newKey[256]={0};
-                //     GetDlgItemText(dataHwnd,GENERAL_CMD_KEYEDIT,newKey,sizeof(newKey));
-					
-				// 	redis_rename_key(dataView->data->dataKey,newKey);
-				// 	break;
-				// }
+				case GENERAL_CMD_RENAME:{
+                    TCHAR newKey[256]={0};
+                    GetDlgItemText(dataHwnd,GENERAL_CMD_KEYEDIT,newKey,sizeof(newKey));
+				
+					redis_rename_key(dataView->data->dataKey,newKey);
+					break;
+				}
 				
 				case GENERAL_CMD_SETTTL:{
 					DialogBox (mainModel->hInstance,MAKEINTRESOURCE (IDD_GOTOLINE),dataHwnd,(DLGPROC)SetTtlDlgProc);
 					break;
 				}
 
-				// case GENERAL_CMD_REMOVE:{
-				// 	redis_delete_key(dataView->data->dataKey);
-				// 	break;
-				// }
+				case GENERAL_CMD_REMOVE:{
+					redis_delete_key(dataView->data->dataKey);
+					break;
+				}
 
 				case GENERAL_CMD_RELOAD:{
 					MessageBox(dataHwnd,"reload the data","title",MB_OK);
@@ -134,35 +83,21 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 			break;
         }
 
-		// case WM_DT:{
-		// 	RedisReply * data = (RedisReply *)wParam;
+		case WM_DT:{
+			RedisReply data = (RedisReply)wParam;
 
-		// 	SendMessage(dataView->keyEditHwnd,WM_SETTEXT,0,(LPARAM)(data->dataKey));
-		// 	SendMessage(dataView->keyNameHwnd,WM_SETTEXT,0,(LPARAM)(data->dataTypeName));
+			SendMessage(dataView->keyEditHwnd,WM_SETTEXT,0,(LPARAM)(data->dataKey));
+			SendMessage(dataView->keyNameHwnd,WM_SETTEXT,0,(LPARAM)(data->dataTypeName));
 
-        //     dataView->data = data;
-        //     dataView->type =  data->dataType;
+            dataView->data = data;
+            dataView->type =  data->dataType;
+			switchView(dataHwnd,data->dataType,data);
 
-        //     // 打开数据按钮状态
-
-		// 	switchView(dataHwnd,data->dataType,data);
-		// 	break;
-		// }
+			break;
+		}
 
 		case WM_SIZE:{
-			GetClientRect(dataHwnd,&rect);
-
-			MoveWindow(dataView->dataViewHwnd,5,34,rect.right-rect.left-5-5,rect.bottom-rect.top-68-5,TRUE);
-			MoveWindow(dataView->exportBtnHwnd,rect.right-rect.left-60-5,rect.bottom-rect.top-24-5,60,24,TRUE);
-			MoveWindow(dataView->saveBtnHwnd,rect.right-rect.left-125-5,rect.bottom-rect.top-24-5,60,24,TRUE);
-
-			MoveWindow(dataView->viewTypeHwnd,rect.right-rect.left-120-5,5,120,100,TRUE);
-			MoveWindow(dataView->reloadBtnHwnd,rect.right-rect.left-5-120-5-60,5,60,24,TRUE);
-			MoveWindow(dataView->removeBtnHwnd,rect.right-rect.left-5-120-5-60-5-60,5,60,24,TRUE);
-			MoveWindow(dataView->ttlBtnHwnd,rect.right-rect.left-5-120-5-60-5-60-5-60,5,60,24,TRUE);
-			MoveWindow(dataView->renameBtnHwnd,rect.right-rect.left-5-120-5-60-5-60-5-60-5-60,5,60,24,TRUE);
-			MoveWindow(dataView->keyEditHwnd,50,5,rect.right-rect.left-40-5-120-5-60-5-60-5-60-5-60-5-5-5,24,TRUE);
-
+			resizeDataViewWinwdow(dataHwnd);
 			break;
 		}
 	}
@@ -170,7 +105,80 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 	return DefWindowProc(dataHwnd, msg, wParam, lParam);
 }
 
-void switchView(HWND hwnd,int type,RedisReply * reply){
+void resizeDataViewWinwdow(HWND dataHwnd){
+	DataView * dataView = mainModel->dataView;
+	RECT rect;
+
+	GetClientRect(dataHwnd,&rect);
+
+    MoveWindow(dataView->dataViewHwnd,5,34,rect.right-rect.left-5-5,rect.bottom-rect.top-68-5,TRUE);
+    MoveWindow(dataView->exportBtnHwnd,rect.right-rect.left-60-5,rect.bottom-rect.top-24-5,60,24,TRUE);
+    MoveWindow(dataView->saveBtnHwnd,rect.right-rect.left-125-5,rect.bottom-rect.top-24-5,60,24,TRUE);
+    
+    MoveWindow(dataView->viewTypeHwnd,rect.right-rect.left-120-5,5,120,100,TRUE);
+    MoveWindow(dataView->reloadBtnHwnd,rect.right-rect.left-5-120-5-60,5,60,24,TRUE);
+    MoveWindow(dataView->removeBtnHwnd,rect.right-rect.left-5-120-5-60-5-60,5,60,24,TRUE);
+    MoveWindow(dataView->ttlBtnHwnd,rect.right-rect.left-5-120-5-60-5-60-5-60,5,60,24,TRUE);
+    MoveWindow(dataView->renameBtnHwnd,rect.right-rect.left-5-120-5-60-5-60-5-60-5-60,5,60,24,TRUE);
+    MoveWindow(dataView->keyEditHwnd,50,5,rect.right-rect.left-40-5-120-5-60-5-60-5-60-5-60-5-5-5,24,TRUE);
+}
+
+void createDataViewWindow(HWND dataHwnd){
+    DataView * dataView = mainModel->dataView;
+    HINSTANCE hinst = mainModel->hInstance;
+    
+    HWND keyNameHwnd   = CreateWindowEx(0, WC_STATIC, (""), WS_VISIBLE | WS_BORDER | WS_CHILD | WS_GROUP | SS_LEFT, 5, 5, 40, 24, dataHwnd, (HMENU)0, hinst, 0);
+    HWND keyEditHwnd   = CreateWindowEx(0, WC_EDIT,   (""), WEDIS_EDIT_STYLE, 0, 0, 0, 0, dataHwnd, (HMENU)GENERAL_CMD_KEYEDIT, hinst, 0);    
+    HWND renameBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Rename"), WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, dataHwnd, (HMENU)GENERAL_CMD_RENAME, hinst, 0);     
+    HWND ttlBtnHwnd    = CreateWindowEx(0, WC_BUTTON, ("TTL"), WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, dataHwnd, (HMENU)GENERAL_CMD_SETTTL, hinst, 0);
+    HWND removeBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Remove"), WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, dataHwnd, (HMENU)GENERAL_CMD_REMOVE, hinst, 0);
+    HWND reloadBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Reload"), WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, dataHwnd, (HMENU)GENERAL_CMD_RELOAD, hinst, 0);
+    HWND viewTypeHwnd  = CreateWindowEx(0, WC_COMBOBOXEX, (""), WEDIS_COMBO_BOX_STYLE,0, 0, 0, 0, dataHwnd, (HMENU)0, hinst, 0);
+    
+    initCombox(viewTypeHwnd);
+    
+    HWND dataViewHwnd  = CreateWindowEx(0, DATA_RENDER_WINDOW, (""), 
+        WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 
+        5, 34, 625, 240, 
+        dataHwnd, (HMENU)0, hinst, 0);
+    
+    dataView->hashViewHwnd = buildHashViewWindow(dataViewHwnd);
+    dataView->stringViewHwnd = buildStringViewWindow(dataViewHwnd);
+    dataView->listViewHwnd = buildListViewWindow(dataViewHwnd);
+    dataView->setViewHwnd = buildSetViewWindow(dataViewHwnd);
+    dataView->zsetViewHwnd = buildZsetViewWindow(dataViewHwnd);
+    
+    HWND saveBtnHwnd  = CreateWindowEx(0, WC_BUTTON,  ("Save"), WEDIS_PUSH_BUTTON_STYLE, 570, 279, 60, 24, dataHwnd, (HMENU)0, hinst, 0);     
+    HWND exportBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Export"), WEDIS_PUSH_BUTTON_STYLE, 505, 279, 60, 24, dataHwnd, (HMENU)0, hinst, 0); 
+    
+    HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
+    SendMessage(dataViewHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
+    SendMessage(saveBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
+    SendMessage(exportBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
+    SendMessage(keyEditHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
+    SendMessage(renameBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
+    SendMessage(viewTypeHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
+    SendMessage(ttlBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
+    SendMessage(removeBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
+    SendMessage(reloadBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
+    SendMessage(keyNameHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
+    
+    dataView->dataViewHwnd  = dataViewHwnd;
+    dataView->exportBtnHwnd = exportBtnHwnd;
+    dataView->saveBtnHwnd   = saveBtnHwnd;
+    dataView->viewTypeHwnd  = viewTypeHwnd;
+    
+    dataView->reloadBtnHwnd = reloadBtnHwnd;
+    dataView->removeBtnHwnd = removeBtnHwnd;
+    dataView->renameBtnHwnd = renameBtnHwnd;
+    dataView->ttlBtnHwnd    = ttlBtnHwnd;
+    dataView->keyEditHwnd   = keyEditHwnd;
+    dataView->keyNameHwnd   = keyNameHwnd;
+    
+    SetWindowLongPtr(dataHwnd,GWLP_USERDATA,(LONG_PTR)dataView);
+}
+
+void switchView(HWND hwnd,int type,RedisReply data){
 	DataView * dataView = mainModel->dataView;
 
 	ShowWindow(mainModel->view->dataHwnd,SW_SHOW);
@@ -204,7 +212,7 @@ void switchView(HWND hwnd,int type,RedisReply * reply){
 	}
 
 	ShowWindow(dataView->visibleHwnd,SW_SHOW);
-	SendMessage(dataView->visibleHwnd,WM_DT,(WPARAM)reply,(LPARAM)NULL);
+	SendMessage(dataView->visibleHwnd,WM_DT,(WPARAM)data,(LPARAM)NULL);
 }
 
 LRESULT CALLBACK dataRenderProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){

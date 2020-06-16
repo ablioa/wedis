@@ -81,7 +81,7 @@ void redis_delete_key(char * dataKey){
     char cmd[256];
     sprintf(cmd,"del %s",dataKey);
 
-    sendRedisRequest(CMD_DELETE_KEY,cmd, REDIS_UNDEFINED,NULL);
+    sendRedisRequest(CMD_DELETE_KEY,cmd, REDIS_UNDEFINED,dataKey);
 }
 
 void redis_rename_key(char * dataKey,char * newKey){

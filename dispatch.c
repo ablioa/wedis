@@ -14,26 +14,23 @@ void dispatch(Task * task,RedisReply data){
     switch(task->taskType){
         case CMD_AUTH:{
             if(data->type == REPLY_STATUS){
-                if(strcmp("OK",data->status->bulk) == 0){
+                if(strcmp("OK",data->status->content) == 0){
                     redis_key_space();
                 }
             }else if(data->type == REPLY_ERROR){
-                MessageBox(NULL,data->error->bulk,"title",MB_OK);
+                MessageBox(NULL,data->error->content,"title",MB_OK);
             }
             break;
         }
 
         case CMD_DATABASE_COUNT:{
-            int dbCount = atoi(data->bulks->bulks[1]->bulk);
-            // data->bulks->bulks
-            // log_message(data->bulks->bulks[0]->bulk);
-            // log_int_message(dbCount);
+            int dbCount = atoi(data->bulks->items[1]->content);
             addDatabaseNode(dbCount);
             break;
         }
 
         case CMD_SELECT:{
-            if(data->type != REPLY_STATUS || strcmp("OK",data->status->bulk) != 0){
+            if(data->type != REPLY_STATUS || strcmp("OK",data->status->content) != 0){
                 log_message("database select error");
             }
             break;
@@ -50,7 +47,7 @@ void dispatch(Task * task,RedisReply data){
 
         case CMD_TYPE:{
             if(data->type == REPLY_STATUS){
-                DataType dataType = checkDataType(data->status->bulk);
+                DataType dataType = checkDataType(data->status->content);
                 if(dataType == REDIS_UNDEFINED){
                     log_message("undefined data type");
                     break;
@@ -74,15 +71,35 @@ void dispatch(Task * task,RedisReply data){
             break;
         }
 
+        case CMD_RENAME_KEY:{
+            if(data->type == REPLY_STATUS){
+                char msg[256] = {0};
+                sprintf(msg,"data:[%s] renamed.",task->dataKey);
+                MessageBox(NULL,msg,"Title",MB_OK);
+
+                redis_keys();
+            }else{
+                log_message("failed to rename!");
+            }
+            break;
+        }
+
         case CMD_DELETE_KEY:{
+            if(data->type == REPLY_STATUS){
+                char msg[256] = {0};
+                sprintf(msg,"data:[%s] removed.",task->dataKey);
+                MessageBox(NULL,msg,"Title",MB_OK);
+
+                redis_keys();
+            }else{
+                log_message("failed to remove!");
+            }
             break;
         }
 
         case CMD_INFO_KEYSPACE:{
-            
             if(data->type == REPLY_BULK){
-                // log_message("dispatch");
-                Keyspace space = parseKeyspace(data->bulk->bulk);
+                Keyspace space = parseKeyspace(data->bulk->content);
                 handleKeyspace(space);
             }
             break;
@@ -91,7 +108,7 @@ void dispatch(Task * task,RedisReply data){
         // TODO 重构到控制层
         case CMD_INFO_STATS:{
             if(data->type == REPLY_BULK){
-                KVPair kv = parseKVPair(data->bulk->bulk);
+                KVPair kv = parseKVPair(data->bulk->content);
                 ShowWindow(mainModel->view->dataHwnd,SW_HIDE);
 			    ShowWindow(mainModel->view->systemViewHwnd,SW_SHOW);
                 SendMessage(mainModel->view->systemViewHwnd,WM_DT,(WPARAM)kv,(LPARAM)NULL);

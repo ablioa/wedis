@@ -36,6 +36,6 @@ LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
 void init_zsetview(HINSTANCE hInstance);
 
-BOOL inertInto(HWND hwnd,RedisReply * reply);
+BOOL UpdateZsetData(HWND hwnd,RedisReply reply);
 
 #endif

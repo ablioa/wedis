@@ -20,7 +20,7 @@ typedef struct{
 
    HWND btnExport;
 
-   RedisReply * data;
+   RedisReply data;
 
 }StringViewModel;
 

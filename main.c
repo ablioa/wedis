@@ -298,7 +298,7 @@ void networkHandle(LPARAM lParam){
 			appendLog("\r\n-------------\r\n");
 
 			Task * task = getTask(pool);
-            RedisReply * rp = read_replay(buff);
+            RedisReply rp = read_replay(buff);
 			dispatch(task,rp);
 	    }
 	    break;

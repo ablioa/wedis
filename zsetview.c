@@ -89,8 +89,7 @@ LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 		}
 
         case WM_DT:{
-            RedisReply * rp = (RedisReply *)wParam;
-            inertInto(zsetViewModel->zsetView,rp);
+            UpdateZsetData(zsetViewModel->zsetView,(RedisReply)wParam);
             break;
         }
 	}
@@ -98,7 +97,7 @@ LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 	return DefWindowProc (hwnd, message, wParam, lParam);
 }
 
-BOOL inertInto(HWND hwnd,RedisReply * reply){
+BOOL UpdateZsetData(HWND hwnd,RedisReply reply){
     char indexBuff[256] = {0};
     LVITEM lvI;
 
@@ -109,26 +108,28 @@ BOOL inertInto(HWND hwnd,RedisReply * reply){
     lvI.state     = 0;
 
     SendMessage(hwnd,LVM_DELETEALLITEMS,(WPARAM)NULL,(LPARAM)NULL);
-    
-    // for (int index = 0; index < (reply->bulkSize/2); index++){
-    //     lvI.iItem  = index;
-    //     lvI.iImage = index;
-    //     lvI.iSubItem = 0;
 
-    //     memset(indexBuff,0,256);
-    //     sprintf(indexBuff,"%d",(index +1));
+    int count         = reply->bulks->count;
+    RedisBulk * bulks = reply->bulks->items;
+    for (int index = 0; index < (count / 2); index++){
+        lvI.iItem  = index;
+        lvI.iImage = index;
+        lvI.iSubItem = 0;
 
-    //     lvI.pszText = indexBuff; 
-    //     ListView_InsertItem(hwnd, &lvI);
+        memset(indexBuff,0,256);
+        sprintf(indexBuff,"%d",(index +1));
 
-    //     lvI.pszText = reply->bulks[index * 2];
-    //     lvI.iSubItem = 1;
-    //     SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+        lvI.pszText = indexBuff; 
+        ListView_InsertItem(hwnd, &lvI);
 
-    //     lvI.pszText = reply->bulks[index *2+1];
-    //     lvI.iSubItem = 2;
-    //     SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
-    // }
+        lvI.pszText = bulks[index * 2]->content;
+        lvI.iSubItem = 1;
+        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+
+        lvI.pszText = bulks[index *2+1]->content;
+        lvI.iSubItem = 2;
+        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+    }
 
     return TRUE;
 }

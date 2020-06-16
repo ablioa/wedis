@@ -115,7 +115,7 @@ void init_systemview(HINSTANCE hInstance){
     stringViewClass.hInstance     = hInstance;
     stringViewClass.hIcon         = NULL;
     stringViewClass.hCursor       = NULL;
-    stringViewClass.hbrBackground = CreateSolidBrush(RGB(0,240,0));
+    stringViewClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
     stringViewClass.lpszMenuName  = 0;
     stringViewClass.lpszClassName = SYSTEM_VIEW_CLASS;
     stringViewClass.hIconSm       = NULL;

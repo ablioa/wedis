@@ -166,7 +166,7 @@ BOOL CALLBACK SetTtlDlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 					mresult = GetDlgItemInt(hwnd,IDC_TTL_EDIT,&lineTogo,TRUE);
 
 					if(lineTogo){
-						wchar_t buff[256]={0};
+						char buff[256]={0};
 						sprintf(buff,"size:%d",mresult);
 						// MessageBox(hwnd,buff,"title",MB_OK);
 					}else{

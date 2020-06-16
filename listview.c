@@ -60,7 +60,7 @@ HWND buildListViewWindow(HWND parent){
     
 }
 
-BOOL updateListDataSet(HWND hwnd,RedisReply * reply){
+BOOL updateListDataSet(HWND hwnd,RedisReply reply){
     char indexBuff[256] = {0};
     LVITEM lvI;
 
@@ -71,22 +71,23 @@ BOOL updateListDataSet(HWND hwnd,RedisReply * reply){
     lvI.state     = 0;
 
     SendMessage(hwnd,LVM_DELETEALLITEMS,(WPARAM)NULL,(LPARAM)NULL);
-    
-    // for (int index = 0; index < (reply->bulkSize); index++){
-    //     lvI.iItem  = index;
-    //     lvI.iImage = index;
-    //     lvI.iSubItem = 0;
 
-    //     memset(indexBuff,0,256);
-    //     sprintf(indexBuff,"%d",(index +1));
+    RedisBulks bulks = reply->bulks;
+    for (int index = 0; index < (bulks->count); index++){
+        lvI.iItem  = index;
+        lvI.iImage = index;
+        lvI.iSubItem = 0;
 
-    //     lvI.pszText = indexBuff; 
-    //     ListView_InsertItem(hwnd, &lvI);
+        memset(indexBuff,0,256);
+        sprintf(indexBuff,"%d",(index +1));
 
-    //     lvI.pszText = reply->bulks[index];
-    //     lvI.iSubItem = 1;
-    //     SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
-    // }
+        lvI.pszText = indexBuff; 
+        ListView_InsertItem(hwnd, &lvI);
+
+        lvI.pszText = bulks->items[index]->content;
+        lvI.iSubItem = 1;
+        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+    }
 
     return TRUE;
 }
@@ -169,7 +170,7 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
         }
 
         case WM_DT:{
-            RedisReply * rp = (RedisReply *)wParam;
+            RedisReply rp = (RedisReply)wParam;
             updateListDataSet(listViewModel->listView,rp);
             break;
         }

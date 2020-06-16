@@ -1,14 +1,12 @@
 #include "hashview.h"
 
-//HWND tableView;
-
 const char * colNames[3]={
     "Row",
 	"Key",
 	"Value"
 };
 
-BOOL InitListViewColumns(HWND hWndListView) { 
+BOOL InitHashViewColumns(HWND hWndListView) { 
     LVCOLUMN lvc;
     int iCol;
 	char * valName;
@@ -42,7 +40,7 @@ BOOL InitListViewColumns(HWND hWndListView) {
 HWND buildHashViewWindow(HWND parent){
 	RECT rect;
 
-	HINSTANCE hinst = mainModel->hInstance;//(HINSTANCE)GetWindowLong(parent,GWLP_HINSTANCE);
+	HINSTANCE hinst = mainModel->hInstance;
 	GetClientRect (parent, &rect);
 	
 	HWND dataViewHwnd  = CreateWindowEx(0, 
@@ -62,7 +60,7 @@ HWND buildHashViewWindow(HWND parent){
 	return dataViewHwnd;
 }
 
-BOOL updateHashDataSet(HWND hwnd,RedisReply * reply){
+BOOL updateHashDataSet(HWND hwnd,RedisReply reply){
     char indexBuff[256] = {0};
     LVITEM lvI;
 
@@ -74,25 +72,27 @@ BOOL updateHashDataSet(HWND hwnd,RedisReply * reply){
 
     SendMessage(hwnd,LVM_DELETEALLITEMS,(WPARAM)NULL,(LPARAM)NULL);
     
-    // for (int index = 0; index < (reply->bulkSize/2); index++){
-    //     lvI.iItem  = index;
-    //     lvI.iImage = index;
-    //     lvI.iSubItem = 0;
+    int count         = reply->bulks->count;
+    RedisBulk * bulks = reply->bulks->items;
+    for (int index = 0; index < (count/2); index++){
+        lvI.iItem  = index;
+        lvI.iImage = index;
+        lvI.iSubItem = 0;
 
-    //     memset(indexBuff,0,256);
-    //     sprintf(indexBuff,"%d",(index +1));
+        memset(indexBuff,0,256);
+        sprintf(indexBuff,"%d",(index +1));
 
-    //     lvI.pszText = indexBuff; 
-    //     ListView_InsertItem(hwnd, &lvI);
+        lvI.pszText = indexBuff; 
+        ListView_InsertItem(hwnd, &lvI);
 
-    //     lvI.pszText = reply->bulks[index * 2];
-    //     lvI.iSubItem = 1;
-    //     SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+        lvI.pszText = bulks[index * 2]->content;
+        lvI.iSubItem = 1;
+        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
 
-    //     lvI.pszText = reply->bulks[index *2+1];
-    //     lvI.iSubItem = 2;
-    //     SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
-    // }
+        lvI.pszText = bulks[index *2+1]->content;
+        lvI.iSubItem = 2;
+        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+    }
 
     return TRUE;
 }
@@ -120,7 +120,7 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
             
             ListView_SetExtendedListViewStyle(hashViewModel->hashView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
 
-			InitListViewColumns(hashViewModel->hashView);
+			InitHashViewColumns(hashViewModel->hashView);
 
             hashViewModel->btnInsert = CreateWindowEx(0, WC_BUTTON, ("Insert"), 
             WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 0, 50, 24, hwnd, (HMENU)0, 
@@ -142,7 +142,7 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 		}
 
         case WM_DT:{
-            RedisReply * rp = (RedisReply *)wParam;
+            RedisReply rp = (RedisReply)wParam;
             updateHashDataSet(hashViewModel->hashView,rp);
             break;
         }

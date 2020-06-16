@@ -106,7 +106,7 @@ typedef struct{
 
 	HWND visibleHwnd;
 
-    RedisReply * data;// = (RedisReply *)wParam;
+    RedisReply data;// = (RedisReply *)wParam;
 	int type;       // = (int) lParam;
 }DataView;
 
