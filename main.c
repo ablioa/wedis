@@ -646,10 +646,16 @@ void buildToolBar(AppView * view){
 
 void buildStatusBar(AppView * view){
     RECT trt;
-    int wd[]={130,210,330,100,100,100,0};
+    int wd[]={50,170,200,430,530,650,0};
 	view->statusBarHwnd = CreateStatusWindow(WS_CHILD | WS_VISIBLE | SBS_SIZEGRIP,"Wedis",view->hwnd, 1200);
 	SendMessage(view->statusBarHwnd,SB_SETPARTS,7,(LPARAM)wd);
     SendMessage(view->statusBarHwnd,SB_SETMINHEIGHT,16,0);
+
+	SendMessage(view->statusBarHwnd, SB_SETTEXT,1, (LPARAM)"192.168.1.9:6379");
+	SendMessage(view->statusBarHwnd, SB_SETTEXT,2, (LPARAM)"db1");
+	SendMessage(view->statusBarHwnd, SB_SETTEXT,3, (LPARAM)"1000000000000001");
+	SendMessage(view->statusBarHwnd, SB_SETTEXT,4, (LPARAM)"STRING");
+	SendMessage(view->statusBarHwnd, SB_SETTEXT,5, (LPARAM)"2312 Byte");
 
 	GetWindowRect(view->statusBarHwnd,&trt);
 	view->statusbarHeight = trt.bottom-trt.top;
@@ -726,7 +732,7 @@ void buildAttributeView(AppView * view){
 void buildConnectionView(AppView * view){
 	RECT            rt;
 
-	HINSTANCE hinst = mainModel->hInstance;//(HINSTANCE)GetWindowLong(view->hwnd,GWLP_HINSTANCE);
+	HINSTANCE hinst = mainModel->hInstance;
 	GetWindowRect(view->hwnd,&rt);
 
 	view->connectionHwnd = CreateWindowEx(0,"SysTreeView32",0,
