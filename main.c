@@ -623,13 +623,11 @@ void buildToolBar(AppView * view){
     view->toolBarHwnd = CreateWindowEx(0L, TOOLBARCLASSNAME, "", WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT, 16, 16, 16, 16, view->hwnd, (HMENU) 0, hInst, NULL);
     SendMessage(view->toolBarHwnd, TB_BUTTONSTRUCTSIZE, sizeof(TBBUTTON), 0);
     HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_MAIN));
-    
-    HIMAGELIST hIcons = ImageList_Create(16, 16, ILC_COLOR24, 0, 7);
-    ImageList_Add(hIcons, hBmp, NULL);
+
+    HIMAGELIST hIcons = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 7, 7);
+	ImageList_AddMasked(hIcons, hBmp, RGB(255,255,255));
     
     SendMessage(view->toolBarHwnd, TB_SETIMAGELIST, 0, (LPARAM) hIcons);
-    SendMessage(view->toolBarHwnd, TB_LOADIMAGES, (WPARAM)IDB_STD_SMALL_COLOR, (LPARAM)HINST_COMMCTRL);
-
     SendMessage(view->toolBarHwnd, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
     SendMessage(view->toolBarHwnd, TB_ADDBUTTONS,       (WPARAM)7,       (LPARAM)&tbtn);
 
