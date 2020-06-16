@@ -4,7 +4,7 @@
 #include "resource.h"
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDB_CHIP           BITMAP         "chips.bmp"
+IDB_CHIP           BITMAP         "treenode.bmp"
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDB_TOOLBAR_MAIN   BITMAP         "toolbar.bmp"

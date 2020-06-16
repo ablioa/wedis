@@ -598,8 +598,8 @@ void Size(AppView * view){
 
 void buildToolBar(AppView * view){
     long oldstyle;
-    TBBUTTON tbtn[3] = {};
-	for(int ix = 0; ix < 3 ;ix++){
+    TBBUTTON tbtn[8] = {};
+	for(int ix = 0; ix < 8 ;ix++){
 		ZeroMemory(&tbtn[ix],sizeof(TBBUTTON));
 
 		tbtn[ix].idCommand = 0;
@@ -611,32 +611,31 @@ void buildToolBar(AppView * view){
 	}
 	tbtn[0].idCommand = IDM_CONNECTION;
 	tbtn[1].idCommand = IDM_TIMING;
-	tbtn[2].idCommand = IDM_REMOVE;
-	// tbtn[3].idCommand = IDM_FILE_OPEN;
-	// tbtn[3].idCommand = IDM_FILE_OPEN;
-	// tbtn[6].idCommand=IDM_FILE_OPEN;
-	// tbtn[8].idCommand=IDM_EXE_RUN;
-	// tbtn[5].idCommand = IDM_FILE_OPEN;
-	// tbtn[4].fsStyle=TBSTYLE_SEP;
-	// tbtn[10].fsStyle=TBSTYLE_SEP;
-	// tbtn[7].fsStyle=TBSTYLE_SEP;
+	tbtn[2].fsStyle = TBSTYLE_SEP;
+	tbtn[3].idCommand = IDM_REMOVE;
+	tbtn[4].idCommand = IDM_CONNECTION;
+	tbtn[5].idCommand = IDM_CONNECTION;
+	tbtn[6].idCommand = IDM_CONNECTION;
+	tbtn[7].idCommand = IDM_CONNECTION;
 
-	HINSTANCE hInst = mainModel->hInstance;//(HINSTANCE)GetWindowLong(view->hwnd,GWLP_HINSTANCE);
-	view->toolBarHwnd=CreateToolbarEx(
-		view->hwnd,// parent window 
-		WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT, // style
-		1, // control identifier
-		3, // number of imagelist
-		hInst, // instance of exe file
-		IDB_TOOLBAR_MAIN, // idenfier of image resource
-		tbtn, // buttons
-		3, // number of buttons
-		14,  // width of button
-		14,  // height of button
-		14, // width of image
-		14, // hright of image
-		sizeof(TBBUTTON) // size of button structure
-		);
+	HINSTANCE hInst = mainModel->hInstance;
+
+    view->toolBarHwnd = CreateWindowEx(0L, TOOLBARCLASSNAME, "", WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT, 16, 16, 16, 16, view->hwnd, (HMENU) 0, hInst, NULL);
+    SendMessage(view->toolBarHwnd, TB_BUTTONSTRUCTSIZE, sizeof(TBBUTTON), 0);
+    HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_MAIN));
+    
+    HIMAGELIST hIcons = ImageList_Create(16, 16, ILC_COLOR24, 0, 7);
+    ImageList_Add(hIcons, hBmp, NULL);
+    
+    SendMessage(view->toolBarHwnd, TB_SETIMAGELIST, 0, (LPARAM) hIcons);
+    SendMessage(view->toolBarHwnd, TB_LOADIMAGES, (WPARAM)IDB_STD_SMALL_COLOR, (LPARAM)HINST_COMMCTRL);
+
+    SendMessage(view->toolBarHwnd, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
+    SendMessage(view->toolBarHwnd, TB_ADDBUTTONS,       (WPARAM)7,       (LPARAM)&tbtn);
+
+    SendMessage(view->toolBarHwnd, TB_AUTOSIZE, 0, 0); 
+    ShowWindow(view->toolBarHwnd,  TRUE);
+	
 
 	oldstyle = GetWindowLong(view->toolBarHwnd,GWL_STYLE);
 	oldstyle = oldstyle  | TBSTYLE_WRAPABLE | TBSTYLE_FLAT;
@@ -649,10 +648,10 @@ void buildToolBar(AppView * view){
 
 void buildStatusBar(AppView * view){
     RECT trt;
-    int wd[]={130,210,330,0};
-	view->statusBarHwnd = CreateStatusWindow(WS_CHILD | WS_VISIBLE | SBS_SIZEGRIP,"Wedis",view->hwnd, 200);
-	SendMessage(view->statusBarHwnd,SB_SETPARTS,4,(LPARAM)wd);
-    SendMessage(view->statusBarHwnd,SB_SETMINHEIGHT,20,0);
+    int wd[]={130,210,330,100,100,100,0};
+	view->statusBarHwnd = CreateStatusWindow(WS_CHILD | WS_VISIBLE | SBS_SIZEGRIP,"Wedis",view->hwnd, 1200);
+	SendMessage(view->statusBarHwnd,SB_SETPARTS,7,(LPARAM)wd);
+    SendMessage(view->statusBarHwnd,SB_SETMINHEIGHT,16,0);
 
 	GetWindowRect(view->statusBarHwnd,&trt);
 	view->statusbarHeight = trt.bottom-trt.top;
@@ -740,7 +739,7 @@ void buildConnectionView(AppView * view){
             rt.bottom-rt.left-view->statusbarHeight - view->statusbarHeight,
             view->hwnd,NULL,hinst,0);
 
-	HIMAGELIST hImageList=ImageList_Create(14,14,ILC_COLOR16,2,10);
+	HIMAGELIST hImageList=ImageList_Create(16,16,ILC_COLOR24,2,10);
 	HBITMAP hBitmap = LoadBitmap(hinst,MAKEINTRESOURCE(IDB_CHIP));
 	ImageList_Add(hImageList,hBitmap,NULL);
 	SendMessage(view->connectionHwnd,TVM_SETIMAGELIST,0,(LPARAM)hImageList);

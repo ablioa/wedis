@@ -1,7 +1,7 @@
 APP      = output/wedis
 
 CC=gcc
-CFLAGS=--std=c11 -g -Wall -Wwrite-strings -Wincompatible-pointer-types -B include
+CFLAGS=--std=c11 -Wall -Wwrite-strings -Wincompatible-pointer-types -B include
 LFLAGS=-mwindows
 SYSLIB=-lcomctl32 -lwsock32
 
