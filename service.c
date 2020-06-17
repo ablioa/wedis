@@ -5,6 +5,14 @@ void redis_auth(char * password){
 	memset(cmd,0,sizeof(char) * 256);
 	sprintf(cmd,"auth %s",password);
 
+    RedisParam tmpe  = redis_build_param("auth");
+    RedisParam param = redis_build_param(password);
+    
+    int total_size = param->s_length + 
+    char * cmd = (char *) calloc(sizeof(char) * 256);
+	memset(cmd,0,sizeof(char) * 256);
+	sprintf(cmd,"auth %s",password);
+
     sendRedisRequest(CMD_AUTH,cmd,REDIS_UNDEFINED,NULL);
 }
 
@@ -98,7 +106,20 @@ void redis_info_stats(){
     sendRedisRequest(CMD_INFO_STATS,"info stats",REDIS_UNDEFINED,NULL);
 }
 
-void sendRedisRequest(CommandType cmdType,const char * cmd,const DataType dataType,const char * dataKey){
+void redis_serialize_params(RedisParams params){
+    char head[128] = {0};
+    sprintf(head,"%d%c%c",params->param_count,CHAR_CR, CHAR_LF);
+    connection_senddata(mainModel->connection,head,strlen(head),0);
+
+    for(int ix = 0; ix < params->param_count; ix ++){
+        char * cmd = params->items[ix]->diagram;
+        int    len = params->items[ix]->s_length;
+
+        connection_senddata(mainModel->connection,cmd,len,0);
+    }
+}
+
+void sendRedisRequest(CommandType cmdType,const DataType dataType,const char * dataKey){
     Task * task = buildTask(cmdType);
 
     task->dataType = dataType;
@@ -108,9 +129,36 @@ void sendRedisRequest(CommandType cmdType,const char * cmd,const DataType dataTy
         memset(task->dataKey,0,sizeof(char ) * 256);
         sprintf(task->dataKey,"%s",dataKey);
     }
-   
-	char * encodedCmd = parse_command((char *)cmd,256);
-    connection_senddata(mainModel->connection,encodedCmd,strlen(encodedCmd),0);
 
     addTask(pool,task);
 }
+
+
+// /**
+//  * JUST FOR DEBUG
+//  */
+
+// #define KEY_SIZE 1024*1025*5
+// #define VAL_SIZE 1024*1024*10
+// #define CMD_SIZE 1024*1024*15+256
+// void redis_add_big(){
+//     char * key = (char*)calloc(2048,sizeof(char));
+//     FILE * fkey = fopen("test/key.txt","r");
+//     fread(key,1,2048,fkey);
+//     fclose(fkey);
+
+//     log_message(key);
+
+//     char * value = (char*)calloc(1048576+1024,sizeof(char));
+//     FILE * fval = fopen("test/value.txt","r");
+//     fread(value,1,1048576+1024,fval);
+//     fclose(fval);
+
+//     log_message(value);
+
+//     free(key);
+//     free(value);
+
+//     char * cmd = (char*)calloc(CMD_SIZE,sizeof(char));
+//     sprintf(cmd,"set %s %s");
+// }

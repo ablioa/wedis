@@ -1,5 +1,10 @@
 #include "callbacks.h"
 
+void SetDialogIcon(HWND hWnd, int idi) {
+   SendMessage(hWnd, WM_SETICON, ICON_BIG,  (LPARAM)LoadIcon((HINSTANCE) GetWindowLongPtr(hWnd, GWLP_HINSTANCE),MAKEINTRESOURCE(idi)));
+   SendMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon((HINSTANCE) GetWindowLongPtr(hWnd, GWLP_HINSTANCE),MAKEINTRESOURCE(idi)));
+}
+
 void MoveToScreenCenter(HWND hwnd){
 	RECT rt;
 	int cx,cy;
@@ -13,6 +18,7 @@ void MoveToScreenCenter(HWND hwnd){
 BOOL CALLBACK ListItemEditProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	switch(message){
         case WM_INITDIALOG:{
+			SetDialogIcon(hwnd,IDI_MAIN);
             MoveToScreenCenter(hwnd);
 
             HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));

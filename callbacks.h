@@ -5,6 +5,9 @@
 #include "resource/resource.h"
 
 #include "main.h"
+#include "wedis.h"
+
+void SetDialogIcon(HWND hWnd, int idi);
 
 void MoveToScreenCenter(HWND hwnd);
 
