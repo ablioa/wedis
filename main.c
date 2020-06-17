@@ -381,7 +381,7 @@ void command(HWND hwnd,int cmd){
 			break;
 		}
 		
-		case IDM_FILE_CLOSE:{
+		case IDM_PREFERENCE:{
 			DialogBox (hInst,MAKEINTRESOURCE (IDD_PREFERENCE),hwnd,(DLGPROC)SetPreferenceProc);
 			break;
 		}
@@ -415,6 +415,21 @@ void command(HWND hwnd,int cmd){
 
 		case IDM_SYSTEM_STAT:{
 			redis_info_stats();
+			break;
+		}
+
+		case IDM_ADD:{
+			log_message("add data entry");
+			break;
+		}
+
+		case IDM_RELOAD:{
+			log_message("reload data entry");
+			break;
+		}
+
+		case IDM_RENAME:{
+			log_message("rename data entry");
 			break;
 		}
 	}
@@ -597,51 +612,37 @@ void Size(AppView * view){
 }
 
 void buildToolBar(AppView * view){
-    long oldstyle;
-    TBBUTTON tbtn[8] = {};
-	for(int ix = 0; ix < 8 ;ix++){
-		ZeroMemory(&tbtn[ix],sizeof(TBBUTTON));
-
-		tbtn[ix].idCommand = 0;
-		tbtn[ix].iBitmap = ix;
-		tbtn[ix].iString = 0;
-		tbtn[ix].fsState = TBSTATE_ENABLED;
-		tbtn[ix].fsStyle = TBSTYLE_BUTTON ;
-		tbtn[ix].dwData = 0;
-	}
-	tbtn[0].idCommand = IDM_CONNECTION;
-	tbtn[1].idCommand = IDM_TIMING;
-	tbtn[2].fsStyle = TBSTYLE_SEP;
-	tbtn[3].idCommand = IDM_REMOVE;
-	tbtn[4].idCommand = IDM_CONNECTION;
-	tbtn[5].idCommand = IDM_CONNECTION;
-	tbtn[6].idCommand = IDM_CONNECTION;
-	tbtn[7].idCommand = IDM_CONNECTION;
-
 	HINSTANCE hInst = mainModel->hInstance;
+	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
+	RECT  rect;
+	
+	
+	TBBUTTON tbtn[8] = {
+        {(0), IDM_CONNECTION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(1), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(0), 0             , 0,               TBSTYLE_SEP,    {0}, 0, 0},
+		{(2), IDM_ADD       , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(3), IDM_REMOVE    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(4), IDM_RELOAD    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+		{(5), IDM_RENAME    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(6), IDM_TIMING    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+    };
 
-    view->toolBarHwnd = CreateWindowEx(0L, TOOLBARCLASSNAME, "", WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT, 16, 16, 16, 16, view->hwnd, (HMENU) 0, hInst, NULL);
-    SendMessage(view->toolBarHwnd, TB_BUTTONSTRUCTSIZE, sizeof(TBBUTTON), 0);
-    HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_MAIN));
-
-    HIMAGELIST hIcons = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 7, 7);
+	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_MAIN));
+    HIMAGELIST hIcons = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 1, 8);
 	ImageList_AddMasked(hIcons, hBmp, RGB(255,255,255));
-    
+
+    view->toolBarHwnd = CreateWindowEx(0L, TOOLBARCLASSNAME, "", tstyle, 16, 16, 16, 16, view->hwnd, (HMENU) 0, hInst, NULL);
+    SendMessage(view->toolBarHwnd, TB_BUTTONSTRUCTSIZE, sizeof(TBBUTTON), 0);
     SendMessage(view->toolBarHwnd, TB_SETIMAGELIST, 0, (LPARAM) hIcons);
     SendMessage(view->toolBarHwnd, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
-    SendMessage(view->toolBarHwnd, TB_ADDBUTTONS,       (WPARAM)7,       (LPARAM)&tbtn);
+    SendMessage(view->toolBarHwnd, TB_ADDBUTTONS,       (WPARAM)8,       (LPARAM)&tbtn);
+    SendMessage(view->toolBarHwnd, TB_AUTOSIZE, 0, 0);
 
-    SendMessage(view->toolBarHwnd, TB_AUTOSIZE, 0, 0); 
     ShowWindow(view->toolBarHwnd,  TRUE);
 	
-
-	oldstyle = GetWindowLong(view->toolBarHwnd,GWL_STYLE);
-	oldstyle = oldstyle  | TBSTYLE_WRAPABLE | TBSTYLE_FLAT;
-	SetWindowLong(view->toolBarHwnd,GWL_STYLE,oldstyle);
-
-	RECT trt;
-	GetWindowRect(view->toolBarHwnd,&trt);
-	view->toolbarHeight = trt.bottom-trt.top;
+	GetWindowRect(view->toolBarHwnd,&rect);
+	view->toolbarHeight = rect.bottom-rect.top;
 }
 
 void buildStatusBar(AppView * view){

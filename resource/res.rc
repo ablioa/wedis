@@ -16,7 +16,7 @@ ID_MAIN MENU
     {
         MENUITEM "&Connction", IDM_CONNECTION_POOL
         MENUITEM SEPARATOR
-        MENUITEM "&Preference", IDM_FILE_CLOSE
+        MENUITEM "&Preference", IDM_PREFERENCE
         MENUITEM SEPARATOR
         MENUITEM "&Exit", IDM_EXIT
     }

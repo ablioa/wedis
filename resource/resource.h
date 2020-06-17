@@ -16,7 +16,6 @@
 #define IDC_RS                                  4005
 #define IDA_RUN                                 4014
 #define IDM_EXE_RUN                             4014
-#define IDM_FILE_CLOSE                          4020
 #define IDM_EXE_BRK                             4030
 #define IDB_CHIP                                5031
 #define ID_COLOR_SPLITBAR                       40000
@@ -26,8 +25,12 @@
 #define IDS_REGVIEW                             40004
 #define IDS_STACKVIEW                           40005
 
-#define IDM_TIMING  40006
-#define IDM_REMOVE  40007
+#define IDM_TIMING     40006
+#define IDM_REMOVE     40007
+#define IDM_RELOAD     40008
+#define IDM_RENAME     40009
+#define IDM_ADD        40010
+#define IDM_PREFERENCE 40011
 
 #define IDC_ABOUT_OK           500
 #define IDC_ABOUT_URL          501
