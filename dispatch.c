@@ -37,7 +37,9 @@ void dispatch(Task * task,RedisReply data){
         }
 
         case CMD_KEYS:{
+            log_message("1111");
             if(data->type == REPLY_MULTI){
+                 log_message("2222");
                 addDataNode(data);
             }else{
                 log_message("error data on KEYS request");

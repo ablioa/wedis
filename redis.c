@@ -156,16 +156,16 @@ void free_command(CommandBlock *block){
 	}
 }
 
-char redis_encode_set_command(char * key,int key_length,char * value,int value_length){
-	int cmd_length = key_length + value_length + 128;
-	char * cmd = calloc(cmd_length,sizeof(char));
+// char redis_encode_set_command(char * key,int key_length,char * value,int value_length){
+// 	int cmd_length = key_length + value_length + 128;
+// 	char * cmd = calloc(cmd_length,sizeof(char));
 
-	int cur = 0;
-	sprintf(cmd+cur,"%d\r\n",cmd_length);
-	cur += strlen(cur);
-	sprintf(cmd+cur,"%s\r\n","set");
-	sprintf(cmd+strlen(cmd),"%s",)
-}
+// 	int cur = 0;
+// 	sprintf(cmd+cur,"%d\r\n",cmd_length);
+// 	cur += strlen(cur);
+// 	sprintf(cmd+cur,"%s\r\n","set");
+// 	sprintf(cmd+strlen(cmd),"%s",)
+// }
 
 /**
  * encode command

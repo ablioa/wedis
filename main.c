@@ -374,7 +374,7 @@ void command(HWND hwnd,int cmd){
 			// redis_key_space();
 			// redis_database_count();
 			//redis_info_stats();
-            redis_add_big();
+            // redis_add_big();
 			break;
 		}
 		case IDM_CONNECTION_POOL:{

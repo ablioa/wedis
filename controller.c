@@ -13,6 +13,8 @@ void handleKeyspace(Keyspace keyspace){
 	mainModel->keyspaces  = spaces;
 	mainModel->spaceCount = keyspace->count;
 
+	log_message("gettting key space");
+
 	redis_database_count();
 }
 
@@ -139,6 +141,9 @@ void handleDataType(Task * task,DataType dataType){
 // }
 
 void addDataNode(RedisReply rp){
+
+	log_message("adding nodes");
+	
     TVITEM ti = {0};
     ti.mask = TVIF_HANDLE | TVIF_PARAM;
     ti.cchTextMax = 128;
