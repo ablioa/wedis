@@ -67,18 +67,18 @@ BOOL CALLBACK CmdBoxProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 				case VK_RETURN:
 					GetWindowText(hwnd,buff,256);
 
-					char * cmds = parse_command((char *)buff,256);
-					char * comment = build_comment((char *)buff,cmds);
+					//char * cmds = parse_command((char *)buff,256);
+					//char * comment = build_comment((char *)buff,cmds);
 					int curLeng = GetWindowTextLength(consoleView->logHwnd);
 					SendMessage(consoleView->logHwnd,EM_SETSEL,curLeng,curLeng);
-					SendMessage(consoleView->logHwnd,EM_REPLACESEL,FALSE,(LPARAM)comment);
+					//SendMessage(consoleView->logHwnd,EM_REPLACESEL,FALSE,(LPARAM)comment);
 
-                    connection_senddata(mainModel->connection,cmds,strlen(cmds),0);
+                    //connection_senddata(mainModel->connection,cmds,strlen(cmds),0);
 					
 					SetWindowText(hwnd,NULL);
 					
-					free(cmds);
-					free(comment);
+					//free(cmds);
+					//free(comment);
 				break;
 			}
 		break;

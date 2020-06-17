@@ -30,6 +30,8 @@ RedisReply read_replay(char *text){
 	int cur = 0;
 	char ch = text[cur++];
 
+	int consumed = 0;
+
 	RedisReply reply = (RedisReply)calloc(1, sizeof(RedisReplyInfo));
 	switch (ch){
 		/** status */
@@ -40,6 +42,8 @@ RedisReply read_replay(char *text){
 			RedisBulk status = buildRedisBulk(length);
 			memcpy(status->content, (text + 1), length);
 			reply->status = status;
+
+			consumed = length + 3;
 			break;
 		}
 		
@@ -51,6 +55,8 @@ RedisReply read_replay(char *text){
 			RedisBulk error = buildRedisBulk(length);
 			memcpy(error->content, (text + 1), length);
 			reply->error = error;
+
+			consumed = length + 3;
 			break;
 		}
 		
@@ -74,6 +80,8 @@ RedisReply read_replay(char *text){
 			RedisBulk bulk = buildRedisBulk(count);
 			reply->bulk = bulk;
 			memcpy(bulk->content, (text + cur), count);
+
+			consumed = cur + count + 2;
 
 			break;
 		}
@@ -112,94 +120,15 @@ RedisReply read_replay(char *text){
 
 				cur += 3;
 			}
+
+			consumed = cur-1;
 			break;
 		}
 	}
 
+	reply->consumed = consumed;
+
 	return reply;
-}
-
-void init_command(CommandBlock *block){
-	block->size = 0;
-	memset(block->list, 0, sizeof(char *) * LENGTH_WORD);
-}
-
-void add_command(CommandBlock *block, char *word){
-	block->list[block->size] = word;
-	block->size += 1;
-}
-
-char *put_command(CommandBlock *block){
-	char *buff = (char *)malloc(sizeof(char) * LENGTH_COMMAND);
-	char item[LENGTH_WORD] = {0};
-
-	sprintf(item, "*%d%c%c", block->size, CHAR_CR, CHAR_LF);
-	strcpy(buff, item);
-	for (int ix = 0; ix < block->size; ix++){
-		memset(item, 0, LENGTH_WORD);
-
-		sprintf(item, "$%I64d%c%c%s%c%c",
-				strlen(block->list[ix]),
-				CHAR_CR, CHAR_LF,
-				block->list[ix],
-				CHAR_CR, CHAR_LF);
-
-		strcpy(buff + strlen(buff), item);
-	}
-
-	return buff;
-}
-
-void free_command(CommandBlock *block){
-	for (int ix = 0; ix < block->size; ix++){
-		free(block->list[ix]);
-	}
-}
-
-// char redis_encode_set_command(char * key,int key_length,char * value,int value_length){
-// 	int cmd_length = key_length + value_length + 128;
-// 	char * cmd = calloc(cmd_length,sizeof(char));
-
-// 	int cur = 0;
-// 	sprintf(cmd+cur,"%d\r\n",cmd_length);
-// 	cur += strlen(cur);
-// 	sprintf(cmd+cur,"%s\r\n","set");
-// 	sprintf(cmd+strlen(cmd),"%s",)
-// }
-
-/**
- * encode command
- */
-char *parse_command(char *text, const size_t size){
-	char word[LENGTH_WORD] = {0};
-	int wordCur = 0;
-
-	CommandBlock block;
-	init_command(&block);
-
-	char *start = text;
-	while (*start){
-
-		if (isspace(*start)){
-			add_command(&block, buildWord(word, wordCur));
-			memset(word, 0, LENGTH_WORD);
-			wordCur = 0;
-		}
-		else{
-			word[wordCur++] = *start;
-		}
-
-		start++;
-
-		if (!*start && wordCur != 0){
-			add_command(&block, buildWord(word, wordCur));
-		}
-	}
-
-	char *buff = put_command(&block);
-	free_command(&block);
-
-	return buff;
 }
 
 char *buildWord(char *word, size_t length){

@@ -74,6 +74,6 @@ void redis_keys();
 
 void redis_info_stats();
 
-// void redis_add_big();
+void redis_add_big();
 
 #endif

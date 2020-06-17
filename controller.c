@@ -13,13 +13,15 @@ void handleKeyspace(Keyspace keyspace){
 	mainModel->keyspaces  = spaces;
 	mainModel->spaceCount = keyspace->count;
 
-	log_message("gettting key space");
-
 	redis_database_count();
 }
 
 void handleRedisData(Task * task,RedisReply data){
-	data->dataKey = (char*) calloc(256,sizeof(char));
+
+	return;
+	log_message(task->dataKey);
+
+	data->dataKey = (char*) calloc(strlen(task->dataKey)+1,sizeof(char));
 	sprintf(data->dataKey,"%s",task->dataKey);
 
 	switch(task->dataType){
@@ -141,12 +143,9 @@ void handleDataType(Task * task,DataType dataType){
 // }
 
 void addDataNode(RedisReply rp){
-
-	log_message("adding nodes");
-	
     TVITEM ti = {0};
     ti.mask = TVIF_HANDLE | TVIF_PARAM;
-    ti.cchTextMax = 128;
+    //ti.cchTextMax = 128;
     ti.hItem = mainModel->selectedNode;
     TreeView_GetItem(mainModel->view->connectionHwnd, &ti);
     
@@ -160,16 +159,21 @@ void addDataNode(RedisReply rp){
     
     for(int ix =0;ix < rp->bulks->count; ix ++){
         TV_INSERTSTRUCT tvinsert;
-     
+
+		// char buff[1024]={};
+		// sprintf(buff,"%d-%s",rp->bulks->items[ix]->length,rp->bulks->items[ix]->content);
+
         tvinsert.hParent = mainModel->selectedNode;
         tvinsert.hInsertAfter=TVI_LAST;
         tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
-        tvinsert.item.pszText = rp->bulks->items[ix]->content;
+		tvinsert.item.cchTextMax = rp->bulks->items[ix]->length;
+        tvinsert.item.pszText    = rp->bulks->items[ix]->content;
         tvinsert.item.iImage=2;
         tvinsert.item.iSelectedImage=2;
      
         TreeNode * tn = buildTreeNode();
         tn->level = 3;
+		tn->key = rp->bulks->items[ix]->content;
 		tn->database = tnf->database;
         tvinsert.item.lParam= (LPARAM)tn;
         tnf->subHandleSize ++;

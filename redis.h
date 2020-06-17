@@ -41,13 +41,9 @@ typedef enum{
 	CMD_DELETE_KEY,
 	CMD_RENAME_KEY,
 	CMD_INFO_KEYSPACE,
-	CMD_INFO_STATS
+	CMD_INFO_STATS,
+	CMD_SET_STRING
 }CommandType;
-
-typedef struct{
-	int    size;
-	char * list[LENGTH_WORD];
-}CommandBlock;
 
 struct redis_bulk{
 	char  * content;
@@ -75,6 +71,8 @@ struct redis_reply_info{
     char *   dataKey;
     char *   dataTypeName;
     DataType dataType;
+
+	int consumed;
 };
 
 typedef struct redis_reply_info   RedisReplyInfo;
@@ -133,14 +131,6 @@ void setKeyspaceValue(Keyspace info,char * value);
 Keyspace parseKeyspace(char * buffer);
 
 RedisReply read_replay(char * text);
-
-void init_command(CommandBlock * block);
-
-void add_command(CommandBlock * block,char * word);
-
-char * put_command(CommandBlock * block);
-
-void free_command(CommandBlock * block);
 
 char * buildWord(char * word,size_t length);
 

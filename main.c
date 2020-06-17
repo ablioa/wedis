@@ -238,7 +238,10 @@ void onDataNodeSelection(){
 	TreeNode * tn = (TreeNode*) ti.lParam;
 	if(tn->level == 3){
 		redis_select(tn->database);
-		redis_data_type(ti.pszText);
+
+		// log_message(tn->key);
+
+		redis_data_type(tn->key);
 	}
 }
 
@@ -280,6 +283,9 @@ void appendLog(const char * text){
 }
 
 void networkHandle(LPARAM lParam){
+
+	DispatchRequest * requests[10];
+
     switch(LOWORD(lParam)){
 	    case FD_CONNECT:{
 			redis_auth(mainModel->connection->password);
@@ -293,13 +299,28 @@ void networkHandle(LPARAM lParam){
 			appendLog(buff);
 
 			char * binText = dumpText((char*)buff,dr_size);
-			appendLog("\r\n-------------\r\n");
-			appendLog(binText);
-			appendLog("\r\n-------------\r\n");
+
 
 			Task * task = getTask(pool);
             RedisReply rp = read_replay(buff);
+
+			char bag[256] = {0};
+			
+			sprintf(bag,"total=%d,consumed=%d",dr_size,rp->consumed);
+			appendLog("\r\n-------------\r\n");
+			appendLog(binText);
+			appendLog("\r\n");
+			appendLog(bag);
+			appendLog("\r\n-------------\r\n");
+
 			dispatch(task,rp);
+
+			if(rp->consumed < dr_size){
+				task = getTask(pool);
+           		RedisReply ss= read_replay(buff + rp->consumed );
+				dispatch(task,ss);
+			}
+			
 	    }
 	    break;
 	    
@@ -374,7 +395,7 @@ void command(HWND hwnd,int cmd){
 			// redis_key_space();
 			// redis_database_count();
 			//redis_info_stats();
-            // redis_add_big();
+             redis_add_big();
 			break;
 		}
 		case IDM_CONNECTION_POOL:{

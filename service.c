@@ -2,7 +2,6 @@
 
 RedisParams redis_build_params(int count){
     RedisParams params = (RedisParams)calloc(1,sizeof(struct redis_params));
-    //params->param_count = count;
     params->items = (RedisParam*)calloc(count,sizeof(struct redis_param));
 }
 
@@ -31,6 +30,8 @@ RedisParam redis_build_param(char * content){
         CHAR_CR, CHAR_LF);
 
     param->s_length = strlen(param->diagram);
+    
+    // log_message(param->diagram);
 
     return param;
 }
@@ -105,65 +106,90 @@ void redis_keys(){
 }
 
 void redis_data_type(char * dataKey){
-    char * cmd = (char*)malloc(sizeof(char)*128);
-	memset(cmd,0,sizeof(char) * 128);
-	sprintf(cmd,"type %s",dataKey);
+    RedisParams params = redis_build_params(2);
+    redis_add_param(params,redis_build_param("type"));
+    redis_add_param(params,redis_build_param(dataKey));
+    redis_serialize_params(params);
 
-    // sendRedisRequest(CMD_TYPE,cmd,REDIS_UNDEFINED,dataKey);
+    appendTask(CMD_TYPE,REDIS_UNDEFINED,dataKey);
 }
 
 void redis_get_string(char * dataKey){
-    char * cmd = (char *) calloc(256,sizeof(char));
-	sprintf(cmd,"get %s",dataKey);
-    
-	// sendRedisRequest(CMD_DATA,cmd,REDIS_STRING,dataKey);
+    RedisParams params = redis_build_params(2);
+    redis_add_param(params,redis_build_param("get"));
+    redis_add_param(params,redis_build_param(dataKey));
+    redis_serialize_params(params);
+
+    appendTask(CMD_DATA,REDIS_STRING,dataKey);
 }
 
 void redis_get_list(char * dataKey){
-	char * cmd = (char *) calloc(256,sizeof(char));
-	sprintf(cmd,"lrange %s 0 -1",dataKey);
+    RedisParams params = redis_build_params(4);
+    redis_add_param(params,redis_build_param("lrange"));
+    redis_add_param(params,redis_build_param(dataKey));
+    redis_add_param(params,redis_build_param("0"));
+    redis_add_param(params,redis_build_param("-1"));
+    redis_serialize_params(params);
 
-	// sendRedisRequest(CMD_DATA,cmd, REDIS_LIST,dataKey);
+    appendTask(CMD_DATA,REDIS_LIST,dataKey);
 }
 
 void redis_get_hash(char * dataKey){
-    char * cmd = (char *) calloc(256,sizeof(char));
-	sprintf(cmd,"hgetall %s",dataKey);
+    RedisParams params = redis_build_params(2);
+    redis_add_param(params,redis_build_param("hgetall"));
+    redis_add_param(params,redis_build_param(dataKey));
+    redis_serialize_params(params);
 
-    // sendRedisRequest(CMD_DATA,cmd, REDIS_HASH,dataKey);
+    appendTask(CMD_DATA,REDIS_HASH,dataKey);
 }
 
 void redis_get_set(char * dataKey){
-    char * cmd = (char *) malloc(sizeof(char) * 256);
-	memset(cmd,0,sizeof(char) * 256);
-	sprintf(cmd,"smembers %s",dataKey);
+    RedisParams params = redis_build_params(2);
+    redis_add_param(params,redis_build_param("smembers"));
+    redis_add_param(params,redis_build_param(dataKey));
+    redis_serialize_params(params);
 
-    // sendRedisRequest(CMD_DATA,cmd, REDIS_SET,dataKey);
+    appendTask(CMD_DATA,REDIS_SET,dataKey);
 }
 
 void redis_get_zset(char * dataKey){
-    char * cmd = (char *) malloc(sizeof(char) * 256);
-	memset(cmd,0,sizeof(char) * 256);
-	sprintf(cmd,"zrange %s 0 -1 withscores",dataKey);
+    RedisParams params = redis_build_params(5);
+    redis_add_param(params,redis_build_param("zrange"));
+    redis_add_param(params,redis_build_param(dataKey));
+    redis_add_param(params,redis_build_param("0"));
+    redis_add_param(params,redis_build_param("-1"));
+    redis_add_param(params,redis_build_param("withscores"));
+    redis_serialize_params(params);
     
-    // sendRedisRequest(CMD_DATA,cmd, REDIS_ZSET,dataKey);
+    appendTask(CMD_DATA,REDIS_ZSET,dataKey);
 }
 
 void redis_delete_key(char * dataKey){
-    char cmd[256];
-    sprintf(cmd,"del %s",dataKey);
+    RedisParams params = redis_build_params(2);
+    redis_add_param(params,redis_build_param("del"));
+    redis_add_param(params,redis_build_param(dataKey));
+    redis_serialize_params(params);
 
-    // sendRedisRequest(CMD_DELETE_KEY,cmd, REDIS_UNDEFINED,dataKey);
+    appendTask(CMD_DELETE_KEY,REDIS_UNDEFINED,dataKey);
 }
 
 void redis_rename_key(char * dataKey,char * newKey){
-    char cmd[256];
-    sprintf(cmd,"rename %s %s",dataKey,newKey);
-    // sendRedisRequest(CMD_RENAME_KEY,cmd,REDIS_UNDEFINED,dataKey);
+    RedisParams params = redis_build_params(3);
+    redis_add_param(params,redis_build_param("rename"));
+    redis_add_param(params,redis_build_param(dataKey));
+    redis_add_param(params,redis_build_param(newKey));
+    redis_serialize_params(params);
+
+    appendTask(CMD_RENAME_KEY,REDIS_UNDEFINED,dataKey);
 }
 
 void redis_info_stats(){
-    // sendRedisRequest(CMD_INFO_STATS,"info stats",REDIS_UNDEFINED,NULL);
+    RedisParams params = redis_build_params(2);
+    redis_add_param(params,redis_build_param("info"));
+    redis_add_param(params,redis_build_param("stats"));
+    redis_serialize_params(params);
+    
+    appendTask(CMD_INFO_STATS,REDIS_UNDEFINED,NULL);
 }
 
 void appendTask(CommandType cmdType,const DataType dataType,const char * dataKey){
@@ -182,31 +208,39 @@ void appendTask(CommandType cmdType,const DataType dataType,const char * dataKey
 
 
 
-// /**
-//  * JUST FOR DEBUG
-//  */
+/**
+ * JUST FOR DEBUG
+ */
 
-// #define KEY_SIZE 1024*1025*5
-// #define VAL_SIZE 1024*1024*10
-// #define CMD_SIZE 1024*1024*15+256
-// void redis_add_big(){
-//     char * key = (char*)calloc(2048,sizeof(char));
-//     FILE * fkey = fopen("test/key.txt","r");
-//     fread(key,1,2048,fkey);
-//     fclose(fkey);
+#define KEY_SIZE 1024*1025*5
+#define VAL_SIZE 1024*1024*10
+#define CMD_SIZE 1024*1024*15+256
+void redis_add_big(){
+    char * key = (char*)calloc(2048,sizeof(char));
+    FILE * fkey = fopen("../test/key.txt","r");
+    fread(key,1,2048,fkey);
+    fclose(fkey);
 
-//     log_message(key);
+    log_message(key);
 
-//     char * value = (char*)calloc(1048576+1024,sizeof(char));
-//     FILE * fval = fopen("test/value.txt","r");
-//     fread(value,1,1048576+1024,fval);
-//     fclose(fval);
+    char * value = (char*)calloc(1048576+1024,sizeof(char));
+    FILE * fval = fopen("../test/value.txt","r");
+    fread(value,1,1048576+1024,fval);
+    fclose(fval);
 
-//     log_message(value);
+    log_message(value);
 
-//     free(key);
-//     free(value);
+    RedisParams params = redis_build_params(3);
+    redis_add_param(params,redis_build_param("set"));
+    redis_add_param(params,redis_build_param(key));
+    redis_add_param(params,redis_build_param(value));
+    redis_serialize_params(params);
+    
+    appendTask(CMD_SET_STRING,REDIS_UNDEFINED,key);
 
-//     char * cmd = (char*)calloc(CMD_SIZE,sizeof(char));
-//     sprintf(cmd,"set %s %s");
-// }
+    //free(key);
+    //free(value);
+
+    //char * cmd = (char*)calloc(CMD_SIZE,sizeof(char));
+   // sprintf(cmd,"set %s %s");
+}
