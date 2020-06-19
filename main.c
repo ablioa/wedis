@@ -106,6 +106,8 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
     return DefWindowProc (hwnd, message, wParam, lParam);
 }
 
+static FILE * fout;
+
 void initpan(HINSTANCE hInstance){
 	init_hashview(hInstance);
 	init_stringview(hInstance);
@@ -113,6 +115,8 @@ void initpan(HINSTANCE hInstance){
 	init_setview(hInstance);
 	init_zsetview(hInstance);
 	init_systemview(hInstance);
+
+    fout = fopen("log.txt","wa");
 
     WNDCLASSEX hSplitClass;
     hSplitClass.cbSize        = sizeof(hSplitClass);
@@ -239,8 +243,7 @@ void onDataNodeSelection(){
 	if(tn->level == 3){
 		redis_select(tn->database);
 
-		// log_message(tn->key);
-
+       // log_message(tn->key);
 		redis_data_type(tn->key);
 	}
 }
@@ -280,6 +283,9 @@ void appendLog(const char * text){
     size_t curLeng = GetWindowTextLength(mainModel->logHwnd);
 	SendMessage(mainModel->logHwnd,EM_SETSEL,curLeng,curLeng);
 	SendMessage(mainModel->logHwnd,EM_REPLACESEL,FALSE,(LPARAM)text);
+
+    fprintf(fout,"%s",text);
+    fflush(fout);
 }
 
 void networkHandle(LPARAM lParam){
@@ -312,6 +318,8 @@ void networkHandle(LPARAM lParam){
 			appendLog("\r\n");
 			appendLog(bag);
 			appendLog("\r\n-------------\r\n");
+
+            //log_message("-----");
 
 			dispatch(task,rp);
 
