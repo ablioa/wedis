@@ -85,11 +85,14 @@ void buildConnectionTree(HWND hwnd){
 	HINSTANCE hinst = mainModel->hInstance;
 	GetWindowRect(hwnd,&rt);
 
-	HWND hTreeHwnd = CreateWindowEx(0,"SysTreeView32",0,
-		WS_CHILD |WS_BORDER | WS_VISIBLE | TVIF_TEXT | TVS_HASLINES  | TVS_LINESATROOT,
-        	5,5,
-			120,300,
-            hwnd,NULL,hinst,0);
+    HWND hTreeHwnd = GetDlgItem(hwnd,IDC_CONNECTION_TREE);
+
+	//HWND hTreeHwnd = CreateWindowEx(0,"SysTreeView32",0,
+	//	WS_CHILD |WS_BORDER | WS_VISIBLE | TVIF_TEXT | TVS_HASLINES  | TVS_LINESATROOT,
+    //    	5,5,
+	//		320,
+    //        300,
+    //        hwnd,NULL,hinst,0);
 
 	HIMAGELIST hImageList=ImageList_Create(16,16,ILC_COLOR24|ILC_MASK,2,10);
 	HBITMAP hBitmap = LoadBitmap(hinst,MAKEINTRESOURCE(IDB_CONNECTION));
@@ -109,7 +112,7 @@ void buildConnectionTree(HWND hwnd){
 	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
 	tvinsert.item.iImage=0;
 	tvinsert.item.iSelectedImage=1;
-    tvinsert.item.pszText= "mmm";
+    tvinsert.item.pszText= "product and internet service";
 
 	TreeNode * treeNode = buildTreeNode();
 	treeNode->level = 1;
@@ -123,7 +126,7 @@ void buildConnectionTree(HWND hwnd){
 	    tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
 	    tvinsert.item.iImage=2;
 	    tvinsert.item.iSelectedImage=2;
-        tvinsert.item.pszText= "00000";
+        tvinsert.item.pszText= "192.168.112.129:10122";
 		
 		(HTREEITEM)SendMessage(hTreeHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 	}
@@ -149,12 +152,12 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lPa
 
 			///////////////////////////////////////////////////////////////////////
 
-			HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
-            SendMessage(GetDlgItem(hWin,IDOK), WM_SETFONT, (WPARAM)hfont0, FALSE);
-			SendMessage(GetDlgItem(hWin,IDCANCEL), WM_SETFONT, (WPARAM)hfont0, FALSE);
-			SendMessage(GetDlgItem(hWin,IDC_LST_COLORS), WM_SETFONT, (WPARAM)hfont0, FALSE);
-			SendMessage(GetDlgItem(hWin,IDC_STATIC), WM_SETFONT, (WPARAM)hfont0, FALSE);
-			SendMessage(GetDlgItem(hWin,IDC_STATIC), WM_SETFONT, (WPARAM)hfont0, FALSE);
+			//HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
+            //SendMessage(GetDlgItem(hWin,IDOK), WM_SETFONT, (WPARAM)hfont0, FALSE);
+			//SendMessage(GetDlgItem(hWin,IDCANCEL), WM_SETFONT, (WPARAM)hfont0, FALSE);
+			//SendMessage(GetDlgItem(hWin,IDC_LST_COLORS), WM_SETFONT, (WPARAM)hfont0, FALSE);
+			//SendMessage(GetDlgItem(hWin,IDC_STATIC), WM_SETFONT, (WPARAM)hfont0, FALSE);
+			//SendMessage(GetDlgItem(hWin,IDC_STATIC), WM_SETFONT, (WPARAM)hfont0, FALSE);
 
 			break;
 		}

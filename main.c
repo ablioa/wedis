@@ -403,7 +403,7 @@ void command(HWND hwnd,int cmd){
 			// redis_key_space();
 			// redis_database_count();
 			//redis_info_stats();
-             redis_add_big();
+            redis_add_big();
 			break;
 		}
 		case IDM_CONNECTION_POOL:{
@@ -645,12 +645,14 @@ void buildToolBar(AppView * view){
 	HINSTANCE hInst = mainModel->hInstance;
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
 	RECT  rect;
+
+    int buttonCount = 10;
 	
-	
-	TBBUTTON tbtn[9] = {
+	TBBUTTON tbtn[10] = {
         {(0), IDM_CONNECTION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(1), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
 		{(7), IDM_SYSTEM_STAT, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(8), IDM_DEBUG_GET_DATABASES, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(0), 0             , 0,               TBSTYLE_SEP,    {0}, 0, 0},
 		{(2), IDM_ADD       , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(3), IDM_REMOVE    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
@@ -660,14 +662,14 @@ void buildToolBar(AppView * view){
     };
 
 	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_MAIN));
-    HIMAGELIST hIcons = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 1, 9);
+    HIMAGELIST hIcons = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 1, buttonCount);
 	ImageList_AddMasked(hIcons, hBmp, RGB(255,255,255));
 
     view->toolBarHwnd = CreateWindowEx(0L, TOOLBARCLASSNAME, "", tstyle, 16, 16, 16, 16, view->hwnd, (HMENU) 0, hInst, NULL);
     SendMessage(view->toolBarHwnd, TB_BUTTONSTRUCTSIZE, sizeof(TBBUTTON), 0);
     SendMessage(view->toolBarHwnd, TB_SETIMAGELIST, 0, (LPARAM) hIcons);
     SendMessage(view->toolBarHwnd, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
-    SendMessage(view->toolBarHwnd, TB_ADDBUTTONS,       (WPARAM)9,       (LPARAM)&tbtn);
+    SendMessage(view->toolBarHwnd, TB_ADDBUTTONS,       (WPARAM)buttonCount,       (LPARAM)&tbtn);
     SendMessage(view->toolBarHwnd, TB_AUTOSIZE, 0, 0);
 
     ShowWindow(view->toolBarHwnd,  TRUE);
