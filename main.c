@@ -647,9 +647,10 @@ void buildToolBar(AppView * view){
 	RECT  rect;
 	
 	
-	TBBUTTON tbtn[8] = {
+	TBBUTTON tbtn[9] = {
         {(0), IDM_CONNECTION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(1), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+		{(7), IDM_SYSTEM_STAT, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(0), 0             , 0,               TBSTYLE_SEP,    {0}, 0, 0},
 		{(2), IDM_ADD       , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(3), IDM_REMOVE    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
@@ -659,14 +660,14 @@ void buildToolBar(AppView * view){
     };
 
 	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_MAIN));
-    HIMAGELIST hIcons = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 1, 8);
+    HIMAGELIST hIcons = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 1, 9);
 	ImageList_AddMasked(hIcons, hBmp, RGB(255,255,255));
 
     view->toolBarHwnd = CreateWindowEx(0L, TOOLBARCLASSNAME, "", tstyle, 16, 16, 16, 16, view->hwnd, (HMENU) 0, hInst, NULL);
     SendMessage(view->toolBarHwnd, TB_BUTTONSTRUCTSIZE, sizeof(TBBUTTON), 0);
     SendMessage(view->toolBarHwnd, TB_SETIMAGELIST, 0, (LPARAM) hIcons);
     SendMessage(view->toolBarHwnd, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
-    SendMessage(view->toolBarHwnd, TB_ADDBUTTONS,       (WPARAM)8,       (LPARAM)&tbtn);
+    SendMessage(view->toolBarHwnd, TB_ADDBUTTONS,       (WPARAM)9,       (LPARAM)&tbtn);
     SendMessage(view->toolBarHwnd, TB_AUTOSIZE, 0, 0);
 
     ShowWindow(view->toolBarHwnd,  TRUE);

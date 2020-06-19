@@ -67,7 +67,7 @@ void dispatch(Task * task,RedisReply data){
                 break;
             }
 
-            log_message(data->bulk->content);
+            // log_message(data->bulk->content);
 
             handleRedisData(task,data);
             break;

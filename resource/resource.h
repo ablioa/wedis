@@ -6,6 +6,7 @@
 #define IDD_ABOUT                               108
 #define ID_MAIN                                 109
 #define IDB_TOOLBAR_MAIN                        110
+#define IDB_CONNECTION                          111
 #define IDD_PREFERENCE                          113
 #define IDD_GOTOLINE                            114
 #define IDC_LST_COLORS                          1005
@@ -64,3 +65,4 @@
 
 #define IDM_DEBUG_GET_DATABASES 3001
 
+#define IDC_LF_FACENAME 99999
