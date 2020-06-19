@@ -35,7 +35,8 @@ char * dumpText( char * text,int len){
     char * output =buff;
 
     int offset =0;
-    for(int ix = 0; ix < len; ix ++){
+    int ix = 0;
+    for(ix = 0; ix < len; ix ++){
         sprintf(output,"%02X ",(unsigned char)(text[ix]));
         output +=3;
         line[offset++]= isprint(text[ix])?text[ix]:'.';
@@ -44,8 +45,20 @@ char * dumpText( char * text,int len){
             sprintf(output,"    %s\r\n",line);
             offset=0;
 
+            memset(line,0,17);
+
             output +=22;
         }
+    }
+
+    if(ix % 0x10 != 0x00){
+        sprintf(output,"[ix=%d]",ix);
+        for(ix =(0x10 - len % 0x10); ix < 0x10;ix++){
+            sprintf(output,"   ");
+        }
+
+        sprintf(output,"    %s\r\n",line);
+        output +=22;
     }
 
 	return buff;
