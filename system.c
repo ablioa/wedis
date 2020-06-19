@@ -61,10 +61,10 @@ BOOL updateConfigDataSet(HWND hwnd,KVPair kv){
         memset(value,0,256);
         sprintf(value,"%d",kv->array[index]->value);
 
-        lvI.pszText = kv->array[index]->key;//indexBuff; 
+        lvI.pszText = kv->array[index]->key;
         ListView_InsertItem(hwnd, &lvI);
 
-        lvI.pszText = value;//reply->bulks[index];
+        lvI.pszText = value;
         lvI.iSubItem = 1;
         SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
     }
