@@ -32,7 +32,7 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
             memset(model,0,sizeof(StringViewModel));
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
 
-			model->stringView = CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | WS_BORDER | WS_CHILD | WS_TABSTOP | WS_VSCROLL  |ES_MULTILINE, 0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_TEXT, mainModel->hInstance, 0);
+			model->stringView = CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | ES_AUTOVSCROLL | WS_BORDER | WS_CHILD | WS_TABSTOP | WS_VSCROLL |ES_MULTILINE, 0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_TEXT, mainModel->hInstance, 0);
             model->btnInsert  = CreateWindowEx(0, WC_BUTTON, ("Save"), WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_SAVE, mainModel->hInstance, 0);
 
             SendMessage(model->btnInsert, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
@@ -64,6 +64,8 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 
 			SendMessage(model->stringView,EM_REPLACESEL,FALSE,(LPARAM)data->bulk->content);
 			SetWindowText(model->stringView,data->bulk->content);
+
+            //MessageBox(hwnd,data->bulk->content,"text",MB_OK);
             break;
         }
 

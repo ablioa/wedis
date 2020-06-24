@@ -50,6 +50,7 @@ BOOL CALLBACK ListItemEditProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lP
 
 	return FALSE;
 }
+
 BOOL CALLBACK SetPreferenceProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	switch(message){
 		case WM_COMMAND:
