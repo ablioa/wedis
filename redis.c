@@ -1,5 +1,7 @@
 #include "redis.h"
 
+#include <windows.h>
+
 int getStatusReplyLength(char *text){
 	int cur = 0;
 
@@ -26,7 +28,7 @@ RedisBulks buildRedisBulks(int count){
 	return bulks;
 }
 
-RedisReply read_replay(char *text){
+RedisReply read_replay(char *text,int length){
 	int cur = 0;
 	char ch = text[cur++];
 
@@ -76,6 +78,11 @@ RedisReply read_replay(char *text){
 
 			cur += 2;
 			int count = atoi(cnt);
+			if(strlen(text+cur) < count){
+				char buff[256] = {0};
+				sprintf(buff,"acture.size: %d,supporsed.count:%d",strlen(text+cur),count);
+				MessageBox(NULL,buff,"Title",MB_OK);
+			}
 
 			RedisBulk bulk = buildRedisBulk(count);
 			reply->bulk = bulk;

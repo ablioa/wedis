@@ -23,6 +23,8 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
 					400, 300,
                     NULL,NULL, hInst, NULL) ;
 
+	mainModel->mainWindowHwnd = hwndFrame;
+
     ShowWindow (hwndFrame, cmdShow) ;
     UpdateWindow (hwndFrame) ;
 
@@ -308,7 +310,7 @@ void networkHandle(LPARAM lParam){
 
 
 			Task * task = getTask(pool);
-            RedisReply rp = read_replay(buff);
+            RedisReply rp = read_replay(buff,dr_size);
 
 			char bag[256] = {0};
 			
@@ -325,7 +327,7 @@ void networkHandle(LPARAM lParam){
 
 			if(rp->consumed < dr_size){
 				task = getTask(pool);
-           		RedisReply ss= read_replay(buff + rp->consumed );
+           		RedisReply ss= read_replay(buff + rp->consumed,dr_size);
 				dispatch(task,ss);
 			}
 			
@@ -378,8 +380,6 @@ void command(HWND hwnd,int cmd){
 	HINSTANCE hInst = mainModel->hInstance;
 
 	if(cmd > 900 && cmd < 1000){
-		
-
 		Host * host = getHostByIndex(appConfig,cmd);
 		if(host == NULL){
 			return;
@@ -399,11 +399,17 @@ void command(HWND hwnd,int cmd){
 	}
 
     switch (cmd){
+
+		case IDM_ADD:{
+			DialogBox (hInst,MAKEINTRESOURCE (IDD_ADD_ENTRY),hwnd,(DLGPROC)entryDlgProc);
+			break;
+		}
 		case IDM_DEBUG_GET_DATABASES:{
 			// redis_key_space();
 			// redis_database_count();
 			//redis_info_stats();
             redis_add_big();
+			// wedis_test();
 			break;
 		}
 		case IDM_CONNECTION_POOL:{
@@ -445,11 +451,6 @@ void command(HWND hwnd,int cmd){
 
 		case IDM_SYSTEM_STAT:{
 			redis_info_stats();
-			break;
-		}
-
-		case IDM_ADD:{
-			log_message("add data entry");
 			break;
 		}
 

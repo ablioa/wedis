@@ -34,6 +34,11 @@
 
 #include "dispatch.h"
 
+#include "entry.h"
+
+#include "test.h"
+
+
 #define szFrameClass "MdiFrame"
 
 #define DATAVIEW_WINDOW     "DATA_VIEW_WINDOW"
@@ -135,6 +140,9 @@ typedef struct{
     HINSTANCE hInstance;
 
     Keyspace * keyspaces;
+
+	HWND mainWindowHwnd;
+
 	int spaceCount;
 }MainModel;
 

@@ -130,7 +130,7 @@ void setKeyspaceValue(Keyspace info,char * value);
 
 Keyspace parseKeyspace(char * buffer);
 
-RedisReply read_replay(char * text);
+RedisReply read_replay(char * text,int length);
 
 char * buildWord(char * word,size_t length);
 

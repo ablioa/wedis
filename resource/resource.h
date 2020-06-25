@@ -87,3 +87,5 @@
 #define IDC_CONNECTION_OK              217
 #define IDC_CONNECTION_CANCEL          218
 #define IDC_CONNECTION_TREE            219
+
+#define IDD_ADD_ENTRY                  300

@@ -36,6 +36,8 @@ BOOL InitSetViewColumns1(HWND hWndListView) {
         if (ListView_InsertColumn(hWndListView, iCol, &lvc) == -1){
             return FALSE;
 		}
+
+        ListView_SetColumnWidth(hWndListView,iCol,(iCol+1) * 200);
     }
     
     return TRUE;
