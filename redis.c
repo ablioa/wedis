@@ -28,6 +28,109 @@ RedisBulks buildRedisBulks(int count){
 	return bulks;
 }
 
+///char * chunk;
+
+int crlf_end(char * text,int pos){
+	return (text[pos-1] == 0x0d && text[pos] == 0x0a);
+}
+
+int check_tail(char * text,int length){
+	int bound = 0;
+	int tail_position = 0;
+
+	int cur = 0;
+	char ch = text[0];
+	switch (ch){
+		case '+':
+		case '-':{
+			while(!crlf_end(text,cur++)){
+				if(cur >= length){
+					return 0;
+				}
+			}
+			return cur;
+		}
+
+		case ':':{
+			break;
+		}
+
+		case '$':{
+			int found = 1;
+			char cnt[128] = {0};
+			int scur = 0;
+			while (isdigit(text[cur])){
+				cnt[scur++] = text[cur++];
+				if(cur >= length){return 0;}
+			}
+
+			cur += 2;
+			if(cur >= length){return 0;}
+
+			int count = atoi(cnt);
+			cur += count;
+
+			if(cur > length){return 0;}
+
+			return cur;
+		}
+
+		case '*':{
+			char cnt[128] = {0};
+			int scur = 0;
+			while (isdigit(text[cur])){
+				cnt[scur++] = text[cur++];
+				if(cur >= length){return 0;}
+			}
+
+			int count = atoi(cnt);
+			cur += 3;
+			if(cur >= length){return 0;}
+
+			for (int ix = 0; ix < count; ix++){
+				int scur = 0;
+				memset(cnt, 0, 128);
+
+				while (isdigit(text[cur])){
+					cnt[scur++] = text[cur++];
+					if(cur >= length){return 0;}
+				}
+
+				cur += 2;
+				if(cur >= length){return 0;}
+				int mcount = atoi(cnt);
+				cur += mcount;
+				if(cur >= length){return 0;}
+
+				cur += 3;
+				if(cur >= length){return 0;}
+			}
+
+			return cur;
+		}
+
+		default:{
+			return -1;
+			break;
+		}
+	}
+}
+
+int redis_read_pack(char * text,int length){
+	int pos     = check_tail(text,length);
+	char * next = text;
+	while(pos != 0){
+		// parse();
+
+		next = text + pos;
+		pos = check_tail(next,length-pos);
+	}
+
+	if(next < text+length){
+		// backup
+	}
+}
+
 RedisReply read_replay(char *text,int length){
 	int cur = 0;
 	char ch = text[cur++];

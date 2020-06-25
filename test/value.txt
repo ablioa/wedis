@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "main.h"
 
 MainModel * mainModel;
@@ -802,3 +803,8 @@ TreeNode * buildTreeNode(){
 }
 
 ==== last line ===
+=======
+wang
+zh
+hua
+>>>>>>> 8295b8847afce85dda305d959dd66612d0e4a81e
