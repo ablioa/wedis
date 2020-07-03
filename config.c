@@ -33,21 +33,20 @@ void load_all(){
         char section_name[MAX_PATH]={0};
         wsprintf(section_name,"host/%d",ix);
 
-        char * host_name = (char *)calloc(MAX_PATH,sizeof(char));
+        host->name = (char *)calloc(MAX_PATH,sizeof(char));
+        GetPrivateProfileString(section_name,CONFIG_NAME,"",host->name,MAX_PATH,INI_NAME);
 
-        GetPrivateProfileString(section_name,CONFIG_HOST,"127.0.0.1",host_name,MAX_PATH,INI_NAME);
-        host->host = host_name;
+        host->description = (char *)calloc(MAX_PATH,sizeof(char));
+        GetPrivateProfileString(section_name,CONFIG_DESC,"",host->description,MAX_PATH,INI_NAME);
 
-        LONG port=GetPrivateProfileInt(section_name,CONFIG_PORT,6379,INI_NAME);
-        host->port=port;
+        host->host = (char *)calloc(MAX_PATH,sizeof(char));
+        GetPrivateProfileString(section_name,CONFIG_HOST,"",host->host,MAX_PATH,INI_NAME);
 
-        LONG requirepass=GetPrivateProfileInt(section_name,CONFIG_REQUIREPASS,0,INI_NAME);
-        host->requirepass=requirepass;
+        host->port=GetPrivateProfileInt(section_name,CONFIG_PORT,6379,INI_NAME);
+        host->requirepass=GetPrivateProfileInt(section_name,CONFIG_REQUIREPASS,0,INI_NAME);
 
-        char * password = (char *)calloc(MAX_PATH,sizeof(char));
-
-        GetPrivateProfileString(section_name,CONFIG_PASSWORD,"abc123",password,MAX_PATH,INI_NAME);
-        host->password=password;
+        host->password = (char *)calloc(MAX_PATH,sizeof(char));
+        GetPrivateProfileString(section_name,CONFIG_PASSWORD,"",host->password,MAX_PATH,INI_NAME);
 
         appConfig->hosts[ix] = host;
     }
@@ -60,6 +59,10 @@ void save_all(){
     //char tmp[MAX_PATH]={0};
     //wsprintf(tmp,"%d",10);
     //WritePrivateProfileString(GENERAL_CONFIG,TOTAL_HOST,tmp,INI_NAME);
+}
+
+void save_config(){
+    MessageBox(NULL,"service config!","title",MB_OK);    
 }
 
 //config::config(){
