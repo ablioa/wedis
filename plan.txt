@@ -125,3 +125,12 @@ RedisClient
    4. 记录通信日志
 
 
+		case WM_PAINT:
+			//hdc = BeginPaint(hWin,&ps);
+			//Rectangle(hdc,200,40,260,60);
+			//Rectangle(hdc,200,100,260,120);
+			//EndPaint(hWin,&ps);
+		break;
+
+    windowsx.h里面有很多针对普通组件的消息处理，有详细的文档描述。
+    https://docs.microsoft.com/en-us/windows/win32/controls/bm-setcheck
