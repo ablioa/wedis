@@ -187,6 +187,8 @@ void initModel(){
 	mainModel->dataView = (DataView *) calloc(1,sizeof(DataView));
 
 	initTaskPool();
+
+	init_working_buffer();
 }
 
 void onExit(){
@@ -281,17 +283,21 @@ void onDataBaseSelect(HWND hwnd){
     }
 }
 
-void appendLog(const char * text){
-    size_t curLeng = GetWindowTextLength(mainModel->logHwnd);
-	SendMessage(mainModel->logHwnd,EM_SETSEL,curLeng,curLeng);
-	SendMessage(mainModel->logHwnd,EM_REPLACESEL,FALSE,(LPARAM)text);
 
-    fprintf(fout,"%s",text);
-    fflush(fout);
+int packet_read(unsigned char * text,int length){
+	char * binText = dumpText((char*)text,length);
+	wedis_log("packet to be processed:(%d)\n",length);
+	wedis_log("%s",binText);
+
+	return 0;
+}
+
+void appendLog(const char * text){
+    //fprintf(fout,"%s",text);
+    //fflush(fout);
 }
 
 void networkHandle(LPARAM lParam){
-
 	DispatchRequest * requests[10];
 
     switch(LOWORD(lParam)){
@@ -304,22 +310,26 @@ void networkHandle(LPARAM lParam){
 	    	char * buff;
 	    	buff = connection_get_buffer(mainModel->connection);
             int dr_size = connection_receivedata(mainModel->connection);
-			appendLog(buff);
+			//appendLog(buff);
 
-			char * binText = dumpText((char*)buff,dr_size);
+			//char * binText = dumpText((char*)buff,dr_size);
 
+			wedis_log("data-from-network: %d",dr_size);
+
+			
 
 			Task * task = getTask(pool);
             RedisReply rp = read_replay(buff,dr_size);
 
-			char bag[256] = {0};
-			
-			sprintf(bag,"total=%d,consumed=%d",dr_size,rp->consumed);
-			appendLog("\r\n-------------\r\n");
-			appendLog(binText);
-			appendLog("\r\n");
-			appendLog(bag);
-			appendLog("\r\n-------------\r\n");
+			// char bag[256] = {0};
+			// sprintf(bag,"total=%d,consumed=%d",dr_size,rp->consumed);
+			// appendLog("\r\n-------------\r\n");
+			// appendLog(binText);
+			// appendLog("\r\n");
+			// appendLog(bag);
+			// appendLog("\r\n-------------\r\n");
+
+			redis_read_pack(buff,dr_size,packet_read);
 
             //log_message("-----");
 

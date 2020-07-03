@@ -2,6 +2,65 @@
 
 #include <windows.h>
 
+RedisWorkingBuffer redisWorkingBuffer;
+
+void init_working_buffer(){
+	redisWorkingBuffer = (RedisWorkingBuffer) calloc(1,sizeof(struct redis_working_buffer));
+	redisWorkingBuffer->buffer = (char*) calloc(WORKING_BUFFER_SIZE,sizeof(char));
+	redisWorkingBuffer->capacity = WORKING_BUFFER_SIZE;
+	redisWorkingBuffer->size = 0;
+}
+
+void append_working_buffer(unsigned char * buffer,int length){
+	int new_size = redisWorkingBuffer->size + length;
+    int offset = redisWorkingBuffer->size;
+
+	wedis_log("pre.append-> address:%ld,capacity:%d,size:%d,data-length:%d",
+	redisWorkingBuffer->buffer,
+	redisWorkingBuffer->capacity,
+	redisWorkingBuffer->size,
+	length);
+
+	if( new_size > redisWorkingBuffer->capacity){
+		realloc(redisWorkingBuffer->buffer,new_size);
+		redisWorkingBuffer->capacity = new_size;
+	}
+
+	memcpy(redisWorkingBuffer->buffer + offset,buffer,length);
+	redisWorkingBuffer->size = new_size;
+
+	wedis_log("post.append-> address:%ld,capacity:%d,size:%d,data-length:%d",
+	redisWorkingBuffer->buffer,
+	redisWorkingBuffer->capacity,
+	redisWorkingBuffer->size,
+	length);
+}
+
+void retain_working_buffer(int invalid_size){
+	int valid_size = redisWorkingBuffer->size - invalid_size;
+	unsigned char * buff = (unsigned char*)calloc((valid_size),sizeof(unsigned char));
+
+	wedis_log("pre.retain-> address:%ld,capacity:%d,size:%d,data-length:%d",
+	redisWorkingBuffer->buffer,
+	redisWorkingBuffer->capacity,
+	redisWorkingBuffer->size,
+	valid_size);
+	
+	memcpy(buff,redisWorkingBuffer->buffer+invalid_size,valid_size);
+	memset(redisWorkingBuffer->buffer,0,redisWorkingBuffer->capacity);
+	memcpy(redisWorkingBuffer->buffer,buff,valid_size);
+
+	redisWorkingBuffer->size = valid_size;
+
+	wedis_log("post.retain-> address:%ld,capacity:%d,size:%d,data-length:%d",
+	redisWorkingBuffer->buffer,
+	redisWorkingBuffer->capacity,
+	redisWorkingBuffer->size,
+	valid_size);
+
+	free(buff);
+}
+
 int getStatusReplyLength(char *text){
 	int cur = 0;
 
@@ -40,6 +99,11 @@ int check_tail(char * text,int length){
 
 	int cur = 0;
 	char ch = text[0];
+
+	wedis_log("start token(text):%s",text);
+	wedis_log("start token(char):|%c|",ch);
+	wedis_log("length of token:%d",length);
+
 	switch (ch){
 		case '+':
 		case '-':{
@@ -56,9 +120,10 @@ int check_tail(char * text,int length){
 		}
 
 		case '$':{
-			int found = 1;
+			//int found = 1;
 			char cnt[128] = {0};
 			int scur = 0;
+			cur++;
 			while (isdigit(text[cur])){
 				cnt[scur++] = text[cur++];
 				if(cur >= length){return 0;}
@@ -69,6 +134,7 @@ int check_tail(char * text,int length){
 
 			int count = atoi(cnt);
 			cur += count;
+			cur += 2;
 
 			if(cur > length){return 0;}
 
@@ -77,6 +143,7 @@ int check_tail(char * text,int length){
 
 		case '*':{
 			char cnt[128] = {0};
+			cur++;
 			int scur = 0;
 			while (isdigit(text[cur])){
 				cnt[scur++] = text[cur++];
@@ -110,25 +177,37 @@ int check_tail(char * text,int length){
 		}
 
 		default:{
-			return -1;
-			break;
+			wedis_log("wrong pack: %d-> %s",length,text);
+			return 0;
 		}
 	}
 }
 
-int redis_read_pack(char * text,int length){
-	int pos     = check_tail(text,length);
-	char * next = text;
+int redis_read_pack(char * text,int length,redis_pack_handle handle){
+	append_working_buffer(text,length);
+	int pos     = check_tail(redisWorkingBuffer->buffer,redisWorkingBuffer->size);
+	char * next = redisWorkingBuffer->buffer;
 	while(pos != 0){
-		// parse();
+		char * pk = (char*) calloc(pos,sizeof(char));
+		memcpy(pk,next,pos-1);
 
-		next = text + pos;
-		pos = check_tail(next,length-pos);
+		wedis_log("data retrieved: %d",pos-1);
+		handle(pk,pos-1);
+
+		next = redisWorkingBuffer->buffer + pos;
+		if(length - pos == 0){
+			pos = 0;
+		}else{
+			pos = check_tail(next,length - pos);
+		}
 	}
 
-	if(next < text+length){
-		// backup
+	wedis_log("post.process: buff: %ld,invalid-pos: %ld ,size:%d",redisWorkingBuffer->buffer,next,redisWorkingBuffer->size);
+	if(next <= redisWorkingBuffer->buffer + redisWorkingBuffer->size){
+		retain_working_buffer((next-redisWorkingBuffer->buffer));
 	}
+
+	return 0;
 }
 
 RedisReply read_replay(char *text,int length){

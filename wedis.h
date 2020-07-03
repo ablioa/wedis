@@ -3,6 +3,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <time.h>
 
 /**
  * 一般控件样式 
@@ -20,6 +21,8 @@
 #define GENERAL_CMD_RELOAD  10004
 #define GENERAL_CMD_KEYEDIT 10005
 
+#define BUFF_SIZE        1024*1024
+
 typedef struct{
     HFONT ctrlFont;
     HFONT fixedWidthFont;
@@ -34,5 +37,7 @@ void log_message(const char * message);
 char * getOutputBuffer(int size);
 
 char * dumpText( char * text,int len);
+
+int wedis_log(const char *fmt, ...);
 
 #endif

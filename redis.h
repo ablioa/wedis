@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include "wedis.h"
 
 #define CHAR_SPACE ' '
 #define CHAR_TAB   '\t'
@@ -13,6 +14,8 @@
 
 #define LENGTH_WORD     256
 #define LENGTH_COMMAND  1024
+
+#define WORKING_BUFFER_SIZE 10485760
 
 typedef enum{
 	REDIS_UNDEFINED,
@@ -78,6 +81,20 @@ struct redis_reply_info{
 typedef struct redis_reply_info   RedisReplyInfo;
 typedef struct redis_reply_info * RedisReply;
 
+struct redis_working_buffer{
+	char * buffer;
+
+	/** 总空间 */
+	int    capacity;
+
+	/** 已经使用空间 */
+	int    size;
+};
+
+typedef struct redis_working_buffer * RedisWorkingBuffer;
+
+extern RedisWorkingBuffer redisWorkingBuffer;
+
 /**
  * redis 列表数据
  */
@@ -116,6 +133,8 @@ struct key_value_pair{
 typedef struct key_value_pair KeyValuePair;
 typedef struct key_value_pair * KVPair;
 
+typedef int (*redis_pack_handle)(unsigned char *,int);
+
 KVPair buildKVPair();
 
 void destroyKVPair(KVPair kv);
@@ -137,5 +156,12 @@ char * buildWord(char * word,size_t length);
 char  * parse_command(char * text,const size_t size);
 
 DataType checkDataType(char * type);
+
+int redis_read_pack(char * text,int length,redis_pack_handle handle);
+int crlf_end(char * text,int pos);
+int check_tail(char * text,int length);
+void init_working_buffer();
+void append_working_buffer(unsigned char * buffer,int length);
+void retain_working_buffer(int invalid_size);
 
 #endif
