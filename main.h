@@ -59,6 +59,27 @@
 #define CONNECTION_AREA_WIDTH 200
 #define SPLITER_WIDTH 2
 
+#define IDM_TIMING              1000
+#define IDM_SYSTEM_STAT         1001
+#define IDM_ADD                 1002
+#define IDM_DEBUG_GET_DATABASES 1003
+#define IDM_RELOAD              1004
+#define IDM_RENAME              1005
+#define IDM_REMOVE              1006
+#define IDM_CONNECTION          1007
+#define IDC_STRING_VIEW_TEXT    1008
+#define IDC_STRING_VIEW_SAVE    1009
+#define IDC_TTL_OK              1010
+#define IDC_TTL_EDIT            1011
+#define IDC_TTL_CANCEL          1012
+#define IDC_ABOUT_IMAGE         1013
+#define IDC_ABOUT_NAME          1014
+#define IDC_ABOUT_URL           1015
+#define IDC_ABOUT_DESCRIPTION   1016
+
+#define IDM_CUSTOMER_HOST 900
+
+
 typedef struct{
     HWND hwnd;
     

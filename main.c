@@ -203,12 +203,12 @@ void onMainFrameCreate(HWND hwnd){
 	AppendMenu(mainModel->hDev,MF_STRING,IDM_CONNECTION_POOL,"Connections");
 	AppendMenu(mainModel->hDev,MF_SEPARATOR,0,"");
 
-    int total = appConfig->total_host;
-	for(int ix =0 ;ix < total ; ix ++){
-        Host * host = appConfig->hosts[ix];
-		host->hostIndex = IDM_CUSTOMER_HOST + ix;
-		AppendMenu(mainModel->hDev,MF_STRING,(host->hostIndex),host->host);
-	}
+    //int total = appConfig->total_host;
+	//for(int ix =0 ;ix < total ; ix ++){
+    //    Host * host = appConfig->hosts[ix];
+	//	host->hostIndex = IDM_CUSTOMER_HOST + ix;
+	//	AppendMenu(mainModel->hDev,MF_STRING,(host->hostIndex),host->host);
+	//}
 
 	mainModel->hServerInfoMenu = CreatePopupMenu();
 	AppendMenu(mainModel->hServerInfoMenu,MF_STRING,IDM_SYSTEM_STAT,"Server Status");

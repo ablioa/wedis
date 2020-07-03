@@ -15,7 +15,7 @@
 #define CONFIG_REQUIREPASS "requirepass"
 #define CONFIG_PASSWORD    "password"
 
-typedef struct{
+typedef struct wedis_host{
     char * name;
     char * host;
     int    port;
@@ -24,19 +24,39 @@ typedef struct{
     char * description;
 
     int    hostIndex;
+
+    struct wedis_host * next;
 }Host;
 
 typedef struct{
    int total_host;
-   Host ** hosts;
+
+   int seq;
+
+   //Host ** hosts;
+
+   struct wedis_host * head;
+   struct wedis_host * tail;
 }Config;
 
 extern Config * appConfig;
+
+void add_co_host(Host * host);
+
+void remove_host_config(int hostIndex);
+
+void read_host_config(int index,Host * host);
 
 void save_all();
 
 void save_config();
 
+void save_all_host_config();
+
+void save_host_config(int index,Host * host);
+
 Host * getHostByIndex(Config * config,int hostIndex);
+
+LONG WritePrivateProfileInt(LPSTR sectionname,LPSTR keyname,LONG val,LPCSTR file);
 
 #endif

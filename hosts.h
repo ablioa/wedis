@@ -7,6 +7,15 @@
 struct wedis_hosts_model{
     HWND      hostTree;
     HTREEITEM parentTree;
+    HTREEITEM selectedTree;
+
+    int       hostIndex;
+
+    WNDPROC   hostEditProc;
+    WNDPROC   nameEditProc;
+    WNDPROC   portEditProc;
+    WNDPROC   passwordEditProc;
+    WNDPROC   descEditProc;
 };
 
 typedef struct wedis_hosts_model * HostModel;

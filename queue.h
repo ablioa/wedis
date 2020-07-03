@@ -23,7 +23,7 @@ struct taskpool{
     struct task * tail;
 };
 
-typedef struct task Task;
+typedef struct task     Task;
 typedef struct taskpool TaskPool;
 
 extern TaskPool * pool;
