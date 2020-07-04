@@ -203,25 +203,23 @@ void onMainFrameCreate(HWND hwnd){
 	AppendMenu(mainModel->hDev,MF_STRING,IDM_CONNECTION_POOL,"Connections");
 	AppendMenu(mainModel->hDev,MF_SEPARATOR,0,"");
 
-    //int total = appConfig->total_host;
-	//for(int ix =0 ;ix < total ; ix ++){
-    //    Host * host = appConfig->hosts[ix];
-	//	host->hostIndex = IDM_CUSTOMER_HOST + ix;
-	//	AppendMenu(mainModel->hDev,MF_STRING,(host->hostIndex),host->host);
-	//}
-
 	Host * start = appConfig->head;
 	while (start != NULL){
-		// host->hostIndex = IDM_CUSTOMER_HOST + ix;
-		AppendMenu(mainModel->hDev,MF_STRING,(start->hostIndex + IDM_CUSTOMER_HOST),start->name);
+		AppendMenu(mainModel->hDev,MF_STRING,(start->hostIndex + IDM_CUSTOMER_HOST+1),start->name);
 		start = start->next;
 	}
 	
-
 	mainModel->hServerInfoMenu = CreatePopupMenu();
 	AppendMenu(mainModel->hServerInfoMenu,MF_STRING,IDM_SYSTEM_STAT,"Server Status");
 	AppendMenu(mainModel->hServerInfoMenu,MF_SEPARATOR,0,"");
 	AppendMenu(mainModel->hServerInfoMenu,MF_STRING,IDM_SYSTEM_STAT+1,"Commands");
+}
+
+void updateNavigationInfo(TreeNode * node){
+	char path[MAX_PATH] = {0};
+	wsprintf(path,"db%d",node->database,node->key);
+	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,2,(LPARAM)path);
+	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,3,(LPARAM)node->key);
 }
 
 void onDataNodeSelection(){
@@ -254,9 +252,9 @@ void onDataNodeSelection(){
 	TreeNode * tn = (TreeNode*) ti.lParam;
 	if(tn->level == 3){
 		redis_select(tn->database);
-
-       // log_message(tn->key);
 		redis_data_type(tn->key);
+		
+		updateNavigationInfo(tn);
 	}
 }
 
@@ -289,6 +287,8 @@ void onDataBaseSelect(HWND hwnd){
     	mainModel->selectedNode = hItem;
 		mainModel->database = tn->database;
     }
+
+	// SetWindowText(mainModel->mainWindowHwnd,"database node!!!");
 }
 
 
@@ -398,7 +398,7 @@ void command(HWND hwnd,int cmd){
 	HINSTANCE hInst = mainModel->hInstance;
 
 	if(cmd > 900 && cmd < 1000){
-		Host * host = getHostByIndex(appConfig,cmd - IDM_CUSTOMER_HOST);
+		Host * host = getHostByIndex(appConfig,cmd - IDM_CUSTOMER_HOST -1);
 		if(host == NULL){
 			return;
 		}
@@ -407,10 +407,7 @@ void command(HWND hwnd,int cmd){
 		mainModel->connection =  build_connection(host->host,host->port,host->password);
         connect_to_server(mainModel->connection,hwnd);
 
-		// TODO 封装一下
-		char connName[255] = {0};
-		sprintf(connName,"%s:%d",host->host,host->port);
-		HTREEITEM parentHandle = addHostNode(connName);
+		HTREEITEM parentHandle = addHostNode(host->name);
 		mainModel->connection->hostHandle = parentHandle;
 
 		return;
