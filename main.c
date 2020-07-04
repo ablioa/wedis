@@ -210,6 +210,14 @@ void onMainFrameCreate(HWND hwnd){
 	//	AppendMenu(mainModel->hDev,MF_STRING,(host->hostIndex),host->host);
 	//}
 
+	Host * start = appConfig->head;
+	while (start != NULL){
+		// host->hostIndex = IDM_CUSTOMER_HOST + ix;
+		AppendMenu(mainModel->hDev,MF_STRING,(start->hostIndex + IDM_CUSTOMER_HOST),start->name);
+		start = start->next;
+	}
+	
+
 	mainModel->hServerInfoMenu = CreatePopupMenu();
 	AppendMenu(mainModel->hServerInfoMenu,MF_STRING,IDM_SYSTEM_STAT,"Server Status");
 	AppendMenu(mainModel->hServerInfoMenu,MF_SEPARATOR,0,"");
@@ -390,7 +398,7 @@ void command(HWND hwnd,int cmd){
 	HINSTANCE hInst = mainModel->hInstance;
 
 	if(cmd > 900 && cmd < 1000){
-		Host * host = getHostByIndex(appConfig,cmd);
+		Host * host = getHostByIndex(appConfig,cmd - IDM_CUSTOMER_HOST);
 		if(host == NULL){
 			return;
 		}

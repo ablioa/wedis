@@ -26,10 +26,6 @@ void buildConnectionTree(HWND hwnd){
 	tvinsert.item.iSelectedImage=1;
     tvinsert.item.pszText= "product and internet service";
 
-	//TreeNode * treeNode = buildTreeNode();
-	//treeNode->level = 1;
-	//tvinsert.item.lParam=(LPARAM)treeNode;
-
 	model->parentTree = (HTREEITEM)SendMessage(model->hostTree,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 
 
@@ -54,13 +50,15 @@ void buildConnectionTree(HWND hwnd){
 
 
 LRESULT CALLBACK nameEditProc(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam){
-	HWND hParent = GetParent(hwnd);
-	HostModel model = (HostModel)GetWindowLongPtr(hParent,GWLP_USERDATA);
+	HWND hParent        = GetParent(hwnd);
+	HostModel model     = (HostModel)GetWindowLongPtr(hParent,GWLP_USERDATA);
 
 	switch (message){
 		case WM_KEYUP:{
+			char buff[MAX_PATH] = {0};
 			Host * host = getHostByIndex(appConfig,model->hostIndex);
-			MessageBox(hwnd,host->name,"title",MB_OK);
+			GetDlgItemText(hParent,IDC_CONNECTION_VALUE,buff,MAX_PATH);
+			memcpy(host->name,buff,MAX_PATH);
 			break;
 		}
 
@@ -78,9 +76,10 @@ LRESULT CALLBACK hostEditProc(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam
 
 	switch (message){
 		case WM_KEYUP:{
+			char buff[MAX_PATH] = {0};
 			Host * host = getHostByIndex(appConfig,model->hostIndex);
-			MessageBox(hwnd,host->host,"title",MB_OK);
-			//GetDlgItemText(hParent,IDC_CONNECTION_HOSTVALUE);
+			GetDlgItemText(hParent,IDC_CONNECTION_HOSTVALUE,buff,MAX_PATH);
+			memcpy(host->host,buff,MAX_PATH);
 			break;
 		}
 
@@ -95,15 +94,15 @@ LRESULT CALLBACK hostEditProc(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam
 LRESULT CALLBACK portEditProc(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam){
 	HWND hParent = GetParent(hwnd);
 	HostModel model = (HostModel)GetWindowLongPtr(hParent,GWLP_USERDATA);
-
+	BOOL result = TRUE;
 	switch (message){
 		case WM_KEYUP:{
 			Host * host = getHostByIndex(appConfig,model->hostIndex);
+			UINT port   = GetDlgItemInt(hParent,IDC_CONNECTION_PORTVALUE,&result,FALSE);
+			if(result){
+				host->port = port;
+			}
 
-			char msg[255] = {0};
-			wsprintf(msg,"prot: %d",host->port);
-			MessageBox(hwnd,msg,"title",MB_OK);
-			//GetDlgItemText(hParent,IDC_CONNECTION_HOSTVALUE);
 			break;
 		}
 
@@ -123,10 +122,9 @@ LRESULT CALLBACK passwordEditProc(HWND hwnd,UINT message,WPARAM wParam,LPARAM lP
 		case WM_KEYUP:{
 			Host * host = getHostByIndex(appConfig,model->hostIndex);
 
-			char msg[255] = {0};
-			wsprintf(msg,"prot: %d",host->port);
-			MessageBox(hwnd,host->password,"title",MB_OK);
-			//GetDlgItemText(hParent,IDC_CONNECTION_HOSTVALUE);
+			char buff[MAX_PATH] = {0};
+			GetDlgItemText(hParent,IDC_CONNECTION_PASSWORDVALUE,buff,MAX_PATH);
+			memcpy(host->password,buff,MAX_PATH);
 			break;
 		}
 
@@ -146,10 +144,10 @@ LRESULT CALLBACK descEditProc(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam
 		case WM_KEYUP:{
 			Host * host = getHostByIndex(appConfig,model->hostIndex);
 
-			char msg[255] = {0};
-			wsprintf(msg,"prot: %d",host->port);
-			MessageBox(hwnd,host->description,"title",MB_OK);
-			//GetDlgItemText(hParent,IDC_CONNECTION_HOSTVALUE);
+			char buff[MAX_PATH] = {0};
+			GetDlgItemText(hParent,IDC_CONNECTION_DESCRIPTION,buff,MAX_PATH);
+			memcpy(host->description,buff,MAX_PATH);
+
 			break;
 		}
 
@@ -173,10 +171,11 @@ void updateConfigure(HWND hwnd,Host * host){
     SetDlgItemInt(hwnd,IDC_CONNECTION_PORTVALUE,host->port,FALSE);
     
     Button_SetCheck(GetDlgItem(hwnd,IDC_CONNECTION_IFPASSWORD),host->requirepass);
-	if(!host->requirepass){
-		EnableWindow(GetDlgItem(hwnd,IDC_CONNECTION_PASSWORDVALUE),FALSE);
-	}else{
-		EnableWindow(GetDlgItem(hwnd,IDC_CONNECTION_PASSWORDVALUE),TRUE);
+	if (!host->requirepass){
+		EnableWindow(GetDlgItem(hwnd, IDC_CONNECTION_PASSWORDVALUE), FALSE);
+	}
+	else{
+		EnableWindow(GetDlgItem(hwnd, IDC_CONNECTION_PASSWORDVALUE), TRUE);
 	}
 }
 
@@ -186,19 +185,14 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lPa
 
 	switch(msg){
 		case WM_INITDIALOG:{
-			//HINSTANCE hInstance = mainModel->hInstance;
-			//LoadString(hInstance,IDS_CODEVIEW,buff,MAX_PATH);
-			//SendDlgItemMessage(hWin,IDC_LST_COLORS,LB_ADDSTRING,0,(LPARAM)buff);
-
-			// SendMessage(GetDlgItem(hWin,11),);
 			model = (HostModel) calloc(1,sizeof(struct wedis_hosts_model));
 			SetWindowLongPtr(hwnd,GWLP_USERDATA,model);
 
-			model->hostEditProc = SetWindowLongPtr(GetDlgItem(hwnd,IDC_CONNECTION_HOSTVALUE),GWLP_WNDPROC,hostEditProc);
-			model->nameEditProc = SetWindowLongPtr(GetDlgItem(hwnd,IDC_CONNECTION_VALUE),GWLP_WNDPROC,nameEditProc);
-			model->portEditProc = SetWindowLongPtr(GetDlgItem(hwnd,IDC_CONNECTION_PORTVALUE),GWLP_WNDPROC,portEditProc);
+			model->hostEditProc     = SetWindowLongPtr(GetDlgItem(hwnd,IDC_CONNECTION_HOSTVALUE),GWLP_WNDPROC,hostEditProc);
+			model->nameEditProc     = SetWindowLongPtr(GetDlgItem(hwnd,IDC_CONNECTION_VALUE),GWLP_WNDPROC,nameEditProc);
+			model->portEditProc     = SetWindowLongPtr(GetDlgItem(hwnd,IDC_CONNECTION_PORTVALUE),GWLP_WNDPROC,portEditProc);
 			model->passwordEditProc = SetWindowLongPtr(GetDlgItem(hwnd,IDC_CONNECTION_PASSWORDVALUE),GWLP_WNDPROC,passwordEditProc);
-            model->descEditProc = SetWindowLongPtr(GetDlgItem(hwnd,IDC_CONNECTION_DESCRIPTION),GWLP_WNDPROC,descEditProc);
+            model->descEditProc     = SetWindowLongPtr(GetDlgItem(hwnd,IDC_CONNECTION_DESCRIPTION),GWLP_WNDPROC,descEditProc);
 
 			MoveToScreenCenter(hwnd);
 			buildConnectionTree(hwnd);
@@ -301,18 +295,15 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lPa
 				}
 
 				case IDC_CONNECTION_DELETE:{
-					
-					// TreeView_DeleteItem(model->hostTree,model->selectedTree);
-
 					SendMessage(model->hostTree, TVM_DELETEITEM,0,model->selectedTree);
 					remove_host_config(model->hostIndex);
 					break;
 				}
 
-				case IDC_CONNECTION_TEST:{
-					MessageBox(hwnd,"test host","title",MB_OK);
-					break;
-				}
+				// case IDC_CONNECTION_TEST:{
+				// 	MessageBox(hwnd,"test host","title",MB_OK);
+				// 	break;
+				// }
 
 				case IDOK:{
 					save_all_host_config();
@@ -324,11 +315,16 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lPa
 					EndDialog(hwnd,0);
 				break;
 
-                case 9994:{
-                    UINT status =  IsDlgButtonChecked(hwnd,9994);
-                    char buff[255] = {0};
-                    wsprintf(buff,"clicked,status: %d",status);
-                    MessageBox(hwnd,buff,"title",MB_OK);
+                case IDC_CONNECTION_IFPASSWORD:{
+                    UINT status =  IsDlgButtonChecked(hwnd,IDC_CONNECTION_IFPASSWORD);
+					Host * host = getHostByIndex(appConfig,model->hostIndex);
+					if(status){
+						EnableWindow(GetDlgItem(hwnd, IDC_CONNECTION_PASSWORDVALUE), TRUE);
+						host->requirepass = 1;
+					}else{
+						EnableWindow(GetDlgItem(hwnd, IDC_CONNECTION_PASSWORDVALUE), FALSE);
+						host->requirepass = 0;
+					}
                     break;
                 }
 
