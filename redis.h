@@ -158,10 +158,15 @@ char  * parse_command(char * text,const size_t size);
 DataType checkDataType(char * type);
 
 int redis_read_pack(char * text,int length,redis_pack_handle handle);
+
 int crlf_end(char * text,int pos);
+
 int check_tail(char * text,int length);
+
 void init_working_buffer();
+
 void append_working_buffer(unsigned char * buffer,int length);
+
 void retain_working_buffer(int invalid_size);
 
 #endif

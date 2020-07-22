@@ -44,3 +44,5 @@
 #define IDS_REGVIEW                             40004
 #define IDS_STACKVIEW                           40005
 #define IDM_PREFERENCE                          40011
+
+#define IDC_DATATYPE            1017
