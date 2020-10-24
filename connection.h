@@ -15,14 +15,8 @@
 #define WM_DT_LIST   WM_USER+200
 #define WM_DT_HASH   WM_USER+200
 
-// #define PT_SELECT 0
-// #define PT_KEYS   1
-// #define PT_TYPE   2
-// #define PT_DATA   3
-// #define PT_AUTH   3
-
 typedef struct {
-     WSADATA wsa;
+    WSADATA wsa;
 
     struct sockaddr_in serv_addr;
 
@@ -40,6 +34,8 @@ typedef struct {
     char password[128];
 
     HTREEITEM hostHandle;
+
+    HWND connectionHolder;
 }TcpConnection;
 
 TcpConnection * build_connection(char * host,int port,char * password);
@@ -61,5 +57,7 @@ char * connection_get_buffer(TcpConnection * connection);
 BOOL connection_get_status(TcpConnection * connection);
 
 BOOL connection_set_status(TcpConnection * connection,BOOL status);
+
+LRESULT CALLBACK redisClientWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 #endif

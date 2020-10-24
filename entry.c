@@ -1,22 +1,23 @@
 #include "entry.h"
 
-BOOL CALLBACK entryDlgProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lParam){
+BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 	char buff[MAX_PATH];
 
 	switch(msg){
 		case WM_INITDIALOG:{
-			MoveToScreenCenter(hWin);
+			MoveToScreenCenter(hwnd);
 			break;
 		}
 
 		case WM_COMMAND:
 			switch(wParam){
 				case IDOK:
-					EndDialog(hWin,0);
+					MessageBox(hwnd,"Hello,Message!!","Title",MB_OK);
+					EndDialog(hwnd,0);
 				break;
 
 				case IDCANCEL:
-					EndDialog(hWin,0);
+					EndDialog(hwnd,0);
 				break;
 			}
 			break;
@@ -25,7 +26,7 @@ BOOL CALLBACK entryDlgProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lParam){
 		break;
 
 		case WM_CLOSE:
-			EndDialog(hWin,0);
+			EndDialog(hwnd,0);
 		break;
 	}
 

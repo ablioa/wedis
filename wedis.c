@@ -97,5 +97,8 @@ int wedis_log(const char *fmt, ...){
     //fprintf(log_file,"%s %s\n", log_time_stamp,buffer);
     fprintf(log_file,"%s\n", buffer);
     fflush(log_file);
+
+    fprintf(stdout,"%s\n", buffer);
+    
     return(cnt);
 }

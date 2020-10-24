@@ -38,6 +38,8 @@
 
 #include "test.h"
 
+#include "split.h"
+
 
 #define szFrameClass "MdiFrame"
 

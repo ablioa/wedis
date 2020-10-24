@@ -1,5 +1,48 @@
 #include "connection.h"
 
+#define CONNECTION_HOLDER_WINDOW "connectionHolderWindow"
+
+void initRedisClientClass(HINSTANCE hInstance){
+	WNDCLASSEX hSplitClass;
+    
+	hSplitClass.cbSize        = sizeof(hSplitClass);
+    hSplitClass.style         = 0;
+    hSplitClass.lpfnWndProc   = redisClientWndProc;
+    hSplitClass.cbClsExtra    = 0;
+    hSplitClass.cbWndExtra    = 0;
+    hSplitClass.hInstance     = hInstance;
+    hSplitClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
+    hSplitClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
+    hSplitClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
+    hSplitClass.lpszMenuName  = 0;
+    hSplitClass.lpszClassName = CONNECTION_HOLDER_WINDOW;
+    hSplitClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
+
+    RegisterClassEx(&hSplitClass);
+}
+
+LRESULT CALLBACK redisClientWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
+    switch (message){
+		case WM_CREATE:{
+			// TODO 创建窗口的同时创建连接
+			// ...
+			break;
+		}
+
+        case WM_DESTROY:{
+			//connection_close_connect(mainModel->connection);
+            PostQuitMessage(0);
+		}
+
+		case WM_SOCKET:
+			networkHandle(LOWORD(lParam));
+		break;
+
+    }
+
+    return DefWindowProc (hwnd, message, wParam, lParam);
+}
+
 TcpConnection * build_connection(char * host,int port,char * password){
     TcpConnection * connection = (TcpConnection *)calloc(1,sizeof(TcpConnection));
 
@@ -15,6 +58,7 @@ int connect_to_server(TcpConnection * connection,HWND hwnd){
 
     connection->buff = (char *)calloc(BUFF_SIZE,sizeof(char));
 	connection->bconnect = FALSE;
+	connection->connectionHolder = hwnd;
 
 	WORD SysVer=MAKEWORD(2,0);
 	WSAStartup(SysVer,&(connection->wsa));
