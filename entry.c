@@ -51,33 +51,25 @@ BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 
 	switch(msg){
 		case WM_INITDIALOG:{
-
-            HWND dataType = GetDlgItem(hwnd,IDC_DATATYPE);
-            initDataTypeSelector(dataType);
-
 			MoveToScreenCenter(hwnd);
 			break;
 		}
 
-		case WM_COMMAND:
+		case WM_COMMAND:{
 			switch(wParam){
 				case IDOK:
+					MessageBox(hwnd,"Hello,Message!!","Title",MB_OK);
 					EndDialog(hwnd,0);
 				break;
+            }
+            break;
+        }
 
-				case IDCANCEL:
-					EndDialog(hwnd,0);
-				break;
-			}
-			break;
-
-		case WM_PAINT:
-		break;
-
-		case WM_CLOSE:
+		case WM_CLOSE:{
 			EndDialog(hwnd,0);
-		break;
-	}
+		    break;
+        }
+    }
 
 	return FALSE;
 }

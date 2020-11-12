@@ -17,10 +17,6 @@ void handleKeyspace(Keyspace keyspace){
 }
 
 void handleRedisData(Task * task,RedisReply data){
-
-	// return;
-	// log_message(task->dataKey);
-
 	data->dataKey = (char*) calloc(strlen(task->dataKey)+1,sizeof(char));
 	sprintf(data->dataKey,"%s",task->dataKey);
 

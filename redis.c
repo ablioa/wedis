@@ -15,11 +15,11 @@ void append_working_buffer(unsigned char * buffer,int length){
 	int new_size = redisWorkingBuffer->size + length;
     int offset = redisWorkingBuffer->size;
 
-	wedis_log("pre.append-> address:%ld,capacity:%d,size:%d,data-length:%d",
-	redisWorkingBuffer->buffer,
-	redisWorkingBuffer->capacity,
-	redisWorkingBuffer->size,
-	length);
+	// wedis_log("pre.append-> address:%ld,capacity:%d,size:%d,data-length:%d",
+	// redisWorkingBuffer->buffer,
+	// redisWorkingBuffer->capacity,
+	// redisWorkingBuffer->size,
+	// length);
 
 	if( new_size > redisWorkingBuffer->capacity){
 		realloc(redisWorkingBuffer->buffer,new_size);
@@ -29,22 +29,22 @@ void append_working_buffer(unsigned char * buffer,int length){
 	memcpy(redisWorkingBuffer->buffer + offset,buffer,length);
 	redisWorkingBuffer->size = new_size;
 
-	wedis_log("post.append-> address:%ld,capacity:%d,size:%d,data-length:%d",
-	redisWorkingBuffer->buffer,
-	redisWorkingBuffer->capacity,
-	redisWorkingBuffer->size,
-	length);
+	// wedis_log("post.append-> address:%ld,capacity:%d,size:%d,data-length:%d",
+	// redisWorkingBuffer->buffer,
+	// redisWorkingBuffer->capacity,
+	// redisWorkingBuffer->size,
+	// length);
 }
 
 void retain_working_buffer(int invalid_size){
 	int valid_size = redisWorkingBuffer->size - invalid_size;
 	unsigned char * buff = (unsigned char*)calloc((valid_size),sizeof(unsigned char));
 
-	wedis_log("pre.retain-> address:%ld,capacity:%d,size:%d,data-length:%d",
-	redisWorkingBuffer->buffer,
-	redisWorkingBuffer->capacity,
-	redisWorkingBuffer->size,
-	valid_size);
+	// wedis_log("pre.retain-> address:%ld,capacity:%d,size:%d,data-length:%d",
+	// redisWorkingBuffer->buffer,
+	// redisWorkingBuffer->capacity,
+	// redisWorkingBuffer->size,
+	// valid_size);
 	
 	memcpy(buff,redisWorkingBuffer->buffer+invalid_size,valid_size);
 	memset(redisWorkingBuffer->buffer,0,redisWorkingBuffer->capacity);
@@ -52,11 +52,11 @@ void retain_working_buffer(int invalid_size){
 
 	redisWorkingBuffer->size = valid_size;
 
-	wedis_log("post.retain-> address:%ld,capacity:%d,size:%d,data-length:%d",
-	redisWorkingBuffer->buffer,
-	redisWorkingBuffer->capacity,
-	redisWorkingBuffer->size,
-	valid_size);
+	// wedis_log("post.retain-> address:%ld,capacity:%d,size:%d,data-length:%d",
+	// redisWorkingBuffer->buffer,
+	// redisWorkingBuffer->capacity,
+	// redisWorkingBuffer->size,
+	// valid_size);
 
 	free(buff);
 }
@@ -100,9 +100,9 @@ int check_tail(char * text,int length){
 	int cur = 0;
 	char ch = text[0];
 
-	wedis_log("start token(text):%s",text);
-	wedis_log("start token(char):|%c|",ch);
-	wedis_log("length of token:%d",length);
+	// wedis_log("start token(text):%s",text);
+	// wedis_log("start token(char):|%c|",ch);
+	// wedis_log("length of token:%d",length);
 
 	switch (ch){
 		case '+':
@@ -177,7 +177,7 @@ int check_tail(char * text,int length){
 		}
 
 		default:{
-			wedis_log("wrong pack: %d-> %s",length,text);
+			// wedis_log("wrong pack: %d-> %s",length,text);
 			return 0;
 		}
 	}
@@ -185,27 +185,41 @@ int check_tail(char * text,int length){
 
 int redis_read_pack(char * text,int length,redis_pack_handle handle){
 	append_working_buffer(text,length);
+	
 	int pos     = check_tail(redisWorkingBuffer->buffer,redisWorkingBuffer->size);
+	
+	wedis_log("check-tail/01: %d: %s",pos,redisWorkingBuffer->buffer);
 	char * next = redisWorkingBuffer->buffer;
 	while(pos != 0){
 		char * pk = (char*) calloc(pos,sizeof(char));
 		memcpy(pk,next,pos-1);
 
-		wedis_log("data retrieved: %d",pos-1);
+		// wedis_log("data retrieved: %d",pos-1);
 		handle(pk,pos-1);
 
+		if(next <= redisWorkingBuffer->buffer + redisWorkingBuffer->size){
+			retain_working_buffer((next-redisWorkingBuffer->buffer));
+		}
+      
 		next = redisWorkingBuffer->buffer + pos;
 		if(length - pos == 0){
 			pos = 0;
 		}else{
-			pos = check_tail(next,length - pos);
+			pos = check_tail(next,length - pos -1);
+		    //if(next <= redisWorkingBuffer->buffer + redisWorkingBuffer->size){
+		    //	retain_working_buffer((next-redisWorkingBuffer->buffer));
+		    //}
+			dumpText(redisWorkingBuffer->buffer,redisWorkingBuffer->size);
+			wedis_log("check-tail/02: %d:%s",pos,redisWorkingBuffer->buffer);
 		}
 	}
 
-	wedis_log("post.process: buff: %ld,invalid-pos: %ld ,size:%d",redisWorkingBuffer->buffer,next,redisWorkingBuffer->size);
+	//wedis_log("post.process: buff: %ld,invalid-pos: %ld ,size:%d",redisWorkingBuffer->buffer,next,redisWorkingBuffer->size);
 	if(next <= redisWorkingBuffer->buffer + redisWorkingBuffer->size){
 		retain_working_buffer((next-redisWorkingBuffer->buffer));
 	}
+
+	//wedis_log("buff: %s",redisWorkingBuffer->buffer);
 
 	return 0;
 }

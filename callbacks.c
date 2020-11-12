@@ -80,8 +80,6 @@ BOOL CALLBACK SetPreferenceProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 	return FALSE;
 }
 
-
-
 BOOL CALLBACK AboutDlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
     switch (message){
 		case WM_INITDIALOG:{

@@ -15,7 +15,6 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
 
     mainModel->hInstance = hInst;
 
-
 	HWND hwndFrame = CreateWindowEx(WS_EX_LEFT,
 					szFrameClass, TEXT ("wedis"),
                     WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
@@ -117,6 +116,8 @@ void initpan(HINSTANCE hInstance){
 	init_setview(hInstance);
 	init_zsetview(hInstance);
 	init_systemview(hInstance);
+
+	initSplit(hInstance);
 
     fout = fopen("log.txt","wa");
 
@@ -294,8 +295,17 @@ void onDataBaseSelect(HWND hwnd){
 
 int packet_read(unsigned char * text,int length){
 	char * binText = dumpText((char*)text,length);
-	wedis_log("packet to be processed:(%d)\n",length);
-	wedis_log("%s",binText);
+	//wedis_log("packet to be processed:(%d)\n",length);
+	//wedis_log("%s",binText);
+
+	wedis_log("found: %s",text);
+
+
+	RedisReply reply = read_replay(text,length);
+	if(reply != NULL){
+		Task * task = getTask(pool);
+		dispatch(task,reply);
+	}
 
 	return 0;
 }
@@ -318,11 +328,12 @@ void networkHandle(LPARAM lParam){
 	    	char * buff;
 	    	buff = connection_get_buffer(mainModel->connection);
             int dr_size = connection_receivedata(mainModel->connection);
+			//wedis_log("data-read: %d",dr_size);
 			//appendLog(buff);
 
 			//char * binText = dumpText((char*)buff,dr_size);
 
-			wedis_log("data-from-network: %d",dr_size);
+			// wedis_log("data-from-network: %d",dr_size);
 
 			
 
@@ -337,7 +348,7 @@ void networkHandle(LPARAM lParam){
 			// appendLog(bag);
 			// appendLog("\r\n-------------\r\n");
 
-			redis_read_pack(buff,dr_size,packet_read);
+			//redis_read_pack(buff,dr_size,packet_read);
 
             //log_message("-----");
 
@@ -567,22 +578,41 @@ void CreateView(AppView * view){
     buildConnectionView(view);
     getConnectionRect(view,&rt,&connctionRect);
     
-    view->westSplitHwnd = CreateWindowEx(0,
-			"VSplitterCtrl","", WS_CHILD | WS_VISIBLE,
-			connctionRect.right,0+view->toolbarHeight,
-			2,rt.bottom-rt.top-view->toolbarHeight - view->statusbarHeight,
-			view->hwnd,NULL,hInst,NULL);
+    // view->westSplitHwnd = CreateWindowEx(0,
+	// 		"VSplitterCtrl","", WS_CHILD | WS_VISIBLE,
+	// 		connctionRect.right,0+view->toolbarHeight,
+	// 		2,rt.bottom-rt.top-view->toolbarHeight - view->statusbarHeight,
+	// 		view->hwnd,NULL,hInst,NULL);
     
 	// TODO 这里的200指的是属性窗口的高度,需要调整成动态的才可以
-	view->southSplitWnd = CreateWindowEx(0,
-			"HSplitterCtrl","", WS_CHILD | WS_VISIBLE,
-			connctionRect.right + SPLITER_WIDTH,
-            rt.bottom - rt.top - view->statusbarHeight - 200 - SPLITER_WIDTH,
-			rt.right-rt.left - 202,
-			SPLITER_WIDTH,
-			view->hwnd,NULL,hInst,NULL);
-    
-    buildAttributeView(view);
+	// view->southSplitWnd = CreateWindowEx(0,
+	// 		"HSplitterCtrl","", WS_CHILD | WS_VISIBLE,
+	// 		connctionRect.right + SPLITER_WIDTH,
+    //         rt.bottom - rt.top - view->statusbarHeight - 200 - SPLITER_WIDTH,
+	// 		rt.right-rt.left - 202,
+	// 		SPLITER_WIDTH,
+	// 		view->hwnd,NULL,hInst,NULL);
+
+	buildAttributeView(view);
+
+    view->westSplitHwnd =CreateWindowEx(0,V_SPLIT,"", WS_VISIBLE|WS_CHILD,
+		connctionRect.right,0+view->toolbarHeight,
+		2,rt.bottom-rt.top-view->toolbarHeight - view->statusbarHeight,
+		view->hwnd,0,hInst,0);
+
+		char buff[1024] = {0};
+            wsprintf(buff,"size: %d",view->toolbarHeight);
+            SetWindowText(view->hwnd,buff);
+
+    SendMessage(view->westSplitHwnd,
+				WM_SET_PANES_HWND,
+				(WPARAM)view->connectionHwnd,
+				(LPARAM)view->dataHwnd);
+	
+	SendMessage(view->westSplitHwnd,
+				WM_SET_PANES_HWND,
+				(WPARAM)view->connectionHwnd,
+				(LPARAM)view->attributeHwnd);
 }
 
 void buildDataView(AppView * view){
