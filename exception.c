@@ -1,7 +1,5 @@
 #include "exception.h"
-
 #include "callbacks.h"
-
 #include "resource/resource.h"
 
 eMsg err_list[]={
@@ -13,17 +11,17 @@ eMsg err_list[]={
 };
 
 void DumpMessage(long Err_Code){
-    MSGBOXPARAMS *lpBoxParam = (MSGBOXPARAMS *)calloc(1,sizeof(MSGBOXPARAMS));
+    MSGBOXPARAMS *param = (MSGBOXPARAMS *)calloc(1,sizeof(MSGBOXPARAMS));
 
-    lpBoxParam->cbSize      = sizeof(MSGBOXPARAMS);
-    lpBoxParam->hInstance   = GetModuleHandle(NULL);
-    lpBoxParam->hwndOwner   = NULL;
-    lpBoxParam->lpszCaption = "ERROR";
-    lpBoxParam->lpszIcon    = MAKEINTRESOURCE(ID_MAIN);
-    lpBoxParam->dwStyle     = MB_OKCANCEL;	
+    param->cbSize      = sizeof(MSGBOXPARAMS);
+    param->hInstance   = GetModuleHandle(NULL);
+    param->hwndOwner   = NULL;
+    param->lpszCaption = "ERROR";
+    param->lpszIcon    = MAKEINTRESOURCE(ID_MAIN);
+    param->dwStyle     = MB_OKCANCEL;	
 
-	lpBoxParam->lpszText = err_list[Err_Code].Messag;
-	lpBoxParam->dwStyle  = err_list[Err_Code].Style | MB_USERICON ;
+	param->lpszText = err_list[Err_Code].Messag;
+	param->dwStyle  = err_list[Err_Code].Style | MB_USERICON ;
 
-	MessageBoxIndirect(lpBoxParam);
+	MessageBoxIndirect(param);
 }

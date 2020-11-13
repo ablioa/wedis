@@ -7,6 +7,8 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
 
     initResource();
 
+	ginit();
+
     save_all();
 
 	initpan(hInst);
@@ -65,6 +67,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 
 				case NM_DBLCLK:{
 					if(msg->idFrom == 0){
+						// MessageBox(NULL,"database select !!!","OK",MB_OK);
                         onDataBaseSelect(hwnd);
 					}
 					break;
@@ -94,13 +97,13 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 
         case WM_DESTROY:{
 			onExit();
-			connection_close_connect(mainModel->connection);
+			//connection_close_connect(mainModel->connection);
             PostQuitMessage(0);
 		}
 
-		case WM_SOCKET:
-			networkHandle(LOWORD(lParam));
-		break;
+		//case WM_SOCKET:
+		//	networkHandle(LOWORD(lParam));
+		//break;
 
     }
 
@@ -315,69 +318,6 @@ void appendLog(const char * text){
     //fflush(fout);
 }
 
-void networkHandle(LPARAM lParam){
-	DispatchRequest * requests[10];
-
-    switch(LOWORD(lParam)){
-	    case FD_CONNECT:{
-			redis_auth(mainModel->connection->password);
-	    	break;
-		}
-	    
-	    case FD_READ:{
-	    	char * buff;
-	    	buff = connection_get_buffer(mainModel->connection);
-            int dr_size = connection_receivedata(mainModel->connection);
-			//wedis_log("data-read: %d",dr_size);
-			//appendLog(buff);
-
-			//char * binText = dumpText((char*)buff,dr_size);
-
-			// wedis_log("data-from-network: %d",dr_size);
-
-			
-
-			Task * task = getTask(pool);
-            RedisReply rp = read_replay(buff,dr_size);
-
-			// char bag[256] = {0};
-			// sprintf(bag,"total=%d,consumed=%d",dr_size,rp->consumed);
-			// appendLog("\r\n-------------\r\n");
-			// appendLog(binText);
-			// appendLog("\r\n");
-			// appendLog(bag);
-			// appendLog("\r\n-------------\r\n");
-
-			//redis_read_pack(buff,dr_size,packet_read);
-
-            //log_message("-----");
-
-			dispatch(task,rp);
-
-			if(rp->consumed < dr_size){
-				task = getTask(pool);
-           		RedisReply ss= read_replay(buff + rp->consumed,dr_size);
-				dispatch(task,ss);
-			}
-			
-	    }
-	    break;
-	    
-	    case FD_WRITE:
-	    break;
-	    
-	    case FD_CLOSE:{
-		    // MessageBox(hwnd,"connction closed","title",MB_OK);
-	    	// model->excp->DumpMessage(ERR_LINK_BREAKDOWN);
-	    	// model->clt->setStatue(false);
-	    	// view->UpdateView(*model);
-	    	// EnableWindow(GetDlgItem(hwnd,IDC_MSGSEND),FALSE);
-	    	// EnableWindow(GetDlgItem(hwnd,IDC_SEND),FALSE);
-			break;
-		}
-	}
-}
-
 int check_type(char * type,char * key){
 	return 1;
 }
@@ -399,10 +339,7 @@ HTREEITEM addHostNode(char * connectionName){
 	treeNode->level = 1;
 	tvinsert.item.lParam=(LPARAM)treeNode;
 
-	return (HTREEITEM)SendMessage(
-		view->connectionHwnd,
-        TVM_INSERTITEM,
-        0,(LPARAM)&tvinsert);
+	return (HTREEITEM)SendMessage(view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 }
 
 void command(HWND hwnd,int cmd){
@@ -414,18 +351,13 @@ void command(HWND hwnd,int cmd){
 			return;
 		}
 
-		RedisConnection redisConnection = init(host->host,host->port);
-		if(redisConnection == NULL){
-			// ..
+		RedisConnection stream = init(host->host,host->port);
+		if(stream == NULL){
+			return;
 		}
 
-		// TODO 判定连接创建结果
-		//mainModel->connection =  build_connection(host->host,host->port,host->password);
-        //connect_to_server(mainModel->connection,hwnd);
-
-		HTREEITEM parentHandle = addHostNode(host->name);
-		//mainModel->connection->hostHandle = parentHandle;
-
+        mainModel->root = addHostNode(host->name);
+		s_auth(stream,host->password);
 		return;
 	}
 
@@ -439,7 +371,7 @@ void command(HWND hwnd,int cmd){
 			// redis_key_space();
 			// redis_database_count();
 			//redis_info_stats();
-            redis_add_big();
+            // redis_add_big();
 			// wedis_test();
 			break;
 		}

@@ -2,7 +2,6 @@
 #define exception_h
 
 #include <windows.h>
-
 #include <commctrl.h>
 
 #define ERR_NORMAL					0x0000
@@ -20,7 +19,6 @@ typedef struct err_info{
 extern eMsg err_list[];
 
 void DumpMessage(long Err_Code);
-
 
 #endif
 

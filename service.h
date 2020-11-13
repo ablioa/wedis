@@ -4,6 +4,7 @@
 #include "main.h"
 #include "queue.h"
 #include "redis.h"
+#include "myconnection.h"
 
 #include <stdlib.h>
 
@@ -36,7 +37,7 @@ RedisParams redis_build_params(int count);
 
 void redis_add_param(RedisParams params,RedisParam param);
 
-void redis_serialize_params(RedisParams params);
+RedisReply redis_serialize_params(RedisConnection stream,RedisParams params);
 
 /**
  * 动态参数序列化
@@ -46,34 +47,34 @@ RedisParam redis_build_param(char * content);
 
 void appendTask(CommandType cmdType,const DataType dataType,const char * dataKey);
 
-void redis_auth(char * password);
+RedisParams redis_auth(char * password);
 
-void redis_database_count();
+RedisParams redis_database_count();
 
-void redis_select(int database);
+RedisParams redis_select(int database);
 
-void redis_data_type(char * dataKey);
+RedisParams redis_data_type(char * dataKey);
 
-void redis_get_string(char * key);
+RedisParams redis_get_string(char * key);
 
-void redis_get_list(char * dataKey);
+RedisParams redis_get_list(char * dataKey);
 
-void redis_get_hash(char * dataKey);
+RedisParams redis_get_hash(char * dataKey);
 
-void redis_get_set(char * dataKey);
+RedisParams redis_get_set(char * dataKey);
 
-void redis_get_zset(char * dataKey);
+RedisParams redis_get_zset(char * dataKey);
 
-void redis_delete_key(char * dataKey);
+RedisParams redis_delete_key(char * dataKey);
 
-void redis_rename_key(char * dataKey,char * newKey);
+RedisParams redis_rename_key(char * dataKey,char * newKey);
 
-void redis_key_space();
+RedisParams redis_key_space();
 
-void redis_keys();
+RedisParams redis_keys();
 
-void redis_info_stats();
+RedisParams redis_info_stats();
 
-void redis_add_big();
+// RedisParams redis_add_big();
 
 #endif

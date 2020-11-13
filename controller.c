@@ -132,12 +132,6 @@ void handleDataType(Task * task,DataType dataType){
 	}
 }
 
-// void refreshDataBase(){
-// 	//redis_keys();
-//     // 触发消息，展开树节点
-// 	SendMessage(mainModel->view->connectionHwnd,TVM_EXPAND,(WPARAM)TVE_TOGGLE,(LPARAM)(mainModel->selectedNode));
-// }
-
 void addDataNode(RedisReply rp){
     TVITEM ti = {0};
     ti.mask = TVIF_HANDLE | TVIF_PARAM;
@@ -200,7 +194,7 @@ void addDatabaseNode(int dbCount){
 	char dbname[128] = {0};
     
 	AppView * view = mainModel->view;
-    HTREEITEM parentHandle = mainModel->connection->hostHandle;
+    // HTREEITEM parentHandle = mainModel->root;
     
     memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
 	tvinsert.hInsertAfter=TVI_ROOT;
@@ -213,7 +207,7 @@ void addDatabaseNode(int dbCount){
 
 		memset(showName,0,sizeof(char) * 128);
 		Keyspace space = getKeyspaceInfo(dbname);
-		int keyCount = 0;//space->keys;
+		int keyCount = 0;
 		if(space != NULL){
 			keyCount = space->keys;
 		}
@@ -222,7 +216,7 @@ void addDatabaseNode(int dbCount){
 
 		tvinsert.item.iImage=1;
 		tvinsert.item.iSelectedImage=1;
-		tvinsert.hParent=parentHandle;
+		tvinsert.hParent= mainModel->root;
 		tvinsert.hInsertAfter=TVI_LAST;
 		tvinsert.item.pszText= showName;
 

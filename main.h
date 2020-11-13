@@ -40,6 +40,8 @@
 
 #include "split.h"
 
+#include "myconnection.h"
+
 
 #define szFrameClass "MdiFrame"
 
@@ -58,6 +60,7 @@
 #include <commctrl.h>
 
 #include "myconnection.h"
+#include "mservice.h"
 
 #define MAX_SIZE	20
 #define CONNECTION_AREA_WIDTH 200
@@ -169,6 +172,8 @@ typedef struct{
 	HWND mainWindowHwnd;
 
 	int spaceCount;
+
+	HTREEITEM root;
 }MainModel;
 
 typedef struct{

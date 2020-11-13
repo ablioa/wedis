@@ -4,7 +4,7 @@
  * 命令控制窗口
  */
 LRESULT CALLBACK consoleWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
-    HINSTANCE hinst = mainModel->hInstance;//(HINSTANCE)GetWindowLong(hwnd,GWLP_HINSTANCE);
+    HINSTANCE hinst = mainModel->hInstance;
 	ConsoleView * cview = (ConsoleView *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
 
 	RECT rect;

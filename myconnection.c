@@ -32,12 +32,27 @@ RedisConnection init(char * address,int port){
 void sendmsg(RedisConnection stream,char * message){
     send(stream->socket, message, strlen(message), 0);
     
-    char recData[20];
-    int ret = recv(stream->socket, recData, 20, 0);
-    if (ret > 0){
-    	recData[ret] = 0x00;
-    	printf("%s\n",recData);
-    }
+    //char recData[20];
+    //int ret = recv(stream->socket, recData, 20, 0);
+    //if (ret > 0){
+    //	recData[ret] = 0x00;
+    //	printf("%s\n",recData);
+    //}
+}
+
+RedisReply receive_msg(RedisConnection stream){
+	char recData[1024] = {0};
+	int cur = 0;
+
+	RedisReply reply = NULL;
+    int ret = recv(stream->socket, recData+cur, 255, 0);	
+	if(ret > 0){
+		//cur+=ret;
+		reply = read_replay(recData,ret);
+		//ret = recv(stream->socket, recData+cur, 255, 0);
+	}
+	
+	return reply;
 }
 
 void close(RedisConnection stream){
