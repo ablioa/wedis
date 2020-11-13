@@ -60,7 +60,7 @@ void handleRedisData(Task * task,RedisReply data){
 			}else{
 				log_message("wrong hash data format");
 			}
-			break;			
+			break;
 		}
 
 		case REDIS_SET:{

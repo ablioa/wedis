@@ -57,6 +57,8 @@
 
 #include <commctrl.h>
 
+#include "myconnection.h"
+
 #define MAX_SIZE	20
 #define CONNECTION_AREA_WIDTH 200
 #define SPLITER_WIDTH 2
@@ -139,7 +141,7 @@ typedef struct{
 }DataView;
 
 typedef struct{
-	TcpConnection * connection;
+//	TcpConnection * connection;
 
 	AppView * view;
 

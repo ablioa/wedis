@@ -414,12 +414,17 @@ void command(HWND hwnd,int cmd){
 			return;
 		}
 
+		RedisConnection redisConnection = init(host->host,host->port);
+		if(redisConnection == NULL){
+			// ..
+		}
+
 		// TODO 判定连接创建结果
-		mainModel->connection =  build_connection(host->host,host->port,host->password);
-        connect_to_server(mainModel->connection,hwnd);
+		//mainModel->connection =  build_connection(host->host,host->port,host->password);
+        //connect_to_server(mainModel->connection,hwnd);
 
 		HTREEITEM parentHandle = addHostNode(host->name);
-		mainModel->connection->hostHandle = parentHandle;
+		//mainModel->connection->hostHandle = parentHandle;
 
 		return;
 	}
