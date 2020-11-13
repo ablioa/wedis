@@ -41,11 +41,11 @@ void sendmsg(RedisConnection stream,char * message){
 }
 
 RedisReply receive_msg(RedisConnection stream){
-	char recData[1024] = {0};
+	char recData[1024 * 1024] = {0};
 	int cur = 0;
 
 	RedisReply reply = NULL;
-    int ret = recv(stream->socket, recData+cur, 255, 0);	
+    int ret = recv(stream->socket, recData+cur, 1024 * 1024, 0);	
 	if(ret > 0){
 		//cur+=ret;
 		reply = read_replay(recData,ret);

@@ -135,11 +135,19 @@ void handleDataType(Task * task,DataType dataType){
 void addDataNode(RedisReply rp){
     TVITEM ti = {0};
     ti.mask = TVIF_HANDLE | TVIF_PARAM;
-    //ti.cchTextMax = 128;
     ti.hItem = mainModel->selectedNode;
     TreeView_GetItem(mainModel->view->connectionHwnd, &ti);
     
     TreeNode * tnf = (TreeNode*) ti.lParam;
+
+	if(tnf == NULL){
+		return;
+	}
+
+	char name [255] = {0};
+	sprintf(name,"node: %d",tnf);
+	MessageBox(NULL,name,"ok",MB_OK);
+
     for(int ix =0; ix < tnf->subHandleSize; ix ++){
         TreeView_DeleteItem(mainModel->view->connectionHwnd,tnf->subHandles[ix]);
     }
@@ -150,9 +158,6 @@ void addDataNode(RedisReply rp){
     for(int ix =0;ix < rp->bulks->count; ix ++){
         TV_INSERTSTRUCT tvinsert;
 
-		// char buff[1024]={};
-		// sprintf(buff,"%d-%s",rp->bulks->items[ix]->length,rp->bulks->items[ix]->content);
-
         tvinsert.hParent = mainModel->selectedNode;
         tvinsert.hInsertAfter=TVI_LAST;
         tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
@@ -161,8 +166,7 @@ void addDataNode(RedisReply rp){
         tvinsert.item.iImage=2;
         tvinsert.item.iSelectedImage=2;
      
-        TreeNode * tn = buildTreeNode();
-        tn->level = 3;
+        TreeNode * tn = buildTreeNode(3);
 		tn->key = rp->bulks->items[ix]->content;
 		tn->database = tnf->database;
         tvinsert.item.lParam= (LPARAM)tn;
@@ -170,7 +174,6 @@ void addDataNode(RedisReply rp){
         tnf->subHandles[ix]=(HTREEITEM)SendMessage(mainModel->view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
     }
 
-	// 触发消息，展开树节点TVE_TOGGLE
 	SendMessage(mainModel->view->connectionHwnd,TVM_EXPAND,(WPARAM)TVE_EXPAND,(LPARAM)(mainModel->selectedNode));
 }
 
@@ -194,8 +197,8 @@ void addDatabaseNode(int dbCount){
 	char dbname[128] = {0};
     
 	AppView * view = mainModel->view;
-    // HTREEITEM parentHandle = mainModel->root;
-    
+    HTREEITEM parentHandle = mainModel->host->handle;
+
     memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
 	tvinsert.hInsertAfter=TVI_ROOT;
 	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
@@ -216,17 +219,18 @@ void addDatabaseNode(int dbCount){
 
 		tvinsert.item.iImage=1;
 		tvinsert.item.iSelectedImage=1;
-		tvinsert.hParent= mainModel->root;
+		tvinsert.hParent= parentHandle;
 		tvinsert.hInsertAfter=TVI_LAST;
 		tvinsert.item.pszText= showName;
 
-		TreeNode * tn = buildTreeNode();
-		tn->level = 2;
+		TreeNode * tn = buildTreeNode(2);
 		tn->database = ix;
+		tn->stream = mainModel->host->stream;
 		tvinsert.item.lParam= (LPARAM)tn;
     
 		SendMessage(view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 	}
+
 
 	SendMessage(mainModel->view->connectionHwnd,TVM_EXPAND,(WPARAM)TVE_TOGGLE,(LPARAM)(mainModel->selectedNode));
 }

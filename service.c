@@ -77,11 +77,6 @@ RedisParams redis_database_count(){
     redis_add_param(params,redis_build_param("config"));
     redis_add_param(params,redis_build_param("get"));
     redis_add_param(params,redis_build_param("databases"));
-    // redis_serialize_params(params);
-
-    // appendTask(CMD_DATABASE_COUNT,REDIS_UNDEFINED,NULL);
-
-    // MessageBox(NULL,"get database count!!","OK",MB_OK);
 
     return params;
 }

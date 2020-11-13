@@ -144,6 +144,22 @@ typedef struct{
 }DataView;
 
 typedef struct{
+	int level;
+	
+	int database;
+
+	char * key;
+
+    HTREEITEM subHandles[1024 * 1024];
+
+	RedisConnection stream;
+
+	HTREEITEM handle;
+
+    int  subHandleSize;
+}TreeNode;
+
+typedef struct{
 //	TcpConnection * connection;
 
 	AppView * view;
@@ -173,20 +189,12 @@ typedef struct{
 
 	int spaceCount;
 
-	HTREEITEM root;
+	//HTREEITEM root;
+
+	TreeNode * host;
 }MainModel;
 
-typedef struct{
-	int level;
-	
-	int database;
 
-	char * key;
-
-    HTREEITEM subHandles[1024];
-
-    int  subHandleSize;
-}TreeNode;
 
 extern MainModel * mainModel;
 
@@ -221,7 +229,7 @@ void onExit();
 
 void appendLog(const char * text);
 
-TreeNode * buildTreeNode();
+TreeNode * buildTreeNode(int level);
 
 AppView * buildAppView(HWND hwnd);
 

@@ -6,7 +6,6 @@ void s_auth(RedisConnection stream,char * password){
 
     if(reply->type == REPLY_STATUS){
         if(strcmp("OK",reply->status->content) == 0){
-            MessageBox(NULL,"yanzhengchenggong","sd",MB_OK);
             s_key_space(stream);
         }
     }else if(reply->type == REPLY_ERROR){
@@ -27,5 +26,24 @@ void s_key_space(RedisConnection stream){
 
         int dbCount = atoi(dreply->bulks->items[1]->content);
         addDatabaseNode(dbCount);
+    }
+}
+
+void s_db_select(RedisConnection stream,int database){
+    RedisParams param = redis_select(database);
+    RedisReply reply = redis_serialize_params(stream,param);
+
+    if(reply->type != REPLY_STATUS || strcmp("OK",reply->status->content) != 0){
+        log_message("database select error");
+        return;
+    }
+
+    param = redis_keys();
+    reply = redis_serialize_params(stream,param);
+
+    if(reply->type == REPLY_MULTI){
+        addDataNode(reply);
+    }else{
+        log_message("error data on KEYS request");
     }
 }

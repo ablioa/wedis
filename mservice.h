@@ -9,4 +9,6 @@ void s_auth(RedisConnection stream,char * password);
 
 void s_key_space(RedisConnection stream);
 
+void s_db_select(RedisConnection stream,int database);
+
 #endif
