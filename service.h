@@ -1,7 +1,6 @@
 #ifndef _service_h
 #define _service_h
 
-#include "main.h"
 #include "queue.h"
 #include "redis.h"
 #include "myconnection.h"

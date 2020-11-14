@@ -3,10 +3,11 @@
 
 #include "main.h"
 #include "redis.h"
+#include "mservice.h"
 
-void addDatabaseNode(int dbCount);
+void addDatabaseNode(TreeNode * dbnode,int dbCount);
 
-void addDataNode(RedisReply rp);
+void addDataNode(TreeNode * dbnode,RedisReply rp);
 
 void handleDataType(Task * task,DataType dataType);
 

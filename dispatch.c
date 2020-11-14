@@ -24,8 +24,8 @@ void dispatch(Task * task,RedisReply data){
         }
 
         case CMD_DATABASE_COUNT:{
-            int dbCount = atoi(data->bulks->items[1]->content);
-            addDatabaseNode(dbCount);
+            // int dbCount = atoi(data->bulks->items[1]->content);
+            // addDatabaseNode(dbCount);
             break;
         }
 
@@ -37,11 +37,11 @@ void dispatch(Task * task,RedisReply data){
         }
 
         case CMD_KEYS:{
-            if(data->type == REPLY_MULTI){
-                addDataNode(data);
-            }else{
-                log_message("error data on KEYS request");
-            }
+            // if(data->type == REPLY_MULTI){
+            //     addDataNode(data);
+            // }else{
+            //     log_message("error data on KEYS request");
+            // }
             break;
         }
 

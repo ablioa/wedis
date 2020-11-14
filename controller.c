@@ -132,12 +132,12 @@ void handleDataType(Task * task,DataType dataType){
 	}
 }
 
-void addDataNode(RedisReply rp){
+void addDataNode(TreeNode * dbnode,RedisReply rp){
 
 	// TODO 树节点可以直接取得
     TVITEM ti = {0};
     ti.mask = TVIF_HANDLE | TVIF_PARAM;
-    ti.hItem = mainModel->selectedNode;
+    ti.hItem = dbnode->handle; // mainModel->selectedNode;
     TreeView_GetItem(mainModel->view->connectionHwnd, &ti);
     TreeNode * tnf = (TreeNode*) ti.lParam;
 	if(tnf == NULL){
@@ -154,12 +154,12 @@ void addDataNode(RedisReply rp){
     }
     
     tnf->subHandleSize= 0;
-	tnf->database = mainModel->database;
+	tnf->database = dbnode->database;// mainModel->database;
     
     for(int ix =0;ix < rp->bulks->count; ix ++){
         TV_INSERTSTRUCT tvinsert;
 
-        tvinsert.hParent = mainModel->selectedNode;
+        tvinsert.hParent = dbnode->handle;//mainModel->selectedNode;
         tvinsert.hInsertAfter=TVI_LAST;
         tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
 		tvinsert.item.cchTextMax = rp->bulks->items[ix]->length;
@@ -177,7 +177,7 @@ void addDataNode(RedisReply rp){
         tnf->subHandles[ix] = tn->handle;
     }
 
-	SendMessage(mainModel->view->connectionHwnd,TVM_EXPAND,(WPARAM)TVE_EXPAND,(LPARAM)(mainModel->selectedNode));
+	SendMessage(mainModel->view->connectionHwnd,TVM_EXPAND,(WPARAM)TVE_EXPAND,(LPARAM)(dbnode->handle));
 }
 
 Keyspace getKeyspaceInfo(char * dbname){
@@ -195,12 +195,12 @@ Keyspace getKeyspaceInfo(char * dbname){
 	return NULL;
 }
 
-void addDatabaseNode(int dbCount){
+void addDatabaseNode(TreeNode * hostNode,int dbCount){
     TV_INSERTSTRUCT tvinsert;
 	char dbname[128] = {0};
     
 	AppView * view = mainModel->view;
-    HTREEITEM parentHandle = mainModel->host->handle;
+    HTREEITEM parentHandle = hostNode->handle;
 
     memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
 	tvinsert.hInsertAfter=TVI_ROOT;
@@ -228,7 +228,7 @@ void addDatabaseNode(int dbCount){
 
 		TreeNode * tn = buildTreeNode(NODE_LEVEL_DATABASE);
 		tn->database = ix;
-		tn->stream = mainModel->host->stream;
+		tn->stream = hostNode->stream;
 		tvinsert.item.lParam= (LPARAM)tn;
     
 		tn->handle = (HTREEITEM)SendMessage(
@@ -238,6 +238,6 @@ void addDatabaseNode(int dbCount){
 			(LPARAM)&tvinsert);
 	}
 
-	SendMessage(mainModel->view->connectionHwnd,TVM_EXPAND,(WPARAM)TVE_TOGGLE,(LPARAM)(mainModel->selectedNode));
+	//SendMessage(mainModel->view->connectionHwnd,TVM_EXPAND,(WPARAM)TVE_TOGGLE,(LPARAM)(mainModel->selectedNode));
 }
 

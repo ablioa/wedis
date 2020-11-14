@@ -47,11 +47,9 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 			break;
 		}
 
-		case WM_GETMINMAXINFO:{
-			MINMAXINFO * mminfo=(PMINMAXINFO)lParam;  
-			mminfo->ptMinTrackSize.x = 850;
-			mminfo->ptMinTrackSize.y = 600;
-			break;
+		case WM_COMMAND:{
+			command(hwnd,LOWORD (wParam));
+			return 0;
 		}
 
 		case WM_NOTIFY:{
@@ -59,7 +57,8 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 			switch (msg->code) {
 				case NM_CLICK:{
 					if(msg->idFrom == 0){
-                        onDataNodeSelection();
+						TreeNode * selected = getSelectedNode();
+                        onDataNodeSelection(selected);
 					}
 					break;
 				}
@@ -67,13 +66,8 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 				// 节点双击，分别处理
 				case NM_DBLCLK:{
 					if(msg->idFrom == 0){
-						TreeNode * node = getSelectedNode();
-						
-						char name[255] = {0};
-						sprintf(name,"node: %d %d",node->handle,node->level);
-						MessageBox(NULL,name,"title",MB_OK);
-
-                        onDataBaseSelect(node);
+						TreeNode * selected = getSelectedNode();
+                        onDataBaseSelect(selected);
 					}
 					break;
 				}
@@ -95,15 +89,17 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 			UpdateWindow(hwnd);
             break;
 
-        case WM_COMMAND:{
-			command(hwnd,LOWORD (wParam));
-			return 0;
-		}
-
         case WM_DESTROY:{
 			onExit();
 			//connection_close_connect(mainModel->connection);
             PostQuitMessage(0);
+		}
+
+		case WM_GETMINMAXINFO:{
+			MINMAXINFO * mminfo=(PMINMAXINFO)lParam;  
+			mminfo->ptMinTrackSize.x = 850;
+			mminfo->ptMinTrackSize.y = 600;
+			break;
 		}
     }
 
@@ -226,40 +222,26 @@ void updateNavigationInfo(TreeNode * node){
 	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,3,(LPARAM)node->key);
 }
 
-void onDataNodeSelection(){
-	char * buf = (char*)malloc(128);
-    memset(buf,0,128);
-
-	DWORD dwPos = GetMessagePos();
-	POINT pt;
-	pt.x = LOWORD(dwPos);
-	pt.y = HIWORD(dwPos);
-	ScreenToClient(mainModel->view->connectionHwnd, &pt);
-
-	TVHITTESTINFO ht = {0};
-	ht.pt = pt;
-	ht.flags = TVHT_ONITEM;
-	HTREEITEM hItem = TreeView_HitTest(mainModel->view->connectionHwnd, &ht);
-
-	/** 未选中任何节点 */
-	if(hItem == NULL){
+void onDataNodeSelection(TreeNode * selected){
+	if(selected == NULL){
 		return;
 	}
 
-	TVITEM ti = {0};
-	ti.mask = TVIF_HANDLE | TVIF_TEXT | TVIF_PARAM;
-	ti.cchTextMax = 128;
-	ti.pszText = buf;
-	ti.hItem = hItem;
-	TreeView_GetItem(mainModel->view->connectionHwnd, &ti);
-
-	TreeNode * tn = (TreeNode*) ti.lParam;
-	if(tn->level == 3){
-		redis_select(tn->database);
-		redis_data_type(tn->key);
-		
-		updateNavigationInfo(tn);
+	if(selected->level == 3){
+		redis_select(selected->database);
+		redis_data_type(selected->key);
+		updateNavigationInfo(selected);
 	}
+}
+
+void onDataBaseSelect(TreeNode * selected){
+	if(selected == NULL){
+		return;
+	}
+
+    if(selected->level == 2){
+		s_db_select(selected);
+    }
 }
 
 /**
@@ -279,6 +261,10 @@ TreeNode * getSelectedNode(){
     ht.pt = pt;
     ht.flags = TVHT_ONITEM;
     HTREEITEM hItem = TreeView_HitTest(mainModel->view->connectionHwnd, &ht);
+	if(hItem == NULL){
+		return NULL;
+	}
+
     TVITEM ti = {0};
     ti.mask = TVIF_HANDLE | TVIF_TEXT | TVIF_PARAM;
     ti.cchTextMax = 128;
@@ -288,15 +274,6 @@ TreeNode * getSelectedNode(){
 
 	TreeNode * tn = (TreeNode*) ti.lParam;
 	return tn;
-}
-
-void onDataBaseSelect(TreeNode * node){
-    if(node->level == 2){
-		mainModel->selectedNode = node->handle;
-		mainModel->database = node->database;
-		
-		s_db_select(node->stream,node->database);
-    }
 }
 
 int packet_read(unsigned char * text,int length){
@@ -362,8 +339,8 @@ void command(HWND hwnd,int cmd){
 			return;
 		}
 
-        mainModel->host = addHostNode(stream,host->name);
-		s_auth(stream,host->password);
+        TreeNode * hostNode = addHostNode(stream,host->name);
+		s_auth(hostNode,host->password);
 		return;
 	}
 

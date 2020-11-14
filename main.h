@@ -6,41 +6,30 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <stdio.h>
+#include <commctrl.h>
 
+#include "myconnection.h"
+#include "mservice.h"
 #include "hashview.h"
 #include "stringview.h"
 #include "listview.h"
 #include "setview.h"
 #include "zsetview.h"
-
 #include "wedis.h"
-
 #include "console.h"
-
 #include "dataview.h"
 #include "system.h"
-
 #include "callbacks.h"
-
 #include "resource/resource.h"
-
 #include "exception.h"
 #include "config.h"
 #include "connection.h"
-
 #include "queue.h"
-
 #include "service.h"
-
 #include "dispatch.h"
-
 #include "entry.h"
-
-#include "test.h"
-
 #include "split.h"
-
-#include "myconnection.h"
 
 
 #define szFrameClass "MdiFrame"
@@ -50,17 +39,6 @@
 #define DATA_RENDER_WINDOW  "DATA_RENDER_WINDOW"
 
 #define WM_DT WM_USER+200
-
-
-#include "resource/resource.h"
-#include "callbacks.h"
-
-#include <stdio.h>
-
-#include <commctrl.h>
-
-#include "myconnection.h"
-#include "mservice.h"
 
 #define MAX_SIZE	20
 #define CONNECTION_AREA_WIDTH 200
@@ -148,22 +126,6 @@ typedef struct{
 }DataView;
 
 typedef struct{
-	int level;
-	
-	int database;
-
-	char * key;
-
-    HTREEITEM subHandles[1024 * 1024];
-
-	RedisConnection stream;
-
-	HTREEITEM handle;
-
-    int  subHandleSize;
-}TreeNode;
-
-typedef struct{
 	AppView * view;
 
 	HMENU hDev;
@@ -176,11 +138,6 @@ typedef struct{
 
 	ConsoleView * consoleView;
 
-	/** 选中的树节点 */
-	HTREEITEM selectedNode;
-
-	int database;
-
     int UI;
 
     HINSTANCE hInstance;
@@ -190,11 +147,7 @@ typedef struct{
 	HWND mainWindowHwnd;
 
 	int spaceCount;
-
-	TreeNode * host;
 }MainModel;
-
-
 
 extern MainModel * mainModel;
 
@@ -207,7 +160,7 @@ void initModel();
 
 void onMainFrameCreate(HWND hwnd);
 
-void onDataNodeSelection();
+void onDataNodeSelection(TreeNode * node);
 
 void onDataBaseSelect(TreeNode * node);
 
