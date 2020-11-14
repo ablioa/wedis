@@ -31,27 +31,33 @@ RedisConnection init(char * address,int port){
 
 void sendmsg(RedisConnection stream,char * message){
     send(stream->socket, message, strlen(message), 0);
-    
-    //char recData[20];
-    //int ret = recv(stream->socket, recData, 20, 0);
-    //if (ret > 0){
-    //	recData[ret] = 0x00;
-    //	printf("%s\n",recData);
-    //}
 }
 
 RedisReply receive_msg(RedisConnection stream){
-	char recData[1024 * 1024] = {0};
-	int cur = 0;
+	char localbuff[4096] = {0};
 
+	int ret  = 0;
 	RedisReply reply = NULL;
-    int ret = recv(stream->socket, recData+cur, 1024 * 1024, 0);	
-	if(ret > 0){
-		//cur+=ret;
-		reply = read_replay(recData,ret);
-		//ret = recv(stream->socket, recData+cur, 255, 0);
-	}
+
+	stream->capacity  = 4096;
+	stream->free_size = stream->capacity;
+	stream->read_buff = (char*) calloc(stream->capacity,sizeof(char));
 	
+	do{
+		ret = recv(stream->socket, localbuff, 4096, 0);
+		if(stream->free_size <= ret){
+			stream->capacity  += 4096;
+			stream->free_size += 4096;
+			stream->read_buff = (char*) realloc(stream->read_buff,stream->capacity);
+		}
+
+		memcpy(stream->read_buff + ((stream->capacity - stream->free_size)),localbuff,ret);
+		stream->free_size -= ret;
+		reply = read_reply(stream->read_buff,(stream->capacity - stream->free_size));
+	}while(reply->reply_status != REPLY_STATUS_DONE);
+
+	free(stream->read_buff);
+
 	return reply;
 }
 

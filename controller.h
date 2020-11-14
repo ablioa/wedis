@@ -5,9 +5,9 @@
 #include "redis.h"
 #include "mservice.h"
 
-void addDatabaseNode(TreeNode * dbnode,int dbCount);
+void add_database_node(TreeNode * dbnode,int dbCount);
 
-void addDataNode(TreeNode * dbnode,RedisReply rp);
+void add_data_node(TreeNode * dbnode,RedisReply rp);
 
 void handleDataType(Task * task,DataType dataType);
 

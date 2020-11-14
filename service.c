@@ -100,12 +100,19 @@ RedisParams redis_select(int database){
  * TODO 需要优化为scan来处理
  */
 RedisParams redis_keys(){
-    RedisParams params = redis_build_params(2);
-    redis_add_param(params,redis_build_param("keys"));
-    redis_add_param(params,redis_build_param("*"));
-    // redis_serialize_params(params);
+    // RedisParams params = redis_build_params(2);
+    // redis_add_param(params,redis_build_param("keys"));
+    // redis_add_param(params,redis_build_param("*"));
 
-    // appendTask(CMD_KEYS,REDIS_UNDEFINED,NULL);
+    RedisParams params = redis_build_params(2);
+    redis_add_param(params,redis_build_param("scan"));
+    redis_add_param(params,redis_build_param("1"));
+    redis_add_param(params,redis_build_param("match"));
+    redis_add_param(params,redis_build_param("*"));
+    redis_add_param(params,redis_build_param("count"));
+    redis_add_param(params,redis_build_param("20"));
+
+    // scan 1 match * count 20
 
     return params;
 }

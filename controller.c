@@ -132,7 +132,7 @@ void handleDataType(Task * task,DataType dataType){
 	}
 }
 
-void addDataNode(TreeNode * dbnode,RedisReply rp){
+void add_data_node(TreeNode * dbnode,RedisReply rp){
 
 	// TODO 树节点可以直接取得
     TVITEM ti = {0};
@@ -157,6 +157,10 @@ void addDataNode(TreeNode * dbnode,RedisReply rp){
 	tnf->database = dbnode->database;// mainModel->database;
     
     for(int ix =0;ix < rp->bulks->count; ix ++){
+
+		if(ix >= 50 ){
+			break;
+		}
         TV_INSERTSTRUCT tvinsert;
 
         tvinsert.hParent = dbnode->handle;//mainModel->selectedNode;
@@ -195,7 +199,7 @@ Keyspace getKeyspaceInfo(char * dbname){
 	return NULL;
 }
 
-void addDatabaseNode(TreeNode * hostNode,int dbCount){
+void add_database_node(TreeNode * hostNode,int dbCount){
     TV_INSERTSTRUCT tvinsert;
 	char dbname[128] = {0};
     

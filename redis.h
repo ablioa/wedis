@@ -17,6 +17,9 @@
 
 #define WORKING_BUFFER_SIZE 10485760
 
+#define REPLY_STATUS_PENDING 0
+#define REPLY_STATUS_DONE    1
+
 typedef enum{
 	REDIS_UNDEFINED,
 	REDIS_STRING,
@@ -75,7 +78,7 @@ struct redis_reply_info{
     char *   dataTypeName;
     DataType dataType;
 
-	int consumed;
+	int reply_status;
 };
 
 typedef struct redis_reply_info   RedisReplyInfo;
@@ -149,7 +152,7 @@ void setKeyspaceValue(Keyspace info,char * value);
 
 Keyspace parseKeyspace(char * buffer);
 
-RedisReply read_replay(char * text,int length);
+RedisReply read_reply(char * text,int length);
 
 char * buildWord(char * word,size_t length);
 
@@ -159,14 +162,8 @@ DataType checkDataType(char * type);
 
 int redis_read_pack(char * text,int length,redis_pack_handle handle);
 
-int crlf_end(char * text,int pos);
+int get_bulk_size(char * text, int * cur,int length);
 
-int check_tail(char * text,int length);
-
-void init_working_buffer();
-
-void append_working_buffer(unsigned char * buffer,int length);
-
-void retain_working_buffer(int invalid_size);
+int get_status_scope(char * text,int length);
 
 #endif

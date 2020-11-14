@@ -24,7 +24,7 @@
 #include "resource/resource.h"
 #include "exception.h"
 #include "config.h"
-#include "connection.h"
+// #include "connection.h"
 #include "queue.h"
 #include "service.h"
 #include "dispatch.h"

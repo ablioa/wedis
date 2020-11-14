@@ -93,6 +93,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 			onExit();
 			//connection_close_connect(mainModel->connection);
             PostQuitMessage(0);
+			break;
 		}
 
 		case WM_GETMINMAXINFO:{
@@ -187,8 +188,6 @@ void initModel(){
 	mainModel->dataView = (DataView *) calloc(1,sizeof(DataView));
 
 	initTaskPool();
-
-	init_working_buffer();
 }
 
 void onExit(){
@@ -276,22 +275,22 @@ TreeNode * getSelectedNode(){
 	return tn;
 }
 
-int packet_read(unsigned char * text,int length){
-	char * binText = dumpText((char*)text,length);
-	//wedis_log("packet to be processed:(%d)\n",length);
-	//wedis_log("%s",binText);
+// int packet_read(unsigned char * text,int length){
+// 	char * binText = dumpText((char*)text,length);
+// 	//wedis_log("packet to be processed:(%d)\n",length);
+// 	//wedis_log("%s",binText);
 
-	wedis_log("found: %s",text);
+// 	wedis_log("found: %s",text);
 
 
-	RedisReply reply = read_replay(text,length);
-	if(reply != NULL){
-		Task * task = getTask(pool);
-		dispatch(task,reply);
-	}
+// 	RedisReply reply = read_replay(text,length);
+// 	if(reply != NULL){
+// 		Task * task = getTask(pool);
+// 		dispatch(task,reply);
+// 	}
 
-	return 0;
-}
+// 	return 0;
+// }
 
 void appendLog(const char * text){
     //fprintf(fout,"%s",text);

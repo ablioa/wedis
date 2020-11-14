@@ -25,7 +25,7 @@ void s_key_space(TreeNode * hodeNode){
         RedisReply dreply = redis_serialize_params(hodeNode->stream,param);
 
         int dbCount = atoi(dreply->bulks->items[1]->content);
-        addDatabaseNode(hodeNode,dbCount);
+        add_database_node(hodeNode,dbCount);
     }
 }
 
@@ -42,7 +42,7 @@ void s_db_select(TreeNode * selected){
     reply = redis_serialize_params(selected->stream,param);
 
     if(reply->type == REPLY_MULTI){
-        addDataNode(selected,reply);
+        add_data_node(selected,reply);
     }else{
         log_message("error data on KEYS request");
     }

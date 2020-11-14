@@ -2,77 +2,6 @@
 
 #include <windows.h>
 
-RedisWorkingBuffer redisWorkingBuffer;
-
-void init_working_buffer(){
-	redisWorkingBuffer = (RedisWorkingBuffer) calloc(1,sizeof(struct redis_working_buffer));
-	redisWorkingBuffer->buffer = (char*) calloc(WORKING_BUFFER_SIZE,sizeof(char));
-	redisWorkingBuffer->capacity = WORKING_BUFFER_SIZE;
-	redisWorkingBuffer->size = 0;
-}
-
-void append_working_buffer(unsigned char * buffer,int length){
-	int new_size = redisWorkingBuffer->size + length;
-    int offset = redisWorkingBuffer->size;
-
-	// wedis_log("pre.append-> address:%ld,capacity:%d,size:%d,data-length:%d",
-	// redisWorkingBuffer->buffer,
-	// redisWorkingBuffer->capacity,
-	// redisWorkingBuffer->size,
-	// length);
-
-	if( new_size > redisWorkingBuffer->capacity){
-		realloc(redisWorkingBuffer->buffer,new_size);
-		redisWorkingBuffer->capacity = new_size;
-	}
-
-	memcpy(redisWorkingBuffer->buffer + offset,buffer,length);
-	redisWorkingBuffer->size = new_size;
-
-	// wedis_log("post.append-> address:%ld,capacity:%d,size:%d,data-length:%d",
-	// redisWorkingBuffer->buffer,
-	// redisWorkingBuffer->capacity,
-	// redisWorkingBuffer->size,
-	// length);
-}
-
-void retain_working_buffer(int invalid_size){
-	int valid_size = redisWorkingBuffer->size - invalid_size;
-	unsigned char * buff = (unsigned char*)calloc((valid_size),sizeof(unsigned char));
-
-	// wedis_log("pre.retain-> address:%ld,capacity:%d,size:%d,data-length:%d",
-	// redisWorkingBuffer->buffer,
-	// redisWorkingBuffer->capacity,
-	// redisWorkingBuffer->size,
-	// valid_size);
-	
-	memcpy(buff,redisWorkingBuffer->buffer+invalid_size,valid_size);
-	memset(redisWorkingBuffer->buffer,0,redisWorkingBuffer->capacity);
-	memcpy(redisWorkingBuffer->buffer,buff,valid_size);
-
-	redisWorkingBuffer->size = valid_size;
-
-	// wedis_log("post.retain-> address:%ld,capacity:%d,size:%d,data-length:%d",
-	// redisWorkingBuffer->buffer,
-	// redisWorkingBuffer->capacity,
-	// redisWorkingBuffer->size,
-	// valid_size);
-
-	free(buff);
-}
-
-int getStatusReplyLength(char *text){
-	int cur = 0;
-
-	int length = 0;
-	while (text[cur] != 0x0d || text[cur + 1] != 0x0a){
-		cur++;
-		length++;
-	}
-
-	return length - 1;
-}
-
 RedisBulk buildRedisBulk(int length){
 	RedisBulk bulk = (RedisBulk)calloc(1, sizeof(struct redis_bulk));
 	bulk->content = (char *)calloc(length + 1, sizeof(char));
@@ -87,204 +16,90 @@ RedisBulks buildRedisBulks(int count){
 	return bulks;
 }
 
-///char * chunk;
-
-int crlf_end(char * text,int pos){
-	return (text[pos-1] == 0x0d && text[pos] == 0x0a);
-}
-
-int check_tail(char * text,int length){
-	int bound = 0;
-	int tail_position = 0;
-
-	int cur = 0;
-	char ch = text[0];
-
-	// wedis_log("start token(text):%s",text);
-	// wedis_log("start token(char):|%c|",ch);
-	// wedis_log("length of token:%d",length);
-
-	switch (ch){
-		case '+':
-		case '-':{
-			while(!crlf_end(text,cur++)){
-				if(cur >= length){
-					return 0;
-				}
-			}
-			return cur;
-		}
-
-		case ':':{
-			break;
-		}
-
-		case '$':{
-			//int found = 1;
-			char cnt[128] = {0};
-			int scur = 0;
-			cur++;
-			while (isdigit(text[cur])){
-				cnt[scur++] = text[cur++];
-				if(cur >= length){return 0;}
-			}
-
-			cur += 2;
-			if(cur >= length){return 0;}
-
-			int count = atoi(cnt);
-			cur += count;
-			cur += 2;
-
-			if(cur > length){return 0;}
-
-			return cur;
-		}
-
-		case '*':{
-			char cnt[128] = {0};
-			cur++;
-			int scur = 0;
-			while (isdigit(text[cur])){
-				cnt[scur++] = text[cur++];
-				if(cur >= length){return 0;}
-			}
-
-			int count = atoi(cnt);
-			cur += 3;
-			if(cur >= length){return 0;}
-
-			for (int ix = 0; ix < count; ix++){
-				int scur = 0;
-				memset(cnt, 0, 128);
-
-				while (isdigit(text[cur])){
-					cnt[scur++] = text[cur++];
-					if(cur >= length){return 0;}
-				}
-
-				cur += 2;
-				if(cur >= length){return 0;}
-				int mcount = atoi(cnt);
-				cur += mcount;
-				if(cur >= length){return 0;}
-
-				cur += 3;
-				if(cur >= length){return 0;}
-			}
-
-			return cur;
-		}
-
-		default:{
-			// wedis_log("wrong pack: %d-> %s",length,text);
-			return 0;
-		}
-	}
-}
-
+/**
+ * 回调方式处理报文 
+ * 
+ **/
 int redis_read_pack(char * text,int length,redis_pack_handle handle){
-	append_working_buffer(text,length);
-	
-	int pos     = check_tail(redisWorkingBuffer->buffer,redisWorkingBuffer->size);
-	
-	wedis_log("check-tail/01: %d: %s",pos,redisWorkingBuffer->buffer);
-	char * next = redisWorkingBuffer->buffer;
-	while(pos != 0){
-		char * pk = (char*) calloc(pos,sizeof(char));
-		memcpy(pk,next,pos-1);
-
-		// wedis_log("data retrieved: %d",pos-1);
-		handle(pk,pos-1);
-
-		if(next <= redisWorkingBuffer->buffer + redisWorkingBuffer->size){
-			retain_working_buffer((next-redisWorkingBuffer->buffer));
-		}
-      
-		next = redisWorkingBuffer->buffer + pos;
-		if(length - pos == 0){
-			pos = 0;
-		}else{
-			pos = check_tail(next,length - pos -1);
-		    //if(next <= redisWorkingBuffer->buffer + redisWorkingBuffer->size){
-		    //	retain_working_buffer((next-redisWorkingBuffer->buffer));
-		    //}
-			dumpText(redisWorkingBuffer->buffer,redisWorkingBuffer->size);
-			wedis_log("check-tail/02: %d:%s",pos,redisWorkingBuffer->buffer);
-		}
-	}
-
-	//wedis_log("post.process: buff: %ld,invalid-pos: %ld ,size:%d",redisWorkingBuffer->buffer,next,redisWorkingBuffer->size);
-	if(next <= redisWorkingBuffer->buffer + redisWorkingBuffer->size){
-		retain_working_buffer((next-redisWorkingBuffer->buffer));
-	}
-
-	//wedis_log("buff: %s",redisWorkingBuffer->buffer);
-
 	return 0;
 }
 
-RedisReply read_replay(char *text,int length){
+/**
+ * Status包围内容范围计算
+ * +OK\r\n
+ */
+int get_status_scope(char * text,int length){
+	if(text[length-2] == '\r' && text[length -1] == '\n'){
+		return length - 3;
+	}else{
+		return -1;
+	}
+}
+
+/**
+ *  解析交互报文，可能失败
+ **/
+RedisReply read_reply(char *text,int length){
 	int cur = 0;
 	char ch = text[cur++];
-
-	int consumed = 0;
 
 	RedisReply reply = (RedisReply)calloc(1, sizeof(RedisReplyInfo));
 	switch (ch){
 		/** status */
 		case '+':{
 			reply->type = REPLY_STATUS;
-			int length = getStatusReplyLength(text);
+			int slen = get_status_scope(text,length);
 
-			RedisBulk status = buildRedisBulk(length);
-			memcpy(status->content, (text + 1), length);
-			reply->status = status;
+			if(slen == -1){
+				reply->reply_status = REPLY_STATUS_PENDING;
+			}else{
+				reply->reply_status = REPLY_STATUS_DONE;
+				RedisBulk status = buildRedisBulk(slen);
+				memcpy(status->content, (text + 1), slen);
+				reply->status = status;
+			}
 
-			consumed = length + 3;
 			break;
 		}
 		
 		/** error */
 		case '-':{
 			reply->type = REPLY_ERROR;
-			int length = getStatusReplyLength(text);
+			int slen = get_status_scope(text,length);
 
-			RedisBulk error = buildRedisBulk(length);
-			memcpy(error->content, (text + 1), length);
-			reply->error = error;
+			if(slen == -1){
+				reply->reply_status = REPLY_STATUS_PENDING;
+			}else{
+				reply->reply_status = REPLY_STATUS_DONE;
+				RedisBulk error = buildRedisBulk(slen);
+				memcpy(error->content, (text + 1), slen);
+				reply->error = error;
+			}
 
-			consumed = length + 3;
 			break;
 		}
 		
 		/** number */
 		case ':':{
+			MessageBox(NULL,"尚未支持的协议！！","sd",MB_OK);
 			break;
 		}
 
 		/** bulk */
 		case '$':{
 			reply->type = REPLY_BULK;
-			char cnt[128] = {0};
-			int scur = 0;
-			while (isdigit(text[cur])){
-				cnt[scur++] = text[cur++];
+			reply->reply_status = REPLY_STATUS_DONE;
+
+			int count =  get_bulk_size(text,&cur,length);
+			if(count == -1){
+				reply->reply_status = REPLY_STATUS_PENDING;
+			}else{
+				reply->reply_status = REPLY_STATUS_DONE;
+				reply->bulk = buildRedisBulk(count);
+
+				cur += 2;
+				memcpy(reply->bulk->content, (text + cur), count);
 			}
-
-			cur += 2;
-			int count = atoi(cnt);
-			if(strlen(text+cur) < count){
-				char buff[256] = {0};
-				sprintf(buff,"acture.size: %d,supporsed.count:%d",strlen(text+cur),count);
-				MessageBox(NULL,buff,"Title",MB_OK);
-			}
-
-			RedisBulk bulk = buildRedisBulk(count);
-			reply->bulk = bulk;
-			memcpy(bulk->content, (text + cur), count);
-
-			consumed = cur + count + 2;
 
 			break;
 		}
@@ -292,28 +107,26 @@ RedisReply read_replay(char *text,int length){
 		/** multibulk */
 		case '*':{
 			reply->type = REPLY_MULTI;
-			char cnt[128] = {0};
-			int scur = 0;
-			while (isdigit(text[cur])){
-				cnt[scur++] = text[cur++];
+			reply->reply_status = REPLY_STATUS_DONE;
+
+			int count =  get_bulk_size(text,&cur,length);
+			if(count == -1){
+				reply->reply_status = REPLY_STATUS_PENDING;
+				break;
 			}
 
-			int count = atoi(cnt);
 			RedisBulks bulks = buildRedisBulks(count);
 			reply->bulks = bulks;
 
 			cur += 3;
 			for (int ix = 0; ix < count; ix++){
-				int scur = 0;
-				memset(cnt, 0, 128);
-
-				while (isdigit(text[cur])){
-					cnt[scur++] = text[cur++];
+				int mcount =  get_bulk_size(text,&cur,length);
+				if(mcount == -1){
+					reply->reply_status = REPLY_STATUS_PENDING;
+					break;
 				}
 
 				cur += 2;
-				int mcount = atoi(cnt);
-
 				RedisBulk bulk = buildRedisBulk(mcount);
 				reply->bulks->items[ix] = bulk;
 				bulk->length = mcount;
@@ -323,15 +136,34 @@ RedisReply read_replay(char *text,int length){
 
 				cur += 3;
 			}
-
-			consumed = cur-1;
 			break;
 		}
 	}
 
-	reply->consumed = consumed;
-
 	return reply;
+}
+
+int get_bulk_size(char * text, int * cur,int length){
+    char cnt[20] = {0};
+    int scur = 0;
+
+	if(*cur >= length){
+		return -1;
+	}
+
+	int fake_size = 0;
+	while(isdigit(text[*cur])){
+		if(*cur == length -1){
+			fake_size = 1;
+		}
+		cnt[scur++] = text[(*cur)++];
+	}
+
+	if(fake_size){
+		return -1;
+	}
+
+	return atoi(cnt);
 }
 
 char *buildWord(char *word, size_t length){

@@ -10,6 +10,10 @@
 struct redis_connection{
     SOCKET socket;
     struct sockaddr_in address;
+
+    char * read_buff;
+    int    capacity;
+    int    free_size;
 };
 
 typedef struct redis_connection * RedisConnection;
