@@ -58,17 +58,22 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 			LPNMHDR msg = ((LPNMHDR) lParam);
 			switch (msg->code) {
 				case NM_CLICK:{
-					// 其他组件的通知消息也会通知到主窗口，因此需要过滤一下
 					if(msg->idFrom == 0){
                         onDataNodeSelection();
 					}
 					break;
 				}
 
+				// 节点双击，分别处理
 				case NM_DBLCLK:{
 					if(msg->idFrom == 0){
-						// MessageBox(NULL,"database select !!!","OK",MB_OK);
-                        onDataBaseSelect(hwnd);
+						TreeNode * node = getSelectedNode();
+						
+						char name[255] = {0};
+						sprintf(name,"node: %d %d",node->handle,node->level);
+						MessageBox(NULL,name,"title",MB_OK);
+
+                        onDataBaseSelect(node);
 					}
 					break;
 				}
@@ -257,8 +262,11 @@ void onDataNodeSelection(){
 	}
 }
 
-void onDataBaseSelect(HWND hwnd){
-    char * buf = (char*)malloc(128);
+/**
+ * 取得选中的树节点
+ */ 
+TreeNode * getSelectedNode(){
+	char * buf = (char*)malloc(128);
     memset(buf,0,128);
     
     DWORD dwPos = GetMessagePos();
@@ -277,20 +285,19 @@ void onDataBaseSelect(HWND hwnd){
     ti.pszText = buf;
     ti.hItem = hItem;
     TreeView_GetItem(mainModel->view->connectionHwnd, &ti);
-    
-    TreeNode * tn = (TreeNode*) ti.lParam;
-    
-    if(tn->level == 2){
-		s_db_select(tn->stream,tn->database);
-		//redis_select(tn->database);
-		//redis_keys();
-    	mainModel->selectedNode = hItem;
-		mainModel->database = tn->database;
-    }
 
-	// SetWindowText(mainModel->mainWindowHwnd,"database node!!!");
+	TreeNode * tn = (TreeNode*) ti.lParam;
+	return tn;
 }
 
+void onDataBaseSelect(TreeNode * node){
+    if(node->level == 2){
+		mainModel->selectedNode = node->handle;
+		mainModel->database = node->database;
+		
+		s_db_select(node->stream,node->database);
+    }
+}
 
 int packet_read(unsigned char * text,int length){
 	char * binText = dumpText((char*)text,length);
@@ -321,9 +328,7 @@ int check_type(char * type,char * key){
 TreeNode * addHostNode(RedisConnection stream,char * connectionName){
 	AppView * view = mainModel->view;
 
-	// TODO 层级标识常量化
-	TreeNode * hostNode = buildTreeNode(1);
-	hostNode->level = 1;
+	TreeNode * hostNode = buildTreeNode(NODE_LEVEL_HOST);
 	hostNode->stream = stream;
 
 	TV_INSERTSTRUCT tvinsert;
@@ -339,7 +344,7 @@ TreeNode * addHostNode(RedisConnection stream,char * connectionName){
 
 	HTREEITEM  handle = (HTREEITEM)SendMessage(view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 	hostNode->handle = handle;
-	
+
 	return hostNode;
 }
 

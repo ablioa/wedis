@@ -86,6 +86,10 @@
 
 #define IDM_CUSTOMER_HOST 900
 
+/** 树节点标识 */
+#define NODE_LEVEL_HOST     1
+#define NODE_LEVEL_DATABASE 2
+#define NODE_LEVEL_DATA     3
 
 typedef struct{
     HWND hwnd;
@@ -160,8 +164,6 @@ typedef struct{
 }TreeNode;
 
 typedef struct{
-//	TcpConnection * connection;
-
 	AppView * view;
 
 	HMENU hDev;
@@ -189,8 +191,6 @@ typedef struct{
 
 	int spaceCount;
 
-	//HTREEITEM root;
-
 	TreeNode * host;
 }MainModel;
 
@@ -209,7 +209,9 @@ void onMainFrameCreate(HWND hwnd);
 
 void onDataNodeSelection();
 
-void onDataBaseSelect(HWND hwnd);
+void onDataBaseSelect(TreeNode * node);
+
+TreeNode * getSelectedNode();
 
 void networkHandle(LPARAM lParam);
 
@@ -224,8 +226,6 @@ int check_type(char * type,char * key);
 void log_message(const char * message);
 
 void onExit();
-
-
 
 void appendLog(const char * text);
 
