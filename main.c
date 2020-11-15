@@ -63,11 +63,14 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 					break;
 				}
 
-				// 节点双击，分别处理
 				case NM_DBLCLK:{
 					if(msg->idFrom == 0){
 						TreeNode * selected = getSelectedNode();
-                        onDataBaseSelect(selected);
+
+						HINSTANCE hInst = mainModel->hInstance;
+						DialogBox (hInst,MAKEINTRESOURCE (IDD_DB_SEARCH),hwnd,(DLGPROC)dbSearchDlgProc);
+                        
+						onDataBaseSelect(selected);
 					}
 					break;
 				}
@@ -107,8 +110,6 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
     return DefWindowProc (hwnd, message, wParam, lParam);
 }
 
-static FILE * fout;
-
 void initpan(HINSTANCE hInstance){
 	init_hashview(hInstance);
 	init_stringview(hInstance);
@@ -118,8 +119,6 @@ void initpan(HINSTANCE hInstance){
 	init_systemview(hInstance);
 
 	initSplit(hInstance);
-
-    fout = fopen("log.txt","wa");
 
     WNDCLASSEX hSplitClass;
     hSplitClass.cbSize        = sizeof(hSplitClass);
@@ -273,32 +272,6 @@ TreeNode * getSelectedNode(){
 
 	TreeNode * tn = (TreeNode*) ti.lParam;
 	return tn;
-}
-
-// int packet_read(unsigned char * text,int length){
-// 	char * binText = dumpText((char*)text,length);
-// 	//wedis_log("packet to be processed:(%d)\n",length);
-// 	//wedis_log("%s",binText);
-
-// 	wedis_log("found: %s",text);
-
-
-// 	RedisReply reply = read_replay(text,length);
-// 	if(reply != NULL){
-// 		Task * task = getTask(pool);
-// 		dispatch(task,reply);
-// 	}
-
-// 	return 0;
-// }
-
-void appendLog(const char * text){
-    //fprintf(fout,"%s",text);
-    //fflush(fout);
-}
-
-int check_type(char * type,char * key){
-	return 1;
 }
 
 TreeNode * addHostNode(RedisConnection stream,char * connectionName){

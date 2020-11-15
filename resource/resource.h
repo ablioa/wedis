@@ -9,6 +9,7 @@
 #define IDB_CONNECTION                          111
 #define IDD_PREFERENCE                          113
 #define IDD_GOTOLINE                            114
+#define IDD_DB_SEARCH                           115
 #define IDC_CONNECTION_HOSTVALUE                201
 #define IDC_CONNECTION_PORTVALUE                203
 #define IDC_CONNECTION_IFPASSWORD               204
@@ -46,3 +47,6 @@
 #define IDM_PREFERENCE                          40011
 
 #define IDC_DATATYPE            1017
+
+#define IDC_DB_SEARCH_CANCEL 40012
+#define IDC_DB_SEARCH_OK     40013

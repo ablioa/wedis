@@ -46,6 +46,7 @@ void initDataTypeSelector(HWND viewTypeHwnd){
     SendMessage(viewTypeHwnd,CBEM_SETIMAGELIST,0,(LPARAM)hImageList);
 }
 
+
 BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 	char buff[MAX_PATH];
 
@@ -73,3 +74,37 @@ BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 
 	return FALSE;
 }
+
+BOOL CALLBACK dbSearchDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
+	char buff[MAX_PATH];
+
+	switch(msg){
+		case WM_INITDIALOG:{
+			MoveToScreenCenter(hwnd);
+			break;
+		}
+
+		case WM_COMMAND:{
+			switch(wParam){
+				case IDC_DB_SEARCH_OK:
+					MessageBox(hwnd,"Search Done!!!!","search",MB_OK);
+					EndDialog(hwnd,0);
+				break;
+
+                case IDC_DB_SEARCH_CANCEL:{
+                    EndDialog(hwnd,0);
+                    break;
+                }
+            }
+            break;
+        }
+
+		case WM_CLOSE:{
+			EndDialog(hwnd,0);
+		    break;
+        }
+    }
+
+	return FALSE;
+}
+

@@ -173,14 +173,9 @@ void command(HWND _hwnd,int cmd);
 LPTSTR mGetOpenFileName(HWND hwnd);
 LPTSTR mGetSaveFileName(HWND hwnd);
 
-
-int check_type(char * type,char * key);
-
 void log_message(const char * message);
 
 void onExit();
-
-void appendLog(const char * text);
 
 TreeNode * buildTreeNode(int level);
 

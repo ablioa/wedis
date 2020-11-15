@@ -8,4 +8,6 @@
 
 BOOL CALLBACK entryDlgProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lParam);
 
+BOOL CALLBACK dbSearchDlgProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lParam);
+
 #endif

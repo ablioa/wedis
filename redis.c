@@ -120,6 +120,7 @@ RedisReply read_reply(char *text,int length){
 
 			cur += 3;
 			for (int ix = 0; ix < count; ix++){
+				
 				int mcount =  get_bulk_size(text,&cur,length);
 				if(mcount == -1){
 					reply->reply_status = REPLY_STATUS_PENDING;
