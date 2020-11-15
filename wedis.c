@@ -15,57 +15,7 @@ void initResource(){
 }
 
 void log_message(const char * message){
-    //char buff[256] = {0};
-    //sprintf(buff,"value: |%s|",message);
 	MessageBox(NULL,message,"TITLE",MB_OK);
-}
-
-void log_int_message(int value){
-    char buff[256] = {0};
-    sprintf(buff,"value: %d",value);
-    MessageBox(NULL,buff,"TITLE",MB_OK);
-}
-
-char * getOutputBuffer(int size){
-    int bsize = (size/16+1) * 70+1;
-    char * buff = ( char *) malloc(sizeof( char) * bsize);
-    memset(buff,0,sizeof( char) * bsize);
-    return buff;
-}
-
-char * dumpText( char * text,int len){
-    char line[17]={0};
-    char * buff   = getOutputBuffer(len);
-    char * output =buff;
-
-    int offset =0;
-    int ix = 0;
-    for(ix = 0; ix < len; ix ++){
-        sprintf(output,"%02X ",(unsigned char)(text[ix]));
-        output +=3;
-        line[offset++]= isprint(text[ix])?text[ix]:'.';
-
-        if(ix % 0x10 == 0x0f){
-            sprintf(output,"    %s\r\n",line);
-            offset=0;
-
-            memset(line,0,17);
-
-            output +=22;
-        }
-    }
-
-    if(ix % 0x10 != 0x00){
-        sprintf(output,"[ix=%d]",ix);
-        for(ix =(0x10 - len % 0x10); ix < 0x10;ix++){
-            sprintf(output,"   ");
-        }
-
-        sprintf(output,"    %s\r\n",line);
-        output +=22;
-    }
-
-	return buff;
 }
 
 int wedis_log(const char *fmt, ...){
@@ -94,7 +44,6 @@ int wedis_log(const char *fmt, ...){
     cnt = vsnprintf(buffer,BUFF_SIZE ,fmt, argptr);
     va_end(argptr);
 
-    //fprintf(log_file,"%s %s\n", log_time_stamp,buffer);
     fprintf(log_file,"%s\n", buffer);
     fflush(log_file);
 

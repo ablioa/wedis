@@ -34,10 +34,6 @@ void initResource();
 
 void log_message(const char * message);
 
-char * getOutputBuffer(int size);
-
-char * dumpText( char * text,int len);
-
 int wedis_log(const char *fmt, ...);
 
 #endif
