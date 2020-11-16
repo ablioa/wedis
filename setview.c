@@ -64,33 +64,33 @@ HWND buildSetViewWindow(HWND parent){
 }
 
 BOOL updateSetDataSet(HWND hwnd,RedisReply reply){
-    char indexBuff[256] = {0};
-    LVITEM lvI;
+    // char indexBuff[256] = {0};
+    // LVITEM lvI;
 
-    lvI.pszText   = LPSTR_TEXTCALLBACK;
-    lvI.mask      = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE;
-    lvI.stateMask = 0;
-    lvI.iSubItem  = 0;
-    lvI.state     = 0;
+    // lvI.pszText   = LPSTR_TEXTCALLBACK;
+    // lvI.mask      = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE;
+    // lvI.stateMask = 0;
+    // lvI.iSubItem  = 0;
+    // lvI.state     = 0;
 
-    SendMessage(hwnd,LVM_DELETEALLITEMS,(WPARAM)NULL,(LPARAM)NULL);
+    // SendMessage(hwnd,LVM_DELETEALLITEMS,(WPARAM)NULL,(LPARAM)NULL);
 
-    RedisBulks bulks = reply->bulks;
-    for (int index = 0; index < (bulks->count); index++){
-        lvI.iItem  = index;
-        lvI.iImage = index;
-        lvI.iSubItem = 0;
+    // RedisBulks bulks = reply->bulks;
+    // for (int index = 0; index < (bulks->count); index++){
+    //     lvI.iItem  = index;
+    //     lvI.iImage = index;
+    //     lvI.iSubItem = 0;
 
-        memset(indexBuff,0,256);
-        sprintf(indexBuff,"%d",(index +1));
+    //     memset(indexBuff,0,256);
+    //     sprintf(indexBuff,"%d",(index +1));
 
-        lvI.pszText = indexBuff; 
-        ListView_InsertItem(hwnd, &lvI);
+    //     lvI.pszText = indexBuff; 
+    //     ListView_InsertItem(hwnd, &lvI);
 
-        lvI.pszText = bulks->items[index]->content;
-        lvI.iSubItem = 1;
-        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
-    }
+    //     lvI.pszText = bulks->items[index]->content;
+    //     lvI.iSubItem = 1;
+    //     SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+    // }
 
     return TRUE;
 }

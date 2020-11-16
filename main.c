@@ -67,8 +67,8 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 					if(msg->idFrom == 0){
 						TreeNode * selected = getSelectedNode();
 
-						HINSTANCE hInst = mainModel->hInstance;
-						DialogBox (hInst,MAKEINTRESOURCE (IDD_DB_SEARCH),hwnd,(DLGPROC)dbSearchDlgProc);
+						// HINSTANCE hInst = mainModel->hInstance;
+						// DialogBox (hInst,MAKEINTRESOURCE (IDD_DB_SEARCH),hwnd,(DLGPROC)dbSearchDlgProc);
                         
 						onDataBaseSelect(selected);
 					}
@@ -215,9 +215,10 @@ void onMainFrameCreate(HWND hwnd){
 
 void updateNavigationInfo(TreeNode * node){
 	char path[MAX_PATH] = {0};
-	wsprintf(path,"db%d",node->database,node->key);
+	wsprintf(path,"db%d",node->database);
+
 	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,2,(LPARAM)path);
-	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,3,(LPARAM)node->key);
+	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,3,(LPARAM)node->data->data_key);
 }
 
 void onDataNodeSelection(TreeNode * selected){
@@ -225,9 +226,9 @@ void onDataNodeSelection(TreeNode * selected){
 		return;
 	}
 
-	if(selected->level == 3){
-		redis_select(selected->database);
-		redis_data_type(selected->key);
+	if(selected->level == NODE_LEVEL_DATA){
+		// redis_select(selected->database);
+		// redis_data_type(selected->data->data_key);
 		updateNavigationInfo(selected);
 	}
 }
@@ -237,7 +238,7 @@ void onDataBaseSelect(TreeNode * selected){
 		return;
 	}
 
-    if(selected->level == 2){
+    if(selected->level == NODE_LEVEL_DATABASE){
 		s_db_select(selected);
     }
 }
@@ -277,7 +278,7 @@ TreeNode * getSelectedNode(){
 TreeNode * addHostNode(RedisConnection stream,char * connectionName){
 	AppView * view = mainModel->view;
 
-	TreeNode * hostNode = buildTreeNode(NODE_LEVEL_HOST);
+	TreeNode * hostNode = build_tree_node(NODE_LEVEL_HOST);
 	hostNode->stream = stream;
 
 	TV_INSERTSTRUCT tvinsert;
@@ -732,10 +733,4 @@ void addTreeNode(HWND treeHwnd,HTREEITEM hParent,char * nodeName){
 	tvinsert.item.iSelectedImage=0;
 
 	SendMessage(treeHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
-}
-
-TreeNode * buildTreeNode(int level){
-	TreeNode * node = (TreeNode *) calloc(1,sizeof(TreeNode));
-	node->level = level;
-    return node;
 }

@@ -58,10 +58,10 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
         case WM_COMMAND:{
 			switch(LOWORD (wParam)){
 				case GENERAL_CMD_RENAME:{
-                    TCHAR newKey[256]={0};
-                    GetDlgItemText(dataHwnd,GENERAL_CMD_KEYEDIT,newKey,sizeof(newKey));
+                    // TCHAR newKey[256]={0};
+                    // GetDlgItemText(dataHwnd,GENERAL_CMD_KEYEDIT,newKey,sizeof(newKey));
 				
-					redis_rename_key(dataView->data->dataKey,newKey);
+					// redis_rename_key(dataView->data->dataKey,newKey);
 					break;
 				}
 				
@@ -71,7 +71,7 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 				}
 
 				case GENERAL_CMD_REMOVE:{
-					redis_delete_key(dataView->data->dataKey);
+					// redis_delete_key(dataView->data->dataKey);
 					break;
 				}
 
@@ -86,12 +86,12 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 		case WM_DT:{
 			RedisReply data = (RedisReply)wParam;
 
-			SendMessage(dataView->keyEditHwnd,WM_SETTEXT,0,(LPARAM)(data->dataKey));
-			SendMessage(dataView->keyNameHwnd,WM_SETTEXT,0,(LPARAM)(data->dataTypeName));
+			// SendMessage(dataView->keyEditHwnd,WM_SETTEXT,0,(LPARAM)(data->dataKey));
+			// SendMessage(dataView->keyNameHwnd,WM_SETTEXT,0,(LPARAM)(data->dataTypeName));
 
-            dataView->data = data;
-            dataView->type =  data->dataType;
-			switchView(dataHwnd,data->dataType,data);
+            // dataView->data = data;
+            // dataView->type =  data->dataType;
+			// switchView(dataHwnd,data->dataType,data);
 
 			break;
 		}

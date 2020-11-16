@@ -17,85 +17,85 @@ void handleKeyspace(Keyspace keyspace){
 }
 
 void handleRedisData(Task * task,RedisReply data){
-	data->dataKey = (char*) calloc(strlen(task->dataKey)+1,sizeof(char));
-	sprintf(data->dataKey,"%s",task->dataKey);
+	// data->dataKey = (char*) calloc(strlen(task->dataKey)+1,sizeof(char));
+	// sprintf(data->dataKey,"%s",task->dataKey);
 
-	switch(task->dataType){
-		case REDIS_STRING:{
-			if(data->type == REPLY_BULK){
-				data->dataTypeName = (char*) malloc(sizeof(char) * 256);
-				memset(data->dataTypeName,0,sizeof(char) * 256);
-				sprintf(data->dataTypeName,"%s","STRING");
+	// switch(task->dataType){
+	// 	case REDIS_STRING:{
+	// 		if(data->type == REPLY_BULK){
+	// 			data->dataTypeName = (char*) malloc(sizeof(char) * 256);
+	// 			memset(data->dataTypeName,0,sizeof(char) * 256);
+	// 			sprintf(data->dataTypeName,"%s","STRING");
 
-				data->dataType = task->dataType;
-				SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)data,(LPARAM)(NULL));
-			}else{
-				log_message("wrong string data format");
-			}
-			break;
-		}
+	// 			data->dataType = task->dataType;
+	// 			SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)data,(LPARAM)(NULL));
+	// 		}else{
+	// 			log_message("wrong string data format");
+	// 		}
+	// 		break;
+	// 	}
 
-		case REDIS_LIST:{
-			if(data->type == REPLY_MULTI){
-				data->dataTypeName = (char*) malloc(sizeof(char) * 256);
-				memset(data->dataTypeName,0,sizeof(char) * 256);
-				sprintf(data->dataTypeName,"%s","LIST");
+	// 	case REDIS_LIST:{
+	// 		if(data->type == REPLY_MULTI){
+	// 			data->dataTypeName = (char*) malloc(sizeof(char) * 256);
+	// 			memset(data->dataTypeName,0,sizeof(char) * 256);
+	// 			sprintf(data->dataTypeName,"%s","LIST");
 
-				data->dataType = task->dataType;
-				SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)data,(LPARAM)(NULL));
-			}else{
-				log_message("wrong list data format");
-			}
-			break;
-		}
+	// 			data->dataType = task->dataType;
+	// 			SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)data,(LPARAM)(NULL));
+	// 		}else{
+	// 			log_message("wrong list data format");
+	// 		}
+	// 		break;
+	// 	}
 
-		case REDIS_HASH:{
-			if(data->type == REPLY_MULTI){
-				data->dataTypeName = (char*) malloc(sizeof(char) * 256);
-				memset(data->dataTypeName,0,sizeof(char) * 256);
-				sprintf(data->dataTypeName,"%s","HASH");
+	// 	case REDIS_HASH:{
+	// 		if(data->type == REPLY_MULTI){
+	// 			data->dataTypeName = (char*) malloc(sizeof(char) * 256);
+	// 			memset(data->dataTypeName,0,sizeof(char) * 256);
+	// 			sprintf(data->dataTypeName,"%s","HASH");
 
-				data->dataType = task->dataType;
-				SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)data,(LPARAM)(NULL));
-			}else{
-				log_message("wrong hash data format");
-			}
-			break;
-		}
+	// 			data->dataType = task->dataType;
+	// 			SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)data,(LPARAM)(NULL));
+	// 		}else{
+	// 			log_message("wrong hash data format");
+	// 		}
+	// 		break;
+	// 	}
 
-		case REDIS_SET:{
-			if(data->type == REPLY_MULTI){
-				data->dataTypeName = (char*) malloc(sizeof(char) * 256);
-				memset(data->dataTypeName,0,sizeof(char) * 256);
-				sprintf(data->dataTypeName,"%s","SET");
+	// 	case REDIS_SET:{
+	// 		if(data->type == REPLY_MULTI){
+	// 			data->dataTypeName = (char*) malloc(sizeof(char) * 256);
+	// 			memset(data->dataTypeName,0,sizeof(char) * 256);
+	// 			sprintf(data->dataTypeName,"%s","SET");
 
-				data->dataType = task->dataType;
-				SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)data,(LPARAM)(NULL));
-			}else{
-				log_message("wrong hash data format");
-			}
-			break;			
-		}
+	// 			data->dataType = task->dataType;
+	// 			SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)data,(LPARAM)(NULL));
+	// 		}else{
+	// 			log_message("wrong hash data format");
+	// 		}
+	// 		break;			
+	// 	}
 
-		case REDIS_ZSET:{
-			if(data->type == REPLY_MULTI){
-				data->dataTypeName = (char*) malloc(sizeof(char) * 256);
-				memset(data->dataTypeName,0,sizeof(char) * 256);
-				sprintf(data->dataTypeName,"%s","ZSET");
+	// 	case REDIS_ZSET:{
+	// 		if(data->type == REPLY_MULTI){
+	// 			data->dataTypeName = (char*) malloc(sizeof(char) * 256);
+	// 			memset(data->dataTypeName,0,sizeof(char) * 256);
+	// 			sprintf(data->dataTypeName,"%s","ZSET");
 
-				data->dataType = task->dataType;
-				SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)data,(LPARAM)(NULL));
-			}else{
-				log_message("wrong hash data format");
-			}
-			break;			
-		}
+	// 			data->dataType = task->dataType;
+	// 			SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)data,(LPARAM)(NULL));
+	// 		}else{
+	// 			log_message("wrong hash data format");
+	// 		}
+	// 		break;			
+	// 	}
 
-		case REDIS_UNDEFINED:{
-			log_message("undefined data type");
-			break;
-		}
-	}
+	// 	case REDIS_UNDEFINED:{
+	// 		log_message("undefined data type");
+	// 		break;
+	// 	}
+	// }
 }
 
 void handleDataType(Task * task,DataType dataType){
@@ -132,56 +132,38 @@ void handleDataType(Task * task,DataType dataType){
 	}
 }
 
-void add_data_node(TreeNode * dbnode,RedisReply rp){
-
-	// TODO 树节点可以直接取得
-    TVITEM ti = {0};
-    ti.mask = TVIF_HANDLE | TVIF_PARAM;
-    ti.hItem = dbnode->handle; // mainModel->selectedNode;
-    TreeView_GetItem(mainModel->view->connectionHwnd, &ti);
-    TreeNode * tnf = (TreeNode*) ti.lParam;
-	if(tnf == NULL){
-		return;
-	}
-
-	// ========= FOR DEBUG 
-	// char name [255] = {0};
-	// sprintf(name,"node: %d",tnf);
-	// MessageBox(NULL,name,"ok",MB_OK);
-
-    for(int ix =0; ix < tnf->subHandleSize; ix ++){
-        TreeView_DeleteItem(mainModel->view->connectionHwnd,tnf->subHandles[ix]);
+void add_data_node(TreeNode * dbnode,RedisReply data){
+    for(int ix =0; ix < dbnode->subHandleSize; ix ++){
+        TreeView_DeleteItem(mainModel->view->connectionHwnd,dbnode->subHandles[ix]);
     }
     
-    tnf->subHandleSize= 0;
-	tnf->database = dbnode->database;// mainModel->database;
-    
-    for(int ix =0;ix < rp->bulks->count; ix ++){
+    dbnode->subHandleSize= 0;
+	RedisReply cursor = data->bulks[0];
+	RedisReply keydata   = data->bulks[1];
 
-		if(ix >= 50 ){
-			break;
-		}
+	int total = keydata->array_length;
+	for(int ix = 0; ix < total; ix ++){
+		RedisReply item = keydata->bulks[ix];
+
         TV_INSERTSTRUCT tvinsert;
 
-        tvinsert.hParent = dbnode->handle;//mainModel->selectedNode;
+        tvinsert.hParent = dbnode->handle;
         tvinsert.hInsertAfter=TVI_LAST;
         tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
-		tvinsert.item.cchTextMax = rp->bulks->items[ix]->length;
-        tvinsert.item.pszText    = rp->bulks->items[ix]->content;
+		tvinsert.item.cchTextMax = item->bulk->length;
+        tvinsert.item.pszText    = item->bulk->content;
         tvinsert.item.iImage=2;
         tvinsert.item.iSelectedImage=2;
      
-        TreeNode * tn = buildTreeNode(NODE_LEVEL_DATA);
-		tn->key = rp->bulks->items[ix]->content;
-		tn->database = tnf->database;
+        TreeNode * tn = build_tree_node(NODE_LEVEL_DATA);
+		tn->data->data_key = item->bulk->content;
+		// tn->database = dbnode->database;
         tvinsert.item.lParam= (LPARAM)tn;
 		tn->handle = (HTREEITEM)SendMessage(mainModel->view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 
-        tnf->subHandleSize ++;
-        tnf->subHandles[ix] = tn->handle;
-    }
-
-	SendMessage(mainModel->view->connectionHwnd,TVM_EXPAND,(WPARAM)TVE_EXPAND,(LPARAM)(dbnode->handle));
+        dbnode->subHandleSize ++;
+        dbnode->subHandles[ix] = tn->handle;
+	}
 }
 
 Keyspace getKeyspaceInfo(char * dbname){
@@ -230,7 +212,7 @@ void add_database_node(TreeNode * hostNode,int dbCount){
 		tvinsert.hInsertAfter=TVI_LAST;
 		tvinsert.item.pszText= showName;
 
-		TreeNode * tn = buildTreeNode(NODE_LEVEL_DATABASE);
+		TreeNode * tn = build_tree_node(NODE_LEVEL_DATABASE);
 		tn->database = ix;
 		tn->stream = hostNode->stream;
 		tvinsert.item.lParam= (LPARAM)tn;
@@ -242,6 +224,6 @@ void add_database_node(TreeNode * hostNode,int dbCount){
 			(LPARAM)&tvinsert);
 	}
 
-	//SendMessage(mainModel->view->connectionHwnd,TVM_EXPAND,(WPARAM)TVE_TOGGLE,(LPARAM)(mainModel->selectedNode));
+	SendMessage(mainModel->view->connectionHwnd,TVM_EXPAND,(WPARAM)TVE_TOGGLE,(LPARAM)(hostNode->handle));
 }
 

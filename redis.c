@@ -2,6 +2,35 @@
 
 #include <windows.h>
 
+RedisReply receive_msg(RedisConnection stream){
+	char localbuff[4096] = {0};
+	RedisReply reply = NULL;
+
+	stream->capacity  = 4096;
+	stream->free_size = stream->capacity;
+	stream->read_buff = (char*) calloc(stream->capacity,sizeof(char));
+	
+	do{
+		int ret = recv(stream->socket, localbuff, 4096, 0);
+
+		if(stream->free_size <= ret){
+			stream->capacity  += 4096;
+			stream->free_size += 4096;
+			stream->read_buff = (char*) realloc(stream->read_buff,stream->capacity);
+		}
+
+		memcpy(stream->read_buff + ((stream->capacity - stream->free_size)),localbuff,ret);
+		stream->free_size -= ret;
+        
+        int pos = 0;
+		reply = read_reply(stream->read_buff,&pos,(stream->capacity - stream->free_size));
+	}while(reply->reply_status != REPLY_STATUS_DONE);
+
+	free(stream->read_buff);
+
+	return reply;
+}
+
 RedisBulk buildRedisBulk(int length){
 	RedisBulk bulk = (RedisBulk)calloc(1, sizeof(struct redis_bulk));
 	bulk->content = (char *)calloc(length + 1, sizeof(char));
@@ -9,12 +38,12 @@ RedisBulk buildRedisBulk(int length){
 	return bulk;
 }
 
-RedisBulks buildRedisBulks(int count){
-	RedisBulks bulks = (RedisBulks)calloc(1, sizeof(struct redis_bulks));
-	bulks->items = (RedisBulk *)calloc(count, sizeof(RedisBulk));
-	bulks->count = count;
-	return bulks;
-}
+// RedisBulks buildRedisBulks(int count){
+// 	RedisBulks bulks = (RedisBulks)calloc(1, sizeof(struct redis_bulks));
+// 	bulks->items = (RedisBulk *)calloc(count, sizeof(RedisBulk));
+// 	bulks->count = count;
+// 	return bulks;
+// }
 
 /**
  * 回调方式处理报文 
@@ -39,11 +68,11 @@ int get_status_scope(char * text,int length){
 /**
  *  解析交互报文，可能失败
  **/
-RedisReply read_reply(char *text,int length){
-	int cur = 0;
-	char ch = text[cur++];
+RedisReply read_reply(char *text,int * cur,int length){
+	//int cur = 0;
+	char ch = text[(*cur)++];
 
-	RedisReply reply = (RedisReply)calloc(1, sizeof(RedisReplyInfo));
+	RedisReply reply = (RedisReply)calloc(1, sizeof(struct redis_reply));
 	switch (ch){
 		/** status */
 		case '+':{
@@ -58,6 +87,8 @@ RedisReply read_reply(char *text,int length){
 				memcpy(status->content, (text + 1), slen);
 				reply->status = status;
 			}
+
+            // TODO 处理复合结构下的指针移动
 
 			break;
 		}
@@ -76,6 +107,8 @@ RedisReply read_reply(char *text,int length){
 				reply->error = error;
 			}
 
+            // TODO 处理复合结构下的指针移动
+
 			break;
 		}
 		
@@ -90,16 +123,20 @@ RedisReply read_reply(char *text,int length){
 			reply->type = REPLY_BULK;
 			reply->reply_status = REPLY_STATUS_DONE;
 
-			int count =  get_bulk_size(text,&cur,length);
-			if(count == -1){
+			int bulk_length =  get_bulk_size(text,cur,length);
+			if(bulk_length == -1){
 				reply->reply_status = REPLY_STATUS_PENDING;
-			}else{
-				reply->reply_status = REPLY_STATUS_DONE;
-				reply->bulk = buildRedisBulk(count);
-
-				cur += 2;
-				memcpy(reply->bulk->content, (text + cur), count);
+                break;
 			}
+
+            if((*cur) + bulk_length >= length){
+                reply->reply_status = REPLY_STATUS_PENDING;
+                break;
+            }
+			
+            reply->bulk = buildRedisBulk(bulk_length);
+			memcpy(reply->bulk->content, (text + *cur), bulk_length);
+            (*cur) = (*cur) + bulk_length + 2;
 
 			break;
 		}
@@ -109,34 +146,23 @@ RedisReply read_reply(char *text,int length){
 			reply->type = REPLY_MULTI;
 			reply->reply_status = REPLY_STATUS_DONE;
 
-			int count =  get_bulk_size(text,&cur,length);
-			if(count == -1){
+			reply->array_length =  get_bulk_size(text,cur,length);
+			if(reply->array_length == -1){
 				reply->reply_status = REPLY_STATUS_PENDING;
 				break;
 			}
 
-			RedisBulks bulks = buildRedisBulks(count);
-			reply->bulks = bulks;
+            reply->bulks = (RedisReply *) calloc(reply->array_length,sizeof(RedisReply));
+            for(int ix = 0; ix < reply->array_length; ix ++){
+                RedisReply mrep = read_reply(text,cur,length);
+                if(mrep->reply_status != REPLY_STATUS_DONE){
+                    reply->reply_status = REPLY_STATUS_PENDING;
+                    break;
+                }else{
+                    reply->bulks[ix] = mrep;
+                }
+            }
 
-			cur += 3;
-			for (int ix = 0; ix < count; ix++){
-				
-				int mcount =  get_bulk_size(text,&cur,length);
-				if(mcount == -1){
-					reply->reply_status = REPLY_STATUS_PENDING;
-					break;
-				}
-
-				cur += 2;
-				RedisBulk bulk = buildRedisBulk(mcount);
-				reply->bulks->items[ix] = bulk;
-				bulk->length = mcount;
-
-				memcpy(bulk->content, (text + cur), mcount);
-				cur += mcount;
-
-				cur += 3;
-			}
 			break;
 		}
 	}
@@ -163,6 +189,8 @@ int get_bulk_size(char * text, int * cur,int length){
 	if(fake_size){
 		return -1;
 	}
+
+    (*cur) = (*cur)+2;
 
 	return atoi(cnt);
 }

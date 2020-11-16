@@ -64,11 +64,6 @@
 
 #define IDM_CUSTOMER_HOST 900
 
-/** 树节点标识 */
-#define NODE_LEVEL_HOST     1
-#define NODE_LEVEL_DATABASE 2
-#define NODE_LEVEL_DATA     3
-
 typedef struct{
     HWND hwnd;
     
@@ -176,8 +171,6 @@ LPTSTR mGetSaveFileName(HWND hwnd);
 void log_message(const char * message);
 
 void onExit();
-
-TreeNode * buildTreeNode(int level);
 
 AppView * buildAppView(HWND hwnd);
 

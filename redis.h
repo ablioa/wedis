@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "wedis.h"
+#include "myconnection.h"
 
 #define CHAR_SPACE ' '
 #define CHAR_TAB   '\t'
@@ -17,8 +18,10 @@
 
 #define WORKING_BUFFER_SIZE 10485760
 
-#define REPLY_STATUS_PENDING 0
-#define REPLY_STATUS_DONE    1
+typedef enum replpy_status{
+	REPLY_STATUS_PENDING,
+	REPLY_STATUS_DONE
+}ReplyStatus;
 
 typedef enum{
 	REDIS_UNDEFINED,
@@ -57,32 +60,59 @@ struct redis_bulk{
 };
 typedef struct redis_bulk * RedisBulk;
 
-struct redis_bulks{
-	int count;
-	RedisBulk * items;
-};
-typedef struct redis_bulks * RedisBulks;
+// struct redis_bulks{
+// 	int count;
+// 	RedisBulk * items;
+// };
+// typedef struct redis_bulks * RedisBulks;
 
-struct redis_reply_info{
-	int type;
+// struct redis_reply_info{
+// 	int type;
 
-    union{
-		RedisBulk    bulk;
-		RedisBulks   bulks;
-		RedisBulk    error;
+//     union{
+// 		RedisBulk    bulk;
+// 		RedisBulks   bulks;
+// 		RedisBulk    error;
+// 		RedisBulk    status;
+// 		int          integer;
+// 	};
+
+//     char *   dataKey;
+//     char *   dataTypeName;
+//     DataType dataType;
+
+// 	int reply_status;
+// };
+
+// TODO 支持整数类型
+typedef union redis_payload{
+	RedisBulk    status;
+    RedisBulk    error;
+    RedisBulk    bulk;
+		
+    struct redis_reply * *   bulks;
+}RedisPayload;
+
+struct redis_reply{
+    ReplyType   type;
+    ReplyStatus reply_status;
+
+	// RedisPayload payload;
+
+	union{
 		RedisBulk    status;
-		int          integer;
+    	RedisBulk    error;
+    	RedisBulk    bulk;
+		
+    	struct redis_reply * *   bulks;
 	};
 
-    char *   dataKey;
-    char *   dataTypeName;
-    DataType dataType;
-
-	int reply_status;
+	int         array_length;
 };
+typedef struct redis_reply * RedisReply;
 
-typedef struct redis_reply_info   RedisReplyInfo;
-typedef struct redis_reply_info * RedisReply;
+// typedef struct redis_reply_info   RedisReplyInfo;
+// typedef struct redis_reply_info * RedisReply;
 
 struct redis_working_buffer{
 	char * buffer;
@@ -152,7 +182,9 @@ void setKeyspaceValue(Keyspace info,char * value);
 
 Keyspace parseKeyspace(char * buffer);
 
-RedisReply read_reply(char * text,int length);
+//RedisReply read_reply(char * text,int length);
+RedisReply read_reply(char *text,int * cur,int length);
+RedisReply receive_msg(RedisConnection stream);
 
 char * buildWord(char * word,size_t length);
 

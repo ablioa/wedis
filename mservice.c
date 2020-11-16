@@ -1,5 +1,29 @@
 #include "mservice.h"
 
+TreeNode * build_tree_node(RedisNodeType node_type){
+	TreeNode * node = (TreeNode *) calloc(1,sizeof(TreeNode));
+    node->level = node_type;
+
+    switch (node_type){
+        case NODE_LEVEL_HOST:{
+            node->host = (struct redis_host_node *) calloc(1,sizeof(struct redis_host_node));
+            break;
+        }
+
+        case NODE_LEVEL_DATABASE:{
+            node->database = (struct redis_database_node *) calloc(1,sizeof(struct redis_database_node));
+            break;
+        }
+
+        case NODE_LEVEL_DATA:{
+            node->data = (struct redis_data_node *) calloc(1,sizeof(struct redis_data_node));
+            break;
+        }
+    }
+	
+    return node;
+}
+
 void s_auth(TreeNode * hodeNode,char * password){
     RedisParams param = redis_auth(password);
 	RedisReply reply = redis_serialize_params(hodeNode->stream,param);
@@ -24,7 +48,7 @@ void s_key_space(TreeNode * hodeNode){
         RedisParams param = redis_database_count();
         RedisReply dreply = redis_serialize_params(hodeNode->stream,param);
 
-        int dbCount = atoi(dreply->bulks->items[1]->content);
+        int dbCount = 16;//atoi(dreply->bulks->items[1]->content);
         add_database_node(hodeNode,dbCount);
     }
 }
