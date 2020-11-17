@@ -20,7 +20,7 @@
 
 extern char szCtrlAppName[];
 
-typedef struct{
+typedef struct split_model{
     HWND parent;
 
     char className[255];
@@ -44,7 +44,5 @@ void initSplit(HINSTANCE hInstance);
 
 LRESULT CALLBACK hSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-//void WINAPI DrawXorBar(HDC hdc, int x1, int y1, int width, int height);
 
 #endif

@@ -22,7 +22,6 @@ void initCombox(HWND viewTypeHwnd){
         { 0, 0,  0, "Text"}
     };
 
-    // Set the mask common to all items.
     cbei.mask = CBEIF_TEXT | CBEIF_INDENT |
                 CBEIF_IMAGE| CBEIF_SELECTEDIMAGE;
 

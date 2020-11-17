@@ -1,11 +1,22 @@
-#ifndef _service_h
-#define _service_h
+#ifndef mservice_h
+#define mservice_h
 
-#include "queue.h"
+#include <windows.h>
+#include <commctrl.h>
+
+#include "connection.h"
 #include "redis.h"
-#include "myconnection.h"
+#include "controller.h"
 
-#include <stdlib.h>
+void s_auth(TreeNode * hodeNode,char * password);
+
+void s_key_space(TreeNode * hodeNode);
+
+void s_db_select(TreeNode * selected);
+
+void s_handle_data(TreeNode * datanode,DataType dataType);
+
+///////////////////////////
 
 struct redis_param{
     char * content;
@@ -46,14 +57,6 @@ RedisParam redis_build_param(char * content);
 
 void appendTask(CommandType cmdType,const DataType dataType,const char * dataKey);
 
-RedisParams redis_auth(char * password);
-
-RedisParams redis_database_count();
-
-RedisParams redis_select(int database);
-
-RedisParams redis_data_type(char * dataKey);
-
 RedisParams redis_get_string(char * key);
 
 RedisParams redis_get_list(char * dataKey);
@@ -68,12 +71,8 @@ RedisParams redis_delete_key(char * dataKey);
 
 RedisParams redis_rename_key(char * dataKey,char * newKey);
 
-RedisParams redis_key_space();
-
 RedisParams redis_keys();
 
 RedisParams redis_info_stats();
-
-// RedisParams redis_add_big();
 
 #endif

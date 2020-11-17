@@ -14,6 +14,9 @@ struct redis_connection{
     char * read_buff;
     int    capacity;
     int    free_size;
+
+    char * host;
+    int    port;
 };
 
 typedef struct redis_connection * RedisConnection;

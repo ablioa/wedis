@@ -37,26 +37,10 @@ RedisBulk buildRedisBulk(int length){
 	bulk->length = length;
 	return bulk;
 }
-
-// RedisBulks buildRedisBulks(int count){
-// 	RedisBulks bulks = (RedisBulks)calloc(1, sizeof(struct redis_bulks));
-// 	bulks->items = (RedisBulk *)calloc(count, sizeof(RedisBulk));
-// 	bulks->count = count;
-// 	return bulks;
-// }
-
-/**
- * 回调方式处理报文 
- * 
- **/
 int redis_read_pack(char * text,int length,redis_pack_handle handle){
 	return 0;
 }
 
-/**
- * Status包围内容范围计算
- * +OK\r\n
- */
 int get_status_scope(char * text,int length){
 	if(text[length-2] == '\r' && text[length -1] == '\n'){
 		return length - 3;

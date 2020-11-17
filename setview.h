@@ -13,7 +13,7 @@
 #define WEDIS_COMBO_BOX_STYLE   CBS_DROPDOWNLIST|WS_CHILD|WS_VISIBLE
 #define WEDIS_EDIT_STYLE        WS_VISIBLE|WS_CHILD|WS_TABSTOP|WS_BORDER|ES_AUTOHSCROLL
 
-typedef struct{
+typedef struct set_view_model{
    HWND setView;
 
    HWND btnInsert;

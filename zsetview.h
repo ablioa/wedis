@@ -19,7 +19,7 @@
 
 #define ZSET_VIEW_CLASS "ZSET_VIEW_CLASS"
 
-typedef struct{
+typedef struct zset_view_model{
    HWND zsetView;
 
    HWND btnInsert;

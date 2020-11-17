@@ -9,8 +9,8 @@
 #include <stdio.h>
 #include <commctrl.h>
 
-#include "myconnection.h"
-#include "mservice.h"
+#include "connection.h"
+#include "service.h"
 #include "hashview.h"
 #include "stringview.h"
 #include "listview.h"
@@ -24,9 +24,7 @@
 #include "resource/resource.h"
 #include "exception.h"
 #include "config.h"
-// #include "connection.h"
 #include "queue.h"
-#include "service.h"
 #include "dispatch.h"
 #include "entry.h"
 #include "split.h"
@@ -64,7 +62,7 @@
 
 #define IDM_CUSTOMER_HOST 900
 
-typedef struct{
+typedef struct app_view{
     HWND hwnd;
     
     HWND toolBarHwnd;
@@ -84,7 +82,7 @@ typedef struct{
     int connectionAreaWitdh;
 }AppView;
 
-typedef struct{
+typedef struct console_view{
 	HWND logHwnd;
 
 	HWND cmdHwnd;
@@ -92,7 +90,7 @@ typedef struct{
 	WNDPROC defaultCmdProc;
 }ConsoleView;
 
-typedef struct{
+typedef struct data_view{
 	HWND dataViewHwnd;
 	HWND exportBtnHwnd;
 	HWND saveBtnHwnd;
@@ -120,7 +118,7 @@ typedef struct{
 	int type;       // = (int) lParam;
 }DataView;
 
-typedef struct{
+typedef struct main_model{
 	AppView * view;
 
 	HMENU hDev;

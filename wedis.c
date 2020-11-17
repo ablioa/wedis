@@ -15,7 +15,7 @@ void initResource(){
 }
 
 void log_message(const char * message){
-	MessageBox(NULL,message,"TITLE",MB_OK);
+	MessageBox(NULL,message,"message",MB_OK);
 }
 
 int wedis_log(const char *fmt, ...){

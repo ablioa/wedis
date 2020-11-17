@@ -214,10 +214,11 @@ void onMainFrameCreate(HWND hwnd){
 }
 
 void updateNavigationInfo(TreeNode * node){
-	char path[MAX_PATH] = {0};
-	wsprintf(path,"db%d",node->database);
+	TreeNode * dbnode = node->parent;
+	TreeNode * hostnode = dbnode->parent;
 
-	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,2,(LPARAM)path);
+	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,1,(LPARAM)hostnode->host->host);
+	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,2,(LPARAM)dbnode->database->dbname);
 	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,3,(LPARAM)node->data->data_key);
 }
 
@@ -227,8 +228,10 @@ void onDataNodeSelection(TreeNode * selected){
 	}
 
 	if(selected->level == NODE_LEVEL_DATA){
-		// redis_select(selected->database);
-		// redis_data_type(selected->data->data_key);
+		TreeNode * dbnode = selected->parent;
+		s_db_select(dbnode);
+		s_db_data_type(selected);
+		
 		updateNavigationInfo(selected);
 	}
 }
@@ -278,8 +281,10 @@ TreeNode * getSelectedNode(){
 TreeNode * addHostNode(RedisConnection stream,char * connectionName){
 	AppView * view = mainModel->view;
 
-	TreeNode * hostNode = build_tree_node(NODE_LEVEL_HOST);
+	TreeNode * hostNode = build_tree_node(NULL,NODE_LEVEL_HOST);
 	hostNode->stream = stream;
+
+	sprintf(hostNode->host->host,"%s:%d",stream->host,stream->port);
 
 	TV_INSERTSTRUCT tvinsert;
     memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
@@ -324,11 +329,6 @@ void command(HWND hwnd,int cmd){
 			break;
 		}
 		case IDM_DEBUG_GET_DATABASES:{
-			// redis_key_space();
-			// redis_database_count();
-			//redis_info_stats();
-            // redis_add_big();
-			// wedis_test();
 			break;
 		}
 		case IDM_CONNECTION_POOL:{
@@ -619,7 +619,7 @@ void buildToolBar(AppView * view){
 
 void buildStatusBar(AppView * view){
     RECT trt;
-    int wd[]={50,170,200,430,530,650,0};
+    int wd[]={50,190,230,460,560,680,0};
 	view->statusBarHwnd = CreateStatusWindow(WS_CHILD | WS_VISIBLE | SBS_SIZEGRIP,"Wedis",view->hwnd, 1200);
 	SendMessage(view->statusBarHwnd,SB_SETPARTS,7,(LPARAM)wd);
     SendMessage(view->statusBarHwnd,SB_SETMINHEIGHT,16,0);

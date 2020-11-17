@@ -5,8 +5,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+
+#include <windows.h>
+#include <commctrl.h>
+
 #include "wedis.h"
-#include "myconnection.h"
+#include "connection.h"
 
 #define CHAR_SPACE ' '
 #define CHAR_TAB   '\t'
@@ -17,6 +21,61 @@
 #define LENGTH_COMMAND  1024
 
 #define WORKING_BUFFER_SIZE 10485760
+
+typedef enum redis_node_type{
+    NODE_LEVEL_HOST,
+    NODE_LEVEL_DATABASE,
+	NODE_LEVEL_DATA
+}RedisNodeType;
+
+typedef struct redis_host_node{
+	char host[255];
+
+	HTREEITEM db_nodes[50];
+	int       capacity;
+	int       used;
+}RedisHostNode;
+
+typedef struct redis_database_node{
+	int    dbindex;
+	
+	char * pattern;
+	int    cursor;
+	int    page_size;
+
+	char   dbname[255];
+
+	HTREEITEM key_nodes[50];
+	int       capacity;
+	int       used;
+}RedisDatabaseNode;
+
+typedef struct redis_data_node{
+	char * data_key;
+	char * key_length;
+	
+	int data_type;
+}RedisDataNode;
+
+typedef struct tree_node{
+	int level;
+
+	HTREEITEM handle;
+	RedisConnection stream;
+
+	HTREEITEM subHandles[1024];
+    int  subHandleSize;
+
+	union{
+		struct redis_host_node     * host;
+		struct redis_database_node * database;
+		struct redis_data_node     * data;
+	};
+
+	struct tree_node * parent;
+}TreeNode;
+
+TreeNode * build_tree_node(TreeNode * parent,RedisNodeType nodeType);
 
 typedef enum replpy_status{
 	REPLY_STATUS_PENDING,
@@ -60,44 +119,9 @@ struct redis_bulk{
 };
 typedef struct redis_bulk * RedisBulk;
 
-// struct redis_bulks{
-// 	int count;
-// 	RedisBulk * items;
-// };
-// typedef struct redis_bulks * RedisBulks;
-
-// struct redis_reply_info{
-// 	int type;
-
-//     union{
-// 		RedisBulk    bulk;
-// 		RedisBulks   bulks;
-// 		RedisBulk    error;
-// 		RedisBulk    status;
-// 		int          integer;
-// 	};
-
-//     char *   dataKey;
-//     char *   dataTypeName;
-//     DataType dataType;
-
-// 	int reply_status;
-// };
-
-// TODO 支持整数类型
-typedef union redis_payload{
-	RedisBulk    status;
-    RedisBulk    error;
-    RedisBulk    bulk;
-		
-    struct redis_reply * *   bulks;
-}RedisPayload;
-
 struct redis_reply{
     ReplyType   type;
     ReplyStatus reply_status;
-
-	// RedisPayload payload;
 
 	union{
 		RedisBulk    status;
@@ -111,16 +135,11 @@ struct redis_reply{
 };
 typedef struct redis_reply * RedisReply;
 
-// typedef struct redis_reply_info   RedisReplyInfo;
-// typedef struct redis_reply_info * RedisReply;
-
 struct redis_working_buffer{
 	char * buffer;
 
-	/** 总空间 */
 	int    capacity;
 
-	/** 已经使用空间 */
 	int    size;
 };
 
@@ -128,9 +147,6 @@ typedef struct redis_working_buffer * RedisWorkingBuffer;
 
 extern RedisWorkingBuffer redisWorkingBuffer;
 
-/**
- * redis 列表数据
- */
 typedef struct{
 	int size;
 	char ** items;
@@ -182,8 +198,8 @@ void setKeyspaceValue(Keyspace info,char * value);
 
 Keyspace parseKeyspace(char * buffer);
 
-//RedisReply read_reply(char * text,int length);
 RedisReply read_reply(char *text,int * cur,int length);
+
 RedisReply receive_msg(RedisConnection stream);
 
 char * buildWord(char * word,size_t length);

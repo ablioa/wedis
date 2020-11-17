@@ -23,7 +23,7 @@
 
 #define BUFF_SIZE        1024*1024
 
-typedef struct{
+typedef struct system_resource{
     HFONT ctrlFont;
     HFONT fixedWidthFont;
 }SystemResource;

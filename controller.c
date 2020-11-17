@@ -12,8 +12,6 @@ void handleKeyspace(Keyspace keyspace){
 
 	mainModel->keyspaces  = spaces;
 	mainModel->spaceCount = keyspace->count;
-
-	redis_database_count();
 }
 
 void handleRedisData(Task * task,RedisReply data){
@@ -98,39 +96,7 @@ void handleRedisData(Task * task,RedisReply data){
 	// }
 }
 
-void handleDataType(Task * task,DataType dataType){
-	switch (dataType){
-		case REDIS_STRING:{
-			redis_get_string(task->dataKey);
-			break;
-		}
 
-		case REDIS_HASH:{
-			redis_get_hash(task->dataKey);
-			break;
-		}
-
-		case REDIS_LIST:{
-			redis_get_list(task->dataKey);
-			break;
-		}
-
-		case REDIS_SET:{
-			redis_get_set(task->dataKey);
-			break;
-		}
-
-		case REDIS_ZSET:{
-			redis_get_zset(task->dataKey);
-			break;
-		}
-
-		default:{
-			log_message("undefined data type");
-			break;
-		}
-	}
-}
 
 void add_data_node(TreeNode * dbnode,RedisReply data){
     for(int ix =0; ix < dbnode->subHandleSize; ix ++){
@@ -145,8 +111,12 @@ void add_data_node(TreeNode * dbnode,RedisReply data){
 	for(int ix = 0; ix < total; ix ++){
 		RedisReply item = keydata->bulks[ix];
 
-        TV_INSERTSTRUCT tvinsert;
+        TreeNode * datanode = build_tree_node(dbnode,NODE_LEVEL_DATA);
+		datanode->data->data_key = item->bulk->content;
+		datanode->data->key_length - item->bulk->length;
+		datanode->stream = dbnode->stream;
 
+        TV_INSERTSTRUCT tvinsert;
         tvinsert.hParent = dbnode->handle;
         tvinsert.hInsertAfter=TVI_LAST;
         tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
@@ -154,15 +124,11 @@ void add_data_node(TreeNode * dbnode,RedisReply data){
         tvinsert.item.pszText    = item->bulk->content;
         tvinsert.item.iImage=2;
         tvinsert.item.iSelectedImage=2;
-     
-        TreeNode * tn = build_tree_node(NODE_LEVEL_DATA);
-		tn->data->data_key = item->bulk->content;
-		// tn->database = dbnode->database;
-        tvinsert.item.lParam= (LPARAM)tn;
-		tn->handle = (HTREEITEM)SendMessage(mainModel->view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+        tvinsert.item.lParam= (LPARAM)datanode;
+		datanode->handle = (HTREEITEM)SendMessage(mainModel->view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 
         dbnode->subHandleSize ++;
-        dbnode->subHandles[ix] = tn->handle;
+        dbnode->subHandles[ix] = datanode->handle;
 	}
 }
 
@@ -183,7 +149,6 @@ Keyspace getKeyspaceInfo(char * dbname){
 
 void add_database_node(TreeNode * hostNode,int dbCount){
     TV_INSERTSTRUCT tvinsert;
-	char dbname[128] = {0};
     
 	AppView * view = mainModel->view;
     HTREEITEM parentHandle = hostNode->handle;
@@ -192,36 +157,31 @@ void add_database_node(TreeNode * hostNode,int dbCount){
 	tvinsert.hInsertAfter=TVI_ROOT;
 	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
 
-	char * showName = (char *)malloc(sizeof(char)*128);
-	for(int ix =0; ix < dbCount;ix ++){
-		memset(dbname,0,sizeof(char) * 128);
-		sprintf(dbname,"db%d",ix);
+	char showName[128]={0};
+	for(int dbindex =0; dbindex < dbCount;dbindex ++){
+		TreeNode * dbnode = build_tree_node(hostNode,NODE_LEVEL_DATABASE);
+		dbnode->database->dbindex=dbindex;
+		sprintf(dbnode->database->dbname,"db%d",dbindex);
+		dbnode->stream = hostNode->stream;
 
 		memset(showName,0,sizeof(char) * 128);
-		Keyspace space = getKeyspaceInfo(dbname);
+		Keyspace space = getKeyspaceInfo(dbnode->database->dbname);
 		int keyCount = 0;
 		if(space != NULL){
 			keyCount = space->keys;
 		}
 		
-		sprintf(showName,"%s(%d)",dbname,keyCount);
-
+		memset(showName,0,128);
+		sprintf(showName,"%s(%d)",dbnode->database->dbname,keyCount);
 		tvinsert.item.iImage=1;
 		tvinsert.item.iSelectedImage=1;
 		tvinsert.hParent= parentHandle;
 		tvinsert.hInsertAfter=TVI_LAST;
 		tvinsert.item.pszText= showName;
+		tvinsert.item.lParam= (LPARAM)dbnode;
 
-		TreeNode * tn = build_tree_node(NODE_LEVEL_DATABASE);
-		tn->database = ix;
-		tn->stream = hostNode->stream;
-		tvinsert.item.lParam= (LPARAM)tn;
-    
-		tn->handle = (HTREEITEM)SendMessage(
-			view->connectionHwnd,
-			TVM_INSERTITEM,
-			0,
-			(LPARAM)&tvinsert);
+		HTREEITEM handle = (HTREEITEM)SendMessage(view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+		dbnode->handle = handle;
 	}
 
 	SendMessage(mainModel->view->connectionHwnd,TVM_EXPAND,(WPARAM)TVE_TOGGLE,(LPARAM)(hostNode->handle));

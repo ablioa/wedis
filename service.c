@@ -1,5 +1,155 @@
 #include "service.h"
 
+TreeNode * build_tree_node(TreeNode * parent,RedisNodeType node_type){
+	TreeNode * node = (TreeNode *) calloc(1,sizeof(TreeNode));
+    node->level = node_type;
+    node->parent = parent;
+
+    switch (node_type){
+        case NODE_LEVEL_HOST:{
+            node->host = (struct redis_host_node *) calloc(1,sizeof(struct redis_host_node));
+            break;
+        }
+
+        case NODE_LEVEL_DATABASE:{
+            node->database = (struct redis_database_node *) calloc(1,sizeof(struct redis_database_node));
+            break;
+        }
+
+        case NODE_LEVEL_DATA:{
+            node->data = (struct redis_data_node *) calloc(1,sizeof(struct redis_data_node));
+            break;
+        }
+    }
+	
+    return node;
+}
+
+void s_auth(TreeNode * hodeNode,char * password){
+    RedisParams param = redis_build_params(2);
+    redis_add_param(param,redis_build_param("auth"));
+    redis_add_param(param,redis_build_param(password));
+
+	RedisReply reply = redis_serialize_params(hodeNode->stream,param);
+
+    if(reply->type == REPLY_STATUS){
+        if(strcmp("OK",reply->status->content) == 0){
+            s_key_space(hodeNode);
+        }
+    }else if(reply->type == REPLY_ERROR){
+        MessageBox(NULL,reply->error->content,"title",MB_OK);
+    }
+}
+
+void s_key_space(TreeNode * hodeNode){
+    RedisParams param = redis_build_params(2);
+    redis_add_param(param,redis_build_param("info"));
+    redis_add_param(param,redis_build_param("keyspace"));
+
+    RedisReply reply = redis_serialize_params(hodeNode->stream,param);
+
+    if(reply->type == REPLY_BULK){
+        Keyspace space = parseKeyspace(reply->bulk->content);
+        handleKeyspace(space);
+
+        RedisParams dparam = redis_build_params(3);
+        redis_add_param(dparam,redis_build_param("config"));
+        redis_add_param(dparam,redis_build_param("get"));
+        redis_add_param(dparam,redis_build_param("databases"));
+
+        RedisReply dreply = redis_serialize_params(hodeNode->stream,dparam);
+
+        // TODO @response format
+        int dbCount = atoi(dreply->bulks[1]->bulk->content);
+        add_database_node(hodeNode,dbCount);
+    }
+}
+
+void s_db_select(TreeNode * selected){
+    char db[10] = {0};
+    sprintf(db,"%d",selected->database->dbindex);
+
+    RedisParams param = redis_build_params(2);
+    redis_add_param(param,redis_build_param("select"));
+    redis_add_param(param,redis_build_param(db));
+
+    //RedisParams param = redis_select(selected->database->dbindex);
+    RedisReply reply = redis_serialize_params(selected->stream,param);
+
+    if(reply->type != REPLY_STATUS || strcmp("OK",reply->status->content) != 0){
+        log_message("database select error");
+        return;
+    }
+
+    param = redis_keys();
+    reply = redis_serialize_params(selected->stream,param);
+
+    if(reply->type == REPLY_MULTI){
+        add_data_node(selected,reply);
+    }else{
+        log_message("error data on KEYS request");
+    }
+}
+
+void s_db_data_type(TreeNode * selected){
+    RedisParams param = redis_build_params(2);
+    redis_add_param(param,redis_build_param("type"));
+    redis_add_param(param,redis_build_param(selected->data->data_key));
+
+    RedisReply reply = redis_serialize_params(selected->stream,param);
+
+    DataType dataType = checkDataType(reply->bulk->content);
+    s_handle_data(selected,dataType);
+}
+
+void s_db_fetch_string(TreeNode * datanode){
+    RedisParams params = redis_build_params(2);
+    redis_add_param(params,redis_build_param("get"));
+    redis_add_param(params,redis_build_param(datanode->data->data_key));
+
+    RedisReply reply = redis_serialize_params(datanode->stream,params);
+
+    // TODO process string values @reply->bulk->content
+}
+
+void s_handle_data(TreeNode * datanode,DataType dataType){
+    char name [640] = {0};
+    sprintf(name,": %d / %s",dataType,datanode->data->data_key);
+    // MessageBox(NULL,name,"OK",MB_OK);
+
+	switch (dataType){
+		case REDIS_STRING:{
+			s_db_fetch_string(datanode);
+			break;
+		}
+
+		case REDIS_HASH:{
+			//redis_get_hash(task->dataKey);
+			break;
+		}
+
+		case REDIS_LIST:{
+			//redis_get_list(task->dataKey);
+			break;
+		}
+
+		case REDIS_SET:{
+			//redis_get_set(task->dataKey);
+			break;
+		}
+
+		case REDIS_ZSET:{
+			//redis_get_zset(task->dataKey);
+			break;
+		}
+
+		default:{
+			//log_message("undefined data type");
+			break;
+		}
+	}
+}
+
 RedisParams redis_build_params(int count){
     RedisParams params = (RedisParams)calloc(1,sizeof(struct redis_params));
     params->items = (RedisParam*)calloc(count,sizeof(struct redis_param));
@@ -34,9 +184,6 @@ RedisParam redis_build_param(char * content){
     return param;
 }
 
-/**
- * 发送报文 
- */
 RedisReply redis_serialize_params(RedisConnection stream,RedisParams params){
     char head[128] = {0};
     sprintf(head,"*%d%c%c",params->param_count,CHAR_CR, CHAR_LF);
@@ -51,54 +198,7 @@ RedisReply redis_serialize_params(RedisConnection stream,RedisParams params){
     return receive_msg(stream);
 }
 
-/**
- * auth password
- */
-RedisParams redis_auth(char * password){
-    RedisParams params = redis_build_params(2);
-    redis_add_param(params,redis_build_param("auth"));
-    redis_add_param(params,redis_build_param(password));
-
-    return params;
-}
-
-RedisParams redis_key_space(){
-    RedisParams params = redis_build_params(2);
-    redis_add_param(params,redis_build_param("info"));
-    redis_add_param(params,redis_build_param("keyspace"));
-
-    return params;
-}
-
-RedisParams redis_database_count(){
-    RedisParams params = redis_build_params(3);
-    redis_add_param(params,redis_build_param("config"));
-    redis_add_param(params,redis_build_param("get"));
-    redis_add_param(params,redis_build_param("databases"));
-
-    return params;
-}
-
-RedisParams redis_select(int database){
-    char db[10] = {0};
-    sprintf(db,"%d",database);
-
-    RedisParams params = redis_build_params(2);
-    redis_add_param(params,redis_build_param("select"));
-    redis_add_param(params,redis_build_param(db));
-
-    return params;
-}
-
-/**
- * 查看数据库键值
- * TODO 需要优化为scan来处理
- */
 RedisParams redis_keys(){
-    // RedisParams params = redis_build_params(2);
-    // redis_add_param(params,redis_build_param("keys"));
-    // redis_add_param(params,redis_build_param("*"));
-
     RedisParams params = redis_build_params(6);
     redis_add_param(params,redis_build_param("scan"));
     redis_add_param(params,redis_build_param("1"));
@@ -106,14 +206,6 @@ RedisParams redis_keys(){
     redis_add_param(params,redis_build_param("*"));
     redis_add_param(params,redis_build_param("count"));
     redis_add_param(params,redis_build_param("20"));
-
-    return params;
-}
-
-RedisParams redis_data_type(char * dataKey){
-    RedisParams params = redis_build_params(2);
-    redis_add_param(params,redis_build_param("type"));
-    redis_add_param(params,redis_build_param(dataKey));
 
     return params;
 }
