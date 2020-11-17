@@ -73,19 +73,24 @@ void s_db_select(TreeNode * selected){
     redis_add_param(param,redis_build_param("select"));
     redis_add_param(param,redis_build_param(db));
 
-    //RedisParams param = redis_select(selected->database->dbindex);
     RedisReply reply = redis_serialize_params(selected->stream,param);
-
     if(reply->type != REPLY_STATUS || strcmp("OK",reply->status->content) != 0){
         log_message("database select error");
         return;
     }
 
-    param = redis_keys();
-    reply = redis_serialize_params(selected->stream,param);
+    RedisParams keyparam = redis_build_params(6);
+    redis_add_param(keyparam,redis_build_param("scan"));
+    redis_add_param(keyparam,redis_build_param("0"));
+    redis_add_param(keyparam,redis_build_param("match"));
+    redis_add_param(keyparam,redis_build_param("*"));
+    redis_add_param(keyparam,redis_build_param("count"));
+    redis_add_param(keyparam,redis_build_param("20"));
 
-    if(reply->type == REPLY_MULTI){
-        add_data_node(selected,reply);
+    RedisReply kreply = redis_serialize_params(selected->stream,keyparam);
+
+    if(kreply->type == REPLY_MULTI){
+        add_data_node(selected,kreply);
     }else{
         log_message("error data on KEYS request");
     }
@@ -98,18 +103,10 @@ void s_db_data_type(TreeNode * selected){
 
     RedisReply reply = redis_serialize_params(selected->stream,param);
 
-    DataType dataType = checkDataType(reply->bulk->content);
-    s_handle_data(selected,dataType);
-}
-
-void s_db_fetch_string(TreeNode * datanode){
-    RedisParams params = redis_build_params(2);
-    redis_add_param(params,redis_build_param("get"));
-    redis_add_param(params,redis_build_param(datanode->data->data_key));
-
-    RedisReply reply = redis_serialize_params(datanode->stream,params);
-
-    // TODO process string values @reply->bulk->content
+    selected->data->data_type = checkDataType(reply->bulk->content);
+    strcpy(selected->data->type_name,reply->bulk->content);
+    
+    s_handle_data(selected,selected->data->data_type);
 }
 
 void s_handle_data(TreeNode * datanode,DataType dataType){
@@ -117,37 +114,84 @@ void s_handle_data(TreeNode * datanode,DataType dataType){
     sprintf(name,": %d / %s",dataType,datanode->data->data_key);
     // MessageBox(NULL,name,"OK",MB_OK);
 
+    RedisReply reply = NULL;
 	switch (dataType){
 		case REDIS_STRING:{
-			s_db_fetch_string(datanode);
+			reply = s_db_fetch_string(datanode);
 			break;
 		}
 
 		case REDIS_HASH:{
-			//redis_get_hash(task->dataKey);
+			reply = s_db_fetch_hash(datanode);
 			break;
 		}
 
 		case REDIS_LIST:{
-			//redis_get_list(task->dataKey);
+			reply = s_db_fetch_list(datanode);
 			break;
 		}
 
 		case REDIS_SET:{
-			//redis_get_set(task->dataKey);
+			reply = s_db_fetch_set(datanode);
 			break;
 		}
 
 		case REDIS_ZSET:{
-			//redis_get_zset(task->dataKey);
+			reply = s_db_fetch_zset(datanode);
 			break;
 		}
 
 		default:{
-			//log_message("undefined data type");
 			break;
 		}
 	}
+
+    handle_redis_data(datanode,reply);
+}
+
+RedisReply s_db_fetch_string(TreeNode * datanode){
+    RedisParams params = redis_build_params(2);
+    redis_add_param(params,redis_build_param("get"));
+    redis_add_param(params,redis_build_param(datanode->data->data_key));
+
+    return redis_serialize_params(datanode->stream,params);
+}
+
+RedisReply s_db_fetch_hash(TreeNode * datanode){
+    RedisParams params = redis_build_params(2);
+    redis_add_param(params,redis_build_param("hgetall"));
+    redis_add_param(params,redis_build_param(datanode->data->data_key));
+
+    return redis_serialize_params(datanode->stream,params);
+}
+
+RedisReply s_db_fetch_list(TreeNode * datanode){
+    RedisParams params = redis_build_params(4);
+    redis_add_param(params,redis_build_param("lrange"));
+    redis_add_param(params,redis_build_param(datanode->data->data_key));
+    redis_add_param(params,redis_build_param("0"));
+    redis_add_param(params,redis_build_param("-1"));
+
+    return redis_serialize_params(datanode->stream,params);
+}
+
+RedisReply s_db_fetch_set(TreeNode * datanode){
+    RedisParams params = redis_build_params(2);
+    redis_add_param(params,redis_build_param("smembers"));
+    redis_add_param(params,redis_build_param(datanode->data->data_key));
+
+    return redis_serialize_params(datanode->stream,params);
+}
+
+RedisReply s_db_fetch_zset(TreeNode * datanode){
+    RedisParams params = redis_build_params(5);
+    redis_add_param(params,redis_build_param("zrange"));
+    redis_add_param(params,redis_build_param(datanode->data->data_key));
+    redis_add_param(params,redis_build_param("0"));
+    redis_add_param(params,redis_build_param("-1"));
+    redis_add_param(params,redis_build_param("withscores"));
+
+    return redis_serialize_params(datanode->stream,params);
 }
 
 RedisParams redis_build_params(int count){
@@ -173,11 +217,9 @@ RedisParam redis_build_param(char * content){
     param->s_length = param->length + 15;
     param->diagram = (char*)calloc(param->s_length,sizeof(char));
 
-    sprintf(param->diagram,"$%d%c%c%s%c%c",
+    sprintf(param->diagram,"$%d\r\n%s\r\n",
         param->length,
-        CHAR_CR, CHAR_LF,
-        param->content,
-        CHAR_CR, CHAR_LF);
+        param->content);
 
     param->s_length = strlen(param->diagram);
     
@@ -186,73 +228,15 @@ RedisParam redis_build_param(char * content){
 
 RedisReply redis_serialize_params(RedisConnection stream,RedisParams params){
     char head[128] = {0};
-    sprintf(head,"*%d%c%c",params->param_count,CHAR_CR, CHAR_LF);
+
+    sprintf(head,"*%d\r\n",params->param_count);
     sendmsg(stream,head);
 
     for(int ix = 0; ix < params->param_count; ix ++){
-        char * cmd = params->items[ix]->diagram;
-        int    len = params->items[ix]->s_length;
-        sendmsg(stream,cmd);
+        sendmsg(stream,params->items[ix]->diagram);
     }
 
     return receive_msg(stream);
-}
-
-RedisParams redis_keys(){
-    RedisParams params = redis_build_params(6);
-    redis_add_param(params,redis_build_param("scan"));
-    redis_add_param(params,redis_build_param("1"));
-    redis_add_param(params,redis_build_param("match"));
-    redis_add_param(params,redis_build_param("*"));
-    redis_add_param(params,redis_build_param("count"));
-    redis_add_param(params,redis_build_param("20"));
-
-    return params;
-}
-
-RedisParams redis_get_string(char * dataKey){
-    RedisParams params = redis_build_params(2);
-    redis_add_param(params,redis_build_param("get"));
-    redis_add_param(params,redis_build_param(dataKey));
-
-    return params;
-}
-
-RedisParams redis_get_list(char * dataKey){
-    RedisParams params = redis_build_params(4);
-    redis_add_param(params,redis_build_param("lrange"));
-    redis_add_param(params,redis_build_param(dataKey));
-    redis_add_param(params,redis_build_param("0"));
-    redis_add_param(params,redis_build_param("-1"));
-
-    return params;
-}
-
-RedisParams redis_get_hash(char * dataKey){
-    RedisParams params = redis_build_params(2);
-    redis_add_param(params,redis_build_param("hgetall"));
-    redis_add_param(params,redis_build_param(dataKey));
-
-    return params;
-}
-
-RedisParams redis_get_set(char * dataKey){
-    RedisParams params = redis_build_params(2);
-    redis_add_param(params,redis_build_param("smembers"));
-    redis_add_param(params,redis_build_param(dataKey));
-
-    return params;
-}
-
-RedisParams redis_get_zset(char * dataKey){
-    RedisParams params = redis_build_params(5);
-    redis_add_param(params,redis_build_param("zrange"));
-    redis_add_param(params,redis_build_param(dataKey));
-    redis_add_param(params,redis_build_param("0"));
-    redis_add_param(params,redis_build_param("-1"));
-    redis_add_param(params,redis_build_param("withscores"));
-
-    return params;
 }
 
 RedisParams redis_delete_key(char * dataKey){

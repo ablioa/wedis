@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
-// #include "redis.h"
 
 struct redis_connection{
     SOCKET socket;
@@ -26,8 +25,6 @@ void ginit();
 RedisConnection init(char * address,int port);
 
 void sendmsg(RedisConnection stream,char * message);
-
-// RedisReply receive_msg(RedisConnection stream);
 
 void close(RedisConnection stream);
 

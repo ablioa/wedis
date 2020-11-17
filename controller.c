@@ -14,89 +14,9 @@ void handleKeyspace(Keyspace keyspace){
 	mainModel->spaceCount = keyspace->count;
 }
 
-void handleRedisData(Task * task,RedisReply data){
-	// data->dataKey = (char*) calloc(strlen(task->dataKey)+1,sizeof(char));
-	// sprintf(data->dataKey,"%s",task->dataKey);
-
-	// switch(task->dataType){
-	// 	case REDIS_STRING:{
-	// 		if(data->type == REPLY_BULK){
-	// 			data->dataTypeName = (char*) malloc(sizeof(char) * 256);
-	// 			memset(data->dataTypeName,0,sizeof(char) * 256);
-	// 			sprintf(data->dataTypeName,"%s","STRING");
-
-	// 			data->dataType = task->dataType;
-	// 			SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)data,(LPARAM)(NULL));
-	// 		}else{
-	// 			log_message("wrong string data format");
-	// 		}
-	// 		break;
-	// 	}
-
-	// 	case REDIS_LIST:{
-	// 		if(data->type == REPLY_MULTI){
-	// 			data->dataTypeName = (char*) malloc(sizeof(char) * 256);
-	// 			memset(data->dataTypeName,0,sizeof(char) * 256);
-	// 			sprintf(data->dataTypeName,"%s","LIST");
-
-	// 			data->dataType = task->dataType;
-	// 			SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)data,(LPARAM)(NULL));
-	// 		}else{
-	// 			log_message("wrong list data format");
-	// 		}
-	// 		break;
-	// 	}
-
-	// 	case REDIS_HASH:{
-	// 		if(data->type == REPLY_MULTI){
-	// 			data->dataTypeName = (char*) malloc(sizeof(char) * 256);
-	// 			memset(data->dataTypeName,0,sizeof(char) * 256);
-	// 			sprintf(data->dataTypeName,"%s","HASH");
-
-	// 			data->dataType = task->dataType;
-	// 			SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)data,(LPARAM)(NULL));
-	// 		}else{
-	// 			log_message("wrong hash data format");
-	// 		}
-	// 		break;
-	// 	}
-
-	// 	case REDIS_SET:{
-	// 		if(data->type == REPLY_MULTI){
-	// 			data->dataTypeName = (char*) malloc(sizeof(char) * 256);
-	// 			memset(data->dataTypeName,0,sizeof(char) * 256);
-	// 			sprintf(data->dataTypeName,"%s","SET");
-
-	// 			data->dataType = task->dataType;
-	// 			SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)data,(LPARAM)(NULL));
-	// 		}else{
-	// 			log_message("wrong hash data format");
-	// 		}
-	// 		break;			
-	// 	}
-
-	// 	case REDIS_ZSET:{
-	// 		if(data->type == REPLY_MULTI){
-	// 			data->dataTypeName = (char*) malloc(sizeof(char) * 256);
-	// 			memset(data->dataTypeName,0,sizeof(char) * 256);
-	// 			sprintf(data->dataTypeName,"%s","ZSET");
-
-	// 			data->dataType = task->dataType;
-	// 			SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)data,(LPARAM)(NULL));
-	// 		}else{
-	// 			log_message("wrong hash data format");
-	// 		}
-	// 		break;			
-	// 	}
-
-	// 	case REDIS_UNDEFINED:{
-	// 		log_message("undefined data type");
-	// 		break;
-	// 	}
-	// }
+void handle_redis_data(TreeNode * datanode,RedisReply reply){
+	SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)reply,(LPARAM)(datanode));
 }
-
-
 
 void add_data_node(TreeNode * dbnode,RedisReply data){
     for(int ix =0; ix < dbnode->subHandleSize; ix ++){

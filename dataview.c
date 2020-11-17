@@ -83,14 +83,15 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
         }
 
 		case WM_DT:{
-			RedisReply data = (RedisReply)wParam;
+			RedisReply data     = (RedisReply) wParam;
+            TreeNode * datanode = (TreeNode *) lParam;
 
 			// SendMessage(dataView->keyEditHwnd,WM_SETTEXT,0,(LPARAM)(data->dataKey));
 			// SendMessage(dataView->keyNameHwnd,WM_SETTEXT,0,(LPARAM)(data->dataTypeName));
 
             // dataView->data = data;
             // dataView->type =  data->dataType;
-			// switchView(dataHwnd,data->dataType,data);
+			switchView(dataHwnd,datanode->data->data_type,data);
 
 			break;
 		}

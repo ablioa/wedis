@@ -220,6 +220,7 @@ void updateNavigationInfo(TreeNode * node){
 	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,1,(LPARAM)hostnode->host->host);
 	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,2,(LPARAM)dbnode->database->dbname);
 	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,3,(LPARAM)node->data->data_key);
+	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,4,(LPARAM)node->data->type_name);
 }
 
 void onDataNodeSelection(TreeNode * selected){

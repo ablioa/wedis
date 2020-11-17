@@ -14,68 +14,11 @@
 
 #define CHAR_SPACE ' '
 #define CHAR_TAB   '\t'
-#define CHAR_CR    0x0D
-#define CHAR_LF    0x0A
 
 #define LENGTH_WORD     256
 #define LENGTH_COMMAND  1024
 
 #define WORKING_BUFFER_SIZE 10485760
-
-typedef enum redis_node_type{
-    NODE_LEVEL_HOST,
-    NODE_LEVEL_DATABASE,
-	NODE_LEVEL_DATA
-}RedisNodeType;
-
-typedef struct redis_host_node{
-	char host[255];
-
-	HTREEITEM db_nodes[50];
-	int       capacity;
-	int       used;
-}RedisHostNode;
-
-typedef struct redis_database_node{
-	int    dbindex;
-	
-	char * pattern;
-	int    cursor;
-	int    page_size;
-
-	char   dbname[255];
-
-	HTREEITEM key_nodes[50];
-	int       capacity;
-	int       used;
-}RedisDatabaseNode;
-
-typedef struct redis_data_node{
-	char * data_key;
-	char * key_length;
-	
-	int data_type;
-}RedisDataNode;
-
-typedef struct tree_node{
-	int level;
-
-	HTREEITEM handle;
-	RedisConnection stream;
-
-	HTREEITEM subHandles[1024];
-    int  subHandleSize;
-
-	union{
-		struct redis_host_node     * host;
-		struct redis_database_node * database;
-		struct redis_data_node     * data;
-	};
-
-	struct tree_node * parent;
-}TreeNode;
-
-TreeNode * build_tree_node(TreeNode * parent,RedisNodeType nodeType);
 
 typedef enum replpy_status{
 	REPLY_STATUS_PENDING,
@@ -112,6 +55,81 @@ typedef enum{
 	CMD_INFO_STATS,
 	CMD_SET_STRING
 }CommandType;
+
+typedef enum redis_node_type{
+    NODE_LEVEL_HOST,
+    NODE_LEVEL_DATABASE,
+	NODE_LEVEL_DATA
+}RedisNodeType;
+
+typedef struct redis_host_node{
+	char host[255];
+
+	HTREEITEM db_nodes[50];
+	int       capacity;
+	int       used;
+}RedisHostNode;
+
+typedef struct redis_database_node{
+	int    dbindex;
+	
+	char * pattern;
+	int    cursor;
+	int    page_size;
+
+	char   dbname[255];
+
+	HTREEITEM key_nodes[50];
+	int       capacity;
+	int       used;
+}RedisDatabaseNode;
+
+typedef struct redis_data_node{
+	char * data_key;
+	char * key_length;
+	
+	DataType data_type;
+	char   type_name[255];
+}RedisDataNode;
+
+typedef struct tree_node{
+	int level;
+
+	HTREEITEM handle;
+	RedisConnection stream;
+
+	HTREEITEM subHandles[1024];
+    int  subHandleSize;
+
+	union{
+		struct redis_host_node     * host;
+		struct redis_database_node * database;
+		struct redis_data_node     * data;
+	};
+
+	struct tree_node * parent;
+}TreeNode;
+
+TreeNode * build_tree_node(TreeNode * parent,RedisNodeType nodeType);
+
+struct redis_param{
+    char * content;
+    int    length;
+
+    char * diagram;
+    int    s_length;
+};
+typedef struct redis_param * RedisParam;
+
+struct redis_params{
+    int param_count;
+    RedisParam * items;
+};
+typedef struct redis_params * RedisParams;
+
+RedisParams redis_build_params(int count);
+
+void redis_add_param(RedisParams params,RedisParam param);
 
 struct redis_bulk{
 	char  * content;

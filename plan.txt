@@ -70,6 +70,10 @@
    ### 查看ZSET里的所有元素
    zrange names 0 -1 withscores
 
+   lpush wangzh 1111
+   lpush wangzh 2222
+   lpush wangzh 3333
+
 ## 包的通知机制
 
 1. listner收到包负责组装通信数据，如果发现能够解析出有效的业务数据，再通知业务方。
