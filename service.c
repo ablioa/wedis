@@ -105,15 +105,10 @@ void s_db_data_type(TreeNode * selected){
 
     selected->data->data_type = checkDataType(reply->bulk->content);
     strcpy(selected->data->type_name,reply->bulk->content);
-    
     s_handle_data(selected,selected->data->data_type);
 }
 
 void s_handle_data(TreeNode * datanode,DataType dataType){
-    char name [640] = {0};
-    sprintf(name,": %d / %s",dataType,datanode->data->data_key);
-    // MessageBox(NULL,name,"OK",MB_OK);
-
     RedisReply reply = NULL;
 	switch (dataType){
 		case REDIS_STRING:{

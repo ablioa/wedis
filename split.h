@@ -42,7 +42,7 @@ typedef struct split_model{
 
 void initSplit(HINSTANCE hInstance);
 
-LRESULT CALLBACK hSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+// LRESULT CALLBACK hSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 #endif

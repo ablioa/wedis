@@ -115,22 +115,22 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
 			InitListDViewColumns(listViewModel->listView);
 
-            listViewModel->btnInsert = CreateWindowEx(0, WC_BUTTON, ("Insert"), 
-            WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 0, 50, 24, hwnd, (HMENU)LIST_INSERT_CMD, 
-            mainModel->hInstance, 0);
+            // listViewModel->btnInsert = CreateWindowEx(0, WC_BUTTON, ("Insert"), 
+            // WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 0, 50, 24, hwnd, (HMENU)LIST_INSERT_CMD, 
+            // mainModel->hInstance, 0);
 
-            listViewModel->btnDelete = CreateWindowEx(0, WC_BUTTON, ("Delete"), 
-            WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 29, 50, 24, hwnd, (HMENU)LIST_DELETE_CMD, 
-            mainModel->hInstance, 0);
+            // listViewModel->btnDelete = CreateWindowEx(0, WC_BUTTON, ("Delete"), 
+            // WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 29, 50, 24, hwnd, (HMENU)LIST_DELETE_CMD, 
+            // mainModel->hInstance, 0);
 
-            listViewModel->btnExport = CreateWindowEx(0, WC_BUTTON, ("Export"), 
-            WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 58, 50, 24, hwnd, (HMENU)LIST_EXPORT_CMD, 
-            mainModel->hInstance, 0);
+            // listViewModel->btnExport = CreateWindowEx(0, WC_BUTTON, ("Export"), 
+            // WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 58, 50, 24, hwnd, (HMENU)LIST_EXPORT_CMD, 
+            // mainModel->hInstance, 0);
 
-            HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
-            SendMessage(listViewModel->btnInsert, WM_SETFONT, (WPARAM)hfont0, FALSE);
-            SendMessage(listViewModel->btnDelete, WM_SETFONT, (WPARAM)hfont0, FALSE);
-            SendMessage(listViewModel->btnExport, WM_SETFONT, (WPARAM)hfont0, FALSE);
+            // HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
+            // SendMessage(listViewModel->btnInsert, WM_SETFONT, (WPARAM)hfont0, FALSE);
+            // SendMessage(listViewModel->btnDelete, WM_SETFONT, (WPARAM)hfont0, FALSE);
+            // SendMessage(listViewModel->btnExport, WM_SETFONT, (WPARAM)hfont0, FALSE);
 
 		    break;
 		}
@@ -179,9 +179,9 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 			GetClientRect(hwnd,&rect);
 			MoveWindow(listViewModel->listView,0,0,rect.right-rect.left-60,rect.bottom-rect.top,TRUE);
 
-            MoveWindow(listViewModel->btnInsert,rect.right - rect.left - 55,0, 50,24,TRUE);
-            MoveWindow(listViewModel->btnDelete,rect.right - rect.left - 55,29,50,24,TRUE);
-            MoveWindow(listViewModel->btnExport,rect.right - rect.left - 55,58,50,24,TRUE);
+            // MoveWindow(listViewModel->btnInsert,rect.right - rect.left - 55,0, 50,24,TRUE);
+            // MoveWindow(listViewModel->btnDelete,rect.right - rect.left - 55,29,50,24,TRUE);
+            // MoveWindow(listViewModel->btnExport,rect.right - rect.left - 55,58,50,24,TRUE);
 		    break;
 		}
 	}

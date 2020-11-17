@@ -1,49 +1,38 @@
 #include "dataview.h"
 
-void initCombox(HWND viewTypeHwnd){
-    INITCOMMONCONTROLSEX icex;
-    icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
-    icex.dwICC = ICC_USEREX_CLASSES;
-    InitCommonControlsEx(&icex);
+// void buildMyToolBar(HWND parent){
+// 	HINSTANCE hInst = mainModel->hInstance;
+// 	DWORD tstyle = WS_CHILD | CCS_VERT  | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
+// 	RECT  rect;
 
-    COMBOBOXEXITEM cbei;
-    int iCnt;
-    
-    typedef struct {
-        int iImage;
-        int iSelectedImage;
-        int iIndent;
-        LPTSTR pszText;
-    } ITEMINFO;
+//     int buttonCount = 10;
+	
+// 	TBBUTTON tbtn[10] = {
+//         {(0), IDM_CONNECTION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+//         {(1), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+// 		{(7), IDM_SYSTEM_STAT, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+//         {(8), IDM_DEBUG_GET_DATABASES, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+//         {(0), 0             , 0,               TBSTYLE_SEP,    {0}, 0, 0},
+// 		{(2), IDM_ADD       , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+//         {(3), IDM_REMOVE    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+//         {(4), IDM_RELOAD    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+// 		{(5), IDM_RENAME    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+//         {(6), IDM_TIMING    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+//     };
 
-    ITEMINFO IInf[] = {
-        { 0, 0,  0, "Json"}, 
-        { 0, 0,  0, "Binary"},
-        { 0, 0,  0, "Text"}
-    };
+// 	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_MAIN));
+//     HIMAGELIST hIcons = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 1, buttonCount);
+// 	ImageList_AddMasked(hIcons, hBmp, RGB(255,255,255));
 
-    cbei.mask = CBEIF_TEXT | CBEIF_INDENT |
-                CBEIF_IMAGE| CBEIF_SELECTEDIMAGE;
+//     HWND tb = CreateWindowEx(0L, TOOLBARCLASSNAME, "", tstyle, 16, 16, 16, 16, parent, (HMENU) 0, hInst, NULL);
+//     SendMessage(tb, TB_BUTTONSTRUCTSIZE, sizeof(TBBUTTON), 0);
+//     SendMessage(tb, TB_SETIMAGELIST, 0, (LPARAM) hIcons);
+//     SendMessage(tb, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
+//     SendMessage(tb, TB_ADDBUTTONS,       (WPARAM)buttonCount,       (LPARAM)&tbtn);
+//     SendMessage(tb, TB_AUTOSIZE, 0, 0);
 
-    for(iCnt=0; iCnt<3; iCnt++){
-        cbei.iItem          = iCnt;
-        cbei.pszText        = IInf[iCnt].pszText;
-        cbei.cchTextMax     = sizeof(IInf[iCnt].pszText);
-        cbei.iImage         = IInf[iCnt].iImage;
-        cbei.iSelectedImage = IInf[iCnt].iSelectedImage;
-        cbei.iIndent        = IInf[iCnt].iIndent;
-        
-		SendMessage(viewTypeHwnd,CBEM_INSERTITEM,0,(LPARAM)&cbei);
-    }
-
-	HIMAGELIST hImageList=ImageList_Create(14,14,ILC_COLOR|ILC_MASK,2,10);
-	HBITMAP hBitmap = LoadBitmap(mainModel->hInstance,MAKEINTRESOURCE(IDB_CHIP)); //
-
-
-	ImageList_Add(hImageList,hBitmap,NULL);
-
-    SendMessage(viewTypeHwnd,CBEM_SETIMAGELIST,0,(LPARAM)hImageList);
-} 
+//     ShowWindow(tb,  TRUE);
+// }
 
 LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam){
 	DataView * dataView = mainModel->dataView;
@@ -111,35 +100,16 @@ void resizeDataViewWinwdow(HWND dataHwnd){
 
 	GetClientRect(dataHwnd,&rect);
 
-    MoveWindow(dataView->dataViewHwnd,5,34,rect.right-rect.left-5-5,rect.bottom-rect.top-68-5,TRUE);
-    MoveWindow(dataView->exportBtnHwnd,rect.right-rect.left-60-5,rect.bottom-rect.top-24-5,60,24,TRUE);
-    MoveWindow(dataView->saveBtnHwnd,rect.right-rect.left-125-5,rect.bottom-rect.top-24-5,60,24,TRUE);
-    
-    MoveWindow(dataView->viewTypeHwnd,rect.right-rect.left-120-5,5,120,100,TRUE);
-    MoveWindow(dataView->reloadBtnHwnd,rect.right-rect.left-5-120-5-60,5,60,24,TRUE);
-    MoveWindow(dataView->removeBtnHwnd,rect.right-rect.left-5-120-5-60-5-60,5,60,24,TRUE);
-    MoveWindow(dataView->ttlBtnHwnd,rect.right-rect.left-5-120-5-60-5-60-5-60,5,60,24,TRUE);
-    MoveWindow(dataView->renameBtnHwnd,rect.right-rect.left-5-120-5-60-5-60-5-60-5-60,5,60,24,TRUE);
-    MoveWindow(dataView->keyEditHwnd,50,5,rect.right-rect.left-40-5-120-5-60-5-60-5-60-5-60-5-5-5,24,TRUE);
+    MoveWindow(dataView->dataViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
 }
 
 void createDataViewWindow(HWND dataHwnd){
     DataView * dataView = mainModel->dataView;
     HINSTANCE hinst = mainModel->hInstance;
     
-    HWND keyNameHwnd   = CreateWindowEx(0, WC_STATIC, (""), WS_VISIBLE | WS_BORDER | WS_CHILD | WS_GROUP | SS_LEFT, 5, 5, 40, 24, dataHwnd, (HMENU)0, hinst, 0);
-    HWND keyEditHwnd   = CreateWindowEx(0, WC_EDIT,   (""), WEDIS_EDIT_STYLE, 0, 0, 0, 0, dataHwnd, (HMENU)GENERAL_CMD_KEYEDIT, hinst, 0);    
-    HWND renameBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Rename"), WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, dataHwnd, (HMENU)GENERAL_CMD_RENAME, hinst, 0);     
-    HWND ttlBtnHwnd    = CreateWindowEx(0, WC_BUTTON, ("TTL"), WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, dataHwnd, (HMENU)GENERAL_CMD_SETTTL, hinst, 0);
-    HWND removeBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Remove"), WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, dataHwnd, (HMENU)GENERAL_CMD_REMOVE, hinst, 0);
-    HWND reloadBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Reload"), WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, dataHwnd, (HMENU)GENERAL_CMD_RELOAD, hinst, 0);
-    HWND viewTypeHwnd  = CreateWindowEx(0, WC_COMBOBOXEX, (""), WEDIS_COMBO_BOX_STYLE,0, 0, 0, 0, dataHwnd, (HMENU)0, hinst, 0);
-    
-    initCombox(viewTypeHwnd);
-    
     HWND dataViewHwnd  = CreateWindowEx(0, DATA_RENDER_WINDOW, (""), 
         WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 
-        5, 34, 625, 240, 
+        0, 0, 625, 240, 
         dataHwnd, (HMENU)0, hinst, 0);
     
     dataView->hashViewHwnd = buildHashViewWindow(dataViewHwnd);
@@ -148,32 +118,9 @@ void createDataViewWindow(HWND dataHwnd){
     dataView->setViewHwnd = buildSetViewWindow(dataViewHwnd);
     dataView->zsetViewHwnd = buildZsetViewWindow(dataViewHwnd);
     
-    HWND saveBtnHwnd  = CreateWindowEx(0, WC_BUTTON,  ("Save"), WEDIS_PUSH_BUTTON_STYLE, 570, 279, 60, 24, dataHwnd, (HMENU)0, hinst, 0);     
-    HWND exportBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Export"), WEDIS_PUSH_BUTTON_STYLE, 505, 279, 60, 24, dataHwnd, (HMENU)0, hinst, 0); 
-    
-    HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
-    SendMessage(dataViewHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-    SendMessage(saveBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-    SendMessage(exportBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-    SendMessage(keyEditHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-    SendMessage(renameBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-    SendMessage(viewTypeHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-    SendMessage(ttlBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-    SendMessage(removeBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-    SendMessage(reloadBtnHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-    SendMessage(keyNameHwnd, WM_SETFONT, (WPARAM)hfont0, FALSE);
-    
     dataView->dataViewHwnd  = dataViewHwnd;
-    dataView->exportBtnHwnd = exportBtnHwnd;
-    dataView->saveBtnHwnd   = saveBtnHwnd;
-    dataView->viewTypeHwnd  = viewTypeHwnd;
-    
-    dataView->reloadBtnHwnd = reloadBtnHwnd;
-    dataView->removeBtnHwnd = removeBtnHwnd;
-    dataView->renameBtnHwnd = renameBtnHwnd;
-    dataView->ttlBtnHwnd    = ttlBtnHwnd;
-    dataView->keyEditHwnd   = keyEditHwnd;
-    dataView->keyNameHwnd   = keyNameHwnd;
+
+    // buildMyToolBar(dataViewHwnd);
     
     SetWindowLongPtr(dataHwnd,GWLP_USERDATA,(LONG_PTR)dataView);
 }

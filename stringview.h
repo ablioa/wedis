@@ -14,11 +14,13 @@
 typedef struct{
    HWND stringView;
 
-   HWND btnInsert;
+   // HWND btnInsert;
 
-   HWND btnDelete;
+   // HWND btnDelete;
 
-   HWND btnExport;
+   // HWND btnExport;
+
+   HWND toolBar;
 
    RedisReply data;
 

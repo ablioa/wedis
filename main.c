@@ -129,26 +129,11 @@ void initpan(HINSTANCE hInstance){
     hSplitClass.hInstance     = hInstance;
     hSplitClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     hSplitClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    hSplitClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
+    hSplitClass.hbrBackground = CreateSolidBrush(RGB(240,240,240)); // 240 240 240
     hSplitClass.lpszMenuName  = 0;
     hSplitClass.lpszClassName = DATAVIEW_WINDOW;
     hSplitClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     RegisterClassEx(&hSplitClass);
-
-    WNDCLASSEX consoleWinClass;
-    consoleWinClass.cbSize        = sizeof(consoleWinClass);
-    consoleWinClass.style         = 0;
-    consoleWinClass.lpfnWndProc   = consoleWindowProc;
-    consoleWinClass.cbClsExtra    = 0;
-    consoleWinClass.cbWndExtra    = 0;
-    consoleWinClass.hInstance     = hInstance;
-    consoleWinClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
-    consoleWinClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    consoleWinClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
-    consoleWinClass.lpszMenuName  = 0;
-    consoleWinClass.lpszClassName = CONSOLE_WINDOW;
-    consoleWinClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
-    RegisterClassEx(&consoleWinClass);
 
     WNDCLASSEX dataRenderClass;
     dataRenderClass.cbSize        = sizeof(dataRenderClass);
@@ -451,12 +436,6 @@ AppView * buildAppView(HWND hwnd){
     return view;
 }
 
-int getAttributeHeight(AppView * view){
-    RECT rect;
-    GetWindowRect(view->attributeHwnd,&rect);
-    return rect.bottom - rect.top;
-}
-
 void CreateView(AppView * view){
 	RECT rt;
 	RECT connctionRect;
@@ -467,77 +446,19 @@ void CreateView(AppView * view){
 	buildStatusBar(view);
     
 	GetClientRect(view->hwnd,&rt);
-    buildDataView(view);
+	view->dataHwnd       = CreateWindowEx(0, DATAVIEW_WINDOW,NULL,WS_CHILD | WS_VISIBLE,0,0,0,0,view->hwnd,0,mainModel->hInstance,NULL);
+    view->systemViewHwnd = CreateWindowEx(0, SYSTEM_VIEW_CLASS,NULL,WS_CHILD | WS_VISIBLE,0,0,0,0,view->hwnd,0,mainModel->hInstance,NULL);
     
     buildConnectionView(view);
     getConnectionRect(view,&rt,&connctionRect);
     
-    // view->westSplitHwnd = CreateWindowEx(0,
-	// 		"VSplitterCtrl","", WS_CHILD | WS_VISIBLE,
-	// 		connctionRect.right,0+view->toolbarHeight,
-	// 		2,rt.bottom-rt.top-view->toolbarHeight - view->statusbarHeight,
-	// 		view->hwnd,NULL,hInst,NULL);
-    
-	// TODO 这里的200指的是属性窗口的高度,需要调整成动态的才可以
-	// view->southSplitWnd = CreateWindowEx(0,
-	// 		"HSplitterCtrl","", WS_CHILD | WS_VISIBLE,
-	// 		connctionRect.right + SPLITER_WIDTH,
-    //         rt.bottom - rt.top - view->statusbarHeight - 200 - SPLITER_WIDTH,
-	// 		rt.right-rt.left - 202,
-	// 		SPLITER_WIDTH,
-	// 		view->hwnd,NULL,hInst,NULL);
-
-	buildAttributeView(view);
-
     view->westSplitHwnd =CreateWindowEx(0,V_SPLIT,"", WS_VISIBLE|WS_CHILD,
 		connctionRect.right,0+view->toolbarHeight,
 		2,rt.bottom-rt.top-view->toolbarHeight - view->statusbarHeight,
 		view->hwnd,0,hInst,0);
 
-		char buff[1024] = {0};
-            wsprintf(buff,"size: %d",view->toolbarHeight);
-            SetWindowText(view->hwnd,buff);
-
-    SendMessage(view->westSplitHwnd,
-				WM_SET_PANES_HWND,
-				(WPARAM)view->connectionHwnd,
-				(LPARAM)view->dataHwnd);
-	
-	SendMessage(view->westSplitHwnd,
-				WM_SET_PANES_HWND,
-				(WPARAM)view->connectionHwnd,
-				(LPARAM)view->attributeHwnd);
-}
-
-void buildDataView(AppView * view){
-	RECT rt;
-    GetClientRect(view->hwnd,&rt);
-    HINSTANCE hinst = mainModel->hInstance;
-
-	int dataAreaWidth = rt.right-rt.left - 200 -2;
-	view->dataHwnd=CreateWindowEx(0, DATAVIEW_WINDOW,
-               NULL,
-               WS_CHILD | WS_VISIBLE,
-				view->connectionAreaWitdh,
-				view->toolbarHeight,
-				dataAreaWidth,
-				rt.bottom-rt.left-view->toolbarHeight -getAttributeHeight(view),
-               view->hwnd,
-               0,
-               hinst,
-               NULL);
-    
-    view->systemViewHwnd=CreateWindowEx(0, SYSTEM_VIEW_CLASS,
-               NULL,
-               WS_CHILD | WS_VISIBLE,
-				view->connectionAreaWitdh,
-				view->toolbarHeight,
-				dataAreaWidth,
-				rt.bottom-rt.left-view->toolbarHeight -getAttributeHeight(view),
-               view->hwnd,
-               0,
-               hinst,
-               NULL);
+    SendMessage(view->westSplitHwnd,WM_SET_PANES_HWND,(WPARAM)view->connectionHwnd,(LPARAM)view->dataHwnd);
+	SendMessage(view->westSplitHwnd,WM_SET_PANES_HWND,(WPARAM)view->connectionHwnd,(LPARAM)view->systemViewHwnd);
 }
 
 void Size(AppView * view){
@@ -545,8 +466,6 @@ void Size(AppView * view){
     RECT connctionRect;
     RECT dataRect;
     RECT spliterRect;
-    RECT southSpliterRect;
-    RECT attributeRect;
     
     GetClientRect(view->hwnd,&rt);
     MoveWindow(view->toolBarHwnd,0,0,rt.right,view->toolbarHeight,TRUE);
@@ -554,7 +473,6 @@ void Size(AppView * view){
     SendMessage(view->statusBarHwnd,WM_SIZE,0,0);
     
     getConnectionRect(view,&rt,&connctionRect);
-    
     MoveWindow(view->connectionHwnd,connctionRect.left,connctionRect.top,connctionRect.right,connctionRect.bottom,TRUE);
     
     getDataRect(view,&rt,&dataRect);
@@ -563,22 +481,6 @@ void Size(AppView * view){
     
     getSpliterRect(view,&rt,&spliterRect);
     MoveWindow(view->westSplitHwnd,spliterRect.left,spliterRect.top,spliterRect.right,spliterRect.bottom,TRUE);
-    
-    getSouthSpliterRect(view,&rt,&southSpliterRect);
-    MoveWindow(view->southSplitWnd,
-              southSpliterRect.left,
-              southSpliterRect.top,
-              southSpliterRect.right,
-              southSpliterRect.bottom,
-              TRUE);
-    
-    getAttributeRect(view,&rt,&attributeRect);
-    MoveWindow(view->attributeHwnd,
-              attributeRect.left,
-              attributeRect.top,
-              attributeRect.right,
-              attributeRect.bottom,
-              TRUE);
 }
 
 void buildToolBar(AppView * view){
@@ -654,7 +556,7 @@ void getDataRect(AppView * view,RECT * rt,RECT * rect){
     rect->left=getConnectionWidth(view) + SPLITER_WIDTH;
     rect->top=view->toolbarHeight;
     rect->right=(rt->right - rt->left) - getConnectionWidth(view) - SPLITER_WIDTH;
-    rect->bottom= totalHeight - view->toolbarHeight - view->statusbarHeight - SPLITER_WIDTH- getAttributeHeight(view);
+    rect->bottom= totalHeight - view->toolbarHeight - view->statusbarHeight;
 }
 
 void getSpliterRect(AppView * view,RECT * rt,RECT * rect){
@@ -670,37 +572,9 @@ void getSouthSpliterRect(AppView * view,RECT * rt,RECT * rect){
     int totalWidth  = rt->right - rt->left;
 
     rect->left   = getConnectionWidth(view) + SPLITER_WIDTH;
-    rect->top    = totalHeight - getAttributeHeight(view) - SPLITER_WIDTH - view->statusbarHeight;
+    rect->top    = totalHeight - 200 - SPLITER_WIDTH - view->statusbarHeight;
     rect->right  = totalWidth - getConnectionWidth(view) + SPLITER_WIDTH;
     rect->bottom = SPLITER_WIDTH;
-}
-
-void getAttributeRect(AppView * view,RECT * rt,RECT * rect){
-    int totalHeight = rt->bottom - rt->top;
-    int totalWidth  = rt->right - rt->left;
-
-    rect->left   = getConnectionWidth(view) + SPLITER_WIDTH;
-    rect->top    = totalHeight - getAttributeHeight(view) - view->statusbarHeight;
-    rect->right  = totalWidth - getConnectionWidth(view) - SPLITER_WIDTH;
-    rect->bottom = getAttributeHeight(view);
-}
-
-void buildAttributeView(AppView * view){
-    RECT rt;
-    RECT connctionRect;
-
-    HINSTANCE hinst = mainModel->hInstance;
-
-	GetClientRect(view->hwnd,&rt);
-	getConnectionRect(view,&rt,&connctionRect);
-
-    view->attributeHwnd = CreateWindowEx(0, "CONSOLE_WINDOW", NULL,
-                    WS_CHILD | WS_VISIBLE,
-                    connctionRect.right + SPLITER_WIDTH,
-                    rt.bottom - rt.top - view->statusbarHeight - 200,
-                    rt.right-rt.left - 202,
-                    200,
-                    view->hwnd, NULL, hinst, NULL);
 }
 
 void buildConnectionView(AppView * view){

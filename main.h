@@ -71,10 +71,10 @@ typedef struct app_view{
     HWND connectionHwnd;
     HWND dataHwnd;
 	HWND systemViewHwnd;
-    HWND attributeHwnd;
+    // HWND attributeHwnd;
     
     HWND westSplitHwnd;
-    HWND southSplitWnd;
+    // HWND southSplitWnd;
     
     int toolbarHeight;
     int statusbarHeight;
@@ -82,25 +82,8 @@ typedef struct app_view{
     int connectionAreaWitdh;
 }AppView;
 
-typedef struct console_view{
-	HWND logHwnd;
-
-	HWND cmdHwnd;
-
-	WNDPROC defaultCmdProc;
-}ConsoleView;
-
 typedef struct data_view{
 	HWND dataViewHwnd;
-	HWND exportBtnHwnd;
-	HWND saveBtnHwnd;
-	HWND viewTypeHwnd;
-
-	HWND reloadBtnHwnd;
-	HWND removeBtnHwnd;
-	HWND ttlBtnHwnd;
-	HWND renameBtnHwnd;
-	HWND keyEditHwnd;
 
 	WNDPROC ttlBtnProc;
 	WNDPROC exportBtnProc;
@@ -110,12 +93,11 @@ typedef struct data_view{
 	HWND listViewHwnd;
 	HWND setViewHwnd;
     HWND zsetViewHwnd;
-	HWND keyNameHwnd;
 
 	HWND visibleHwnd;
 
-    RedisReply data;// = (RedisReply *)wParam;
-	int type;       // = (int) lParam;
+    RedisReply data;
+	int type;
 }DataView;
 
 typedef struct main_model{
@@ -128,8 +110,6 @@ typedef struct main_model{
 	HWND logHwnd;
 
 	DataView    * dataView;
-
-	ConsoleView * consoleView;
 
     int UI;
 
@@ -176,8 +156,6 @@ void buildToolBar(AppView * appView);
 
 void buildStatusBar(AppView * view);
 
-void buildDataView(AppView * view);
-
 void buildConnectionView(AppView * view);
 
 void getConnectionRect(AppView * view,RECT * rt,RECT * rect);
@@ -185,8 +163,6 @@ void getConnectionRect(AppView * view,RECT * rt,RECT * rect);
 int getConnectionWidth(AppView * view);
 
 void buildAttributeView(AppView * view);
-
-int getAttributeHeight(AppView * view);
 
 void CreateView(AppView * appView);
 
