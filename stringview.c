@@ -4,21 +4,12 @@ HWND buildStringToolBar(HWND parent){
 	HINSTANCE hInst = mainModel->hInstance;
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
 
-    int buttonCount = 10;
+    int buttonCount = 1;
 	TBBUTTON tbtn[10] = {
-        {(0), IDM_CONNECTION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(1), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-		{(7), IDM_SYSTEM_STAT, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(8), IDM_DEBUG_GET_DATABASES, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(0), 0             , 0,               TBSTYLE_SEP,    {0}, 0, 0},
-		{(2), IDM_ADD       , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(3), IDM_REMOVE    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(4), IDM_RELOAD    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-		{(5), IDM_RENAME    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(6), IDM_TIMING    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+        {(0), IDM_CONNECTION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
-	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_MAIN));
+	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_STRINGTB));
     HIMAGELIST hIcons = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 1, buttonCount);
 	ImageList_AddMasked(hIcons, hBmp, RGB(255,255,255));
 
@@ -69,11 +60,6 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 			model->stringView = CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | ES_AUTOVSCROLL | WS_BORDER | WS_CHILD | WS_TABSTOP | WS_VSCROLL |ES_MULTILINE, 0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_TEXT, mainModel->hInstance, 0);
             model->toolBar = buildStringToolBar(hwnd);
             SendMessage(model->stringView, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
-            // model->btnInsert  = CreateWindowEx(0, WC_BUTTON, ("Save"), WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_SAVE, mainModel->hInstance, 0);
-
-            // SendMessage(model->btnInsert, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
-            // SendMessage(model->stringView, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
-            
 		    break;
 		}
        
@@ -107,8 +93,8 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 
 		case WM_SIZE:{
 			GetClientRect(hwnd,&rect);
-			MoveWindow(model->stringView,0,28,rect.right-rect.left,rect.bottom-rect.top,TRUE);
-            // MoveWindow(model->toolBar,rect.right-rect.left - 28,0,28,rect.bottom-rect.top,TRUE);
+            MoveWindow(model->toolBar,0,0,rect.right-rect.left,28,TRUE);
+			MoveWindow(model->stringView,0,28,rect.right-rect.left,rect.bottom-rect.top-28,TRUE);
 		    break;
 		}
 	}

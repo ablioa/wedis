@@ -5,6 +5,34 @@ const char * listColNames[2]={
 	"Value"
 };
 
+HWND buildListToolBar(HWND parent){
+	HINSTANCE hInst = mainModel->hInstance;
+	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
+
+    int buttonCount = 4;
+	TBBUTTON tbtn[4] = {
+        {(0), IDM_CONNECTION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(1), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(2), IDM_PREFERENCE+1, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(3), IDM_PREFERENCE+2, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+    };
+
+	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_LISTTB));
+    HIMAGELIST hIcons = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 1, buttonCount);
+	ImageList_AddMasked(hIcons, hBmp, RGB(255,255,255));
+
+    HWND tb = CreateWindowEx(0L, TOOLBARCLASSNAME, "", tstyle, 16, 16, 16, 16, parent, (HMENU) 0, hInst, NULL);
+    SendMessage(tb, TB_BUTTONSTRUCTSIZE, sizeof(TBBUTTON), 0);
+    SendMessage(tb, TB_SETIMAGELIST, 0, (LPARAM) hIcons);
+    SendMessage(tb, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
+    SendMessage(tb, TB_ADDBUTTONS,       (WPARAM)buttonCount,       (LPARAM)&tbtn);
+    SendMessage(tb, TB_AUTOSIZE, 0, 0);
+
+    ShowWindow(tb,  TRUE);
+
+    return tb;
+}
+
 BOOL InitListDViewColumns(HWND hWndListView) { 
     LVCOLUMN lvc;
     int iCol;
@@ -61,33 +89,33 @@ HWND buildListViewWindow(HWND parent){
 }
 
 BOOL updateListDataSet(HWND hwnd,RedisReply reply){
-    // char indexBuff[256] = {0};
-    // LVITEM lvI;
+    char indexBuff[256] = {0};
+    LVITEM lvI;
 
-    // lvI.pszText   = LPSTR_TEXTCALLBACK;
-    // lvI.mask      = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE;
-    // lvI.stateMask = 0;
-    // lvI.iSubItem  = 0;
-    // lvI.state     = 0;
+    lvI.pszText   = LPSTR_TEXTCALLBACK;
+    lvI.mask      = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE;
+    lvI.stateMask = 0;
+    lvI.iSubItem  = 0;
+    lvI.state     = 0;
 
-    // SendMessage(hwnd,LVM_DELETEALLITEMS,(WPARAM)NULL,(LPARAM)NULL);
+    SendMessage(hwnd,LVM_DELETEALLITEMS,(WPARAM)NULL,(LPARAM)NULL);
+    for(int ix = 0; ix < reply->array_length; ix ++){
+        RedisReply item = reply->bulks[ix];
+        
+        lvI.iItem  = ix;
+        lvI.iImage = ix;
+        lvI.iSubItem = 0;
 
-    // RedisBulks bulks = reply->bulks;
-    // for (int index = 0; index < (bulks->count); index++){
-    //     lvI.iItem  = index;
-    //     lvI.iImage = index;
-    //     lvI.iSubItem = 0;
+        memset(indexBuff,0,256);
+        sprintf(indexBuff,"%d",(ix +1));
 
-    //     memset(indexBuff,0,256);
-    //     sprintf(indexBuff,"%d",(index +1));
+        lvI.pszText = indexBuff; 
+        ListView_InsertItem(hwnd, &lvI);
 
-    //     lvI.pszText = indexBuff; 
-    //     ListView_InsertItem(hwnd, &lvI);
-
-    //     lvI.pszText = bulks->items[index]->content;
-    //     lvI.iSubItem = 1;
-    //     SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
-    // }
+        lvI.pszText = item->bulk->content;
+        lvI.iSubItem = 1;
+        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+    }
 
     return TRUE;
 }
@@ -110,27 +138,12 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                           rect.right - rect.left -60,
                           rect.bottom - rect.top,
                           hwnd, NULL, mainModel->hInstance, NULL);
+
+            listViewModel->toolBar = buildListToolBar(hwnd);
             
             ListView_SetExtendedListViewStyle(listViewModel->listView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
 
 			InitListDViewColumns(listViewModel->listView);
-
-            // listViewModel->btnInsert = CreateWindowEx(0, WC_BUTTON, ("Insert"), 
-            // WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 0, 50, 24, hwnd, (HMENU)LIST_INSERT_CMD, 
-            // mainModel->hInstance, 0);
-
-            // listViewModel->btnDelete = CreateWindowEx(0, WC_BUTTON, ("Delete"), 
-            // WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 29, 50, 24, hwnd, (HMENU)LIST_DELETE_CMD, 
-            // mainModel->hInstance, 0);
-
-            // listViewModel->btnExport = CreateWindowEx(0, WC_BUTTON, ("Export"), 
-            // WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 58, 50, 24, hwnd, (HMENU)LIST_EXPORT_CMD, 
-            // mainModel->hInstance, 0);
-
-            // HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
-            // SendMessage(listViewModel->btnInsert, WM_SETFONT, (WPARAM)hfont0, FALSE);
-            // SendMessage(listViewModel->btnDelete, WM_SETFONT, (WPARAM)hfont0, FALSE);
-            // SendMessage(listViewModel->btnExport, WM_SETFONT, (WPARAM)hfont0, FALSE);
 
 		    break;
 		}
@@ -177,11 +190,8 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
 		case WM_SIZE:{
 			GetClientRect(hwnd,&rect);
-			MoveWindow(listViewModel->listView,0,0,rect.right-rect.left-60,rect.bottom-rect.top,TRUE);
-
-            // MoveWindow(listViewModel->btnInsert,rect.right - rect.left - 55,0, 50,24,TRUE);
-            // MoveWindow(listViewModel->btnDelete,rect.right - rect.left - 55,29,50,24,TRUE);
-            // MoveWindow(listViewModel->btnExport,rect.right - rect.left - 55,58,50,24,TRUE);
+            MoveWindow(listViewModel->toolBar,0,0,rect.right-rect.left,28,TRUE);
+			MoveWindow(listViewModel->listView,0,28,rect.right-rect.left,rect.bottom-rect.top-28,TRUE);
 		    break;
 		}
 	}

@@ -229,6 +229,7 @@ void onDataBaseSelect(TreeNode * selected){
 
     if(selected->level == NODE_LEVEL_DATABASE){
 		s_db_select(selected);
+		s_db_get_data(selected);
     }
 }
 

@@ -242,10 +242,6 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
 			qq.y = rect1.bottom;
 			ScreenToClient(parent,&qq);
 
-            char buff[1024] = {0};
-            wsprintf(buff,"size: %d",pp.y);
-            SetWindowText(parent,buff);
-
             RECT mrect;
             GetClientRect(hwnd,&mrect);
 

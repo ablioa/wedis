@@ -19,13 +19,7 @@
 
 typedef struct{
    HWND listView;
-
-   HWND btnInsert;
-
-   HWND btnDelete;
-
-   HWND btnExport;
-
+   HWND toolBar;
 }ListViewModel;
 
 HWND buildListViewWindow(HWND parent);

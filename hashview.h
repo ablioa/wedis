@@ -15,13 +15,7 @@
 
 typedef struct{
    HWND hashView;
-
-   HWND btnInsert;
-
-   HWND btnDelete;
-
-   HWND btnExport;
-
+   HWND toolBar;
 }HashViewModel;
 
 HWND buildHashViewWindow(HWND parent);

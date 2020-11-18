@@ -21,13 +21,7 @@
 
 typedef struct zset_view_model{
    HWND zsetView;
-
-   HWND btnInsert;
-
-   HWND btnDelete;
-
-   HWND btnExport;
-
+   HWND toolBar;
 }ZsetViewModel;
 
 HWND buildZsetViewWindow(HWND parent);

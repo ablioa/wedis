@@ -12,6 +12,8 @@ void s_auth(TreeNode * hodeNode,char * password);
 
 void s_key_space(TreeNode * hodeNode);
 
+void s_db_get_data(TreeNode * dbnode);
+
 void s_db_select(TreeNode * selected);
 
 void s_handle_data(TreeNode * datanode,DataType dataType);

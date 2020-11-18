@@ -65,20 +65,22 @@ void s_key_space(TreeNode * hodeNode){
     }
 }
 
-void s_db_select(TreeNode * selected){
+void s_db_select(TreeNode * dbnode){
     char db[10] = {0};
-    sprintf(db,"%d",selected->database->dbindex);
+    sprintf(db,"%d",dbnode->database->dbindex);
 
     RedisParams param = redis_build_params(2);
     redis_add_param(param,redis_build_param("select"));
     redis_add_param(param,redis_build_param(db));
 
-    RedisReply reply = redis_serialize_params(selected->stream,param);
+    RedisReply reply = redis_serialize_params(dbnode->stream,param);
     if(reply->type != REPLY_STATUS || strcmp("OK",reply->status->content) != 0){
         log_message("database select error");
         return;
     }
+}
 
+void s_db_get_data(TreeNode * dbnode){
     RedisParams keyparam = redis_build_params(6);
     redis_add_param(keyparam,redis_build_param("scan"));
     redis_add_param(keyparam,redis_build_param("0"));
@@ -87,10 +89,10 @@ void s_db_select(TreeNode * selected){
     redis_add_param(keyparam,redis_build_param("count"));
     redis_add_param(keyparam,redis_build_param("20"));
 
-    RedisReply kreply = redis_serialize_params(selected->stream,keyparam);
+    RedisReply kreply = redis_serialize_params(dbnode->stream,keyparam);
 
     if(kreply->type == REPLY_MULTI){
-        add_data_node(selected,kreply);
+        add_data_node(dbnode,kreply);
     }else{
         log_message("error data on KEYS request");
     }

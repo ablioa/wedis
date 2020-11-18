@@ -6,6 +6,40 @@ const char * colNames[3]={
 	"Value"
 };
 
+HWND buildHashToolBar(HWND parent){
+	HINSTANCE hInst = mainModel->hInstance;
+	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
+
+    int buttonCount = 10;
+	TBBUTTON tbtn[10] = {
+        {(0), IDM_CONNECTION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(1), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+		{(7), IDM_SYSTEM_STAT, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(8), IDM_DEBUG_GET_DATABASES, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(0), 0             , 0,               TBSTYLE_SEP,    {0}, 0, 0},
+		{(2), IDM_ADD       , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(3), IDM_REMOVE    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(4), IDM_RELOAD    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+		{(5), IDM_RENAME    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(6), IDM_TIMING    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+    };
+
+	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_MAIN));
+    HIMAGELIST hIcons = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 1, buttonCount);
+	ImageList_AddMasked(hIcons, hBmp, RGB(255,255,255));
+
+    HWND tb = CreateWindowEx(0L, TOOLBARCLASSNAME, "", tstyle, 16, 16, 16, 16, parent, (HMENU) 0, hInst, NULL);
+    SendMessage(tb, TB_BUTTONSTRUCTSIZE, sizeof(TBBUTTON), 0);
+    SendMessage(tb, TB_SETIMAGELIST, 0, (LPARAM) hIcons);
+    SendMessage(tb, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
+    SendMessage(tb, TB_ADDBUTTONS,       (WPARAM)buttonCount,       (LPARAM)&tbtn);
+    SendMessage(tb, TB_AUTOSIZE, 0, 0);
+
+    ShowWindow(tb,  TRUE);
+
+    return tb;
+}
+
 BOOL InitHashViewColumns(HWND hWndListView) { 
     LVCOLUMN lvc;
     int iCol;
@@ -61,38 +95,38 @@ HWND buildHashViewWindow(HWND parent){
 }
 
 BOOL updateHashDataSet(HWND hwnd,RedisReply reply){
-    // char indexBuff[256] = {0};
-    // LVITEM lvI;
+    char indexBuff[256] = {0};
+    LVITEM lvI;
 
-    // lvI.pszText   = LPSTR_TEXTCALLBACK;
-    // lvI.mask      = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE;
-    // lvI.stateMask = 0;
-    // lvI.iSubItem  = 0;
-    // lvI.state     = 0;
+    lvI.pszText   = LPSTR_TEXTCALLBACK;
+    lvI.mask      = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE;
+    lvI.stateMask = 0;
+    lvI.iSubItem  = 0;
+    lvI.state     = 0;
 
-    // SendMessage(hwnd,LVM_DELETEALLITEMS,(WPARAM)NULL,(LPARAM)NULL);
-    
-    // int count         = reply->bulks->count;
-    // RedisBulk * bulks = reply->bulks->items;
-    // for (int index = 0; index < (count/2); index++){
-    //     lvI.iItem  = index;
-    //     lvI.iImage = index;
-    //     lvI.iSubItem = 0;
+    SendMessage(hwnd,LVM_DELETEALLITEMS,(WPARAM)NULL,(LPARAM)NULL);
 
-    //     memset(indexBuff,0,256);
-    //     sprintf(indexBuff,"%d",(index +1));
+    int total = reply->array_length;
 
-    //     lvI.pszText = indexBuff; 
-    //     ListView_InsertItem(hwnd, &lvI);
+    for(int index =0; index < (total/2); index ++){
+        lvI.iItem  = index;
+        lvI.iImage = index;
+        lvI.iSubItem = 0;
 
-    //     lvI.pszText = bulks[index * 2]->content;
-    //     lvI.iSubItem = 1;
-    //     SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+        memset(indexBuff,0,256);
+        sprintf(indexBuff,"%d",(index +1));
 
-    //     lvI.pszText = bulks[index *2+1]->content;
-    //     lvI.iSubItem = 2;
-    //     SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
-    // }
+        lvI.pszText = indexBuff; 
+        ListView_InsertItem(hwnd, &lvI);
+
+        lvI.pszText = reply->bulks[index*2]->bulk->content;
+        lvI.iSubItem = 1;
+        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+
+        lvI.pszText = reply->bulks[index*2+1]->bulk->content;
+        lvI.iSubItem = 2;
+        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+    }
 
     return TRUE;
 }
@@ -118,26 +152,12 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                           rect.bottom - rect.top,
                           hwnd, NULL, hinst, NULL);
             
+            hashViewModel->toolBar = buildHashToolBar(hwnd);
+            
             ListView_SetExtendedListViewStyle(hashViewModel->hashView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
 
 			InitHashViewColumns(hashViewModel->hashView);
 
-            // hashViewModel->btnInsert = CreateWindowEx(0, WC_BUTTON, ("Insert"), 
-            // WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 0, 50, 24, hwnd, (HMENU)0, 
-            // mainModel->hInstance, 0);
-
-            // hashViewModel->btnDelete = CreateWindowEx(0, WC_BUTTON, ("Delete"), 
-            // WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 29, 50, 24, hwnd, (HMENU)0, 
-            // mainModel->hInstance, 0);
-
-            // hashViewModel->btnExport = CreateWindowEx(0, WC_BUTTON, ("Export"), 
-            // WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 58, 50, 24, hwnd, (HMENU)0, 
-            // mainModel->hInstance, 0);
-
-            // HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
-            // SendMessage(hashViewModel->btnInsert, WM_SETFONT, (WPARAM)hfont0, FALSE);
-            // SendMessage(hashViewModel->btnDelete, WM_SETFONT, (WPARAM)hfont0, FALSE);
-            // SendMessage(hashViewModel->btnExport, WM_SETFONT, (WPARAM)hfont0, FALSE);
 		    break;
 		}
 
@@ -149,11 +169,9 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
 		case WM_SIZE:{
 			GetClientRect(hwnd,&rect);
-			MoveWindow(hashViewModel->hashView,0,0,rect.right-rect.left - 60,rect.bottom-rect.top,TRUE);
-
-            // MoveWindow(hashViewModel->btnInsert,rect.right - rect.left - 55,0, 50,24,TRUE);
-            // MoveWindow(hashViewModel->btnDelete,rect.right - rect.left - 55,29,50,24,TRUE);
-            // MoveWindow(hashViewModel->btnExport,rect.right - rect.left - 55,58,50,24,TRUE);
+			// MoveWindow(hashViewModel->hashView,0,0,rect.right-rect.left - 60,rect.bottom-rect.top,TRUE);
+            MoveWindow(hashViewModel->toolBar,0,0,rect.right-rect.left,28,TRUE);
+			MoveWindow(hashViewModel->hashView,0,28,rect.right-rect.left,rect.bottom-rect.top-28,TRUE);
 		    break;
 		}
 	}

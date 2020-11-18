@@ -10,6 +10,8 @@
 #define IDD_PREFERENCE                          113
 #define IDD_GOTOLINE                            114
 #define IDD_DB_SEARCH                           115
+#define IDB_TOOLBAR_STRINGTB                    116
+#define IDB_TOOLBAR_LISTTB                      117
 #define IDC_CONNECTION_HOSTVALUE                201
 #define IDC_CONNECTION_PORTVALUE                203
 #define IDC_CONNECTION_IFPASSWORD               204

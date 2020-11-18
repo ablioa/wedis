@@ -15,13 +15,7 @@
 
 typedef struct set_view_model{
    HWND setView;
-
-   HWND btnInsert;
-
-   HWND btnDelete;
-
-   HWND btnExport;
-
+   HWND toolBar;
 }SetViewModel;
 
 HWND buildSetViewWindow(HWND parent);

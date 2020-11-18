@@ -104,6 +104,6 @@ void add_database_node(TreeNode * hostNode,int dbCount){
 		dbnode->handle = handle;
 	}
 
-	//SendMessage(mainModel->view->connectionHwnd,TVM_EXPAND,(WPARAM)TVE_TOGGLE,(LPARAM)(hostNode->handle));
+	SendMessage(mainModel->view->connectionHwnd,TVM_EXPAND,(WPARAM)TVE_TOGGLE,(LPARAM)(hostNode->handle));
 }
 

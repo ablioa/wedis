@@ -6,6 +6,40 @@ const char * zsetColNames[3]={
 	"Score"
 };
 
+HWND buildZsetToolBar(HWND parent){
+	HINSTANCE hInst = mainModel->hInstance;
+	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
+
+    int buttonCount = 10;
+	TBBUTTON tbtn[10] = {
+        {(0), IDM_CONNECTION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(1), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+		{(7), IDM_SYSTEM_STAT, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(8), IDM_DEBUG_GET_DATABASES, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(0), 0             , 0,               TBSTYLE_SEP,    {0}, 0, 0},
+		{(2), IDM_ADD       , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(3), IDM_REMOVE    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(4), IDM_RELOAD    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+		{(5), IDM_RENAME    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(6), IDM_TIMING    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+    };
+
+	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_MAIN));
+    HIMAGELIST hIcons = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 1, buttonCount);
+	ImageList_AddMasked(hIcons, hBmp, RGB(255,255,255));
+
+    HWND tb = CreateWindowEx(0L, TOOLBARCLASSNAME, "", tstyle, 16, 16, 16, 16, parent, (HMENU) 0, hInst, NULL);
+    SendMessage(tb, TB_BUTTONSTRUCTSIZE, sizeof(TBBUTTON), 0);
+    SendMessage(tb, TB_SETIMAGELIST, 0, (LPARAM) hIcons);
+    SendMessage(tb, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
+    SendMessage(tb, TB_ADDBUTTONS,       (WPARAM)buttonCount,       (LPARAM)&tbtn);
+    SendMessage(tb, TB_AUTOSIZE, 0, 0);
+
+    ShowWindow(tb,  TRUE);
+
+    return tb;
+}
+
 BOOL InitZsetViewColumns(HWND hWndListView) { 
     LVCOLUMN lvc;
     int iCol;
@@ -50,41 +84,21 @@ LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 	        
             zsetViewModel->zsetView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
                           WS_CHILD | WS_BORDER | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS,
-                          0, 0,
-                          rect.right - rect.left - 60,
-                          rect.bottom - rect.top,
+                          0, 0,0,0,
                           hwnd, NULL, hinst, NULL);
 
+            zsetViewModel->toolBar = buildZsetToolBar(hwnd);
 			InitZsetViewColumns(zsetViewModel->zsetView);
             
 			ListView_SetExtendedListViewStyle(zsetViewModel->zsetView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
-
-            // zsetViewModel->btnInsert = CreateWindowEx(0, WC_BUTTON, ("Insert"), 
-            // WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 0, 50, 24, hwnd, (HMENU)LIST_INSERT_CMD, 
-            // mainModel->hInstance, 0);
-
-            // zsetViewModel->btnDelete = CreateWindowEx(0, WC_BUTTON, ("Delete"), 
-            // WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 29, 50, 24, hwnd, (HMENU)LIST_DELETE_CMD, 
-            // mainModel->hInstance, 0);
-
-            // zsetViewModel->btnExport = CreateWindowEx(0, WC_BUTTON, ("Export"), 
-            // WEDIS_PUSH_BUTTON_STYLE, rect.right - rect.left - 60, 58, 50, 24, hwnd, (HMENU)LIST_EXPORT_CMD, 
-            // mainModel->hInstance, 0);
-
-            // HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
-            // SendMessage(zsetViewModel->btnInsert, WM_SETFONT, (WPARAM)hfont0, FALSE);
-            // SendMessage(zsetViewModel->btnDelete, WM_SETFONT, (WPARAM)hfont0, FALSE);
-            // SendMessage(zsetViewModel->btnExport, WM_SETFONT, (WPARAM)hfont0, FALSE);
 		    break;
 		}
 
 		case WM_SIZE:{
 			GetClientRect(hwnd,&rect);
-			MoveWindow(zsetViewModel->zsetView,0,0,rect.right-rect.left-60,rect.bottom-rect.top,TRUE);
+            MoveWindow(zsetViewModel->toolBar,0,0,rect.right-rect.left,28,TRUE);
+			MoveWindow(zsetViewModel->zsetView,0,28,rect.right-rect.left,rect.bottom-rect.top-28,TRUE);
 
-            // MoveWindow(zsetViewModel->btnInsert,rect.right - rect.left - 55,0, 50,24,TRUE);
-            // MoveWindow(zsetViewModel->btnDelete,rect.right - rect.left - 55,29,50,24,TRUE);
-            // MoveWindow(zsetViewModel->btnExport,rect.right - rect.left - 55,58,50,24,TRUE);
 		    break;
 		}
 
@@ -98,38 +112,36 @@ LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 }
 
 BOOL UpdateZsetData(HWND hwnd,RedisReply reply){
-    // char indexBuff[256] = {0};
-    // LVITEM lvI;
+    char indexBuff[256] = {0};
+    LVITEM lvI;
 
-    // lvI.pszText   = LPSTR_TEXTCALLBACK;
-    // lvI.mask      = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE;
-    // lvI.stateMask = 0;
-    // lvI.iSubItem  = 0;
-    // lvI.state     = 0;
+    lvI.pszText   = LPSTR_TEXTCALLBACK;
+    lvI.mask      = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE;
+    lvI.stateMask = 0;
+    lvI.iSubItem  = 0;
+    lvI.state     = 0;
 
-    // SendMessage(hwnd,LVM_DELETEALLITEMS,(WPARAM)NULL,(LPARAM)NULL);
+    SendMessage(hwnd,LVM_DELETEALLITEMS,(WPARAM)NULL,(LPARAM)NULL);
 
-    // int count         = reply->bulks->count;
-    // RedisBulk * bulks = reply->bulks->items;
-    // for (int index = 0; index < (count / 2); index++){
-    //     lvI.iItem  = index;
-    //     lvI.iImage = index;
-    //     lvI.iSubItem = 0;
+    for (int index = 0; index < (reply->array_length / 2); index++){
+        lvI.iItem  = index;
+        lvI.iImage = index;
+        lvI.iSubItem = 0;
 
-    //     memset(indexBuff,0,256);
-    //     sprintf(indexBuff,"%d",(index +1));
+        memset(indexBuff,0,256);
+        sprintf(indexBuff,"%d",(index +1));
 
-    //     lvI.pszText = indexBuff; 
-    //     ListView_InsertItem(hwnd, &lvI);
+        lvI.pszText = indexBuff; 
+        ListView_InsertItem(hwnd, &lvI);
 
-    //     lvI.pszText = bulks[index * 2]->content;
-    //     lvI.iSubItem = 1;
-    //     SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+        lvI.pszText = reply->bulks[index * 2]->bulk->content;
+        lvI.iSubItem = 1;
+        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
 
-    //     lvI.pszText = bulks[index *2+1]->content;
-    //     lvI.iSubItem = 2;
-    //     SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
-    // }
+        lvI.pszText = reply->bulks[index *2+1]->bulk->content;
+        lvI.iSubItem = 2;
+        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+    }
 
     return TRUE;
 }
