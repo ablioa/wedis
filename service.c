@@ -206,10 +206,6 @@ void redis_add_param(RedisParams params,RedisParam param){
     params->param_count++;
 }
 
-/**
- * 动态参数序列化
- * 2^32最大10位+2+2+1 = 15
- **/
 RedisParam redis_build_param(char * content){
     RedisParam param = (RedisParam) calloc(1,sizeof(struct redis_param));
 

@@ -11,18 +11,16 @@
 
 #define STRING_VIEW_CLASS "STRING_VIEW_CLASS"
 
-typedef struct{
+typedef struct string_data_model{
    HWND stringView;
-
-   // HWND btnInsert;
-
-   // HWND btnDelete;
-
-   // HWND btnExport;
 
    HWND toolBar;
 
    RedisReply data;
+   
+   char * hex_buff;
+
+   int hex_buff_size;
 
 }StringViewModel;
 
@@ -32,5 +30,9 @@ HWND buildStringViewWindow(HWND parent);
 LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 void init_stringview(HINSTANCE hInstance);
+
+char * get_output_buffer(int size);
+
+char * dump_text( char * text,int len);
 
 #endif

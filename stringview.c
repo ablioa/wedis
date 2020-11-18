@@ -120,3 +120,47 @@ void init_stringview(HINSTANCE hInstance){
     stringViewClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     RegisterClassEx(&stringViewClass);
 }
+
+
+char * get_output_buffer(int size){
+    int bsize = (size/16+1) * 70+1;
+    char * buff = ( char *) malloc(sizeof( char) * bsize);
+    memset(buff,0,sizeof( char) * bsize);
+    return buff;
+}
+
+char * dump_text( char * text,int len){
+    char line[17]={0};
+    char * buff   = get_output_buffer(len);
+    char * output =buff;
+
+    int offset =0;
+    int ix = 0;
+    for(ix = 0; ix < len; ix ++){
+        sprintf(output,"%02X ",(unsigned char)(text[ix]));
+        output +=3;
+        line[offset++]= isprint(text[ix])?text[ix]:'.';
+
+        if(ix % 0x10 == 0x0f){
+            sprintf(output,"    %s\r\n",line);
+            offset=0;
+
+            memset(line,0,17);
+
+            output +=22;
+        }
+    }
+
+    if(ix % 0x10 != 0x00){
+        sprintf(output,"[ix=%d]",ix);
+        for(ix =(0x10 - len % 0x10); ix < 0x10;ix++){
+            sprintf(output,"   ");
+        }
+
+        sprintf(output,"    %s\r\n",line);
+        output +=22;
+    }
+
+	return buff;
+}
+
