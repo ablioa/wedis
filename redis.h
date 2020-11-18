@@ -89,7 +89,8 @@ typedef struct redis_data_node{
 	char * key_length;
 	
 	DataType data_type;
-	char   type_name[255];
+	char     type_name[255];
+	int      quantity;
 }RedisDataNode;
 
 typedef struct tree_node{

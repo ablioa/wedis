@@ -115,26 +115,31 @@ void s_handle_data(TreeNode * datanode,DataType dataType){
 	switch (dataType){
 		case REDIS_STRING:{
 			reply = s_db_fetch_string(datanode);
+            datanode->data->quantity = reply->bulk->length;
 			break;
 		}
 
 		case REDIS_HASH:{
 			reply = s_db_fetch_hash(datanode);
+            datanode->data->quantity = reply->array_length/2;
 			break;
 		}
 
 		case REDIS_LIST:{
 			reply = s_db_fetch_list(datanode);
+            datanode->data->quantity = reply->array_length;
 			break;
 		}
 
 		case REDIS_SET:{
 			reply = s_db_fetch_set(datanode);
+            datanode->data->quantity = reply->array_length;
 			break;
 		}
 
 		case REDIS_ZSET:{
 			reply = s_db_fetch_zset(datanode);
+            datanode->data->quantity = reply->array_length/2;
 			break;
 		}
 

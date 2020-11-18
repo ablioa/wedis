@@ -199,6 +199,8 @@ void onMainFrameCreate(HWND hwnd){
 }
 
 void updateNavigationInfo(TreeNode * node){
+	char tbuff[100] = {};
+
 	TreeNode * dbnode = node->parent;
 	TreeNode * hostnode = dbnode->parent;
 
@@ -206,6 +208,9 @@ void updateNavigationInfo(TreeNode * node){
 	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,2,(LPARAM)dbnode->database->dbname);
 	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,3,(LPARAM)node->data->data_key);
 	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,4,(LPARAM)node->data->type_name);
+
+	sprintf(tbuff,"%d",node->data->quantity);
+	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,5,(LPARAM)tbuff);
 }
 
 void onDataNodeSelection(TreeNode * selected){
