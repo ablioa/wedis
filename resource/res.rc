@@ -30,6 +30,9 @@ IDB_TOOLBAR_STRINGTB   BITMAP         "stringtb.bmp"
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDB_TOOLBAR_LISTTB   BITMAP           "listtb.bmp"
 
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDB_TOOLBAR_STATTB   BITMAP           "stattb.bmp"
+
 //
 // Menu resources
 //

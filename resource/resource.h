@@ -12,6 +12,7 @@
 #define IDD_DB_SEARCH                           115
 #define IDB_TOOLBAR_STRINGTB                    116
 #define IDB_TOOLBAR_LISTTB                      117
+#define IDB_TOOLBAR_STATTB                      118
 #define IDC_CONNECTION_HOSTVALUE                201
 #define IDC_CONNECTION_PORTVALUE                203
 #define IDC_CONNECTION_IFPASSWORD               204
@@ -30,6 +31,15 @@
 #define IDC_LIST_STATIC                         601
 #define IDC_LIST_OK                             602
 #define IDC_LIST_CANCEL                         603
+#define IDM_STAT_SERVER                         700
+#define IDM_STAT_CLIENT                         701
+#define IDM_STAT_MEMORY                         702
+#define IDM_STAT_PERSISENCE                     703
+#define IDM_STAT_STATS                          704
+#define IDM_STAT_REPLICATION                    705
+#define IDM_STAT_CPU                            706
+#define IDM_STAT_CLUSTER                        707
+#define IDM_STAT_KEYSPACE                       708
 #define IDM_CONNECTION_POOL                     899
 #define IDM_EXIT                                4002
 #define IDM_ABOUT                               4004

@@ -30,6 +30,8 @@ RedisReply s_db_fetch_zset(TreeNode * datanode);
 
 void s_db_data_type(TreeNode * selected);
 
+RedisReply s_db_info_stats(TreeNode * host,char * information);
+
 RedisReply redis_serialize_params(RedisConnection stream,RedisParams params);
 
 /**
@@ -43,11 +45,6 @@ void appendTask(CommandType cmdType,const DataType dataType,const char * dataKey
 RedisParams redis_delete_key(char * dataKey);
 
 RedisParams redis_rename_key(char * dataKey,char * newKey);
-
-RedisParams redis_info_stats();
-
-
-
 
 
 #endif

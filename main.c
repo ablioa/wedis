@@ -361,7 +361,7 @@ void command(HWND hwnd,int cmd){
 		}
 
 		case IDM_SYSTEM_STAT:{
-			redis_info_stats();
+			RedisReply dd = s_db_info_stats(mainModel->activeHost,"stats");
 			break;
 		}
 
@@ -453,7 +453,7 @@ void CreateView(AppView * view){
     
 	GetClientRect(view->hwnd,&rt);
 	view->dataHwnd       = CreateWindowEx(0, DATAVIEW_WINDOW,NULL,WS_CHILD | WS_VISIBLE,0,0,0,0,view->hwnd,0,mainModel->hInstance,NULL);
-    view->systemViewHwnd = CreateWindowEx(0, SYSTEM_VIEW_CLASS,NULL,WS_CHILD | WS_VISIBLE,0,0,0,0,view->hwnd,0,mainModel->hInstance,NULL);
+    // view->systemViewHwnd = CreateWindowEx(0, SYSTEM_VIEW_CLASS,NULL,WS_CHILD | WS_VISIBLE,0,0,0,0,view->hwnd,0,mainModel->hInstance,NULL);
     
     buildConnectionView(view);
     getConnectionRect(view,&rt,&connctionRect);
@@ -464,7 +464,7 @@ void CreateView(AppView * view){
 		view->hwnd,0,hInst,0);
 
     SendMessage(view->westSplitHwnd,WM_SET_PANES_HWND,(WPARAM)view->connectionHwnd,(LPARAM)view->dataHwnd);
-	SendMessage(view->westSplitHwnd,WM_SET_PANES_HWND,(WPARAM)view->connectionHwnd,(LPARAM)view->systemViewHwnd);
+	// SendMessage(view->westSplitHwnd,WM_SET_PANES_HWND,(WPARAM)view->connectionHwnd,(LPARAM)view->systemViewHwnd);
 }
 
 void Size(AppView * view){
@@ -483,7 +483,7 @@ void Size(AppView * view){
     
     getDataRect(view,&rt,&dataRect);
     MoveWindow(view->dataHwnd,dataRect.left,dataRect.top,dataRect.right,dataRect.bottom,TRUE);
-    MoveWindow(view->systemViewHwnd,dataRect.left,dataRect.top,dataRect.right,dataRect.bottom,TRUE);
+    // MoveWindow(view->systemViewHwnd,dataRect.left,dataRect.top,dataRect.right,dataRect.bottom,TRUE);
     
     getSpliterRect(view,&rt,&spliterRect);
     MoveWindow(view->westSplitHwnd,spliterRect.left,spliterRect.top,spliterRect.right,spliterRect.bottom,TRUE);

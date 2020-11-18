@@ -19,7 +19,7 @@
 #include "wedis.h"
 #include "console.h"
 #include "dataview.h"
-#include "system.h"
+#include "systemview.h"
 #include "callbacks.h"
 #include "resource/resource.h"
 #include "exception.h"
@@ -70,11 +70,9 @@ typedef struct app_view{
     
     HWND connectionHwnd;
     HWND dataHwnd;
-	HWND systemViewHwnd;
-    // HWND attributeHwnd;
+	// HWND systemViewHwnd;
     
     HWND westSplitHwnd;
-    // HWND southSplitWnd;
     
     int toolbarHeight;
     int statusbarHeight;
@@ -93,6 +91,7 @@ typedef struct data_view{
 	HWND listViewHwnd;
 	HWND setViewHwnd;
     HWND zsetViewHwnd;
+	HWND systemViewHwnd;
 
 	HWND visibleHwnd;
 
@@ -120,6 +119,8 @@ typedef struct main_model{
 	HWND mainWindowHwnd;
 
 	int spaceCount;
+
+	TreeNode * activeHost;
 }MainModel;
 
 extern MainModel * mainModel;

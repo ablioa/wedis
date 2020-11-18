@@ -78,6 +78,8 @@ void s_db_select(TreeNode * dbnode){
         log_message("database select error");
         return;
     }
+
+    mainModel->activeHost = dbnode->parent;
 }
 
 void s_db_get_data(TreeNode * dbnode){
@@ -196,6 +198,17 @@ RedisReply s_db_fetch_zset(TreeNode * datanode){
     return redis_serialize_params(datanode->stream,params);
 }
 
+RedisReply s_db_info_stats(TreeNode * hostnode,char * information){
+    RedisParams params = redis_build_params(2);
+    redis_add_param(params,redis_build_param("info"));
+    redis_add_param(params,redis_build_param(information));
+
+    RedisReply reply = redis_serialize_params(hostnode->stream,params);
+
+    handle_redis_data(hostnode,reply);
+    return reply;
+}
+
 RedisParams redis_build_params(int count){
     RedisParams params = (RedisParams)calloc(1,sizeof(struct redis_params));
     params->items = (RedisParam*)calloc(count,sizeof(struct redis_param));
@@ -250,14 +263,6 @@ RedisParams redis_rename_key(char * dataKey,char * newKey){
     redis_add_param(params,redis_build_param("rename"));
     redis_add_param(params,redis_build_param(dataKey));
     redis_add_param(params,redis_build_param(newKey));
-
-    return params;
-}
-
-RedisParams redis_info_stats(){
-    RedisParams params = redis_build_params(2);
-    redis_add_param(params,redis_build_param("info"));
-    redis_add_param(params,redis_build_param("stats"));
 
     return params;
 }

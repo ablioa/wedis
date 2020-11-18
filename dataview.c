@@ -1,39 +1,5 @@
 #include "dataview.h"
 
-// void buildMyToolBar(HWND parent){
-// 	HINSTANCE hInst = mainModel->hInstance;
-// 	DWORD tstyle = WS_CHILD | CCS_VERT  | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
-// 	RECT  rect;
-
-//     int buttonCount = 10;
-	
-// 	TBBUTTON tbtn[10] = {
-//         {(0), IDM_CONNECTION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-//         {(1), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-// 		{(7), IDM_SYSTEM_STAT, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-//         {(8), IDM_DEBUG_GET_DATABASES, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-//         {(0), 0             , 0,               TBSTYLE_SEP,    {0}, 0, 0},
-// 		{(2), IDM_ADD       , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-//         {(3), IDM_REMOVE    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-//         {(4), IDM_RELOAD    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-// 		{(5), IDM_RENAME    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-//         {(6), IDM_TIMING    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
-//     };
-
-// 	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_MAIN));
-//     HIMAGELIST hIcons = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 1, buttonCount);
-// 	ImageList_AddMasked(hIcons, hBmp, RGB(255,255,255));
-
-//     HWND tb = CreateWindowEx(0L, TOOLBARCLASSNAME, "", tstyle, 16, 16, 16, 16, parent, (HMENU) 0, hInst, NULL);
-//     SendMessage(tb, TB_BUTTONSTRUCTSIZE, sizeof(TBBUTTON), 0);
-//     SendMessage(tb, TB_SETIMAGELIST, 0, (LPARAM) hIcons);
-//     SendMessage(tb, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
-//     SendMessage(tb, TB_ADDBUTTONS,       (WPARAM)buttonCount,       (LPARAM)&tbtn);
-//     SendMessage(tb, TB_AUTOSIZE, 0, 0);
-
-//     ShowWindow(tb,  TRUE);
-// }
-
 LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam){
 	DataView * dataView = mainModel->dataView;
 
@@ -80,7 +46,16 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 
             // dataView->data = data;
             // dataView->type =  data->dataType;
-			switchView(dataHwnd,datanode->data->data_type,data);
+			
+			int dataType = REDIS_SYSTEM;
+			if(datanode->level != NODE_LEVEL_HOST){
+				//SendMessage(dataView->systemViewHwnd,WM_DT,(WPARAM)data,(LPARAM)(datanode));
+				// switchView(dataHwnd,datanode->data->data_type,data);
+			//}else{
+				dataType = datanode->data->data_type;
+			}
+
+			switchView(dataHwnd,dataType,data);
 
 			break;
 		}
@@ -117,20 +92,20 @@ void createDataViewWindow(HWND dataHwnd){
     dataView->listViewHwnd = buildListViewWindow(dataViewHwnd);
     dataView->setViewHwnd = buildSetViewWindow(dataViewHwnd);
     dataView->zsetViewHwnd = buildZsetViewWindow(dataViewHwnd);
+	
+	dataView->systemViewHwnd = CreateWindowEx(0, SYSTEM_VIEW_CLASS,NULL,WS_CHILD | WS_VISIBLE,0,0,0,0,dataViewHwnd,0,hinst,NULL);
     
     dataView->dataViewHwnd  = dataViewHwnd;
 
-    // buildMyToolBar(dataViewHwnd);
-    
     SetWindowLongPtr(dataHwnd,GWLP_USERDATA,(LONG_PTR)dataView);
 }
 
 void switchView(HWND hwnd,int type,RedisReply data){
 	DataView * dataView = mainModel->dataView;
 
-	ShowWindow(mainModel->view->dataHwnd,SW_SHOW);
+	// ShowWindow(mainModel->view->dataHwnd,SW_SHOW);
 	ShowWindow(dataView->visibleHwnd,SW_HIDE);
-	ShowWindow(mainModel->view->systemViewHwnd,SW_HIDE);
+	// ShowWindow(dataView->systemViewHwnd,SW_HIDE);
 	switch(type){
 		case REDIS_STRING:{
 			dataView->visibleHwnd = dataView->stringViewHwnd;
@@ -156,6 +131,11 @@ void switchView(HWND hwnd,int type,RedisReply data){
 			dataView->visibleHwnd = dataView->zsetViewHwnd;
 			break;
 		}
+
+		case REDIS_SYSTEM:{
+			dataView->visibleHwnd = dataView->systemViewHwnd;
+			break;
+		}
 	}
 
 	ShowWindow(dataView->visibleHwnd,SW_SHOW);
@@ -176,6 +156,7 @@ LRESULT CALLBACK dataRenderProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 			MoveWindow(dataView->listViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
 			MoveWindow(dataView->setViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
 			MoveWindow(dataView->zsetViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
+			MoveWindow(dataView->systemViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
 			break;
 	    }
 	}
