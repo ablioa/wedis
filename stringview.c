@@ -4,9 +4,10 @@ HWND buildStringToolBar(HWND parent){
 	HINSTANCE hInst = mainModel->hInstance;
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
 
-    int buttonCount = 1;
+    int buttonCount = 2;
 	TBBUTTON tbtn[10] = {
-        {(0), IDM_CONNECTION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+        {(0), IDM_CONNECTION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(1), IDM_CONNECTION+1, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
 	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_STRINGTB));
