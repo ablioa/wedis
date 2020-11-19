@@ -455,6 +455,9 @@ void CreateView(AppView * view){
 	view->dataHwnd       = CreateWindowEx(0, DATAVIEW_WINDOW,NULL,WS_CHILD | WS_VISIBLE,0,0,0,0,view->hwnd,0,mainModel->hInstance,NULL);
     // view->systemViewHwnd = CreateWindowEx(0, SYSTEM_VIEW_CLASS,NULL,WS_CHILD | WS_VISIBLE,0,0,0,0,view->hwnd,0,mainModel->hInstance,NULL);
     
+	// ShowWindow(view->dataHwnd,SW_HIDE);
+	// ShowWindow(view->toolBarHwnd,SW_HIDE);
+
     buildConnectionView(view);
     getConnectionRect(view,&rt,&connctionRect);
     
@@ -483,7 +486,6 @@ void Size(AppView * view){
     
     getDataRect(view,&rt,&dataRect);
     MoveWindow(view->dataHwnd,dataRect.left,dataRect.top,dataRect.right,dataRect.bottom,TRUE);
-    // MoveWindow(view->systemViewHwnd,dataRect.left,dataRect.top,dataRect.right,dataRect.bottom,TRUE);
     
     getSpliterRect(view,&rt,&spliterRect);
     MoveWindow(view->westSplitHwnd,spliterRect.left,spliterRect.top,spliterRect.right,spliterRect.bottom,TRUE);
@@ -601,6 +603,8 @@ void buildConnectionView(AppView * view){
 	HBITMAP hBitmap = LoadBitmap(hinst,MAKEINTRESOURCE(IDB_CHIP));
 	ImageList_Add(hImageList,hBitmap,NULL);
 	SendMessage(view->connectionHwnd,TVM_SETIMAGELIST,0,(LPARAM)hImageList);
+
+	// ShowWindow(view->connectionHwnd,SW_HIDE);
 }
 
 void addTreeNode(HWND treeHwnd,HTREEITEM hParent,char * nodeName){
