@@ -18,11 +18,6 @@ void handle_redis_data(TreeNode * datanode,RedisReply reply){
 	SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)reply,(LPARAM)(datanode));
 }
 
-// void handle_stat_info(RedisReply data){
-// 	KVPair kp = parseKVPair(data->bulk->content);
-// 	SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)reply,(LPARAM)(datanode));
-// }
-
 void add_data_node(TreeNode * dbnode,RedisReply data){
     for(int ix =0; ix < dbnode->subHandleSize; ix ++){
         TreeView_DeleteItem(mainModel->view->connectionHwnd,dbnode->subHandles[ix]);

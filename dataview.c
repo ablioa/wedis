@@ -94,7 +94,7 @@ void createDataViewWindow(HWND dataHwnd){
     dataView->zsetViewHwnd = buildZsetViewWindow(dataViewHwnd);
 	
 	dataView->systemViewHwnd = CreateWindowEx(0, SYSTEM_VIEW_CLASS,NULL,WS_CHILD | WS_VISIBLE,0,0,0,0,dataViewHwnd,0,hinst,NULL);
-    
+    ShowWindow(dataView->systemViewHwnd,SW_HIDE);
     dataView->dataViewHwnd  = dataViewHwnd;
 
     SetWindowLongPtr(dataHwnd,GWLP_USERDATA,(LONG_PTR)dataView);
@@ -102,10 +102,7 @@ void createDataViewWindow(HWND dataHwnd){
 
 void switchView(HWND hwnd,int type,RedisReply data){
 	DataView * dataView = mainModel->dataView;
-
-	// ShowWindow(mainModel->view->dataHwnd,SW_SHOW);
 	ShowWindow(dataView->visibleHwnd,SW_HIDE);
-	// ShowWindow(dataView->systemViewHwnd,SW_HIDE);
 	switch(type){
 		case REDIS_STRING:{
 			dataView->visibleHwnd = dataView->stringViewHwnd;
