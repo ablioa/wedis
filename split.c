@@ -39,6 +39,19 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
     HDC   hdc;
     RECT  rect;
 
+    ////////
+    HWND parentHwnd = GetParent(hwnd);
+    RECT parentRect;
+    RECT splitRect;
+    
+    ////////
+
+    GetWindowRect(parentHwnd, &parentRect);
+    GetWindowRect(hwnd,&splitRect);
+
+    int shadowTop    = splitRect.top - parentRect.top;
+    int shadowHeight = splitRect.bottom - splitRect.top;
+
     switch(msg){
         case WM_CREATE:{
             splitModel = (SplitModel*)calloc(1,sizeof(SplitModel));
@@ -55,67 +68,13 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
             break;
 		}
 
-        case WM_LBUTTONDOWN:{
+        case WM_LBUTTONUP:{
+            if(fDragMode == FALSE){break;}
             pt.x = (short)LOWORD(lParam);
             pt.y = (short)HIWORD(lParam);
-
-            RECT rectp;
-            HWND parent = GetParent(hwnd);
-            GetWindowRect(parent, &rectp);
-            ClipCursor(&rectp);
-
-            RECT rect1;
-            POINT pp;
-            POINT qq;
-
-			qq.x = rect1.right;
-			qq.y = rect1.bottom;
-			ScreenToClient(parent,&qq);
-
-            RECT wrect;
-            RECT lrect;
-            GetWindowRect(parent,&wrect);
-            GetWindowRect(hwnd,&lrect);
-            int offset = lrect.top - wrect.top;
-
-            hdc = GetWindowDC(parent);
-            DrawXorBar(hdc, pt.x,offset, SPLIT_WIDTH ,qq.y-pp.y);
-            ReleaseDC(parent, hdc);
-
-            GetWindowRect(parent,&rect);
-            
             ClientToScreen(hwnd,&pt);
-            pt.x -= rect.left;
-            pt.y -= rect.top;
-            
-            OffsetRect(&rect,-rect.left,-rect.top);
-            
-            if(pt.x < 0) {
-                pt.x = 0;
-            }
 
-            if(pt.x > rect.right - SPLIT_WIDTH){
-                pt.x = rect.right - SPLIT_WIDTH;
-            }
-            
-            fDragMode = TRUE;
-            SetCapture(hwnd);
-
-            oldx = pt.x;
-        }
-        break;
-       
-        case WM_LBUTTONUP:{
-             HWND parent = GetParent(hwnd);
-             pt.x = (short)LOWORD(lParam);
-             pt.y = (short)HIWORD(lParam);
-        
-             if(fDragMode == FALSE){
-                 return 0;
-             }
-        
-             GetWindowRect(parent,&rect);
-             ClientToScreen(hwnd,&pt);
+             GetWindowRect(parentHwnd,&rect);
              pt.x -= rect.left;
              pt.y -= rect.top;
         
@@ -130,38 +89,19 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
 			POINT pp;
 			POINT qq;
 
-            GetWindowRect(hwnd,&rect1);
-            pp.x = rect1.left;
-			pp.y = rect1.top;
-			ScreenToClient(parent,&pp);
-
-			qq.x = rect1.right;
-			qq.y = rect1.bottom;
-			ScreenToClient(parent,&qq);
-
-            RECT wrect;
-            RECT lrect;
-            GetWindowRect(parent,&wrect);
-            GetWindowRect(hwnd,&lrect);
-            int offset = lrect.top - wrect.top;
-
-            hdc = GetWindowDC(parent);
-            DrawXorBar(hdc, oldx,offset, SPLIT_WIDTH ,qq.y-pp.y);
-            ReleaseDC(parent, hdc);
+            hdc = GetWindowDC(parentHwnd);
+            DrawXorBar(hdc, oldx,shadowTop, SPLIT_WIDTH ,shadowHeight);
+            ReleaseDC(parentHwnd, hdc);
         
-             oldx = pt.x;
+            oldx = pt.x;
         
-             fDragMode = FALSE;
+            fDragMode = FALSE;
         
-             GetWindowRect(parent, &rect);
-             pt.x += rect.left;
-             pt.y += rect.top;
+            pt.x += parentRect.left;
+            pt.y += parentRect.top;
         
-             ScreenToClient(parent, &pt);
-             GetClientRect(parent, &rect);
-             nSplitterPos = pt.x;
-
-            ReleaseCapture();
+            ScreenToClient(parentHwnd, &pt);
+            nSplitterPos = pt.x;
 
             ClipCursor(NULL);
             ReleaseCapture();
@@ -173,11 +113,11 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
 
 				pp.x = rect1.left;
 				pp.y = rect1.top;
-				ScreenToClient(parent,&pp);
+				ScreenToClient(parentHwnd,&pp);
 
 				qq.x = rect1.right;
 				qq.y = rect1.bottom;
-				ScreenToClient(parent,&qq);
+				ScreenToClient(parentHwnd,&qq);
 
 				MoveWindow(hwnd,pp.x,pp.y,nSplitterPos-pp.x,qq.y - pp.y,TRUE);
                 SendMessage(hwnd,WM_SIZE,NULL,NULL);
@@ -189,11 +129,11 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
 
 				pp.x = rect1.left;
 				pp.y = rect1.top;
-				ScreenToClient(parent,&pp);
+				ScreenToClient(parentHwnd,&pp);
 
 				qq.x = rect1.right;
 				qq.y = rect1.bottom;
-				ScreenToClient(parent,&qq);
+				ScreenToClient(parentHwnd,&qq);
 
 				MoveWindow(hwnd,nSplitterPos+SPLIT_WIDTH,pp.y,
 					qq.x - (nSplitterPos+SPLIT_WIDTH),
@@ -205,11 +145,11 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
             GetWindowRect(hwnd,&rect1);
             pp.x = rect1.left;
 			pp.y = rect1.top;
-			ScreenToClient(parent,&pp);
+			ScreenToClient(parentHwnd,&pp);
 
 			qq.x = rect1.right;
 			qq.y = rect1.bottom;
-			ScreenToClient(parent,&qq);
+			ScreenToClient(parentHwnd,&qq);
 
 			MoveWindow(hwnd,nSplitterPos,pp.y,SPLIT_WIDTH,qq.y-pp.y,TRUE);
         }
@@ -220,52 +160,56 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
                  break;
             }
 
-            RECT parentRect;
-
-            HWND parent = GetParent(hwnd);
-            GetWindowRect(parent, &parentRect);
-
             pt.x = (short)LOWORD(lParam);
             pt.y = (short)HIWORD(lParam);
             ClientToScreen(hwnd, &pt);
             
             pt.x -= parentRect.left;
             pt.y -= parentRect.top;
-            
+
             OffsetRect(&parentRect, -parentRect.left, -parentRect.top);
             if(pt.x < 0){pt.x = 0;}
             if(pt.x > parentRect.right - SPLIT_WIDTH) {
                 pt.x = parentRect.right - SPLIT_WIDTH;
             }
-
-            RECT splitRect;
-            POINT pp;
-            POINT qq;
-
-            GetWindowRect(hwnd,&splitRect);
-            pp.x = splitRect.left;
-			pp.y = splitRect.top;
-			ScreenToClient(parent,&pp);
-
-			qq.x = splitRect.right;
-			qq.y = splitRect.bottom;
-			ScreenToClient(parent,&qq);
-
-            RECT wrect;
-            RECT lrect;
-            GetWindowRect(parent,&wrect);
-            GetWindowRect(hwnd,&lrect);
-            int offset = lrect.top - wrect.top;
             
             if(pt.x != oldx && wParam & MK_LBUTTON){
-                hdc = GetWindowDC(parent);
-                DrawXorBar(hdc, oldx,offset,SPLIT_WIDTH, qq.y-pp.y);
-                DrawXorBar(hdc, pt.x,offset,SPLIT_WIDTH, qq.y-pp.y);
-                ReleaseDC(parent, hdc);
+                hdc = GetWindowDC(parentHwnd);
+                DrawXorBar(hdc, oldx,shadowTop,SPLIT_WIDTH, shadowHeight);
+                DrawXorBar(hdc, pt.x,shadowTop,SPLIT_WIDTH, shadowHeight);
+                ReleaseDC(parentHwnd, hdc);
                 oldx = pt.x;
             }
         }
         break;
+
+        case WM_LBUTTONDOWN:{
+            pt.x = (short)LOWORD(lParam);
+            pt.y = (short)HIWORD(lParam);
+
+            ClipCursor(&parentRect);
+
+            hdc = GetWindowDC(parentHwnd);
+            DrawXorBar(hdc, pt.x,shadowTop, SPLIT_WIDTH ,shadowHeight);
+            ReleaseDC(parentHwnd, hdc);
+
+            ClientToScreen(hwnd,&pt);
+            pt.x -= parentRect.left;
+            pt.y -= parentRect.top;
+            OffsetRect(&parentRect,-parentRect.left,-parentRect.top);
+
+            if(pt.x < 0) {pt.x = 0;}
+            if(pt.x > parentRect.right - SPLIT_WIDTH){
+                pt.x = parentRect.right - SPLIT_WIDTH;
+            }
+            
+            fDragMode = TRUE;
+            SetCapture(hwnd);
+
+            oldx = pt.x;
+        }
+        break;
+
         
         case WM_DESTROY:{
             PostQuitMessage(0);

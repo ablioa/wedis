@@ -17,7 +17,6 @@
 #include "setview.h"
 #include "zsetview.h"
 #include "wedis.h"
-#include "console.h"
 #include "dataview.h"
 #include "systemview.h"
 #include "callbacks.h"
