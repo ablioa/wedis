@@ -4,9 +4,12 @@
 #include <windows.h>
 #include <commctrl.h>
 
+#include "wedis.h"
 #include "redis.h"
 #include "connection.h"
 #include "controller.h"
+
+extern FILE * logstream;
 
 void s_auth(TreeNode * hodeNode,char * password);
 

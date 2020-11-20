@@ -19,12 +19,16 @@ RedisReply receive_msg(RedisConnection stream){
 			stream->read_buff = (char*) realloc(stream->read_buff,stream->capacity);
 		}
 
+		//
+
 		memcpy(stream->read_buff + ((stream->capacity - stream->free_size)),localbuff,ret);
 		stream->free_size -= ret;
         
         int pos = 0;
 		reply = read_reply(stream->read_buff,&pos,(stream->capacity - stream->free_size));
 	}while(reply->reply_status != REPLY_STATUS_DONE);
+
+	wedis_log(stream->read_buff);
 
 	free(stream->read_buff);
 
@@ -283,7 +287,11 @@ void setKVPair(KVPair kv, const char *text){
 	char *vpos = strchr(text, ':');
 
 	strncpy(kv->key, text, (vpos - text));
-	kv->value = atoi(vpos + 1);
+
+	int len = strlen(vpos);
+
+	kv->value = (char *) calloc(strlen(vpos),sizeof(char));
+	strcpy(kv->value,vpos+1);
 }
 
 KVPair parseKVPair(char *buffer){

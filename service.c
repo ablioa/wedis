@@ -1,5 +1,26 @@
 #include "service.h"
 
+FILE * logstream;
+
+// TODO 记录二进制日志
+RedisReply redis_serialize_params(RedisConnection stream,RedisParams params){
+    char head[128] = {0};
+
+    sprintf(head,"*%d\r\n",params->param_count);
+    sendmsg(stream,head);
+
+    wedis_log(head);
+
+    //fwrite(head,strlen(head),1,log_file);
+
+    for(int ix = 0; ix < params->param_count; ix ++){
+        sendmsg(stream,params->items[ix]->diagram);
+        wedis_log(params->items[ix]->diagram);
+    }
+
+    return receive_msg(stream);
+}
+
 TreeNode * build_tree_node(TreeNode * parent,RedisNodeType node_type){
 	TreeNode * node = (TreeNode *) calloc(1,sizeof(TreeNode));
     node->level = node_type;
@@ -235,19 +256,6 @@ RedisParam redis_build_param(char * content){
     param->s_length = strlen(param->diagram);
     
     return param;
-}
-
-RedisReply redis_serialize_params(RedisConnection stream,RedisParams params){
-    char head[128] = {0};
-
-    sprintf(head,"*%d\r\n",params->param_count);
-    sendmsg(stream,head);
-
-    for(int ix = 0; ix < params->param_count; ix ++){
-        sendmsg(stream,params->items[ix]->diagram);
-    }
-
-    return receive_msg(stream);
 }
 
 RedisParams redis_delete_key(char * dataKey){

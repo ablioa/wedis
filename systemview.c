@@ -71,7 +71,6 @@ BOOL InitSetViewColumns1(HWND hWndListView) {
 }
 
 BOOL updateConfigDataSet(HWND hwnd,KVPair kv){
-    char value[256] = {0};
     LVITEM lvI;
 
     lvI.pszText   = LPSTR_TEXTCALLBACK;
@@ -87,13 +86,10 @@ BOOL updateConfigDataSet(HWND hwnd,KVPair kv){
         lvI.iImage = index;
         lvI.iSubItem = 0;
 
-        memset(value,0,256);
-        sprintf(value,"%d",kv->array[index]->value);
-
         lvI.pszText = kv->array[index]->key;
         ListView_InsertItem(hwnd, &lvI);
 
-        lvI.pszText = value;
+        lvI.pszText = kv->array[index]->value;
         lvI.iSubItem = 1;
         SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
     }

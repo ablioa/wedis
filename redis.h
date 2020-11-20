@@ -189,7 +189,8 @@ typedef struct keyspace_info * Keyspace;
 
 struct key_value_pair{
     char key[256];
-    int  value;
+
+	char * value;
 
     struct key_value_pair * tail;
     struct key_value_pair * next;
