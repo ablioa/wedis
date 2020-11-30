@@ -131,6 +131,7 @@ typedef struct redis_params * RedisParams;
 
 RedisParams redis_build_params(int count);
 
+
 void redis_add_param(RedisParams params,RedisParam param);
 
 struct redis_bulk{
@@ -155,22 +156,20 @@ struct redis_reply{
 };
 typedef struct redis_reply * RedisReply;
 
-struct redis_working_buffer{
-	char * buffer;
+struct redis_progress{
+	int total_buffer_size;
+	int free_buffer_size;
 
-	int    capacity;
+	int total_packet_size;
+	int read_packet_size;
 
-	int    size;
+	int total_entries;
+	int read_entries;
 };
 
-typedef struct redis_working_buffer * RedisWorkingBuffer;
+typedef struct redis_progress * RedisProgress;
 
-extern RedisWorkingBuffer redisWorkingBuffer;
-
-typedef struct{
-	int size;
-	char ** items;
-}ListModel;
+void free_redis_reply(RedisReply reply);
 
 struct keyspace_info{
     char name[255];

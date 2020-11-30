@@ -11,6 +11,10 @@ RedisReply receive_msg(RedisConnection stream){
 	stream->read_buff = (char*) calloc(stream->capacity,sizeof(char));
 	
 	do{
+		if(reply){
+			free_redis_reply(reply);
+			reply=NULL;
+		}
 		int ret = recv(stream->socket, localbuff, 4096, 0);
 
 		if(stream->free_size <= ret){
@@ -18,8 +22,6 @@ RedisReply receive_msg(RedisConnection stream){
 			stream->free_size += 4096;
 			stream->read_buff = (char*) realloc(stream->read_buff,stream->capacity);
 		}
-
-		//
 
 		memcpy(stream->read_buff + ((stream->capacity - stream->free_size)),localbuff,ret);
 		stream->free_size -= ret;
@@ -29,10 +31,47 @@ RedisReply receive_msg(RedisConnection stream){
 	}while(reply->reply_status != REPLY_STATUS_DONE);
 
 	wedis_log(stream->read_buff);
-
 	free(stream->read_buff);
 
 	return reply;
+}
+
+void free_redis_reply(RedisReply reply){
+	if(!reply){
+		return;
+	}
+
+	switch (reply->type){
+		case REPLY_STATUS:
+		case REPLY_ERROR:
+		case REPLY_BULK:
+			if(reply->bulk){
+				if(reply->bulk->content)
+					free(reply->bulk->content);
+
+				free(reply->bulk);
+			}
+			
+			break;
+		break;
+
+		case REPLY_DIGITAL:
+			// TODO ...
+		break;
+
+		case REPLY_MULTI:
+			for(int i = 0; i < reply->array_length; i++){
+				if(reply->bulks[i] != NULL){
+					free_redis_reply(reply->bulks[i]);
+				}
+			}
+		break;
+		
+		default:
+			break;
+	}
+
+	free(reply);
 }
 
 RedisBulk buildRedisBulk(int length){
@@ -53,9 +92,6 @@ int get_status_scope(char * text,int length){
 	}
 }
 
-/**
- *  解析交互报文，可能失败
- **/
 RedisReply read_reply(char *text,int * cur,int length){
 	//int cur = 0;
 	char ch = text[(*cur)++];
@@ -145,6 +181,14 @@ RedisReply read_reply(char *text,int * cur,int length){
                 RedisReply mrep = read_reply(text,cur,length);
                 if(mrep->reply_status != REPLY_STATUS_DONE){
                     reply->reply_status = REPLY_STATUS_PENDING;
+
+					// free temp memory
+					//for(int i = 0; i < ix; i ++){
+					//	free_redis_reply(reply->bulks[i]);
+					//	reply->bulks[i] = NULL;
+					//}
+					free_redis_reply(mrep);
+					// end free
                     break;
                 }else{
                     reply->bulks[ix] = mrep;

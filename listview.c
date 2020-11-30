@@ -98,7 +98,11 @@ BOOL updateListDataSet(HWND hwnd,RedisReply reply){
     lvI.iSubItem  = 0;
     lvI.state     = 0;
 
-    SendMessage(hwnd,LVM_DELETEALLITEMS,(WPARAM)NULL,(LPARAM)NULL);
+    //SendMessage(hwnd,LVM_DELETEALLITEMS,(WPARAM)NULL,(LPARAM)NULL);
+    ListView_DeleteAllItems(hwnd);
+
+    // MessageBox(hwnd,"start loading data","title",MB_OK);
+
     for(int ix = 0; ix < reply->array_length; ix ++){
         RedisReply item = reply->bulks[ix];
         
@@ -116,6 +120,23 @@ BOOL updateListDataSet(HWND hwnd,RedisReply reply){
         lvI.iSubItem = 1;
         SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
     }
+
+    free_redis_reply(reply);
+
+    // MessageBox(hwnd,"end loading data","title",MB_OK);
+
+    // free
+    // int length = reply->array_length;
+    // for(int i = 0; i < length; i ++){
+    //     RedisReply bulk = reply->bulks[i];
+
+    //     free(bulk->bulk->content);
+    //     free(bulk->bulk);
+    // }
+    // free(reply);
+
+    free_redis_reply(reply);
+    // free end
 
     return TRUE;
 }

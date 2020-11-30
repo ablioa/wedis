@@ -9,6 +9,19 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 		    break;
 		}
 
+		case WM_NOTIFY:{
+			LPNMHDR msg = ((LPNMHDR) lParam);
+			switch (msg->code) {
+				case LVN_DELETEALLITEMS:{
+					MessageBox(dataHwnd,"data removed.","hello",MB_OK);
+					break;
+				}
+			}
+
+			MessageBox(dataHwnd,"data removed.","hello",MB_OK);
+			break;
+		}
+
         case WM_COMMAND:{
 			switch(LOWORD (wParam)){
 				case GENERAL_CMD_RENAME:{

@@ -1,5 +1,9 @@
 #include "controller.h"
 
+void update_progress(){
+	
+}
+
 void handleKeyspace(Keyspace keyspace){
 	Keyspace * spaces = (Keyspace*)calloc(keyspace->count,sizeof(Keyspace *));
     Keyspace inode    = keyspace->next;
