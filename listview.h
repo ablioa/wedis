@@ -22,8 +22,6 @@ typedef struct{
    HWND toolBar;
 }ListViewModel;
 
-HWND buildListViewWindow(HWND parent);
-
 LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 void init_listview(HINSTANCE hInstance);

@@ -42,30 +42,14 @@ HWND buildZsetToolBar(HWND parent){
 
 BOOL InitZsetViewColumns(HWND hWndListView) { 
     LVCOLUMN lvc;
-    int iCol;
-
-	char * valName;
-
     lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
-    for (iCol = 0; iCol < 3; iCol++){
-		valName = (char *) calloc(128,sizeof(char));
-		strcpy(valName,zsetColNames[iCol]);
-
+    for (int iCol = 0; iCol < 3; iCol++){
         lvc.iSubItem = iCol;
-        lvc.pszText = valName;
+        lvc.pszText = zsetColNames[iCol];
         lvc.cx = 100;
-
-        if ( iCol < 2 ){
-            lvc.fmt = LVCFMT_LEFT;
-		}
-        else{
-            lvc.fmt = LVCFMT_RIGHT;
-		}
-
-        if (ListView_InsertColumn(hWndListView, iCol, &lvc) == -1){
-            return FALSE;
-		}
+        lvc.fmt = LVCFMT_LEFT;
+        ListView_InsertColumn(hWndListView, iCol, &lvc);
     }
     
     return TRUE;
@@ -144,29 +128,6 @@ BOOL UpdateZsetData(HWND hwnd,RedisReply reply){
     }
 
     return TRUE;
-}
-
-HWND buildZsetViewWindow(HWND parent){
-	HINSTANCE hinst = mainModel->hInstance;
-
-	RECT containerRect;
-	GetClientRect (parent, &containerRect);
-	
-	HWND dataViewHwnd  = CreateWindowEx(0, 
-		ZSET_VIEW_CLASS, (""), 
-        WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 
-        0, 
-		0,
-        containerRect.right - containerRect.left,
-        containerRect.bottom - containerRect.top,
-        parent, 
-	    (HMENU)0, 
-		hinst, 
-		0);
-
-	ShowWindow(dataViewHwnd,SW_HIDE);
-
-	return dataViewHwnd;
 }
 
 void init_zsetview(HINSTANCE hInstance){

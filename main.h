@@ -23,7 +23,6 @@
 #include "resource/resource.h"
 #include "exception.h"
 #include "config.h"
-#include "queue.h"
 #include "dispatch.h"
 #include "entry.h"
 #include "split.h"
@@ -80,7 +79,7 @@ typedef struct app_view{
 }AppView;
 
 typedef struct data_view{
-	HWND dataViewHwnd;
+	// HWND dataViewHwnd;
 
 	WNDPROC ttlBtnProc;
 	WNDPROC exportBtnProc;
@@ -121,8 +120,6 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 void initpan();
-
-void initModel();
 
 void onMainFrameCreate(HWND hwnd);
 

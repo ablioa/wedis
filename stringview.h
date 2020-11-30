@@ -25,8 +25,6 @@ typedef struct string_data_model{
 }StringViewModel;
 
 
-HWND buildStringViewWindow(HWND parent);
-
 LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 void init_stringview(HINSTANCE hInstance);

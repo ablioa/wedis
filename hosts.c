@@ -300,11 +300,6 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lPa
 					break;
 				}
 
-				// case IDC_CONNECTION_TEST:{
-				// 	MessageBox(hwnd,"test host","title",MB_OK);
-				// 	break;
-				// }
-
 				case IDOK:{
 					save_all_host_config();
 					EndDialog(hwnd,0);

@@ -18,8 +18,6 @@ typedef struct set_view_model{
    HWND toolBar;
 }SetViewModel;
 
-HWND buildSetViewWindow(HWND parent);
-
 LRESULT CALLBACK SetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 void init_setview(HINSTANCE hInstance);

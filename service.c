@@ -275,16 +275,16 @@ RedisParams redis_rename_key(char * dataKey,char * newKey){
     return params;
 }
 
-void appendTask(CommandType cmdType,const DataType dataType,const char * dataKey){
-    Task * task = buildTask(cmdType);
+// void appendTask(CommandType cmdType,const DataType dataType,const char * dataKey){
+//     Task * task = buildTask(cmdType);
 
-    task->dataType = dataType;
-    task->dataKey = NULL;
-    if(dataKey != NULL){
-        task->dataKey = (char *) malloc(sizeof(char) * 256);
-        memset(task->dataKey,0,sizeof(char ) * 256);
-        sprintf(task->dataKey,"%s",dataKey);
-    }
+//     task->dataType = dataType;
+//     task->dataKey = NULL;
+//     if(dataKey != NULL){
+//         task->dataKey = (char *) malloc(sizeof(char) * 256);
+//         memset(task->dataKey,0,sizeof(char ) * 256);
+//         sprintf(task->dataKey,"%s",dataKey);
+//     }
 
-    addTask(pool,task);
-}
+//     addTask(pool,task);
+// }

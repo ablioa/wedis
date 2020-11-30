@@ -26,28 +26,6 @@ HWND buildStringToolBar(HWND parent){
     return tb;
 }
 
-HWND buildStringViewWindow(HWND parent){
-	RECT rect;
-	HINSTANCE hinst = mainModel->hInstance;
-
-	GetClientRect (parent, &rect);
-	HWND dataViewHwnd  = CreateWindowEx(0,
-		STRING_VIEW_CLASS, (""), 
-        WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 
-        0, 
-		0,
-        rect.right - rect.left,
-        rect.bottom - rect.top,
-        parent, 
-	    (HMENU)0, 
-		hinst, 
-		0);
-
-	ShowWindow(dataViewHwnd,SW_HIDE);
-
-	return dataViewHwnd;
-}
-
 LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	RECT rect;
     StringViewModel * model = (StringViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);

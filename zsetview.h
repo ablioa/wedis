@@ -24,8 +24,6 @@ typedef struct zset_view_model{
    HWND toolBar;
 }ZsetViewModel;
 
-HWND buildZsetViewWindow(HWND parent);
-
 LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 void init_zsetview(HINSTANCE hInstance);

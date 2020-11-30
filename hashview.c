@@ -43,55 +43,20 @@ HWND buildHashToolBar(HWND parent){
 BOOL InitHashViewColumns(HWND hWndListView) { 
     LVCOLUMN lvc;
     int iCol;
-	char * valName;
+	char valName[255]={};
 
     lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
     for (iCol = 0; iCol < 3; iCol++){
-		valName = (char *) malloc(sizeof(char) * 128);
-		memset(valName,0,sizeof(char) * 128);
-		strcpy(valName,colNames[iCol]);
-
         lvc.iSubItem = iCol;
-        lvc.pszText = valName;
+        lvc.pszText = colNames[iCol];
         lvc.cx = 100;
+        lvc.fmt = LVCFMT_LEFT;
 
-        if ( iCol < 2 ){
-            lvc.fmt = LVCFMT_LEFT;
-		}
-        else{
-            lvc.fmt = LVCFMT_RIGHT;
-		}
-
-        if (ListView_InsertColumn(hWndListView, iCol, &lvc) == -1){
-            return FALSE;
-		}
+        ListView_InsertColumn(hWndListView, iCol, &lvc);
     }
     
     return TRUE;
-}
-
-HWND buildHashViewWindow(HWND parent){
-	RECT rect;
-
-	HINSTANCE hinst = mainModel->hInstance;
-	GetClientRect (parent, &rect);
-	
-	HWND dataViewHwnd  = CreateWindowEx(0, 
-		HASH_VIEW_CLASS, (""), 
-        WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 
-        0, 
-		0,
-        rect.right - rect.left,
-        rect.bottom - rect.top,
-        parent, 
-	    (HMENU)0, 
-		hinst, 
-		0);
-
-	ShowWindow(dataViewHwnd,SW_HIDE);
-
-	return dataViewHwnd;
 }
 
 BOOL updateHashDataSet(HWND hwnd,RedisReply reply){

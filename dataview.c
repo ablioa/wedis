@@ -2,10 +2,21 @@
 
 LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam){
 	DataView * dataView = mainModel->dataView;
+	RECT rect;
 
     switch(msg){
 		case WM_CREATE:{
-			createDataViewWindow(dataHwnd);
+			HINSTANCE hinst = mainModel->hInstance;
+			
+			dataView->hashViewHwnd   = CreateWindowEx(0, HASH_VIEW_CLASS,NULL, (!WS_VISIBLE) | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 0,0,0,0,dataHwnd, (HMENU)0, hinst, 0);
+			dataView->stringViewHwnd = CreateWindowEx(0, STRING_VIEW_CLASS,NULL, (!WS_VISIBLE) | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 0,0,0,0,dataHwnd, (HMENU)0, hinst, 0);
+			dataView->listViewHwnd   = CreateWindowEx(0, LIST_VIEW_CLASS,NULL, (!WS_VISIBLE) | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 0,0,0,0,dataHwnd, (HMENU)0, mainModel->hInstance,0);
+			dataView->setViewHwnd    = CreateWindowEx(0, SET_VIEW_CLASS,NULL, (!WS_VISIBLE) | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 0,0,0,0,dataHwnd, (HMENU)0, hinst, 0);;
+			dataView->zsetViewHwnd   = CreateWindowEx(0, ZSET_VIEW_CLASS,NULL, (!WS_VISIBLE) | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 0,0,0,0,dataHwnd, (HMENU)0, hinst, 0);
+			dataView->systemViewHwnd = CreateWindowEx(0, SYSTEM_VIEW_CLASS,NULL,(!WS_VISIBLE)| WS_CHILD,0,0,0,0,dataHwnd,0,hinst,NULL);
+
+			ShowWindow(dataView->systemViewHwnd,SW_HIDE);
+			SetWindowLongPtr(dataHwnd,GWLP_USERDATA,(LONG_PTR)dataView);
 		    break;
 		}
 
@@ -74,7 +85,13 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 		}
 
 		case WM_SIZE:{
-			resizeDataViewWinwdow(dataHwnd);
+			GetClientRect(dataHwnd,&rect);
+			MoveWindow(dataView->hashViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
+			MoveWindow(dataView->stringViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
+			MoveWindow(dataView->listViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
+			MoveWindow(dataView->setViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
+			MoveWindow(dataView->zsetViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
+			MoveWindow(dataView->systemViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
 			break;
 		}
 	}
@@ -82,40 +99,10 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 	return DefWindowProc(dataHwnd, msg, wParam, lParam);
 }
 
-void resizeDataViewWinwdow(HWND dataHwnd){
-	DataView * dataView = mainModel->dataView;
-	RECT rect;
-
-	GetClientRect(dataHwnd,&rect);
-
-    MoveWindow(dataView->dataViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
-}
-
-void createDataViewWindow(HWND dataHwnd){
-    DataView * dataView = mainModel->dataView;
-    HINSTANCE hinst = mainModel->hInstance;
-    
-    HWND dataViewHwnd  = CreateWindowEx(0, DATA_RENDER_WINDOW, (""), 
-        WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 
-        0, 0, 625, 240, 
-        dataHwnd, (HMENU)0, hinst, 0);
-    
-    dataView->hashViewHwnd = buildHashViewWindow(dataViewHwnd);
-    dataView->stringViewHwnd = buildStringViewWindow(dataViewHwnd);
-    dataView->listViewHwnd = buildListViewWindow(dataViewHwnd);
-    dataView->setViewHwnd = buildSetViewWindow(dataViewHwnd);
-    dataView->zsetViewHwnd = buildZsetViewWindow(dataViewHwnd);
-	
-	dataView->systemViewHwnd = CreateWindowEx(0, SYSTEM_VIEW_CLASS,NULL,WS_CHILD | WS_VISIBLE,0,0,0,0,dataViewHwnd,0,hinst,NULL);
-    ShowWindow(dataView->systemViewHwnd,SW_HIDE);
-    dataView->dataViewHwnd  = dataViewHwnd;
-
-    SetWindowLongPtr(dataHwnd,GWLP_USERDATA,(LONG_PTR)dataView);
-}
-
 void switchView(HWND hwnd,int type,RedisReply data){
 	DataView * dataView = mainModel->dataView;
-	ShowWindow(dataView->visibleHwnd,SW_HIDE);
+	HWND lastVisible = dataView->visibleHwnd;
+	
 	switch(type){
 		case REDIS_STRING:{
 			dataView->visibleHwnd = dataView->stringViewHwnd;
@@ -148,28 +135,9 @@ void switchView(HWND hwnd,int type,RedisReply data){
 		}
 	}
 
-	ShowWindow(dataView->visibleHwnd,SW_SHOW);
 	SendMessage(dataView->visibleHwnd,WM_DT,(WPARAM)data,(LPARAM)NULL);
-}
-
-LRESULT CALLBACK dataRenderProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
-
-	DataView * dataView = mainModel->dataView;
-	RECT rect;
-
-	switch(message){
-	    case WM_SIZE:{
-			GetClientRect(hwnd,&rect);
-
-			MoveWindow(dataView->hashViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
-			MoveWindow(dataView->stringViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
-			MoveWindow(dataView->listViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
-			MoveWindow(dataView->setViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
-			MoveWindow(dataView->zsetViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
-			MoveWindow(dataView->systemViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
-			break;
-	    }
+	ShowWindow(dataView->visibleHwnd,SW_SHOW);
+	if(lastVisible != dataView->visibleHwnd){
+		ShowWindow(lastVisible,SW_HIDE);
 	}
-
-    return DefWindowProc (hwnd, message, wParam, lParam);
 }

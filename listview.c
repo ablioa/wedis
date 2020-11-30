@@ -33,59 +33,19 @@ HWND buildListToolBar(HWND parent){
     return tb;
 }
 
-BOOL InitListDViewColumns(HWND hWndListView) { 
+BOOL InitListDViewColumns(HWND hWndListView) {
     LVCOLUMN lvc;
-    int iCol;
-	char * valName;
-
     lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
-
-    for (iCol = 0; iCol < 2; iCol++){
-        lvc.iSubItem = iCol;
-
-		// 注意内存释放
-		valName = (char *) malloc(sizeof(char) * 128);
-		memset(valName,0,sizeof(char) * 128);
-		strcpy(valName,listColNames[iCol]);
-
-        lvc.pszText = valName;
-        lvc.cx = 100;
-
-        if ( iCol < 2 ){
-            lvc.fmt = LVCFMT_LEFT;
-		}
-        else{
-            lvc.fmt = LVCFMT_RIGHT;
-		}
-
-        if (ListView_InsertColumn(hWndListView, iCol, &lvc) == -1){
-            return FALSE;
-		}
+    
+    for (int i = 0; i < 2; i++){
+        lvc.pszText  = listColNames[i];
+        lvc.cx       = 100;
+        lvc.iSubItem = i;
+        lvc.fmt      = LVCFMT_LEFT;
+        ListView_InsertColumn(hWndListView, i, &lvc);
     }
     
     return TRUE;
-}
-
-HWND buildListViewWindow(HWND parent){
-    RECT rect;
-	GetClientRect (parent, &rect);
-	
-	HWND dataViewHwnd  = CreateWindowEx(0, 
-		LIST_VIEW_CLASS, (""), 
-        WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 
-        0, 
-		0,
-        rect.right - rect.left,
-        rect.bottom - rect.top,
-        parent, 
-	    (HMENU)0, 
-		mainModel->hInstance, 
-		0);
-
-	ShowWindow(dataViewHwnd,SW_HIDE);
-
-	return dataViewHwnd;
-    
 }
 
 BOOL updateListDataSet(HWND hwnd,RedisReply reply){
@@ -98,10 +58,7 @@ BOOL updateListDataSet(HWND hwnd,RedisReply reply){
     lvI.iSubItem  = 0;
     lvI.state     = 0;
 
-    //SendMessage(hwnd,LVM_DELETEALLITEMS,(WPARAM)NULL,(LPARAM)NULL);
     ListView_DeleteAllItems(hwnd);
-
-    // MessageBox(hwnd,"start loading data","title",MB_OK);
 
     for(int ix = 0; ix < reply->array_length; ix ++){
         RedisReply item = reply->bulks[ix];
@@ -123,21 +80,6 @@ BOOL updateListDataSet(HWND hwnd,RedisReply reply){
 
     free_redis_reply(reply);
 
-    // MessageBox(hwnd,"end loading data","title",MB_OK);
-
-    // free
-    // int length = reply->array_length;
-    // for(int i = 0; i < length; i ++){
-    //     RedisReply bulk = reply->bulks[i];
-
-    //     free(bulk->bulk->content);
-    //     free(bulk->bulk);
-    // }
-    // free(reply);
-
-    free_redis_reply(reply);
-    // free end
-
     return TRUE;
 }
 
@@ -147,25 +89,17 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
     switch(message){
 	    case WM_CREATE:{
-            listViewModel = (ListViewModel*)malloc(sizeof(ListViewModel));
-            memset(listViewModel,0,sizeof(ListViewModel));
+            listViewModel = (ListViewModel*)calloc(1,sizeof(ListViewModel));
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)listViewModel);
-
-            GetClientRect (hwnd, &rect);
 
 	        listViewModel->listView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
                           WS_CHILD | WS_VISIBLE| WS_BORDER | LVS_REPORT | LVS_SHAREIMAGELISTS,
-                          0, 0,
-                          rect.right - rect.left -60,
-                          rect.bottom - rect.top,
+                          0, 0, 0, 0,
                           hwnd, NULL, mainModel->hInstance, NULL);
 
             listViewModel->toolBar = buildListToolBar(hwnd);
-            
             ListView_SetExtendedListViewStyle(listViewModel->listView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
-
 			InitListDViewColumns(listViewModel->listView);
-
 		    break;
 		}
 

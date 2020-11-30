@@ -6,23 +6,15 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
 	MSG  msg;
 
     initResource();
-
 	ginit();
-
     save_all();
-
 	initpan(hInst);
 
-	initModel();
-
+	mainModel = (MainModel *)calloc(1,sizeof(MainModel));
+	mainModel->dataView = (DataView *) calloc(1,sizeof(DataView));
     mainModel->hInstance = hInst;
 
-	HWND hwndFrame = CreateWindowEx(WS_EX_LEFT,
-					szFrameClass, TEXT ("wedis"),
-                    WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
-					CW_USEDEFAULT, 0,
-					400, 300,
-                    NULL,NULL, hInst, NULL) ;
+	HWND hwndFrame = CreateWindowEx(WS_EX_LEFT,szFrameClass, TEXT ("wedis"),WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,CW_USEDEFAULT, 0,400, 300,NULL,NULL, hInst, NULL) ;
 
 	mainModel->mainWindowHwnd = hwndFrame;
 
@@ -116,7 +108,6 @@ void initpan(HINSTANCE hInstance){
 	init_setview(hInstance);
 	init_zsetview(hInstance);
 	init_systemview(hInstance);
-
 	initSplit(hInstance);
 
     WNDCLASSEX hSplitClass;
@@ -128,26 +119,11 @@ void initpan(HINSTANCE hInstance){
     hSplitClass.hInstance     = hInstance;
     hSplitClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     hSplitClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    hSplitClass.hbrBackground = CreateSolidBrush(RGB(240,0,0)); // 240 240 240
+    hSplitClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
     hSplitClass.lpszMenuName  = 0;
     hSplitClass.lpszClassName = DATAVIEW_WINDOW;
     hSplitClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     RegisterClassEx(&hSplitClass);
-
-    WNDCLASSEX dataRenderClass;
-    dataRenderClass.cbSize        = sizeof(dataRenderClass);
-    dataRenderClass.style         = 0;
-    dataRenderClass.lpfnWndProc   = dataRenderProc;
-    dataRenderClass.cbClsExtra    = 0;
-    dataRenderClass.cbWndExtra    = 0;
-    dataRenderClass.hInstance     = hInstance;
-    dataRenderClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
-    dataRenderClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    dataRenderClass.hbrBackground = CreateSolidBrush(RGB(0,0,240));
-    dataRenderClass.lpszMenuName  = 0;
-    dataRenderClass.lpszClassName = DATA_RENDER_WINDOW;
-    dataRenderClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
-    RegisterClassEx(&dataRenderClass);
 
 	WNDCLASSEX  mainClass;
 	mainClass.cbSize = sizeof (WNDCLASSEX);
@@ -166,19 +142,10 @@ void initpan(HINSTANCE hInstance){
 	RegisterClassEx(&mainClass);
 }
 
-void initModel(){
-	mainModel = (MainModel *)calloc(1,sizeof(MainModel));
-	mainModel->dataView = (DataView *) calloc(1,sizeof(DataView));
-
-	initTaskPool();
-}
-
 void onExit(){
 }
 
 void onMainFrameCreate(HWND hwnd){
-	RECT rt;
-	RECT connctionRect;
 	HINSTANCE hInst = mainModel->hInstance;
 
     mainModel->view = (AppView *)calloc(1,sizeof(AppView));
@@ -187,17 +154,14 @@ void onMainFrameCreate(HWND hwnd){
 	buildToolBar(mainModel->view);
 	buildStatusBar(mainModel->view);
     
-	//GetClientRect(mainModel->view->hwnd,&rt);
-	mainModel->view->dataviewHwnd       = CreateWindowEx(0, DATAVIEW_WINDOW,NULL,WS_CHILD | WS_VISIBLE,0,0,0,0,mainModel->view->hwnd,0,mainModel->hInstance,NULL);
+	mainModel->view->dataviewHwnd = CreateWindowEx(0, DATAVIEW_WINDOW,NULL,WS_CHILD | WS_VISIBLE,0,0,0,0,mainModel->view->hwnd,0,mainModel->hInstance,NULL);
 
     buildConnectionView(mainModel->view);
-    //getConnectionRect(mainModel->view,&rt,&connctionRect);
     
     mainModel->view->westSplitHwnd =CreateWindowEx(0,V_SPLIT,"", WS_VISIBLE|WS_CHILD,0,0,0,0,mainModel->view->hwnd,0,hInst,0);
     SendMessage(mainModel->view->westSplitHwnd,WM_SET_PANES_HWND,(WPARAM)mainModel->view->overviewHwnd,(LPARAM)mainModel->view->dataviewHwnd);
 
 	mainModel->hConnectionMenu = CreatePopupMenu();
-
 	AppendMenu(mainModel->hConnectionMenu,MF_STRING,IDM_CONNECTION_POOL,"Connections");
 	AppendMenu(mainModel->hConnectionMenu,MF_SEPARATOR,0,"");
 
@@ -335,9 +299,7 @@ void command(HWND hwnd,int cmd){
 			DialogBox (hInst,MAKEINTRESOURCE (IDD_ADD_ENTRY),hwnd,(DLGPROC)entryDlgProc);
 			break;
 		}
-		case IDM_DEBUG_GET_DATABASES:{
-			break;
-		}
+
 		case IDM_CONNECTION_POOL:{
 			DialogBox (hInst,MAKEINTRESOURCE (IDD_CONNECTION),hwnd,(DLGPROC)conectionConfigDlgProc);
 			break;
@@ -393,23 +355,17 @@ void command(HWND hwnd,int cmd){
 }
 
 LPTSTR mGetOpenFileName(HWND hwnd){
-    OPENFILENAME * ofn = (OPENFILENAME *)malloc(sizeof(OPENFILENAME));
-	LPSTR	fname = (LPSTR)malloc(sizeof(char) * MAX_PATH);
-	ZeroMemory(fname,MAX_PATH);
-
 	LPSTR retVal = NULL;
-
-	ZeroMemory(ofn,sizeof(OPENFILENAME));
+    OPENFILENAME * ofn = (OPENFILENAME *)calloc(1,sizeof(OPENFILENAME));
+	LPSTR	fname = (LPSTR)calloc(MAX_PATH,sizeof(char));
 
 	ofn->lStructSize = sizeof(OPENFILENAME);
-	ofn->hwndOwner = hwnd;
-	ofn->hInstance = mainModel->hInstance;
+	ofn->hwndOwner   = hwnd;
+	ofn->hInstance   = mainModel->hInstance;
 	ofn->lpstrFilter = "All Files\0*.*\0HexFiles\0*.hex\0\0";
-	ofn->lpstrFile = fname;
-	ofn->nMaxFile =MAX_PATH;
-
-	ofn->Flags = OFN_FILEMUSTEXIST |OFN_PATHMUSTEXIST |
-		OFN_LONGNAMES | OFN_EXPLORER |OFN_HIDEREADONLY;
+	ofn->lpstrFile   = fname;
+	ofn->nMaxFile    = MAX_PATH;
+	ofn->Flags = OFN_FILEMUSTEXIST |OFN_PATHMUSTEXIST | OFN_LONGNAMES | OFN_EXPLORER |OFN_HIDEREADONLY;
 
 	if(GetOpenFileName(ofn)){
 		retVal = fname;
@@ -419,23 +375,17 @@ LPTSTR mGetOpenFileName(HWND hwnd){
 }
 
 LPTSTR mGetSaveFileName(HWND hwnd){
-	OPENFILENAME * ofn = (OPENFILENAME *)malloc(sizeof(OPENFILENAME));
-	LPSTR	fname = (LPSTR)malloc(sizeof(char) * MAX_PATH);
-	ZeroMemory(fname,MAX_PATH);
-
-	LPSTR retVal = NULL;
-
-	ZeroMemory(ofn,sizeof(OPENFILENAME));
-
+	LPSTR retVal      = NULL;
+	OPENFILENAME * ofn = (OPENFILENAME *)calloc(1,sizeof(OPENFILENAME));
+	LPSTR	fname      = (LPSTR)calloc(MAX_PATH,sizeof(char));
+	
 	ofn->lStructSize = sizeof(OPENFILENAME);
 	ofn->hwndOwner = hwnd;
 	ofn->hInstance = mainModel->hInstance;
 	ofn->lpstrFilter = "All Files\0*.*\0HexFiles\0*.hex\0\0";
 	ofn->lpstrFile = fname;
 	ofn->nMaxFile =MAX_PATH;
-
-	ofn->Flags = OFN_FILEMUSTEXIST |OFN_PATHMUSTEXIST |
-		OFN_LONGNAMES | OFN_EXPLORER |OFN_HIDEREADONLY;
+	ofn->Flags = OFN_FILEMUSTEXIST |OFN_PATHMUSTEXIST |OFN_LONGNAMES | OFN_EXPLORER |OFN_HIDEREADONLY;
 
 	if(GetSaveFileName(ofn)){
 		retVal = fname;
@@ -541,17 +491,6 @@ void getSpliterRect(AppView * v,RECT * rt,RECT * rect){
     rect->right  = SPLITER_WIDTH;
     rect->bottom = (rt->bottom - rt->top) - v->toolbarHeight - v->statusbarHeight;
 }
-
-// void getSouthSpliterRect(AppView * view,RECT * rt,RECT * rect){
-
-//     int totalHeight = rt->bottom - rt->top;
-//     int totalWidth  = rt->right - rt->left;
-
-//     rect->left   = getConnectionWidth(view) + SPLITER_WIDTH;
-//     rect->top    = totalHeight - 200 - SPLITER_WIDTH - STATUSBAR_HEIGHT;
-//     rect->right  = totalWidth - getConnectionWidth(view) + SPLITER_WIDTH;
-//     rect->bottom = SPLITER_WIDTH;
-// }
 
 void buildConnectionView(AppView * view){
 	RECT            rt;
