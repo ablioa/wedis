@@ -241,7 +241,7 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lPa
                     TVITEM ti = {0};
                     ti.mask = TVIF_HANDLE | TVIF_PARAM;
                     ti.hItem = hItem;
-                    TreeView_GetItem(mainModel->view->connectionHwnd, &ti);
+                    TreeView_GetItem(mainModel->view->overviewHwnd, &ti);
 
                     Host * host = (Host *) ti.lParam;
                     if(host != NULL){

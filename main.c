@@ -94,7 +94,6 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 
         case WM_DESTROY:{
 			onExit();
-			//connection_close_connect(mainModel->connection);
             PostQuitMessage(0);
 			break;
 		}
@@ -129,7 +128,7 @@ void initpan(HINSTANCE hInstance){
     hSplitClass.hInstance     = hInstance;
     hSplitClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     hSplitClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    hSplitClass.hbrBackground = CreateSolidBrush(RGB(240,240,240)); // 240 240 240
+    hSplitClass.hbrBackground = CreateSolidBrush(RGB(240,0,0)); // 240 240 240
     hSplitClass.lpszMenuName  = 0;
     hSplitClass.lpszClassName = DATAVIEW_WINDOW;
     hSplitClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
@@ -144,7 +143,7 @@ void initpan(HINSTANCE hInstance){
     dataRenderClass.hInstance     = hInstance;
     dataRenderClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     dataRenderClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    dataRenderClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
+    dataRenderClass.hbrBackground = CreateSolidBrush(RGB(0,0,240));
     dataRenderClass.lpszMenuName  = 0;
     dataRenderClass.lpszClassName = DATA_RENDER_WINDOW;
     dataRenderClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
@@ -178,17 +177,33 @@ void onExit(){
 }
 
 void onMainFrameCreate(HWND hwnd){
-	mainModel->view = buildAppView(hwnd);
-	CreateView(mainModel->view);
+	RECT rt;
+	RECT connctionRect;
+	HINSTANCE hInst = mainModel->hInstance;
 
-	mainModel->hDev = CreatePopupMenu();
+    mainModel->view = (AppView *)calloc(1,sizeof(AppView));
+    mainModel->view->hwnd = hwnd;
 
-	AppendMenu(mainModel->hDev,MF_STRING,IDM_CONNECTION_POOL,"Connections");
-	AppendMenu(mainModel->hDev,MF_SEPARATOR,0,"");
+	buildToolBar(mainModel->view);
+	buildStatusBar(mainModel->view);
+    
+	//GetClientRect(mainModel->view->hwnd,&rt);
+	mainModel->view->dataviewHwnd       = CreateWindowEx(0, DATAVIEW_WINDOW,NULL,WS_CHILD | WS_VISIBLE,0,0,0,0,mainModel->view->hwnd,0,mainModel->hInstance,NULL);
+
+    buildConnectionView(mainModel->view);
+    //getConnectionRect(mainModel->view,&rt,&connctionRect);
+    
+    mainModel->view->westSplitHwnd =CreateWindowEx(0,V_SPLIT,"", WS_VISIBLE|WS_CHILD,0,0,0,0,mainModel->view->hwnd,0,hInst,0);
+    SendMessage(mainModel->view->westSplitHwnd,WM_SET_PANES_HWND,(WPARAM)mainModel->view->overviewHwnd,(LPARAM)mainModel->view->dataviewHwnd);
+
+	mainModel->hConnectionMenu = CreatePopupMenu();
+
+	AppendMenu(mainModel->hConnectionMenu,MF_STRING,IDM_CONNECTION_POOL,"Connections");
+	AppendMenu(mainModel->hConnectionMenu,MF_SEPARATOR,0,"");
 
 	Host * start = appConfig->head;
 	while (start != NULL){
-		AppendMenu(mainModel->hDev,MF_STRING,(start->hostIndex + IDM_CUSTOMER_HOST+1),start->name);
+		AppendMenu(mainModel->hConnectionMenu,MF_STRING,(start->hostIndex + IDM_CUSTOMER_HOST+1),start->name);
 		start = start->next;
 	}
 	
@@ -249,12 +264,12 @@ TreeNode * getSelectedNode(){
     POINT pt;
     pt.x = LOWORD(dwPos);
     pt.y = HIWORD(dwPos);
-    ScreenToClient(mainModel->view->connectionHwnd, &pt);
+    ScreenToClient(mainModel->view->overviewHwnd, &pt);
     
     TVHITTESTINFO ht = {0};
     ht.pt = pt;
     ht.flags = TVHT_ONITEM;
-    HTREEITEM hItem = TreeView_HitTest(mainModel->view->connectionHwnd, &ht);
+    HTREEITEM hItem = TreeView_HitTest(mainModel->view->overviewHwnd, &ht);
 	if(hItem == NULL){
 		return NULL;
 	}
@@ -264,7 +279,7 @@ TreeNode * getSelectedNode(){
     ti.cchTextMax = 128;
     ti.pszText = buf;
     ti.hItem = hItem;
-    TreeView_GetItem(mainModel->view->connectionHwnd, &ti);
+    TreeView_GetItem(mainModel->view->overviewHwnd, &ti);
 
 	TreeNode * tn = (TreeNode*) ti.lParam;
 	return tn;
@@ -289,7 +304,7 @@ TreeNode * addHostNode(RedisConnection stream,char * connectionName){
     tvinsert.item.pszText= connectionName;
 	tvinsert.item.lParam=(LPARAM)hostNode;
 
-	HTREEITEM  handle = (HTREEITEM)SendMessage(view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+	HTREEITEM  handle = (HTREEITEM)SendMessage(view->overviewHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 	hostNode->handle = handle;
 
 	return hostNode;
@@ -341,7 +356,7 @@ void command(HWND hwnd,int cmd){
 		case IDM_CONNECTION:{
 			POINT pt;
 			GetCursorPos(&pt);
-			TrackPopupMenu(mainModel->hDev,TPM_LEFTALIGN,pt.x,pt.y,0,hwnd,NULL);
+			TrackPopupMenu(mainModel->hConnectionMenu,TPM_LEFTALIGN,pt.x,pt.y,0,hwnd,NULL);
 			break;
 		}
 
@@ -361,7 +376,7 @@ void command(HWND hwnd,int cmd){
 		}
 
 		case IDM_SYSTEM_STAT:{
-			RedisReply dd = s_db_info_stats(mainModel->activeHost,"stats");
+			s_db_info_stats(mainModel->activeHost,"stats");
 			break;
 		}
 
@@ -429,47 +444,6 @@ LPTSTR mGetSaveFileName(HWND hwnd){
 	return retVal;
 }
 
-AppView * buildAppView(HWND hwnd){
-    AppView * view = (AppView *)malloc(sizeof(AppView));
-    ZeroMemory(view,sizeof(AppView));
-
-    view->hwnd = hwnd;
-    view->connectionAreaWitdh = CONNECTION_AREA_WIDTH;
-
-    view->toolbarHeight = 16;
-    view->statusbarHeight = 20;
-    
-    return view;
-}
-
-void CreateView(AppView * view){
-	RECT rt;
-	RECT connctionRect;
-
-	HINSTANCE hInst = mainModel->hInstance;
-
-	buildToolBar(view);
-	buildStatusBar(view);
-    
-	GetClientRect(view->hwnd,&rt);
-	view->dataHwnd       = CreateWindowEx(0, DATAVIEW_WINDOW,NULL,WS_CHILD | WS_VISIBLE,0,0,0,0,view->hwnd,0,mainModel->hInstance,NULL);
-    // view->systemViewHwnd = CreateWindowEx(0, SYSTEM_VIEW_CLASS,NULL,WS_CHILD | WS_VISIBLE,0,0,0,0,view->hwnd,0,mainModel->hInstance,NULL);
-    
-	// ShowWindow(view->dataHwnd,SW_HIDE);
-	// ShowWindow(view->toolBarHwnd,SW_HIDE);
-
-    buildConnectionView(view);
-    getConnectionRect(view,&rt,&connctionRect);
-    
-    view->westSplitHwnd =CreateWindowEx(0,V_SPLIT,"", WS_VISIBLE|WS_CHILD,
-		connctionRect.right,0+view->toolbarHeight,
-		2,rt.bottom-rt.top-view->toolbarHeight - view->statusbarHeight,
-		view->hwnd,0,hInst,0);
-
-    SendMessage(view->westSplitHwnd,WM_SET_PANES_HWND,(WPARAM)view->connectionHwnd,(LPARAM)view->dataHwnd);
-	// SendMessage(view->westSplitHwnd,WM_SET_PANES_HWND,(WPARAM)view->connectionHwnd,(LPARAM)view->systemViewHwnd);
-}
-
 void Size(AppView * view){
     RECT rt;
     RECT connctionRect;
@@ -477,15 +451,15 @@ void Size(AppView * view){
     RECT spliterRect;
     
     GetClientRect(view->hwnd,&rt);
-    MoveWindow(view->toolBarHwnd,0,0,rt.right,view->toolbarHeight,TRUE);
-    MoveWindow(view->statusBarHwnd,0,rt.bottom-view->statusbarHeight,rt.right,view->statusbarHeight,TRUE);
+    MoveWindow(view->toolBarHwnd,0,0,rt.right,TOOLBAR_HEIGHT,TRUE);
+    MoveWindow(view->statusBarHwnd,0,rt.bottom-STATUSBAR_HEIGHT,rt.right,STATUSBAR_HEIGHT,TRUE);
     SendMessage(view->statusBarHwnd,WM_SIZE,0,0);
     
     getConnectionRect(view,&rt,&connctionRect);
-    MoveWindow(view->connectionHwnd,connctionRect.left,connctionRect.top,connctionRect.right,connctionRect.bottom,TRUE);
+    MoveWindow(view->overviewHwnd,connctionRect.left,connctionRect.top,connctionRect.right,connctionRect.bottom,TRUE);
     
     getDataRect(view,&rt,&dataRect);
-    MoveWindow(view->dataHwnd,dataRect.left,dataRect.top,dataRect.right,dataRect.bottom,TRUE);
+    MoveWindow(view->dataviewHwnd,dataRect.left,dataRect.top,dataRect.right,dataRect.bottom,TRUE);
     
     getSpliterRect(view,&rt,&spliterRect);
     MoveWindow(view->westSplitHwnd,spliterRect.left,spliterRect.top,spliterRect.right,spliterRect.bottom,TRUE);
@@ -535,55 +509,49 @@ void buildStatusBar(AppView * view){
 	SendMessage(view->statusBarHwnd,SB_SETPARTS,7,(LPARAM)wd);
     SendMessage(view->statusBarHwnd,SB_SETMINHEIGHT,16,0);
 
-	SendMessage(view->statusBarHwnd, SB_SETTEXT,1, (LPARAM)"192.168.1.9:6379");
-	SendMessage(view->statusBarHwnd, SB_SETTEXT,2, (LPARAM)"db1");
-	SendMessage(view->statusBarHwnd, SB_SETTEXT,3, (LPARAM)"1000000000000001");
-	SendMessage(view->statusBarHwnd, SB_SETTEXT,4, (LPARAM)"STRING");
-	SendMessage(view->statusBarHwnd, SB_SETTEXT,5, (LPARAM)"2312 Byte");
-
 	GetWindowRect(view->statusBarHwnd,&trt);
 	view->statusbarHeight = trt.bottom-trt.top;
 }
 
-void getConnectionRect(AppView * view,RECT * rt,RECT * rect){
-    rect->left=0;
-    rect->top=view->toolbarHeight;
-    rect->right=getConnectionWidth(view) + rect->left;
-    rect->bottom= (rt->bottom - rt->top) - (view->toolbarHeight + view->statusbarHeight);
+void getConnectionRect(AppView * v,RECT * rt,RECT * rect){
+    rect->left   = 0;
+    rect->top    = v->toolbarHeight;
+    rect->right  = getConnectionWidth(v) + rect->left;
+    rect->bottom = (rt->bottom - rt->top) - (v->toolbarHeight + v->statusbarHeight);
 }
 
 int getConnectionWidth(AppView * view){
     RECT rect;
-    GetWindowRect(view->connectionHwnd,&rect);
+    GetWindowRect(view->overviewHwnd,&rect);
     return rect.right - rect.left;
 }
 
-void getDataRect(AppView * view,RECT * rt,RECT * rect){
+void getDataRect(AppView * v,RECT * rt,RECT * rect){
     int totalHeight = rt->bottom - rt->top;
 
-    rect->left=getConnectionWidth(view) + SPLITER_WIDTH;
-    rect->top=view->toolbarHeight;
-    rect->right=(rt->right - rt->left) - getConnectionWidth(view) - SPLITER_WIDTH;
-    rect->bottom= totalHeight - view->toolbarHeight - view->statusbarHeight;
+    rect->left   = getConnectionWidth(v) + SPLITER_WIDTH;
+    rect->top    = v->toolbarHeight;
+    rect->right  = (rt->right - rt->left) - getConnectionWidth(v) - SPLITER_WIDTH;
+    rect->bottom = totalHeight - v->toolbarHeight - v->statusbarHeight;
 }
 
-void getSpliterRect(AppView * view,RECT * rt,RECT * rect){
-    rect->left   = getConnectionWidth(view);
-    rect->top    = view->toolbarHeight;
+void getSpliterRect(AppView * v,RECT * rt,RECT * rect){
+    rect->left   = getConnectionWidth(v);
+    rect->top    = v->toolbarHeight;
     rect->right  = SPLITER_WIDTH;
-    rect->bottom = (rt->bottom - rt->top) - (view->toolbarHeight + view->statusbarHeight);
+    rect->bottom = (rt->bottom - rt->top) - v->toolbarHeight - v->statusbarHeight;
 }
 
-void getSouthSpliterRect(AppView * view,RECT * rt,RECT * rect){
+// void getSouthSpliterRect(AppView * view,RECT * rt,RECT * rect){
 
-    int totalHeight = rt->bottom - rt->top;
-    int totalWidth  = rt->right - rt->left;
+//     int totalHeight = rt->bottom - rt->top;
+//     int totalWidth  = rt->right - rt->left;
 
-    rect->left   = getConnectionWidth(view) + SPLITER_WIDTH;
-    rect->top    = totalHeight - 200 - SPLITER_WIDTH - view->statusbarHeight;
-    rect->right  = totalWidth - getConnectionWidth(view) + SPLITER_WIDTH;
-    rect->bottom = SPLITER_WIDTH;
-}
+//     rect->left   = getConnectionWidth(view) + SPLITER_WIDTH;
+//     rect->top    = totalHeight - 200 - SPLITER_WIDTH - STATUSBAR_HEIGHT;
+//     rect->right  = totalWidth - getConnectionWidth(view) + SPLITER_WIDTH;
+//     rect->bottom = SPLITER_WIDTH;
+// }
 
 void buildConnectionView(AppView * view){
 	RECT            rt;
@@ -591,20 +559,18 @@ void buildConnectionView(AppView * view){
 	HINSTANCE hinst = mainModel->hInstance;
 	GetWindowRect(view->hwnd,&rt);
 
-	view->connectionHwnd = CreateWindowEx(0,"SysTreeView32",0,
+	view->overviewHwnd = CreateWindowEx(0,"SysTreeView32",0,
 		WS_CHILD |WS_BORDER | WS_VISIBLE | TVIF_TEXT | TVS_HASLINES  | TVS_LINESATROOT,
         	0,
-            view->toolbarHeight,
-			view->connectionAreaWitdh,
-            rt.bottom-rt.left-view->statusbarHeight - view->statusbarHeight,
+            TOOLBAR_HEIGHT,
+			CONNECTION_AREA_WIDTH,
+            rt.bottom-rt.top-TOOLBAR_HEIGHT - STATUSBAR_HEIGHT,
             view->hwnd,NULL,hinst,0);
 
 	HIMAGELIST hImageList=ImageList_Create(16,16,ILC_COLOR24,2,10);
 	HBITMAP hBitmap = LoadBitmap(hinst,MAKEINTRESOURCE(IDB_CHIP));
 	ImageList_Add(hImageList,hBitmap,NULL);
-	SendMessage(view->connectionHwnd,TVM_SETIMAGELIST,0,(LPARAM)hImageList);
-
-	// ShowWindow(view->connectionHwnd,SW_HIDE);
+	SendMessage(view->overviewHwnd,TVM_SETIMAGELIST,0,(LPARAM)hImageList);
 }
 
 void addTreeNode(HWND treeHwnd,HTREEITEM hParent,char * nodeName){

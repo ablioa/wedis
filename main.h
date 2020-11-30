@@ -61,22 +61,22 @@
 
 #define IDM_CUSTOMER_HOST 900
 
+#define TOOLBAR_HEIGHT    20
+#define STATUSBAR_HEIGHT  20
+
 typedef struct app_view{
     HWND hwnd;
     
     HWND toolBarHwnd;
     HWND statusBarHwnd;
     
-    HWND connectionHwnd;
-    HWND dataHwnd;
-	// HWND systemViewHwnd;
+    HWND overviewHwnd;
+    HWND dataviewHwnd;
     
     HWND westSplitHwnd;
-    
-    int toolbarHeight;
-    int statusbarHeight;
-    
-    int connectionAreaWitdh;
+
+	int statusbarHeight;
+	int toolbarHeight;
 }AppView;
 
 typedef struct data_view{
@@ -99,24 +99,17 @@ typedef struct data_view{
 }DataView;
 
 typedef struct main_model{
-	AppView * view;
-
-	HMENU hDev;
-
-	HMENU hServerInfoMenu;
-
-	HWND logHwnd;
-
+	AppView     * view;
 	DataView    * dataView;
 
-    int UI;
+	HMENU hConnectionMenu;
+	HMENU hServerInfoMenu;
 
     HINSTANCE hInstance;
 
     Keyspace * keyspaces;
 
 	HWND mainWindowHwnd;
-
 	int spaceCount;
 
 	TreeNode * activeHost;
@@ -150,8 +143,6 @@ void log_message(const char * message);
 
 void onExit();
 
-AppView * buildAppView(HWND hwnd);
-
 void buildToolBar(AppView * appView);
 
 void buildStatusBar(AppView * view);
@@ -163,8 +154,6 @@ void getConnectionRect(AppView * view,RECT * rt,RECT * rect);
 int getConnectionWidth(AppView * view);
 
 void buildAttributeView(AppView * view);
-
-void CreateView(AppView * appView);
 
 void Size(AppView * appView);
 

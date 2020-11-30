@@ -19,12 +19,12 @@ void handleKeyspace(Keyspace keyspace){
 }
 
 void handle_redis_data(TreeNode * datanode,RedisReply reply){
-	SendMessage(mainModel->view->dataHwnd,WM_DT,(WPARAM)reply,(LPARAM)(datanode));
+	SendMessage(mainModel->view->dataviewHwnd,WM_DT,(WPARAM)reply,(LPARAM)(datanode));
 }
 
 void add_data_node(TreeNode * dbnode,RedisReply data){
     for(int ix =0; ix < dbnode->subHandleSize; ix ++){
-        TreeView_DeleteItem(mainModel->view->connectionHwnd,dbnode->subHandles[ix]);
+        TreeView_DeleteItem(mainModel->view->overviewHwnd,dbnode->subHandles[ix]);
     }
     
     dbnode->subHandleSize= 0;
@@ -49,7 +49,7 @@ void add_data_node(TreeNode * dbnode,RedisReply data){
         tvinsert.item.iImage=2;
         tvinsert.item.iSelectedImage=2;
         tvinsert.item.lParam= (LPARAM)datanode;
-		datanode->handle = (HTREEITEM)SendMessage(mainModel->view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+		datanode->handle = (HTREEITEM)SendMessage(mainModel->view->overviewHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 
         dbnode->subHandleSize ++;
         dbnode->subHandles[ix] = datanode->handle;
@@ -104,10 +104,10 @@ void add_database_node(TreeNode * hostNode,int dbCount){
 		tvinsert.item.pszText= showName;
 		tvinsert.item.lParam= (LPARAM)dbnode;
 
-		HTREEITEM handle = (HTREEITEM)SendMessage(view->connectionHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+		HTREEITEM handle = (HTREEITEM)SendMessage(view->overviewHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 		dbnode->handle = handle;
 	}
 
-	SendMessage(mainModel->view->connectionHwnd,TVM_EXPAND,(WPARAM)TVE_TOGGLE,(LPARAM)(hostNode->handle));
+	SendMessage(mainModel->view->overviewHwnd,TVM_EXPAND,(WPARAM)TVE_TOGGLE,(LPARAM)(hostNode->handle));
 }
 
