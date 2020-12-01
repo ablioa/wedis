@@ -69,7 +69,6 @@
   
    ### 查看ZSET里的所有元素
    zrange names 0 -1 withscores
-
    lpush wangzh 1111
    lpush wangzh 2222
    lpush wangzh 3333
@@ -116,10 +115,6 @@ RedisClient
    1. 设置断点 b main.c:352
    2. 下一步   n(next)
 
-
-
-
-
    #####
 
    配置项
@@ -128,13 +123,4 @@ RedisClient
    3. 显示帮助信息
    4. 记录通信日志
 
-
-		case WM_PAINT:
-			//hdc = BeginPaint(hWin,&ps);
-			//Rectangle(hdc,200,40,260,60);
-			//Rectangle(hdc,200,100,260,120);
-			//EndPaint(hWin,&ps);
-		break;
-
     windowsx.h里面有很多针对普通组件的消息处理，有详细的文档描述。
-    https://docs.microsoft.com/en-us/windows/win32/controls/bm-setcheck

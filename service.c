@@ -70,8 +70,8 @@ void s_key_space(TreeNode * hodeNode){
     RedisReply reply = redis_serialize_params(hodeNode->stream,param);
 
     if(reply->type == REPLY_BULK){
-        Keyspace space = parseKeyspace(reply->bulk->content);
-        handleKeyspace(space);
+        // Keyspace space = parseKeyspace(reply->bulk->content);
+        // handleKeyspace(space);
 
         RedisParams dparam = redis_build_params(3);
         redis_add_param(dparam,redis_build_param("config"));
@@ -274,17 +274,3 @@ RedisParams redis_rename_key(char * dataKey,char * newKey){
 
     return params;
 }
-
-// void appendTask(CommandType cmdType,const DataType dataType,const char * dataKey){
-//     Task * task = buildTask(cmdType);
-
-//     task->dataType = dataType;
-//     task->dataKey = NULL;
-//     if(dataKey != NULL){
-//         task->dataKey = (char *) malloc(sizeof(char) * 256);
-//         memset(task->dataKey,0,sizeof(char ) * 256);
-//         sprintf(task->dataKey,"%s",dataKey);
-//     }
-
-//     addTask(pool,task);
-// }

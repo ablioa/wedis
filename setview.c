@@ -92,24 +92,17 @@ LRESULT CALLBACK SetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 
 	switch(message){
 	    case WM_CREATE:{
-            setViewModel = (SetViewModel*)malloc(sizeof(SetViewModel));
-            memset(setViewModel,0,sizeof(SetViewModel));
+            setViewModel = (SetViewModel*)calloc(1,sizeof(SetViewModel));
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)setViewModel);
-
-		    HINSTANCE hinst = mainModel->hInstance;
-            GetClientRect (hwnd, &rect); 
-
+            
 	        setViewModel->setView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
                           WS_CHILD | WS_BORDER | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS,
-                          0, 0,
-                          rect.right - rect.left - 60,
-                          rect.bottom - rect.top,
-                          hwnd, NULL, hinst, NULL);
-            
-            setViewModel->toolBar = buildSetToolBar(hwnd);
-
+                          0, 0,0,0,
+                          hwnd, NULL, mainModel->hInstance, NULL);
             ListView_SetExtendedListViewStyle(setViewModel->setView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
 			InitSetViewColumns(setViewModel->setView);
+
+            setViewModel->toolBar = buildSetToolBar(hwnd);
 		    break;
 		}
 

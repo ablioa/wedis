@@ -4,6 +4,30 @@ SystemResource * resource;
 
 FILE * log_file;
 
+eMsg err_list[]={
+	{0X0000,"",0},
+	{0X0001,"Can't connect to server!",MB_RETRYCANCEL},
+	{0x0002,"Create Socket Failed!",MB_OK},
+	{0x0003,"Send data failed!",MB_RETRYCANCEL},
+	{0x0004,"TCP-Server have broken down!",MB_OK},
+};
+
+int DumpMessage(long Err_Code){
+    MSGBOXPARAMS *param = (MSGBOXPARAMS *)calloc(1,sizeof(MSGBOXPARAMS));
+
+    param->cbSize      = sizeof(MSGBOXPARAMS);
+    param->hInstance   = GetModuleHandle(NULL);
+    param->hwndOwner   = mainModel->mainWindowHwnd;
+    param->lpszCaption = "ERROR";
+    param->lpszIcon    = MAKEINTRESOURCE(IDI_MAIN);
+    param->dwStyle     = MB_OKCANCEL;	
+
+	param->lpszText = err_list[Err_Code].Messag;
+	param->dwStyle  = err_list[Err_Code].Style | MB_USERICON ;
+
+	return MessageBoxIndirect(param);
+}
+
 void initResource(){
     resource = (SystemResource*)malloc(sizeof(SystemResource));
     memset(resource,0,sizeof(SystemResource));

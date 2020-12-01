@@ -4,19 +4,19 @@ void update_progress(){
 	
 }
 
-void handleKeyspace(Keyspace keyspace){
-	Keyspace * spaces = (Keyspace*)calloc(keyspace->count,sizeof(Keyspace *));
-    Keyspace inode    = keyspace->next;
+// void handleKeyspace(Keyspace keyspace){
+// 	Keyspace * spaces = (Keyspace*)calloc(keyspace->count,sizeof(Keyspace *));
+//     Keyspace inode    = keyspace->next;
 
-	int ix = 0;
-    while(inode != NULL){
-		spaces[ix++] = inode;
-        inode = inode->next;
-    }
+// 	int ix = 0;
+//     while(inode != NULL){
+// 		spaces[ix++] = inode;
+//         inode = inode->next;
+//     }
 
-	mainModel->keyspaces  = spaces;
-	mainModel->spaceCount = keyspace->count;
-}
+// 	mainModel->keyspaces  = spaces;
+// 	mainModel->spaceCount = keyspace->count;
+// }
 
 void handle_redis_data(TreeNode * datanode,RedisReply reply){
 	SendMessage(mainModel->view->dataviewHwnd,WM_DT,(WPARAM)reply,(LPARAM)(datanode));
@@ -56,20 +56,20 @@ void add_data_node(TreeNode * dbnode,RedisReply data){
 	}
 }
 
-Keyspace getKeyspaceInfo(char * dbname){
-	Keyspace * spaces = mainModel->keyspaces;
-	if(spaces == NULL){
-		return NULL;
-	}
+// Keyspace getKeyspaceInfo(char * dbname){
+// 	Keyspace * spaces = mainModel->keyspaces;
+// 	if(spaces == NULL){
+// 		return NULL;
+// 	}
 
-	for(int ix = 0; ix< mainModel->spaceCount; ix ++){
-		if(strcmp(spaces[ix]->name,dbname) == 0){
-			return spaces[ix];
-		}
-	}
+// 	for(int ix = 0; ix< mainModel->spaceCount; ix ++){
+// 		if(strcmp(spaces[ix]->name,dbname) == 0){
+// 			return spaces[ix];
+// 		}
+// 	}
 
-	return NULL;
-}
+// 	return NULL;
+// }
 
 void add_database_node(TreeNode * hostNode,int dbCount){
     TV_INSERTSTRUCT tvinsert;
@@ -89,14 +89,14 @@ void add_database_node(TreeNode * hostNode,int dbCount){
 		dbnode->stream = hostNode->stream;
 
 		memset(showName,0,sizeof(char) * 128);
-		Keyspace space = getKeyspaceInfo(dbnode->database->dbname);
-		int keyCount = 0;
-		if(space != NULL){
-			keyCount = space->keys;
-		}
+		// Keyspace space = getKeyspaceInfo(dbnode->database->dbname);
+		// int keyCount = 0;
+		// if(space != NULL){
+		// 	keyCount = space->keys;
+		// }
 		
 		memset(showName,0,128);
-		sprintf(showName,"%s(%d)",dbnode->database->dbname,keyCount);
+		sprintf(showName,"%s",dbnode->database->dbname);
 		tvinsert.item.iImage=1;
 		tvinsert.item.iSelectedImage=1;
 		tvinsert.hParent= parentHandle;

@@ -24,9 +24,15 @@ RedisConnection init(char * address,int port){
 	stream->address.sin_family = AF_INET;
 	stream->address.sin_port = htons(port);
 	stream->address.sin_addr.S_un.S_addr = inet_addr(address);
+
+connect:
 	if (connect(stream->socket, (struct sockaddr *)&(stream->address), sizeof(stream->address)) == SOCKET_ERROR){
-		MessageBox(NULL,"connect error !","OK",MB_OK);
-		closesocket(stream->socket);
+		int result = DumpMessage(ERR_CANNOT_CONNECTED);
+		if(result == 4){
+			goto connect;
+		}else{
+			closesocket(stream->socket);
+		}
 		return NULL;
 	}
 
@@ -36,34 +42,6 @@ RedisConnection init(char * address,int port){
 void sendmsg(RedisConnection stream,char * message){
     send(stream->socket, message, strlen(message), 0);
 }
-
-// RedisReply receive_msg(RedisConnection stream){
-// 	char localbuff[4096] = {0};
-
-// 	int ret  = 0;
-// 	RedisReply reply = NULL;
-
-// 	stream->capacity  = 4096;
-// 	stream->free_size = stream->capacity;
-// 	stream->read_buff = (char*) calloc(stream->capacity,sizeof(char));
-	
-// 	do{
-// 		ret = recv(stream->socket, localbuff, 4096, 0);
-// 		if(stream->free_size <= ret){
-// 			stream->capacity  += 4096;
-// 			stream->free_size += 4096;
-// 			stream->read_buff = (char*) realloc(stream->read_buff,stream->capacity);
-// 		}
-
-// 		memcpy(stream->read_buff + ((stream->capacity - stream->free_size)),localbuff,ret);
-// 		stream->free_size -= ret;
-// 		reply = read_reply(stream->read_buff,(stream->capacity - stream->free_size));
-// 	}while(reply->reply_status != REPLY_STATUS_DONE);
-
-// 	free(stream->read_buff);
-
-// 	return reply;
-// }
 
 void close(RedisConnection stream){
 	closesocket(stream->socket);

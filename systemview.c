@@ -1,6 +1,6 @@
  #include "systemview.h"
 
-const char * cfgColNames[2]={"Property","Value"};
+char * cfgColNames[2]={"Property","Value"};
 HWND buildStatToolBar(HWND parent){
 	HINSTANCE hInst = mainModel->hInstance;
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
@@ -37,33 +37,15 @@ HWND buildStatToolBar(HWND parent){
 BOOL InitSetViewColumns1(HWND hWndListView) { 
     LVCOLUMN lvc;
     int iCol;
-
-	char * valName;
-
     lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
     for (iCol = 0; iCol < 2; iCol++){
-
-        // 注意内存释放
-		valName = (char *) malloc(sizeof(char) * 128);
-		memset(valName,0,sizeof(char) * 128);
-		strcpy(valName,cfgColNames[iCol]);
-
         lvc.iSubItem = iCol;
-        lvc.pszText = valName;
+        lvc.pszText = cfgColNames[iCol];
         lvc.cx = 100;
+        lvc.fmt = LVCFMT_LEFT;
 
-        if ( iCol < 2 ){
-            lvc.fmt = LVCFMT_LEFT;
-		}
-        else{
-            lvc.fmt = LVCFMT_RIGHT;
-		}
-
-        if (ListView_InsertColumn(hWndListView, iCol, &lvc) == -1){
-            return FALSE;
-		}
-
+        ListView_InsertColumn(hWndListView, iCol, &lvc);
         ListView_SetColumnWidth(hWndListView,iCol,(iCol+1) * 200);
     }
     

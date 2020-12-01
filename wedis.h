@@ -2,8 +2,12 @@
 #define wedis_h
 
 #include <windows.h>
+#include <commctrl.h>
 #include <stdio.h>
 #include <time.h>
+
+#include "main.h"
+#include "resource/resource.h"
 
 #define WEDIS_PUSH_BUTTON_STYLE BS_FLAT|WS_VISIBLE|WS_CHILD|WS_TABSTOP
 #define WEDIS_COMBO_BOX_STYLE   CBS_DROPDOWNLIST|WS_CHILD|WS_VISIBLE
@@ -23,6 +27,23 @@ typedef struct system_resource{
 }SystemResource;
 
 extern SystemResource * resource;
+
+
+#define ERR_NORMAL					0x0000
+#define ERR_CANNOT_CONNECTED		0X0001
+#define ERR_CANNOT_CREATESOCKET		0x0002
+#define ERR_SENDDATA_FAILED			0x0003
+#define ERR_LINK_BREAKDOWN			0x0004
+
+typedef struct err_info{
+	LONG ecode;
+	char Messag[MAX_PATH];
+	UINT Style;
+}eMsg;
+
+extern eMsg err_list[];
+
+int DumpMessage(long Err_Code);
 
 void initResource();
 

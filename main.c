@@ -221,9 +221,6 @@ void onDataBaseSelect(TreeNode * selected){
  * 取得选中的树节点
  */ 
 TreeNode * getSelectedNode(){
-	char * buf = (char*)malloc(128);
-    memset(buf,0,128);
-    
     DWORD dwPos = GetMessagePos();
     POINT pt;
     pt.x = LOWORD(dwPos);
@@ -239,9 +236,7 @@ TreeNode * getSelectedNode(){
 	}
 
     TVITEM ti = {0};
-    ti.mask = TVIF_HANDLE | TVIF_TEXT | TVIF_PARAM;
-    ti.cchTextMax = 128;
-    ti.pszText = buf;
+    ti.mask = TVIF_HANDLE | TVIF_PARAM;
     ti.hItem = hItem;
     TreeView_GetItem(mainModel->view->overviewHwnd, &ti);
 

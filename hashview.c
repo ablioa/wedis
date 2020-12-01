@@ -103,26 +103,18 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
 	switch(message){
 	    case WM_CREATE:{
-			HINSTANCE hinst = mainModel->hInstance;
-            GetClientRect (hwnd, &rect); 
-
-            hashViewModel = (HashViewModel*)malloc(sizeof(HashViewModel));
-            memset(hashViewModel,0,sizeof(HashViewModel));
+            hashViewModel = (HashViewModel*)calloc(1,sizeof(HashViewModel));
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)hashViewModel);
 	        
             hashViewModel->hashView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
                           WS_CHILD | WS_BORDER | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS,
-                          0, 0,
-                          rect.right - rect.left - 60,
-                          rect.bottom - rect.top,
-                          hwnd, NULL, hinst, NULL);
-            
-            hashViewModel->toolBar = buildHashToolBar(hwnd);
+                          0, 0,0,0,
+                          hwnd, NULL, mainModel->hInstance, NULL);
             
             ListView_SetExtendedListViewStyle(hashViewModel->hashView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
-
 			InitHashViewColumns(hashViewModel->hashView);
 
+            hashViewModel->toolBar = buildHashToolBar(hwnd);
 		    break;
 		}
 
@@ -134,7 +126,6 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
 		case WM_SIZE:{
 			GetClientRect(hwnd,&rect);
-			// MoveWindow(hashViewModel->hashView,0,0,rect.right-rect.left - 60,rect.bottom-rect.top,TRUE);
             MoveWindow(hashViewModel->toolBar,0,0,rect.right-rect.left,28,TRUE);
 			MoveWindow(hashViewModel->hashView,0,28,rect.right-rect.left,rect.bottom-rect.top-28,TRUE);
 		    break;

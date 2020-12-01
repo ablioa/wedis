@@ -171,21 +171,6 @@ typedef struct redis_progress * RedisProgress;
 
 void free_redis_reply(RedisReply reply);
 
-struct keyspace_info{
-    char name[255];
-    int  keys;
-    int  expires;
-    int  avg_ttl;
-
-    struct keyspace_info * tail;
-    struct keyspace_info * next;
-
-    int count;
-};
-
-typedef struct keyspace_info KeyspaceInfo;
-typedef struct keyspace_info * Keyspace;
-
 struct key_value_pair{
     char key[256];
 
@@ -212,17 +197,9 @@ void setKVPair(KVPair kv,const char * text);
 
 KVPair parseKVPair(char * buffer);
 
-Keyspace buildKeyspaceInfo();
-
-void setKeyspaceValue(Keyspace info,char * value);
-
-Keyspace parseKeyspace(char * buffer);
-
 RedisReply read_reply(char *text,int * cur,int length);
 
 RedisReply receive_msg(RedisConnection stream);
-
-char * buildWord(char * word,size_t length);
 
 char  * parse_command(char * text,const size_t size);
 

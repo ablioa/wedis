@@ -181,14 +181,7 @@ RedisReply read_reply(char *text,int * cur,int length){
                 RedisReply mrep = read_reply(text,cur,length);
                 if(mrep->reply_status != REPLY_STATUS_DONE){
                     reply->reply_status = REPLY_STATUS_PENDING;
-
-					// free temp memory
-					//for(int i = 0; i < ix; i ++){
-					//	free_redis_reply(reply->bulks[i]);
-					//	reply->bulks[i] = NULL;
-					//}
 					free_redis_reply(mrep);
-					// end free
                     break;
                 }else{
                     reply->bulks[ix] = mrep;
@@ -225,96 +218,6 @@ int get_bulk_size(char * text, int * cur,int length){
     (*cur) = (*cur)+2;
 
 	return atoi(cnt);
-}
-
-char *buildWord(char *word, size_t length){
-	char *buff = (char *)malloc(sizeof(char) * LENGTH_WORD);
-
-	memset(buff, 0, LENGTH_WORD);
-	memcpy(buff, word, length);
-
-	return buff;
-}
-
-char *build_comment(const char *text, const char *pack){
-	char *buff = (char *)malloc(sizeof(char) * 1024);
-	memset(buff, 0, sizeof(char) * 1024);
-	sprintf(buff, "# ---- %s ----\r\n%s", text, pack);
-	return buff;
-}
-
-Keyspace buildKeyspaceInfo(){
-	Keyspace info = (Keyspace)malloc(sizeof(KeyspaceInfo));
-	memset(info, 0, sizeof(KeyspaceInfo));
-
-	info->tail = NULL;
-	info->next = NULL;
-	info->count = 0;
-	return info;
-}
-
-void setKeyspaceValue(Keyspace info, char *value){
-	char key[255] = {0};
-	char *vpos = strchr(value, '=');
-
-	strncpy(key, value, (vpos - value));
-
-	if (strcmp(key, "expires") == 0){
-		info->expires = atoi(vpos + 1);
-	}
-
-	if (strcmp(key, "keys") == 0){
-		info->keys = atoi(vpos + 1);
-	}
-
-	if (strcmp(key, "avg_ttl") == 0){
-		info->avg_ttl = atoi(vpos + 1);
-	}
-}
-
-Keyspace parseKeyspace(char *buffer){
-	char *buf = buffer;
-	char *outer_ptr = NULL;
-	char *inner_ptr = NULL;
-	char *pp_ptr = NULL;
-
-	char *line;
-	char *dbitem;
-	char *vitem;
-
-	Keyspace head = buildKeyspaceInfo();
-	while ((line = strtok_r(buf, "\r\n", &outer_ptr)) != NULL){
-		if (strcmp("# Keyspace", line) == 0){
-			buf = NULL;
-			continue;
-		}
-
-		Keyspace node = buildKeyspaceInfo();
-		if (head->next == NULL){
-			head->next = node;
-			head->tail = node;
-		}
-		else{
-			head->tail->next = node;
-			head->tail = node;
-		}
-
-		head->count++;
-		while ((dbitem = strtok_r(line, ":", &inner_ptr)) != NULL){
-			if (strncmp("db", dbitem, 2) == 0){
-				line = NULL;
-				strcpy(node->name, dbitem);
-				continue;
-			}
-
-			while ((vitem = strtok_r(dbitem, ",", &pp_ptr)) != NULL){
-				dbitem = NULL;
-				setKeyspaceValue(node, vitem);
-			}
-		}
-	}
-
-	return head;
 }
 
 KVPair buildKVPair(){

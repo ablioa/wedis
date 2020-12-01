@@ -21,7 +21,6 @@
 #include "systemview.h"
 #include "callbacks.h"
 #include "resource/resource.h"
-#include "exception.h"
 #include "config.h"
 #include "dispatch.h"
 #include "entry.h"
@@ -79,8 +78,6 @@ typedef struct app_view{
 }AppView;
 
 typedef struct data_view{
-	// HWND dataViewHwnd;
-
 	WNDPROC ttlBtnProc;
 	WNDPROC exportBtnProc;
 
@@ -105,8 +102,6 @@ typedef struct main_model{
 	HMENU hServerInfoMenu;
 
     HINSTANCE hInstance;
-
-    Keyspace * keyspaces;
 
 	HWND mainWindowHwnd;
 	int spaceCount;
@@ -135,8 +130,6 @@ void command(HWND _hwnd,int cmd);
 
 LPTSTR mGetOpenFileName(HWND hwnd);
 LPTSTR mGetSaveFileName(HWND hwnd);
-
-void log_message(const char * message);
 
 void onExit();
 
