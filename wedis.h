@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#include "main.h"
+#include "redis.h"
 #include "resource/resource.h"
 
 #define WEDIS_PUSH_BUTTON_STYLE BS_FLAT|WS_VISIBLE|WS_CHILD|WS_TABSTOP
@@ -20,6 +20,53 @@
 #define GENERAL_CMD_KEYEDIT 10005
 
 #define BUFF_SIZE        1024*1024
+
+typedef struct app_view{
+    HWND hwnd;
+    
+    HWND toolBarHwnd;
+    HWND statusBarHwnd;
+    
+    HWND overviewHwnd;
+    HWND dataviewHwnd;
+    
+    HWND westSplitHwnd;
+
+	int statusbarHeight;
+	int toolbarHeight;
+}AppView;
+
+typedef struct data_view{
+	WNDPROC ttlBtnProc;
+	WNDPROC exportBtnProc;
+
+	HWND hashViewHwnd;
+	HWND stringViewHwnd;
+	HWND listViewHwnd;
+	HWND setViewHwnd;
+    HWND zsetViewHwnd;
+	HWND systemViewHwnd;
+
+	HWND visibleHwnd;
+
+    RedisReply data;
+	int type;
+}DataView;
+
+typedef struct main_model{
+	AppView     * view;
+	DataView    * dataView;
+
+	HMENU hConnectionMenu;
+	HMENU hServerInfoMenu;
+
+    HINSTANCE hInstance;
+
+	HWND mainWindowHwnd;
+	int spaceCount;
+
+	TreeNode * activeHost;
+}MainModel;
 
 typedef struct system_resource{
     HFONT ctrlFont;

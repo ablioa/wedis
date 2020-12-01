@@ -62,53 +62,6 @@
 #define TOOLBAR_HEIGHT    20
 #define STATUSBAR_HEIGHT  20
 
-typedef struct app_view{
-    HWND hwnd;
-    
-    HWND toolBarHwnd;
-    HWND statusBarHwnd;
-    
-    HWND overviewHwnd;
-    HWND dataviewHwnd;
-    
-    HWND westSplitHwnd;
-
-	int statusbarHeight;
-	int toolbarHeight;
-}AppView;
-
-typedef struct data_view{
-	WNDPROC ttlBtnProc;
-	WNDPROC exportBtnProc;
-
-	HWND hashViewHwnd;
-	HWND stringViewHwnd;
-	HWND listViewHwnd;
-	HWND setViewHwnd;
-    HWND zsetViewHwnd;
-	HWND systemViewHwnd;
-
-	HWND visibleHwnd;
-
-    RedisReply data;
-	int type;
-}DataView;
-
-typedef struct main_model{
-	AppView     * view;
-	DataView    * dataView;
-
-	HMENU hConnectionMenu;
-	HMENU hServerInfoMenu;
-
-    HINSTANCE hInstance;
-
-	HWND mainWindowHwnd;
-	int spaceCount;
-
-	TreeNode * activeHost;
-}MainModel;
-
 extern MainModel * mainModel;
 
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -145,7 +98,7 @@ int getConnectionWidth(AppView * view);
 
 void buildAttributeView(AppView * view);
 
-void Size(AppView * appView);
+void onWindowResize(AppView * appView);
 
 void getDataRect(AppView * view,RECT * rt,RECT * rect);
 
@@ -154,6 +107,8 @@ void getSpliterRect(AppView * view,RECT * rt,RECT * rect);
 void getSouthSpliterRect(AppView * view,RECT * rt,RECT * rect);
 
 void getAttributeRect(AppView * view,RECT * rt,RECT * rect);
+
+void showWindows(AppView * view);
 
 #endif
 

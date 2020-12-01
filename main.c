@@ -2,6 +2,51 @@
 
 MainModel * mainModel;
 
+void initpan(HINSTANCE hInstance){
+	init_hashview(hInstance);
+	init_stringview(hInstance);
+	init_listview(hInstance);
+	init_setview(hInstance);
+	init_zsetview(hInstance);
+	init_systemview(hInstance);
+	initSplit(hInstance);
+
+    WNDCLASSEX hSplitClass;
+    hSplitClass.cbSize        = sizeof(hSplitClass);
+    hSplitClass.style         = 0;
+    hSplitClass.lpfnWndProc   = dataViewProc;
+    hSplitClass.cbClsExtra    = 0;
+    hSplitClass.cbWndExtra    = 0;
+    hSplitClass.hInstance     = hInstance;
+    hSplitClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
+    hSplitClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
+    hSplitClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
+    hSplitClass.lpszMenuName  = 0;
+    hSplitClass.lpszClassName = DATAVIEW_WINDOW;
+    hSplitClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
+    RegisterClassEx(&hSplitClass);
+
+	WNDCLASSEX  mainClass;
+	mainClass.cbSize = sizeof (WNDCLASSEX);
+	mainClass.style = CS_HREDRAW | CS_VREDRAW | CS_BYTEALIGNWINDOW;
+	mainClass.lpfnWndProc=MainWndProc;
+	mainClass.lpszClassName = szFrameClass;
+	mainClass.hInstance = hInstance;
+	mainClass.hIcon = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
+	mainClass.hIconSm = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
+	mainClass.lpszMenuName = MAKEINTRESOURCE (ID_MAIN);
+	mainClass.cbClsExtra = 0;
+	mainClass.cbWndExtra = 0;
+	mainClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
+	mainClass.hCursor = LoadCursor (0, IDC_ARROW);
+	
+	RegisterClassEx(&mainClass);
+}
+
+void onExit(){
+}
+
+
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cmdShow){
 	MSG  msg;
 
@@ -71,7 +116,11 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 					if(msg->idFrom == 0){
 						POINT pt;
 						GetCursorPos(&pt);
-						TrackPopupMenu(mainModel->hServerInfoMenu,TPM_LEFTALIGN,pt.x,pt.y,0,hwnd,NULL);
+
+						TreeNode * selected = getSelectedNode();
+						if(selected != NULL && selected->level == NODE_LEVEL_HOST){
+							TrackPopupMenu(mainModel->hServerInfoMenu,TPM_LEFTALIGN,pt.x,pt.y,0,hwnd,NULL);
+						}
 					}
 					break;
 				}
@@ -80,8 +129,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 			break;
 		}
         case WM_SIZE:
-            Size(mainModel->view);
-			UpdateWindow(hwnd);
+            onWindowResize(mainModel->view);
             break;
 
         case WM_DESTROY:{
@@ -101,48 +149,10 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
     return DefWindowProc (hwnd, message, wParam, lParam);
 }
 
-void initpan(HINSTANCE hInstance){
-	init_hashview(hInstance);
-	init_stringview(hInstance);
-	init_listview(hInstance);
-	init_setview(hInstance);
-	init_zsetview(hInstance);
-	init_systemview(hInstance);
-	initSplit(hInstance);
-
-    WNDCLASSEX hSplitClass;
-    hSplitClass.cbSize        = sizeof(hSplitClass);
-    hSplitClass.style         = 0;
-    hSplitClass.lpfnWndProc   = dataViewProc;
-    hSplitClass.cbClsExtra    = 0;
-    hSplitClass.cbWndExtra    = 0;
-    hSplitClass.hInstance     = hInstance;
-    hSplitClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
-    hSplitClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    hSplitClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
-    hSplitClass.lpszMenuName  = 0;
-    hSplitClass.lpszClassName = DATAVIEW_WINDOW;
-    hSplitClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
-    RegisterClassEx(&hSplitClass);
-
-	WNDCLASSEX  mainClass;
-	mainClass.cbSize = sizeof (WNDCLASSEX);
-	mainClass.style = CS_HREDRAW | CS_VREDRAW | CS_BYTEALIGNWINDOW;
-	mainClass.lpfnWndProc=MainWndProc;
-	mainClass.lpszClassName = szFrameClass;
-	mainClass.hInstance = hInstance;
-	mainClass.hIcon = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
-	mainClass.hIconSm = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
-	mainClass.lpszMenuName = MAKEINTRESOURCE (ID_MAIN);
-	mainClass.cbClsExtra = 0;
-	mainClass.cbWndExtra = 0;
-	mainClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
-	mainClass.hCursor = LoadCursor (0, IDC_ARROW);
-	
-	RegisterClassEx(&mainClass);
-}
-
-void onExit(){
+void showWindows(AppView * v){
+	ShowWindow(v->overviewHwnd,SW_SHOW);
+	ShowWindow(v->westSplitHwnd,SW_SHOW);
+	ShowWindow(v->dataviewHwnd,SW_SHOW);
 }
 
 void onMainFrameCreate(HWND hwnd){
@@ -153,12 +163,10 @@ void onMainFrameCreate(HWND hwnd){
 
 	buildToolBar(mainModel->view);
 	buildStatusBar(mainModel->view);
-    
-	mainModel->view->dataviewHwnd = CreateWindowEx(0, DATAVIEW_WINDOW,NULL,WS_CHILD | WS_VISIBLE,0,0,0,0,mainModel->view->hwnd,0,mainModel->hInstance,NULL);
 
-    buildConnectionView(mainModel->view);
-    
-    mainModel->view->westSplitHwnd =CreateWindowEx(0,V_SPLIT,"", WS_VISIBLE|WS_CHILD,0,0,0,0,mainModel->view->hwnd,0,hInst,0);
+	buildConnectionView(mainModel->view);
+	mainModel->view->dataviewHwnd = CreateWindowEx(0, DATAVIEW_WINDOW,NULL,(!WS_VISIBLE)|WS_CHILD,0,0,0,0,mainModel->view->hwnd,0,mainModel->hInstance,NULL);
+	mainModel->view->westSplitHwnd =CreateWindowEx(0,V_SPLIT,"", (!WS_VISIBLE)|WS_CHILD,0,0,0,0,mainModel->view->hwnd,0,hInst,0);
     SendMessage(mainModel->view->westSplitHwnd,WM_SET_PANES_HWND,(WPARAM)mainModel->view->overviewHwnd,(LPARAM)mainModel->view->dataviewHwnd);
 
 	mainModel->hConnectionMenu = CreatePopupMenu();
@@ -175,6 +183,7 @@ void onMainFrameCreate(HWND hwnd){
 	AppendMenu(mainModel->hServerInfoMenu,MF_STRING,IDM_SYSTEM_STAT,"Server Status");
 	AppendMenu(mainModel->hServerInfoMenu,MF_SEPARATOR,0,"");
 	AppendMenu(mainModel->hServerInfoMenu,MF_STRING,IDM_SYSTEM_STAT+1,"Commands");
+	AppendMenu(mainModel->hServerInfoMenu,MF_STRING,IDM_SYSTEM_STAT+2,"Disconnect");
 }
 
 void updateNavigationInfo(TreeNode * node){
@@ -217,9 +226,6 @@ void onDataBaseSelect(TreeNode * selected){
     }
 }
 
-/**
- * 取得选中的树节点
- */ 
 TreeNode * getSelectedNode(){
     DWORD dwPos = GetMessagePos();
     POINT pt;
@@ -245,15 +251,12 @@ TreeNode * getSelectedNode(){
 }
 
 TreeNode * addHostNode(RedisConnection stream,char * connectionName){
-	AppView * view = mainModel->view;
+	TV_INSERTSTRUCT tvinsert;
+    memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
 
 	TreeNode * hostNode = build_tree_node(NULL,NODE_LEVEL_HOST);
 	hostNode->stream = stream;
-
 	sprintf(hostNode->host->host,"%s:%d",stream->host,stream->port);
-
-	TV_INSERTSTRUCT tvinsert;
-    memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
 
     tvinsert.hParent = NULL;
 	tvinsert.hInsertAfter=TVI_ROOT;
@@ -263,7 +266,7 @@ TreeNode * addHostNode(RedisConnection stream,char * connectionName){
     tvinsert.item.pszText= connectionName;
 	tvinsert.item.lParam=(LPARAM)hostNode;
 
-	HTREEITEM  handle = (HTREEITEM)SendMessage(view->overviewHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+	HTREEITEM  handle = (HTREEITEM)SendMessage(mainModel->view->overviewHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 	hostNode->handle = handle;
 
 	return hostNode;
@@ -285,6 +288,7 @@ void command(HWND hwnd,int cmd){
 
         TreeNode * hostNode = addHostNode(stream,host->name);
 		s_auth(hostNode,host->password);
+		showWindows(mainModel->view);
 		return;
 	}
 
@@ -334,6 +338,11 @@ void command(HWND hwnd,int cmd){
 
 		case IDM_SYSTEM_STAT:{
 			s_db_info_stats(mainModel->activeHost,"stats");
+			break;
+		}
+
+		case IDM_SYSTEM_STAT+2:{
+			DumpMessage(2);
 			break;
 		}
 
@@ -389,7 +398,7 @@ LPTSTR mGetSaveFileName(HWND hwnd){
 	return retVal;
 }
 
-void Size(AppView * view){
+void onWindowResize(AppView * view){
     RECT rt;
     RECT connctionRect;
     RECT dataRect;
@@ -494,7 +503,7 @@ void buildConnectionView(AppView * view){
 	GetWindowRect(view->hwnd,&rt);
 
 	view->overviewHwnd = CreateWindowEx(0,"SysTreeView32",0,
-		WS_CHILD |WS_BORDER | WS_VISIBLE | TVIF_TEXT | TVS_HASLINES  | TVS_LINESATROOT,
+		WS_CHILD |WS_BORDER | (!WS_VISIBLE) | TVIF_TEXT | TVS_HASLINES  | TVS_LINESATROOT,
         	0,
             TOOLBAR_HEIGHT,
 			CONNECTION_AREA_WIDTH,

@@ -71,6 +71,20 @@ typedef struct redis_host_node{
 	int       used;
 }RedisHostNode;
 
+struct redis_connection{
+    SOCKET socket;
+    struct sockaddr_in address;
+
+    char * read_buff;
+    int    capacity;
+    int    free_size;
+
+    char * host;
+    int    port;
+};
+
+typedef struct redis_connection * RedisConnection;
+
 typedef struct redis_database_node{
 	int    dbindex;
 	
