@@ -9,9 +9,6 @@
 #include <windows.h>
 #include <commctrl.h>
 
-#include "wedis.h"
-#include "connection.h"
-
 #define CHAR_SPACE ' '
 #define CHAR_TAB   '\t'
 
@@ -109,6 +106,7 @@ typedef struct redis_data_node{
 }RedisDataNode;
 
 typedef struct tree_node{
+	int tid;
 	int level;
 
 	HTREEITEM handle;
@@ -126,6 +124,7 @@ typedef struct tree_node{
 	struct tree_node * parent;
 }TreeNode;
 
+extern int GLOBAL_TREE_NODE_ID;
 TreeNode * build_tree_node(TreeNode * parent,RedisNodeType nodeType);
 
 struct redis_param{

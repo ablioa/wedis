@@ -2,6 +2,8 @@
 
 FILE * logstream;
 
+int GLOBAL_TREE_NODE_ID = 0;
+
 // TODO 记录二进制日志
 RedisReply redis_serialize_params(RedisConnection stream,RedisParams params){
     char head[128] = {0};
@@ -25,6 +27,7 @@ TreeNode * build_tree_node(TreeNode * parent,RedisNodeType node_type){
 	TreeNode * node = (TreeNode *) calloc(1,sizeof(TreeNode));
     node->level = node_type;
     node->parent = parent;
+    node->tid = GLOBAL_TREE_NODE_ID++;
 
     switch (node_type){
         case NODE_LEVEL_HOST:{
@@ -100,7 +103,7 @@ void s_db_select(TreeNode * dbnode){
         return;
     }
 
-    mainModel->activeHost = dbnode->parent;
+    App->activeHost = dbnode->parent;
 }
 
 void s_db_get_data(TreeNode * dbnode){

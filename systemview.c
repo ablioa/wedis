@@ -2,7 +2,7 @@
 
 char * cfgColNames[2]={"Property","Value"};
 HWND buildStatToolBar(HWND parent){
-	HINSTANCE hInst = mainModel->hInstance;
+	HINSTANCE hInst = App->hInstance;
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
 
     int buttonCount = 9;
@@ -93,7 +93,7 @@ LRESULT CALLBACK SystemViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 	        model->paramViewHwnd = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
                           WS_CHILD | WS_BORDER | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS,
                           0, 0,0,0,
-                          hwnd, NULL, mainModel->hInstance, NULL);
+                          hwnd, NULL, App->hInstance, NULL);
             model->toolBar = buildStatToolBar(hwnd);
             
             ListView_SetExtendedListViewStyle(model->paramViewHwnd,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
@@ -143,7 +143,7 @@ void stat_command(HWND hwnd,int cmd){
         case IDM_STAT_KEYSPACE:{statcmd = "keyspace";break;}
     }
 
-    RedisReply dd = s_db_info_stats(mainModel->activeHost,statcmd);
+    RedisReply dd = s_db_info_stats(App->activeHost,statcmd);
 };
 
 void init_systemview(HINSTANCE hInstance){

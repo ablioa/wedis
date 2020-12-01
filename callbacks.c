@@ -144,10 +144,10 @@ BOOL CALLBACK SetTtlDlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 
 		case WM_INITDIALOG:{
             MoveToScreenCenter(hwnd);
-            HWND styledd   = CreateWindowEx(0, WC_STATIC, ("TTL:"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT, 5, 5, 40, 24, hwnd, (HMENU)0, mainModel->hInstance, 0);
-			HWND ttlEdit   = CreateWindowEx(0, WC_EDIT,   ("-1"), WEDIS_EDIT_STYLE, 0, 0, 0, 0, hwnd, (HMENU)IDC_TTL_EDIT, mainModel->hInstance, 0);    
-            HWND okBtn     = CreateWindowEx(0, WC_BUTTON, ("OK"), WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, hwnd, (HMENU)IDC_TTL_OK, mainModel->hInstance, 0);  
-            HWND cancelBtn = CreateWindowEx(0, WC_BUTTON, ("Cancel"), WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, hwnd, (HMENU)IDC_TTL_OK, mainModel->hInstance, 0); 
+            HWND styledd   = CreateWindowEx(0, WC_STATIC, ("TTL:"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT, 5, 5, 40, 24, hwnd, (HMENU)0, App->hInstance, 0);
+			HWND ttlEdit   = CreateWindowEx(0, WC_EDIT,   ("-1"), WEDIS_EDIT_STYLE, 0, 0, 0, 0, hwnd, (HMENU)IDC_TTL_EDIT, App->hInstance, 0);    
+            HWND okBtn     = CreateWindowEx(0, WC_BUTTON, ("OK"), WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, hwnd, (HMENU)IDC_TTL_OK, App->hInstance, 0);  
+            HWND cancelBtn = CreateWindowEx(0, WC_BUTTON, ("Cancel"), WEDIS_PUSH_BUTTON_STYLE, 0, 0, 0, 0, hwnd, (HMENU)IDC_TTL_OK, App->hInstance, 0); 
 
             HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
 			SendMessage(styledd, WM_SETFONT, (WPARAM)hfont0, FALSE);

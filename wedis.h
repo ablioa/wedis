@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <time.h>
 
+#include "queue.h"
 #include "redis.h"
 #include "resource/resource.h"
 
@@ -53,7 +54,7 @@ typedef struct data_view{
 	int type;
 }DataView;
 
-typedef struct main_model{
+typedef struct application{
 	AppView     * view;
 	DataView    * dataView;
 
@@ -66,7 +67,11 @@ typedef struct main_model{
 	int spaceCount;
 
 	TreeNode * activeHost;
-}MainModel;
+
+	list * connectionList;
+}Application;
+
+extern Application * App;
 
 typedef struct system_resource{
     HFONT ctrlFont;

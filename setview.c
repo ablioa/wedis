@@ -6,7 +6,7 @@ const char * setColNames[2]={
 };
 
 HWND buildSetToolBar(HWND parent){
-	HINSTANCE hInst = mainModel->hInstance;
+	HINSTANCE hInst = App->hInstance;
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
 
     int buttonCount = 10;
@@ -98,7 +98,7 @@ LRESULT CALLBACK SetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 	        setViewModel->setView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
                           WS_CHILD | WS_BORDER | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS,
                           0, 0,0,0,
-                          hwnd, NULL, mainModel->hInstance, NULL);
+                          hwnd, NULL, App->hInstance, NULL);
             ListView_SetExtendedListViewStyle(setViewModel->setView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
 			InitSetViewColumns(setViewModel->setView);
 

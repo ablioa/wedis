@@ -62,8 +62,6 @@
 #define TOOLBAR_HEIGHT    20
 #define STATUSBAR_HEIGHT  20
 
-extern MainModel * mainModel;
-
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

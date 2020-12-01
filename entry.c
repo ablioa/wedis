@@ -39,7 +39,7 @@ void initDataTypeSelector(HWND viewTypeHwnd){
     }
 
 	HIMAGELIST hImageList=ImageList_Create(14,14,ILC_COLOR|ILC_MASK,2,10);
-	HBITMAP hBitmap = LoadBitmap(mainModel->hInstance,MAKEINTRESOURCE(IDB_CHIP)); //
+	HBITMAP hBitmap = LoadBitmap(App->hInstance,MAKEINTRESOURCE(IDB_CHIP)); //
 
 	ImageList_Add(hImageList,hBitmap,NULL);
 

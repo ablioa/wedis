@@ -6,7 +6,7 @@ void buildConnectionTree(HWND hwnd){
     HostModel model = (HostModel)GetWindowLongPtr(hwnd,GWLP_USERDATA);
 	RECT            rt;
 
-	HINSTANCE hinst = mainModel->hInstance;
+	HINSTANCE hinst = App->hInstance;
 	GetWindowRect(hwnd,&rt);
 
     model->hostTree = GetDlgItem(hwnd,IDC_CONNECTION_TREE);
@@ -241,7 +241,7 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lPa
                     TVITEM ti = {0};
                     ti.mask = TVIF_HANDLE | TVIF_PARAM;
                     ti.hItem = hItem;
-                    TreeView_GetItem(mainModel->view->overviewHwnd, &ti);
+                    TreeView_GetItem(App->view->overviewHwnd, &ti);
 
                     Host * host = (Host *) ti.lParam;
                     if(host != NULL){

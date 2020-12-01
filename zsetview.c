@@ -7,7 +7,7 @@ const char * zsetColNames[3]={
 };
 
 HWND buildZsetToolBar(HWND parent){
-	HINSTANCE hInst = mainModel->hInstance;
+	HINSTANCE hInst = App->hInstance;
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
 
     int buttonCount = 10;
@@ -63,7 +63,7 @@ LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
             zsetViewModel = (ZsetViewModel*)calloc(1,sizeof(ZsetViewModel));
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)zsetViewModel);
 
-			HINSTANCE hinst = mainModel->hInstance;
+			HINSTANCE hinst = App->hInstance;
             GetClientRect (hwnd, &rect); 
 	        
             zsetViewModel->zsetView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,

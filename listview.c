@@ -6,7 +6,7 @@ const char * listColNames[2]={
 };
 
 HWND buildListToolBar(HWND parent){
-	HINSTANCE hInst = mainModel->hInstance;
+	HINSTANCE hInst = App->hInstance;
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
 
     int buttonCount = 4;
@@ -95,7 +95,7 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 	        listViewModel->listView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
                           WS_CHILD | WS_VISIBLE| WS_BORDER | LVS_REPORT | LVS_SHAREIMAGELISTS,
                           0, 0, 0, 0,
-                          hwnd, NULL, mainModel->hInstance, NULL);
+                          hwnd, NULL, App->hInstance, NULL);
 
             listViewModel->toolBar = buildListToolBar(hwnd);
             ListView_SetExtendedListViewStyle(listViewModel->listView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
@@ -110,7 +110,7 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                     break;
                 }
                 case NM_DBLCLK:{
-                    DialogBox(mainModel->hInstance,MAKEINTRESOURCE (IDD_LIST_ITEM),hwnd,(DLGPROC)ListItemEditProc);
+                    DialogBox(App->hInstance,MAKEINTRESOURCE (IDD_LIST_ITEM),hwnd,(DLGPROC)ListItemEditProc);
                     break;
                 }
             }

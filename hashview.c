@@ -7,7 +7,7 @@ const char * colNames[3]={
 };
 
 HWND buildHashToolBar(HWND parent){
-	HINSTANCE hInst = mainModel->hInstance;
+	HINSTANCE hInst = App->hInstance;
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
 
     int buttonCount = 10;
@@ -109,7 +109,7 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
             hashViewModel->hashView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
                           WS_CHILD | WS_BORDER | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS,
                           0, 0,0,0,
-                          hwnd, NULL, mainModel->hInstance, NULL);
+                          hwnd, NULL, App->hInstance, NULL);
             
             ListView_SetExtendedListViewStyle(hashViewModel->hashView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
 			InitHashViewColumns(hashViewModel->hashView);

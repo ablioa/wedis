@@ -4,27 +4,13 @@ void update_progress(){
 	
 }
 
-// void handleKeyspace(Keyspace keyspace){
-// 	Keyspace * spaces = (Keyspace*)calloc(keyspace->count,sizeof(Keyspace *));
-//     Keyspace inode    = keyspace->next;
-
-// 	int ix = 0;
-//     while(inode != NULL){
-// 		spaces[ix++] = inode;
-//         inode = inode->next;
-//     }
-
-// 	mainModel->keyspaces  = spaces;
-// 	mainModel->spaceCount = keyspace->count;
-// }
-
 void handle_redis_data(TreeNode * datanode,RedisReply reply){
-	SendMessage(mainModel->view->dataviewHwnd,WM_DT,(WPARAM)reply,(LPARAM)(datanode));
+	SendMessage(App->view->dataviewHwnd,WM_DT,(WPARAM)reply,(LPARAM)(datanode));
 }
 
 void add_data_node(TreeNode * dbnode,RedisReply data){
     for(int ix =0; ix < dbnode->subHandleSize; ix ++){
-        TreeView_DeleteItem(mainModel->view->overviewHwnd,dbnode->subHandles[ix]);
+        TreeView_DeleteItem(App->view->overviewHwnd,dbnode->subHandles[ix]);
     }
     
     dbnode->subHandleSize= 0;
@@ -49,32 +35,17 @@ void add_data_node(TreeNode * dbnode,RedisReply data){
         tvinsert.item.iImage=2;
         tvinsert.item.iSelectedImage=2;
         tvinsert.item.lParam= (LPARAM)datanode;
-		datanode->handle = (HTREEITEM)SendMessage(mainModel->view->overviewHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+		datanode->handle = (HTREEITEM)SendMessage(App->view->overviewHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 
         dbnode->subHandleSize ++;
         dbnode->subHandles[ix] = datanode->handle;
 	}
 }
 
-// Keyspace getKeyspaceInfo(char * dbname){
-// 	Keyspace * spaces = mainModel->keyspaces;
-// 	if(spaces == NULL){
-// 		return NULL;
-// 	}
-
-// 	for(int ix = 0; ix< mainModel->spaceCount; ix ++){
-// 		if(strcmp(spaces[ix]->name,dbname) == 0){
-// 			return spaces[ix];
-// 		}
-// 	}
-
-// 	return NULL;
-// }
-
 void add_database_node(TreeNode * hostNode,int dbCount){
     TV_INSERTSTRUCT tvinsert;
     
-	AppView * view = mainModel->view;
+	AppView * view = App->view;
     HTREEITEM parentHandle = hostNode->handle;
 
     memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
@@ -108,6 +79,6 @@ void add_database_node(TreeNode * hostNode,int dbCount){
 		dbnode->handle = handle;
 	}
 
-	SendMessage(mainModel->view->overviewHwnd,TVM_EXPAND,(WPARAM)TVE_TOGGLE,(LPARAM)(hostNode->handle));
+	SendMessage(App->view->overviewHwnd,TVM_EXPAND,(WPARAM)TVE_TOGGLE,(LPARAM)(hostNode->handle));
 }
 

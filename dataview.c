@@ -1,16 +1,16 @@
 #include "dataview.h"
 
 LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam){
-	DataView * dataView = mainModel->dataView;
+	DataView * dataView = App->dataView;
 	RECT rect;
 
     switch(msg){
 		case WM_CREATE:{
-			HINSTANCE hinst = mainModel->hInstance;
+			HINSTANCE hinst = App->hInstance;
 			
 			dataView->hashViewHwnd   = CreateWindowEx(0, HASH_VIEW_CLASS,NULL, (!WS_VISIBLE) | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 0,0,0,0,dataHwnd, (HMENU)0, hinst, 0);
 			dataView->stringViewHwnd = CreateWindowEx(0, STRING_VIEW_CLASS,NULL, (!WS_VISIBLE) | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 0,0,0,0,dataHwnd, (HMENU)0, hinst, 0);
-			dataView->listViewHwnd   = CreateWindowEx(0, LIST_VIEW_CLASS,NULL, (!WS_VISIBLE) | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 0,0,0,0,dataHwnd, (HMENU)0, mainModel->hInstance,0);
+			dataView->listViewHwnd   = CreateWindowEx(0, LIST_VIEW_CLASS,NULL, (!WS_VISIBLE) | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 0,0,0,0,dataHwnd, (HMENU)0, App->hInstance,0);
 			dataView->setViewHwnd    = CreateWindowEx(0, SET_VIEW_CLASS,NULL, (!WS_VISIBLE) | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 0,0,0,0,dataHwnd, (HMENU)0, hinst, 0);;
 			dataView->zsetViewHwnd   = CreateWindowEx(0, ZSET_VIEW_CLASS,NULL, (!WS_VISIBLE) | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 0,0,0,0,dataHwnd, (HMENU)0, hinst, 0);
 			dataView->systemViewHwnd = CreateWindowEx(0, SYSTEM_VIEW_CLASS,NULL,(!WS_VISIBLE)| WS_CHILD,0,0,0,0,dataHwnd,0,hinst,NULL);
@@ -44,7 +44,7 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 				}
 				
 				case GENERAL_CMD_SETTTL:{
-					DialogBox (mainModel->hInstance,MAKEINTRESOURCE (IDD_GOTOLINE),dataHwnd,(DLGPROC)SetTtlDlgProc);
+					DialogBox (App->hInstance,MAKEINTRESOURCE (IDD_GOTOLINE),dataHwnd,(DLGPROC)SetTtlDlgProc);
 					break;
 				}
 
@@ -100,7 +100,7 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 }
 
 void switchView(HWND hwnd,int type,RedisReply data){
-	DataView * dataView = mainModel->dataView;
+	DataView * dataView = App->dataView;
 	HWND lastVisible = dataView->visibleHwnd;
 	
 	switch(type){

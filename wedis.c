@@ -17,7 +17,7 @@ int DumpMessage(long Err_Code){
 
     param->cbSize      = sizeof(MSGBOXPARAMS);
     param->hInstance   = GetModuleHandle(NULL);
-    param->hwndOwner   = mainModel->mainWindowHwnd;
+    param->hwndOwner   = App->mainWindowHwnd;
     param->lpszCaption = "ERROR";
     param->lpszIcon    = MAKEINTRESOURCE(IDI_MAIN);
     param->dwStyle     = MB_OKCANCEL;	

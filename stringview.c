@@ -1,7 +1,7 @@
 #include "stringview.h"
 
 HWND buildStringToolBar(HWND parent){
-	HINSTANCE hInst = mainModel->hInstance;
+	HINSTANCE hInst = App->hInstance;
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
 
     int buttonCount = 2;
@@ -36,7 +36,7 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
             memset(model,0,sizeof(StringViewModel));
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
 
-			model->stringView = CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | ES_AUTOVSCROLL | WS_BORDER | WS_CHILD | WS_TABSTOP | WS_VSCROLL |ES_MULTILINE, 0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_TEXT, mainModel->hInstance, 0);
+			model->stringView = CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | ES_AUTOVSCROLL | WS_BORDER | WS_CHILD | WS_TABSTOP | WS_VSCROLL |ES_MULTILINE, 0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_TEXT, App->hInstance, 0);
             model->toolBar = buildStringToolBar(hwnd);
             SendMessage(model->stringView, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
 		    break;

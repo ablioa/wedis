@@ -1,6 +1,6 @@
 #include "main.h"
 
-MainModel * mainModel;
+Application * App;
 
 void initpan(HINSTANCE hInstance){
 	init_hashview(hInstance);
@@ -55,13 +55,14 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
     save_all();
 	initpan(hInst);
 
-	mainModel = (MainModel *)calloc(1,sizeof(MainModel));
-	mainModel->dataView = (DataView *) calloc(1,sizeof(DataView));
-    mainModel->hInstance = hInst;
+	App = (Application *)calloc(1,sizeof(Application));
+	App->dataView = (DataView *) calloc(1,sizeof(DataView));
+    App->hInstance = hInst;
+	App->connectionList = init_list(NULL);
 
 	HWND hwndFrame = CreateWindowEx(WS_EX_LEFT,szFrameClass, TEXT ("wedis"),WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,CW_USEDEFAULT, 0,400, 300,NULL,NULL, hInst, NULL) ;
 
-	mainModel->mainWindowHwnd = hwndFrame;
+	App->mainWindowHwnd = hwndFrame;
 
     ShowWindow (hwndFrame, cmdShow) ;
     UpdateWindow (hwndFrame) ;
@@ -104,7 +105,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 					if(msg->idFrom == 0){
 						TreeNode * selected = getSelectedNode();
 
-						// HINSTANCE hInst = mainModel->hInstance;
+						// HINSTANCE hInst = App->hInstance;
 						// DialogBox (hInst,MAKEINTRESOURCE (IDD_DB_SEARCH),hwnd,(DLGPROC)dbSearchDlgProc);
                         
 						onDataBaseSelect(selected);
@@ -119,7 +120,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 
 						TreeNode * selected = getSelectedNode();
 						if(selected != NULL && selected->level == NODE_LEVEL_HOST){
-							TrackPopupMenu(mainModel->hServerInfoMenu,TPM_LEFTALIGN,pt.x,pt.y,0,hwnd,NULL);
+							TrackPopupMenu(App->hServerInfoMenu,TPM_LEFTALIGN,pt.x,pt.y,0,hwnd,NULL);
 						}
 					}
 					break;
@@ -129,7 +130,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 			break;
 		}
         case WM_SIZE:
-            onWindowResize(mainModel->view);
+            onWindowResize(App->view);
             break;
 
         case WM_DESTROY:{
@@ -156,34 +157,34 @@ void showWindows(AppView * v){
 }
 
 void onMainFrameCreate(HWND hwnd){
-	HINSTANCE hInst = mainModel->hInstance;
+	HINSTANCE hInst = App->hInstance;
 
-    mainModel->view = (AppView *)calloc(1,sizeof(AppView));
-    mainModel->view->hwnd = hwnd;
+    App->view = (AppView *)calloc(1,sizeof(AppView));
+    App->view->hwnd = hwnd;
 
-	buildToolBar(mainModel->view);
-	buildStatusBar(mainModel->view);
+	buildToolBar(App->view);
+	buildStatusBar(App->view);
 
-	buildConnectionView(mainModel->view);
-	mainModel->view->dataviewHwnd = CreateWindowEx(0, DATAVIEW_WINDOW,NULL,(!WS_VISIBLE)|WS_CHILD,0,0,0,0,mainModel->view->hwnd,0,mainModel->hInstance,NULL);
-	mainModel->view->westSplitHwnd =CreateWindowEx(0,V_SPLIT,"", (!WS_VISIBLE)|WS_CHILD,0,0,0,0,mainModel->view->hwnd,0,hInst,0);
-    SendMessage(mainModel->view->westSplitHwnd,WM_SET_PANES_HWND,(WPARAM)mainModel->view->overviewHwnd,(LPARAM)mainModel->view->dataviewHwnd);
+	buildConnectionView(App->view);
+	App->view->dataviewHwnd = CreateWindowEx(0, DATAVIEW_WINDOW,NULL,(!WS_VISIBLE)|WS_CHILD,0,0,0,0,App->view->hwnd,0,App->hInstance,NULL);
+	App->view->westSplitHwnd =CreateWindowEx(0,V_SPLIT,"", (!WS_VISIBLE)|WS_CHILD,0,0,0,0,App->view->hwnd,0,hInst,0);
+    SendMessage(App->view->westSplitHwnd,WM_SET_PANES_HWND,(WPARAM)App->view->overviewHwnd,(LPARAM)App->view->dataviewHwnd);
 
-	mainModel->hConnectionMenu = CreatePopupMenu();
-	AppendMenu(mainModel->hConnectionMenu,MF_STRING,IDM_CONNECTION_POOL,"Connections");
-	AppendMenu(mainModel->hConnectionMenu,MF_SEPARATOR,0,"");
+	App->hConnectionMenu = CreatePopupMenu();
+	AppendMenu(App->hConnectionMenu,MF_STRING,IDM_CONNECTION_POOL,"Connections");
+	AppendMenu(App->hConnectionMenu,MF_SEPARATOR,0,"");
 
 	Host * start = appConfig->head;
 	while (start != NULL){
-		AppendMenu(mainModel->hConnectionMenu,MF_STRING,(start->hostIndex + IDM_CUSTOMER_HOST+1),start->name);
+		AppendMenu(App->hConnectionMenu,MF_STRING,(start->hostIndex + IDM_CUSTOMER_HOST+1),start->name);
 		start = start->next;
 	}
 	
-	mainModel->hServerInfoMenu = CreatePopupMenu();
-	AppendMenu(mainModel->hServerInfoMenu,MF_STRING,IDM_SYSTEM_STAT,"Server Status");
-	AppendMenu(mainModel->hServerInfoMenu,MF_SEPARATOR,0,"");
-	AppendMenu(mainModel->hServerInfoMenu,MF_STRING,IDM_SYSTEM_STAT+1,"Commands");
-	AppendMenu(mainModel->hServerInfoMenu,MF_STRING,IDM_SYSTEM_STAT+2,"Disconnect");
+	App->hServerInfoMenu = CreatePopupMenu();
+	AppendMenu(App->hServerInfoMenu,MF_STRING,IDM_SYSTEM_STAT,"Server Status");
+	AppendMenu(App->hServerInfoMenu,MF_SEPARATOR,0,"");
+	AppendMenu(App->hServerInfoMenu,MF_STRING,IDM_SYSTEM_STAT+1,"Commands");
+	AppendMenu(App->hServerInfoMenu,MF_STRING,IDM_SYSTEM_STAT+2,"Disconnect");
 }
 
 void updateNavigationInfo(TreeNode * node){
@@ -192,13 +193,13 @@ void updateNavigationInfo(TreeNode * node){
 	TreeNode * dbnode = node->parent;
 	TreeNode * hostnode = dbnode->parent;
 
-	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,1,(LPARAM)hostnode->host->host);
-	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,2,(LPARAM)dbnode->database->dbname);
-	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,3,(LPARAM)node->data->data_key);
-	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,4,(LPARAM)node->data->type_name);
+	SendMessage(App->view->statusBarHwnd,SB_SETTEXT,1,(LPARAM)hostnode->host->host);
+	SendMessage(App->view->statusBarHwnd,SB_SETTEXT,2,(LPARAM)dbnode->database->dbname);
+	SendMessage(App->view->statusBarHwnd,SB_SETTEXT,3,(LPARAM)node->data->data_key);
+	SendMessage(App->view->statusBarHwnd,SB_SETTEXT,4,(LPARAM)node->data->type_name);
 
 	sprintf(tbuff,"%d",node->data->quantity);
-	SendMessage(mainModel->view->statusBarHwnd,SB_SETTEXT,5,(LPARAM)tbuff);
+	SendMessage(App->view->statusBarHwnd,SB_SETTEXT,5,(LPARAM)tbuff);
 }
 
 void onDataNodeSelection(TreeNode * selected){
@@ -231,12 +232,12 @@ TreeNode * getSelectedNode(){
     POINT pt;
     pt.x = LOWORD(dwPos);
     pt.y = HIWORD(dwPos);
-    ScreenToClient(mainModel->view->overviewHwnd, &pt);
+    ScreenToClient(App->view->overviewHwnd, &pt);
     
     TVHITTESTINFO ht = {0};
     ht.pt = pt;
     ht.flags = TVHT_ONITEM;
-    HTREEITEM hItem = TreeView_HitTest(mainModel->view->overviewHwnd, &ht);
+    HTREEITEM hItem = TreeView_HitTest(App->view->overviewHwnd, &ht);
 	if(hItem == NULL){
 		return NULL;
 	}
@@ -244,7 +245,7 @@ TreeNode * getSelectedNode(){
     TVITEM ti = {0};
     ti.mask = TVIF_HANDLE | TVIF_PARAM;
     ti.hItem = hItem;
-    TreeView_GetItem(mainModel->view->overviewHwnd, &ti);
+    TreeView_GetItem(App->view->overviewHwnd, &ti);
 
 	TreeNode * tn = (TreeNode*) ti.lParam;
 	return tn;
@@ -256,7 +257,7 @@ TreeNode * addHostNode(RedisConnection stream,char * connectionName){
 
 	TreeNode * hostNode = build_tree_node(NULL,NODE_LEVEL_HOST);
 	hostNode->stream = stream;
-	sprintf(hostNode->host->host,"%s:%d",stream->host,stream->port);
+	sprintf(hostNode->host->host,"%s:%d.%d",stream->host,stream->port,hostNode->tid);
 
     tvinsert.hParent = NULL;
 	tvinsert.hInsertAfter=TVI_ROOT;
@@ -266,14 +267,14 @@ TreeNode * addHostNode(RedisConnection stream,char * connectionName){
     tvinsert.item.pszText= connectionName;
 	tvinsert.item.lParam=(LPARAM)hostNode;
 
-	HTREEITEM  handle = (HTREEITEM)SendMessage(mainModel->view->overviewHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+	HTREEITEM  handle = (HTREEITEM)SendMessage(App->view->overviewHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 	hostNode->handle = handle;
 
 	return hostNode;
 }
 
 void command(HWND hwnd,int cmd){
-	HINSTANCE hInst = mainModel->hInstance;
+	HINSTANCE hInst = App->hInstance;
 
 	if(cmd > 900 && cmd < 1000){
 		Host * host = getHostByIndex(appConfig,cmd - IDM_CUSTOMER_HOST -1);
@@ -288,7 +289,7 @@ void command(HWND hwnd,int cmd){
 
         TreeNode * hostNode = addHostNode(stream,host->name);
 		s_auth(hostNode,host->password);
-		showWindows(mainModel->view);
+		showWindows(App->view);
 		return;
 	}
 
@@ -317,7 +318,7 @@ void command(HWND hwnd,int cmd){
 		case IDM_CONNECTION:{
 			POINT pt;
 			GetCursorPos(&pt);
-			TrackPopupMenu(mainModel->hConnectionMenu,TPM_LEFTALIGN,pt.x,pt.y,0,hwnd,NULL);
+			TrackPopupMenu(App->hConnectionMenu,TPM_LEFTALIGN,pt.x,pt.y,0,hwnd,NULL);
 			break;
 		}
 
@@ -337,11 +338,17 @@ void command(HWND hwnd,int cmd){
 		}
 
 		case IDM_SYSTEM_STAT:{
-			s_db_info_stats(mainModel->activeHost,"stats");
+			s_db_info_stats(App->activeHost,"stats");
 			break;
 		}
 
 		case IDM_SYSTEM_STAT+2:{
+			TreeNode * selected = getSelectedNode();
+			if(selected != NULL){
+				char name[255] = {};
+				sprintf(name,"node: %d",selected->tid);
+				log_message(name);
+			}
 			DumpMessage(2);
 			break;
 		}
@@ -365,7 +372,7 @@ LPTSTR mGetOpenFileName(HWND hwnd){
 
 	ofn->lStructSize = sizeof(OPENFILENAME);
 	ofn->hwndOwner   = hwnd;
-	ofn->hInstance   = mainModel->hInstance;
+	ofn->hInstance   = App->hInstance;
 	ofn->lpstrFilter = "All Files\0*.*\0HexFiles\0*.hex\0\0";
 	ofn->lpstrFile   = fname;
 	ofn->nMaxFile    = MAX_PATH;
@@ -385,7 +392,7 @@ LPTSTR mGetSaveFileName(HWND hwnd){
 	
 	ofn->lStructSize = sizeof(OPENFILENAME);
 	ofn->hwndOwner = hwnd;
-	ofn->hInstance = mainModel->hInstance;
+	ofn->hInstance = App->hInstance;
 	ofn->lpstrFilter = "All Files\0*.*\0HexFiles\0*.hex\0\0";
 	ofn->lpstrFile = fname;
 	ofn->nMaxFile =MAX_PATH;
@@ -420,7 +427,7 @@ void onWindowResize(AppView * view){
 }
 
 void buildToolBar(AppView * view){
-	HINSTANCE hInst = mainModel->hInstance;
+	HINSTANCE hInst = App->hInstance;
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
 	RECT  rect;
 
@@ -499,7 +506,7 @@ void getSpliterRect(AppView * v,RECT * rt,RECT * rect){
 void buildConnectionView(AppView * view){
 	RECT            rt;
 
-	HINSTANCE hinst = mainModel->hInstance;
+	HINSTANCE hinst = App->hInstance;
 	GetWindowRect(view->hwnd,&rt);
 
 	view->overviewHwnd = CreateWindowEx(0,"SysTreeView32",0,
