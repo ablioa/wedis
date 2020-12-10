@@ -120,6 +120,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 
 						TreeNode * selected = getSelectedNode();
 						if(selected != NULL && selected->level == NODE_LEVEL_HOST){
+							App->selectHost = selected;
 							TrackPopupMenu(App->hServerInfoMenu,TPM_LEFTALIGN,pt.x,pt.y,0,hwnd,NULL);
 						}
 					}
@@ -343,13 +344,11 @@ void command(HWND hwnd,int cmd){
 		}
 
 		case IDM_SYSTEM_STAT+2:{
-			TreeNode * selected = getSelectedNode();
+			TreeNode * selected = App->selectHost;
 			if(selected != NULL){
-				char name[255] = {};
-				sprintf(name,"node: %d",selected->tid);
-				log_message(name);
+				// 删除树节点,关闭连接
+				TreeView_DeleteItem(App->view->overviewHwnd,selected->handle);
 			}
-			DumpMessage(2);
 			break;
 		}
 

@@ -138,7 +138,7 @@ RedisReply read_reply(char *text,int * cur,int length){
 		
 		/** number */
 		case ':':{
-			MessageBox(NULL,"尚未支持的协议！！","sd",MB_OK);
+			MessageBox(NULL,"unsuported data type: NUMBER.","sd",MB_OK);
 			break;
 		}
 

@@ -69,6 +69,8 @@ typedef struct application{
 	TreeNode * activeHost;
 
 	list * connectionList;
+
+	TreeNode * selectHost;
 }Application;
 
 extern Application * App;
