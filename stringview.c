@@ -1,5 +1,7 @@
 #include "stringview.h"
 
+#define IDB_FORMAT_STRING 5000
+
 HWND buildStringToolBar(HWND parent){
 	HINSTANCE hInst = App->hInstance;
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
@@ -7,7 +9,7 @@ HWND buildStringToolBar(HWND parent){
     int buttonCount = 2;
 	TBBUTTON tbtn[10] = {
         {(0), IDM_CONNECTION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(1), IDM_CONNECTION+1, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+        {(1), IDB_FORMAT_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
 	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_STRINGTB));
@@ -38,7 +40,8 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 
 			model->stringView = CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | ES_AUTOVSCROLL | WS_BORDER | WS_CHILD | WS_TABSTOP | WS_VSCROLL |ES_MULTILINE, 0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_TEXT, App->hInstance, 0);
             model->toolBar = buildStringToolBar(hwnd);
-            SendMessage(model->stringView, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
+            model->mode = BINARY;
+            SendMessage(model->stringView, WM_SETFONT, (WPARAM)(resource->fixedWidthFont), FALSE);
 		    break;
 		}
        
@@ -52,6 +55,22 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                     // sprintf(cmd,"set %s \"%s\"",model->data->key,name);
 
                     // sendRedisCommand(cmd,NULL,NULL,CMD_AUTH);
+                    break;
+                }
+
+                case IDB_FORMAT_STRING:{
+                    char * content = model->data->bulk->content;
+                    if(model->mode == TEXT){
+                        model->mode = BINARY;
+                    }else{
+                        int len = model->data->bulk->length;
+                        content = dump_text(model->data->bulk->content,len);
+                        model->mode = TEXT;
+                    }
+
+                    SendMessage(model->stringView,EM_REPLACESEL,FALSE,(LPARAM)content);
+			        SetWindowText(model->stringView,content);
+                    
                     break;
                 }
             }

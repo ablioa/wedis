@@ -11,6 +11,11 @@
 
 #define STRING_VIEW_CLASS "STRING_VIEW_CLASS"
 
+typedef enum display_mode{
+	TEXT,
+	BINARY
+}DisplayMode;
+
 typedef struct string_data_model{
    HWND stringView;
 
@@ -22,6 +27,8 @@ typedef struct string_data_model{
 
    int hex_buff_size;
 
+   DisplayMode mode;
+   
 }StringViewModel;
 
 
