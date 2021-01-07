@@ -1,6 +1,7 @@
 #include "stringview.h"
 
 #define IDB_FORMAT_STRING 5000
+#define IDB_EXPORT_STRING 5001
 
 HWND buildStringToolBar(HWND parent){
 	HINSTANCE hInst = App->hInstance;
@@ -8,7 +9,7 @@ HWND buildStringToolBar(HWND parent){
 
     int buttonCount = 2;
 	TBBUTTON tbtn[10] = {
-        {(0), IDM_CONNECTION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(0), IDB_EXPORT_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(1), IDB_FORMAT_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
@@ -47,14 +48,15 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
        
         case WM_COMMAND:{
             switch(LOWORD (wParam)){
-                case IDC_STRING_VIEW_SAVE:{
-                    // TCHAR name[256]={0};
-                    // GetDlgItemText(hwnd,IDC_STRING_VIEW_TEXT,name,sizeof(name));
-
-                    // TCHAR cmd[256];
-                    // sprintf(cmd,"set %s \"%s\"",model->data->key,name);
-
-                    // sendRedisCommand(cmd,NULL,NULL,CMD_AUTH);
+                case IDB_EXPORT_STRING:{
+                    LPTSTR fileName = mGetSaveFileName(hwnd);
+                    if(fileName == NULL){
+                        break;
+                    }
+                    
+                    FILE * stream = fopen(fileName,"wb");
+                    fwrite(model->data->bulk->content,1,model->data->bulk->length,stream);
+                    fclose(stream);
                     break;
                 }
 
