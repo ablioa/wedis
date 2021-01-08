@@ -1,8 +1,7 @@
 #ifndef _main_h
 #define _main_h
 
-#include <windows.h>
-
+#include "wedis.h"
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -16,7 +15,7 @@
 #include "listview.h"
 #include "setview.h"
 #include "zsetview.h"
-#include "wedis.h"
+
 #include "dataview.h"
 #include "systemview.h"
 #include "callbacks.h"
@@ -33,7 +32,7 @@
 #define CONSOLE_WINDOW      "CONSOLE_WINDOW"
 #define DATA_RENDER_WINDOW  "DATA_RENDER_WINDOW"
 
-#define WM_DT WM_USER+200
+
 
 #define MAX_SIZE	20
 #define CONNECTION_AREA_WIDTH 200

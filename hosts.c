@@ -24,7 +24,11 @@ void buildConnectionTree(HWND hwnd){
 	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
 	tvinsert.item.iImage=0;
 	tvinsert.item.iSelectedImage=1;
-    tvinsert.item.pszText= "product and internet service";
+
+
+    char * buff = (char *)calloc(1,255);
+    LoadString(App->hInstance,IDS_HOSTLIST,buff,255);
+    tvinsert.item.pszText= buff;
 
 	model->parentTree = (HTREEITEM)SendMessage(model->hostTree,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 
@@ -180,19 +184,18 @@ void updateConfigure(HWND hwnd,Host * host){
 }
 
 BOOL CALLBACK conectionConfigDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
-	char buff[MAX_PATH];
     HostModel model = (HostModel)GetWindowLongPtr(hwnd,GWLP_USERDATA);
 
 	switch(msg){
 		case WM_INITDIALOG:{
 			model = (HostModel) calloc(1,sizeof(struct wedis_hosts_model));
-			SetWindowLongPtr(hwnd,GWLP_USERDATA,model);
+			SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
 
-			model->hostEditProc     = SetWindowLongPtr(GetDlgItem(hwnd,IDC_CONNECTION_HOSTVALUE),GWLP_WNDPROC,hostEditProc);
-			model->nameEditProc     = SetWindowLongPtr(GetDlgItem(hwnd,IDC_CONNECTION_VALUE),GWLP_WNDPROC,nameEditProc);
-			model->portEditProc     = SetWindowLongPtr(GetDlgItem(hwnd,IDC_CONNECTION_PORTVALUE),GWLP_WNDPROC,portEditProc);
-			model->passwordEditProc = SetWindowLongPtr(GetDlgItem(hwnd,IDC_CONNECTION_PASSWORDVALUE),GWLP_WNDPROC,passwordEditProc);
-            model->descEditProc     = SetWindowLongPtr(GetDlgItem(hwnd,IDC_CONNECTION_DESCRIPTION),GWLP_WNDPROC,descEditProc);
+			model->hostEditProc     = (WNDPROC)SetWindowLongPtr(GetDlgItem(hwnd,IDC_CONNECTION_HOSTVALUE),GWLP_WNDPROC,(LONG_PTR)hostEditProc);
+			model->nameEditProc     = (WNDPROC)SetWindowLongPtr(GetDlgItem(hwnd,IDC_CONNECTION_VALUE),GWLP_WNDPROC,(LONG_PTR)nameEditProc);
+			model->portEditProc     = (WNDPROC)SetWindowLongPtr(GetDlgItem(hwnd,IDC_CONNECTION_PORTVALUE),GWLP_WNDPROC,(LONG_PTR)portEditProc);
+			model->passwordEditProc = (WNDPROC)SetWindowLongPtr(GetDlgItem(hwnd,IDC_CONNECTION_PASSWORDVALUE),GWLP_WNDPROC,(LONG_PTR)passwordEditProc);
+            model->descEditProc     = (WNDPROC)SetWindowLongPtr(GetDlgItem(hwnd,IDC_CONNECTION_DESCRIPTION),GWLP_WNDPROC,(LONG_PTR)descEditProc);
 
 			MoveToScreenCenter(hwnd);
 			buildConnectionTree(hwnd);
@@ -209,7 +212,7 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lPa
  					item.hItem = pNMTreeView->itemNew.hItem;
  					
  					TreeView_GetItem(model->hostTree,&item);
- 					Host * host = (TreeNode*) item.lParam;
+ 					Host * host = (Host*)item.lParam;
 
 					// FIXME 这里为什么会取不到数据?
 					if(host == NULL){
@@ -235,7 +238,7 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lPa
 
                     /** 未选中任何节点 */
                     if(hItem == NULL){
-                    	return;
+                    	break;
                     }
 
                     TVITEM ti = {0};
@@ -295,7 +298,7 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lPa
 				}
 
 				case IDC_CONNECTION_DELETE:{
-					SendMessage(model->hostTree, TVM_DELETEITEM,0,model->selectedTree);
+					SendMessage(model->hostTree, TVM_DELETEITEM,0,(LPARAM)model->selectedTree);
 					remove_host_config(model->hostIndex);
 					break;
 				}

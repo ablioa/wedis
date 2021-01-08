@@ -1,7 +1,5 @@
 #include "split.h"
-#include "main.h"
 
-#include <stdio.h>
 
 static WORD _dotPatternBmp[8] = { 
     0x00aa, 0x0055, 0x00aa, 0x0055, 
@@ -9,7 +7,7 @@ static WORD _dotPatternBmp[8] = {
 };
 
 static int  nSplitterPos = 100;
-static int  oldy         = -2;
+//static int  oldy         = -2;
 static int  oldx         = -2;
 
 #define SPLIT_WIDTH 2
@@ -120,7 +118,7 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
 				ScreenToClient(parentHwnd,&qq);
 
 				MoveWindow(hwnd,pp.x,pp.y,nSplitterPos-pp.x,qq.y - pp.y,TRUE);
-                SendMessage(hwnd,WM_SIZE,NULL,NULL);
+                SendMessage(hwnd,WM_SIZE,(WPARAM)NULL,(LPARAM)NULL);
 			}
 			
 			for(int ix = 0; ix < splitModel->rightSize; ix ++){
@@ -139,7 +137,7 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
 					qq.x - (nSplitterPos+SPLIT_WIDTH),
 					qq.y - pp.y,TRUE);
                 
-                SendMessage(hwnd,WM_SIZE,NULL,NULL);
+                SendMessage(hwnd,WM_SIZE,(WPARAM)NULL,(LPARAM)NULL);
 			}
 
             GetWindowRect(hwnd,&rect1);

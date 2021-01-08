@@ -1,13 +1,10 @@
 #ifndef redis_h
 #define redis_h
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
-
 #include <windows.h>
 #include <commctrl.h>
+
+#include "log.h"
 
 #define CHAR_SPACE ' '
 #define CHAR_TAB   '\t'
@@ -128,7 +125,7 @@ extern int GLOBAL_TREE_NODE_ID;
 TreeNode * build_tree_node(TreeNode * parent,RedisNodeType nodeType);
 
 struct redis_param{
-    char * content;
+    const char * content;
     int    length;
 
     char * diagram;
@@ -143,7 +140,6 @@ struct redis_params{
 typedef struct redis_params * RedisParams;
 
 RedisParams redis_build_params(int count);
-
 
 void redis_add_param(RedisParams params,RedisParam param);
 

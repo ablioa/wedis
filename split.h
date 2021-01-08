@@ -1,8 +1,9 @@
 #ifndef split_h
 #define split_h
 
-#include <windows.h>
+#include "main.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -40,6 +41,8 @@ typedef struct split_model{
     HWND down[SPLIT_HANDLE_MAX];
 }SplitModel;
 
+ void WINAPI DrawXorBar(HDC hdc, int x, int y, int width, int height);
+ 
 void initSplit(HINSTANCE hInstance);
 
 // LRESULT CALLBACK hSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);

@@ -2,8 +2,26 @@
 
 const char * listColNames[2]={
     "Row",
-	"Value"
+    "Value"
 };
+
+BOOL InitListDViewColumns(HWND hWndListView) {
+    LVCOLUMN lvc;
+    lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
+
+    for (int i = 0; i < 2; i++){
+        char * buff = calloc(1,255);
+        strcpy(buff,listColNames[i]);
+
+        lvc.pszText  = buff;
+        lvc.cx       = 100;
+        lvc.iSubItem = i;
+        lvc.fmt      = LVCFMT_LEFT;
+        ListView_InsertColumn(hWndListView, i, &lvc);
+    }
+    
+    return TRUE;
+}
 
 HWND buildListToolBar(HWND parent){
 	HINSTANCE hInst = App->hInstance;
@@ -31,21 +49,6 @@ HWND buildListToolBar(HWND parent){
     ShowWindow(tb,  TRUE);
 
     return tb;
-}
-
-BOOL InitListDViewColumns(HWND hWndListView) {
-    LVCOLUMN lvc;
-    lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
-    
-    for (int i = 0; i < 2; i++){
-        lvc.pszText  = listColNames[i];
-        lvc.cx       = 100;
-        lvc.iSubItem = i;
-        lvc.fmt      = LVCFMT_LEFT;
-        ListView_InsertColumn(hWndListView, i, &lvc);
-    }
-    
-    return TRUE;
 }
 
 BOOL updateListDataSet(HWND hwnd,RedisReply reply){

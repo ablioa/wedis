@@ -6,6 +6,24 @@ const char * zsetColNames[3]={
 	"Score"
 };
 
+BOOL InitZsetViewColumns(HWND hWndListView) { 
+    LVCOLUMN lvc;
+    lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
+
+    for (int iCol = 0; iCol < 3; iCol++){
+        char * buff = (char*)calloc(1,255);
+        strcpy(buff,zsetColNames[iCol]);
+
+        lvc.iSubItem = iCol;
+        lvc.pszText = buff;
+        lvc.cx = 100;
+        lvc.fmt = LVCFMT_LEFT;
+        ListView_InsertColumn(hWndListView, iCol, &lvc);
+    }
+    
+    return TRUE;
+}
+
 HWND buildZsetToolBar(HWND parent){
 	HINSTANCE hInst = App->hInstance;
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
@@ -38,21 +56,6 @@ HWND buildZsetToolBar(HWND parent){
     ShowWindow(tb,  TRUE);
 
     return tb;
-}
-
-BOOL InitZsetViewColumns(HWND hWndListView) { 
-    LVCOLUMN lvc;
-    lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
-
-    for (int iCol = 0; iCol < 3; iCol++){
-        lvc.iSubItem = iCol;
-        lvc.pszText = zsetColNames[iCol];
-        lvc.cx = 100;
-        lvc.fmt = LVCFMT_LEFT;
-        ListView_InsertColumn(hWndListView, iCol, &lvc);
-    }
-    
-    return TRUE;
 }
 
 LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){

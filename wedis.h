@@ -1,11 +1,15 @@
 #ifndef wedis_h
 #define wedis_h
 
+#include <winsock2.h>
 #include <windows.h>
 #include <commctrl.h>
 #include <stdio.h>
-#include <time.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
 
+#include "log.h"
 #include "queue.h"
 #include "redis.h"
 #include "resource/resource.h"
@@ -20,7 +24,7 @@
 #define GENERAL_CMD_RELOAD  10004
 #define GENERAL_CMD_KEYEDIT 10005
 
-#define BUFF_SIZE        1024*1024
+#define WM_DT WM_USER+200
 
 typedef struct app_view{
     HWND hwnd;
@@ -68,7 +72,7 @@ typedef struct application{
 
 	TreeNode * activeHost;
 
-	list * connectionList;
+	list connectionList;
 
 	TreeNode * selectHost;
 }Application;
@@ -103,6 +107,5 @@ void initResource();
 
 void log_message(const char * message);
 
-int wedis_log(const char *fmt, ...);
 
 #endif

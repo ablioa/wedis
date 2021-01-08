@@ -1,11 +1,8 @@
 #ifndef _callbacks_h
 #define _callbacks_h
 
-#include <windows.h>
-#include "resource/resource.h"
-
 #include "main.h"
-#include "wedis.h"
+#include "resource/resource.h"
 
 void SetDialogIcon(HWND hWnd, int idi);
 

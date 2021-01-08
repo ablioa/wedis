@@ -1,12 +1,9 @@
 #ifndef zsetview_h
 #define zsetview_h
 
-#include <windows.h>
-//#define _WIN32_IE 0x0600
 #include "main.h"
 
 #include "redis.h"
-
 #include "resource/resource.h"
 
 #define WEDIS_PUSH_BUTTON_STYLE BS_FLAT|WS_VISIBLE|WS_CHILD|WS_TABSTOP

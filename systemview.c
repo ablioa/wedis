@@ -1,6 +1,27 @@
  #include "systemview.h"
 
-char * cfgColNames[2]={"Property","Value"};
+const char * cfgColNames[2]={"Property","Value"};
+
+BOOL InitSetViewColumns1(HWND hWndListView) { 
+    LVCOLUMN lvc;
+    int iCol;
+    lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
+
+    for (iCol = 0; iCol < 2; iCol++){
+        char * buff = (char *)calloc(1,255);
+        strcpy(buff,cfgColNames[iCol]);
+        lvc.iSubItem = iCol;
+        lvc.pszText = buff;
+        lvc.cx = 100;
+        lvc.fmt = LVCFMT_LEFT;
+
+        ListView_InsertColumn(hWndListView, iCol, &lvc);
+        ListView_SetColumnWidth(hWndListView,iCol,(iCol+1) * 200);
+    }
+    
+    return TRUE;
+}
+
 HWND buildStatToolBar(HWND parent){
 	HINSTANCE hInst = App->hInstance;
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
@@ -32,24 +53,6 @@ HWND buildStatToolBar(HWND parent){
     ShowWindow(tb,  TRUE);
 
     return tb;
-}
-
-BOOL InitSetViewColumns1(HWND hWndListView) { 
-    LVCOLUMN lvc;
-    int iCol;
-    lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
-
-    for (iCol = 0; iCol < 2; iCol++){
-        lvc.iSubItem = iCol;
-        lvc.pszText = cfgColNames[iCol];
-        lvc.cx = 100;
-        lvc.fmt = LVCFMT_LEFT;
-
-        ListView_InsertColumn(hWndListView, iCol, &lvc);
-        ListView_SetColumnWidth(hWndListView,iCol,(iCol+1) * 200);
-    }
-    
-    return TRUE;
 }
 
 BOOL updateConfigDataSet(HWND hwnd,KVPair kv){
@@ -85,7 +88,7 @@ LRESULT CALLBACK SystemViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 
 	switch(message){
 	    case WM_CREATE:{
-            model = (StringViewModel*)calloc(1,sizeof(StringViewModel));
+            model = (SystemViewModel)calloc(1,sizeof(struct system_view_model));
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
             
             GetClientRect (hwnd, &rect); 
@@ -130,7 +133,7 @@ LRESULT CALLBACK SystemViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 }
 
 void stat_command(HWND hwnd,int cmd){
-    char * statcmd = "stats";
+    const char * statcmd = "stats";
     switch (cmd){
 		case IDM_STAT_SERVER:{statcmd = "server";break;}
         case IDM_STAT_CLIENT:{statcmd = "clients";break;}
@@ -143,7 +146,7 @@ void stat_command(HWND hwnd,int cmd){
         case IDM_STAT_KEYSPACE:{statcmd = "keyspace";break;}
     }
 
-    RedisReply dd = s_db_info_stats(App->activeHost,statcmd);
+    s_db_info_stats(App->activeHost,statcmd);
 };
 
 void init_systemview(HINSTANCE hInstance){

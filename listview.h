@@ -1,8 +1,6 @@
 #ifndef listview_h
 #define listview_h
 
-#include <windows.h>
-
 #include "main.h"
 
 #include "resource/resource.h"

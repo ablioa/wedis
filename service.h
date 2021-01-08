@@ -1,9 +1,6 @@
 #ifndef mservice_h
 #define mservice_h
 
-#include <windows.h>
-#include <commctrl.h>
-
 #include "wedis.h"
 #include "redis.h"
 #include "connection.h"
@@ -33,7 +30,7 @@ RedisReply s_db_fetch_zset(TreeNode * datanode);
 
 void s_db_data_type(TreeNode * selected);
 
-RedisReply s_db_info_stats(TreeNode * host,char * information);
+RedisReply s_db_info_stats(TreeNode * host,const char * information);
 
 RedisReply redis_serialize_params(RedisConnection stream,RedisParams params);
 
@@ -41,7 +38,7 @@ RedisReply redis_serialize_params(RedisConnection stream,RedisParams params);
  * 动态参数序列化
  * 2^32最大10位+2+2+1 = 15
  **/
-RedisParam redis_build_param(char * content);
+RedisParam redis_build_param(const char * content);
 
 void appendTask(CommandType cmdType,const DataType dataType,const char * dataKey);
 

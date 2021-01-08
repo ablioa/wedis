@@ -6,6 +6,26 @@ const char * colNames[3]={
 	"Value"
 };
 
+BOOL InitHashViewColumns(HWND hWndListView) { 
+    LVCOLUMN lvc;
+    int iCol;
+
+    lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
+
+    for (iCol = 0; iCol < 3; iCol++){
+        char * buff = (char *)calloc(1,255);
+        strcpy(buff,colNames[iCol]);
+        lvc.iSubItem = iCol;
+        lvc.pszText = buff;
+        lvc.cx = 100;
+        lvc.fmt = LVCFMT_LEFT;
+
+        ListView_InsertColumn(hWndListView, iCol, &lvc);
+    }
+    
+    return TRUE;
+}
+
 HWND buildHashToolBar(HWND parent){
 	HINSTANCE hInst = App->hInstance;
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
@@ -38,25 +58,6 @@ HWND buildHashToolBar(HWND parent){
     ShowWindow(tb,  TRUE);
 
     return tb;
-}
-
-BOOL InitHashViewColumns(HWND hWndListView) { 
-    LVCOLUMN lvc;
-    int iCol;
-	char valName[255]={};
-
-    lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
-
-    for (iCol = 0; iCol < 3; iCol++){
-        lvc.iSubItem = iCol;
-        lvc.pszText = colNames[iCol];
-        lvc.cx = 100;
-        lvc.fmt = LVCFMT_LEFT;
-
-        ListView_InsertColumn(hWndListView, iCol, &lvc);
-    }
-    
-    return TRUE;
 }
 
 BOOL updateHashDataSet(HWND hwnd,RedisReply reply){

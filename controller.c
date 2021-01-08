@@ -14,7 +14,7 @@ void add_data_node(TreeNode * dbnode,RedisReply data){
     }
     
     dbnode->subHandleSize= 0;
-	RedisReply cursor = data->bulks[0];
+//	RedisReply cursor = data->bulks[0];
 	RedisReply keydata   = data->bulks[1];
 
 	int total = keydata->array_length;
@@ -23,7 +23,6 @@ void add_data_node(TreeNode * dbnode,RedisReply data){
 
         TreeNode * datanode = build_tree_node(dbnode,NODE_LEVEL_DATA);
 		datanode->data->data_key = item->bulk->content;
-		datanode->data->key_length - item->bulk->length;
 		datanode->stream = dbnode->stream;
 
         TV_INSERTSTRUCT tvinsert;
@@ -52,21 +51,21 @@ void add_database_node(TreeNode * hostNode,int dbCount){
 	tvinsert.hInsertAfter=TVI_ROOT;
 	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
 
-	char showName[128]={0};
+	char showName[255]={0};
 	for(int dbindex =0; dbindex < dbCount;dbindex ++){
 		TreeNode * dbnode = build_tree_node(hostNode,NODE_LEVEL_DATABASE);
 		dbnode->database->dbindex=dbindex;
 		sprintf(dbnode->database->dbname,"db%d",dbindex);
 		dbnode->stream = hostNode->stream;
 
-		memset(showName,0,sizeof(char) * 128);
+		memset(showName,0,sizeof(char) * 255);
 		// Keyspace space = getKeyspaceInfo(dbnode->database->dbname);
 		// int keyCount = 0;
 		// if(space != NULL){
 		// 	keyCount = space->keys;
 		// }
 		
-		memset(showName,0,128);
+		memset(showName,0,255);
 		sprintf(showName,"%s",dbnode->database->dbname);
 		tvinsert.item.iImage=1;
 		tvinsert.item.iSelectedImage=1;

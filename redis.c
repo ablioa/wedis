@@ -31,7 +31,7 @@ RedisReply receive_msg(RedisConnection stream){
 	}while(reply->reply_status != REPLY_STATUS_DONE);
 
 	wedis_log(stream->read_buff);
-	free(stream->read_buff);
+	free(stream->read_buff); 
 
 	return reply;
 }
@@ -234,9 +234,6 @@ void setKVPair(KVPair kv, const char *text){
 	char *vpos = strchr(text, ':');
 
 	strncpy(kv->key, text, (vpos - text));
-
-	int len = strlen(vpos);
-
 	kv->value = (char *) calloc(strlen(vpos),sizeof(char));
 	strcpy(kv->value,vpos+1);
 }

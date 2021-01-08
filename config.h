@@ -57,6 +57,6 @@ void save_host_config(int index,Host * host);
 
 Host * getHostByIndex(Config * config,int hostIndex);
 
-LONG WritePrivateProfileInt(LPSTR sectionname,LPSTR keyname,LONG val,LPCSTR file);
+LONG WritePrivateProfileInt(const char * sectionname,const char *  keyname,const LONG val,const char * file);
 
 #endif

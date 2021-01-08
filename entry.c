@@ -1,5 +1,18 @@
-#include "entry.h"
 #include "main.h"
+#include "entry.h"
+
+typedef struct {
+    int iImage;
+    int iSelectedImage;
+    int iIndent;
+    const char * pszText;
+} ITEMINFO;
+
+ITEMINFO IInf[] = {
+    { 0, 0,  0, "Json"}, 
+    { 0, 0,  0, "Binary"},
+    { 0, 0,  0, "Text"} 
+};
 
 void initDataTypeSelector(HWND viewTypeHwnd){
     INITCOMMONCONTROLSEX icex;
@@ -9,27 +22,17 @@ void initDataTypeSelector(HWND viewTypeHwnd){
 
     COMBOBOXEXITEM cbei;
     int iCnt;
-    
-    typedef struct {
-        int iImage;
-        int iSelectedImage;
-        int iIndent;
-        LPTSTR pszText;
-    } ITEMINFO;
-
-    ITEMINFO IInf[] = {
-        { 0, 0,  0, "Json"}, 
-        { 0, 0,  0, "Binary"},
-        { 0, 0,  0, "Text"}
-    };
 
     // Set the mask common to all items.
     cbei.mask = CBEIF_TEXT | CBEIF_INDENT |
                 CBEIF_IMAGE| CBEIF_SELECTEDIMAGE;
 
     for(iCnt=0; iCnt<3; iCnt++){
+        char * buff = (char*)calloc(1,255);
+        strcpy(buff,IInf[iCnt].pszText);
+
         cbei.iItem          = iCnt;
-        cbei.pszText        = IInf[iCnt].pszText;
+        cbei.pszText        = buff;
         cbei.cchTextMax     = sizeof(IInf[iCnt].pszText);
         cbei.iImage         = IInf[iCnt].iImage;
         cbei.iSelectedImage = IInf[iCnt].iSelectedImage;
@@ -48,8 +51,6 @@ void initDataTypeSelector(HWND viewTypeHwnd){
 
 
 BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
-	char buff[MAX_PATH];
-
 	switch(msg){
 		case WM_INITDIALOG:{
 			MoveToScreenCenter(hwnd);
@@ -76,8 +77,6 @@ BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 }
 
 BOOL CALLBACK dbSearchDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
-	char buff[MAX_PATH];
-
 	switch(msg){
 		case WM_INITDIALOG:{
 			MoveToScreenCenter(hwnd);

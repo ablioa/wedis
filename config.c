@@ -129,7 +129,7 @@ void save_config(){
     MessageBox(NULL,"service config!","title",MB_OK);    
 }
 
-LONG WritePrivateProfileInt(LPSTR sectionname,LPSTR keyname,LONG val,LPCSTR iniFile){
+LONG WritePrivateProfileInt(const char * sectionname,const char *  keyname,const LONG val,const char * iniFile){
 	char tmp[MAX_PATH];
 	wsprintf(tmp,"%d",val);
 	WritePrivateProfileString(sectionname,keyname,tmp,iniFile);

@@ -5,22 +5,41 @@ const char * setColNames[2]={
 	"Value"
 };
 
+BOOL InitSetViewColumns(HWND hWndListView) { 
+    LVCOLUMN lvc;
+    lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
+
+    for (int iCol = 0; iCol < 2; iCol++){
+        char * buff = (char*)calloc(1,255);
+        strcpy(buff,setColNames[iCol]);
+
+        lvc.iSubItem = iCol;
+        lvc.pszText = buff;
+        lvc.cx = 100;
+
+        lvc.fmt = LVCFMT_LEFT;
+        ListView_InsertColumn(hWndListView, iCol, &lvc);
+    }
+    
+    return TRUE;
+}
+
 HWND buildSetToolBar(HWND parent){
 	HINSTANCE hInst = App->hInstance;
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
 
     int buttonCount = 10;
 	TBBUTTON tbtn[10] = {
-        {(0), IDM_CONNECTION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(0), 100, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(1), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-		{(7), IDM_SYSTEM_STAT, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(8), IDM_DEBUG_GET_DATABASES, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+		{(7), 100, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(8), 100, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(0), 0             , 0,               TBSTYLE_SEP,    {0}, 0, 0},
-		{(2), IDM_ADD       , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(3), IDM_REMOVE    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(4), IDM_RELOAD    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-		{(5), IDM_RENAME    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(6), IDM_TIMING    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+		{(2), 100       , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(3), 100    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(4), 100    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+		{(5), 100    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(6), 100    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
 	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_MAIN));
@@ -37,22 +56,6 @@ HWND buildSetToolBar(HWND parent){
     ShowWindow(tb,  TRUE);
 
     return tb;
-}
-
-BOOL InitSetViewColumns(HWND hWndListView) { 
-    LVCOLUMN lvc;
-    lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
-
-    for (int iCol = 0; iCol < 2; iCol++){
-        lvc.iSubItem = iCol;
-        lvc.pszText = setColNames[iCol];
-        lvc.cx = 100;
-
-        lvc.fmt = LVCFMT_LEFT;
-        ListView_InsertColumn(hWndListView, iCol, &lvc);
-    }
-    
-    return TRUE;
 }
 
 BOOL updateSetDataSet(HWND hwnd,RedisReply reply){

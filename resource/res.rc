@@ -180,15 +180,17 @@ FONT 8, "Ms Shell Dlg"
 //
 // String Table resources
 //
-LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
 STRINGTABLE
 {
     ID_COLOR_SPLITBAR             "Split bar"
     ID_COLOR_CURLINE              "Current line"
-    IDS_DATAVIEW                  "Data View"
+    IDS_DATAVIEW                  "数据"
     IDS_CODEVIEW                  "Code View"
     IDS_REGVIEW                   "Register View"
     IDS_STACKVIEW                 "Stack View"
+
+    IDS_HOSTLIST                  "Host List"
 }
 
 

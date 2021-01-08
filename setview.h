@@ -1,12 +1,8 @@
 #ifndef setview_h
 #define setview_h
 
-#include <windows.h>
-
-#include "main.h"
-
+#include "wedis.h"
 #include "resource/resource.h"
-
 #define SET_VIEW_CLASS "SET_VIEW_CLASS"
 
 #define WEDIS_PUSH_BUTTON_STYLE BS_FLAT|WS_VISIBLE|WS_CHILD|WS_TABSTOP

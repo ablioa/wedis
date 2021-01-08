@@ -1,8 +1,6 @@
 #ifndef myconnection_h
 #define myconnection_h
 
-#include <windows.h>
-#include <winsock2.h>
 #include <stdio.h>
 #include <stdlib.h>
 

@@ -56,7 +56,9 @@
 #define IDS_CODEVIEW                            40003
 #define IDS_REGVIEW                             40004
 #define IDS_STACKVIEW                           40005
+#define IDS_HOSTLIST                            40006
 #define IDM_PREFERENCE                          40011
+
 
 #define IDC_DATATYPE            1017
 

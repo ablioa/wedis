@@ -222,7 +222,7 @@ RedisReply s_db_fetch_zset(TreeNode * datanode){
     return redis_serialize_params(datanode->stream,params);
 }
 
-RedisReply s_db_info_stats(TreeNode * hostnode,char * information){
+RedisReply s_db_info_stats(TreeNode * hostnode,const char * information){
     RedisParams params = redis_build_params(2);
     redis_add_param(params,redis_build_param("info"));
     redis_add_param(params,redis_build_param(information));
@@ -236,6 +236,7 @@ RedisReply s_db_info_stats(TreeNode * hostnode,char * information){
 RedisParams redis_build_params(int count){
     RedisParams params = (RedisParams)calloc(1,sizeof(struct redis_params));
     params->items = (RedisParam*)calloc(count,sizeof(struct redis_param));
+    return params;
 }
 
 void redis_add_param(RedisParams params,RedisParam param){
@@ -243,7 +244,7 @@ void redis_add_param(RedisParams params,RedisParam param){
     params->param_count++;
 }
 
-RedisParam redis_build_param(char * content){
+RedisParam redis_build_param(const char * content){
     RedisParam param = (RedisParam) calloc(1,sizeof(struct redis_param));
 
     param->content = content;
@@ -257,7 +258,7 @@ RedisParam redis_build_param(char * content){
         param->content);
 
     param->s_length = strlen(param->diagram);
-    
+     
     return param;
 }
 

@@ -1,8 +1,6 @@
 #ifndef stringview_h
 #define stringview_h
 
-#include <windows.h>
-
 #include "main.h"
 #include "wedis.h"
 #include "redis.h"
