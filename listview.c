@@ -11,7 +11,7 @@ HWND buildListToolBar(HWND parent){
 
     int buttonCount = 4;
 	TBBUTTON tbtn[4] = {
-        {(0), IDM_CONNECTION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(0), LIST_EXPORT_CMD, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(1), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(2), IDM_PREFERENCE+1, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(3), IDM_PREFERENCE+2, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
@@ -78,28 +78,29 @@ BOOL updateListDataSet(HWND hwnd,RedisReply reply){
         SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
     }
 
-    free_redis_reply(reply);
+    // TODO 这里还不能释放，需要选择合适的时机
+    // free_redis_reply(reply);
 
     return TRUE;
 }
 
 LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	RECT rect;
-	ListViewModel * listViewModel = (ListViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
+	ListViewModel * model = (ListViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
 
     switch(message){
 	    case WM_CREATE:{
-            listViewModel = (ListViewModel*)calloc(1,sizeof(ListViewModel));
-            SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)listViewModel);
+            model = (ListViewModel*)calloc(1,sizeof(ListViewModel));
+            SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
 
-	        listViewModel->listView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
+	        model->listView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
                           WS_CHILD | WS_VISIBLE| WS_BORDER | LVS_REPORT | LVS_SHAREIMAGELISTS,
                           0, 0, 0, 0,
                           hwnd, NULL, App->hInstance, NULL);
 
-            listViewModel->toolBar = buildListToolBar(hwnd);
-            ListView_SetExtendedListViewStyle(listViewModel->listView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
-			InitListDViewColumns(listViewModel->listView);
+            model->toolBar = buildListToolBar(hwnd);
+            ListView_SetExtendedListViewStyle(model->listView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
+			InitListDViewColumns(model->listView);
 		    break;
 		}
 
@@ -124,13 +125,25 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                     break;
                 }
 
-                case LIST_EXPORT_CMD:{
-//                    char * filename = mGetOpenFileName(hwnd);
+                case LIST_DELETE_CMD:{
+                    MessageBox(hwnd,"delete list item right now!","title",MB_OK);
                     break;
                 }
 
-                case LIST_DELETE_CMD:{
-                    MessageBox(hwnd,"delete list item right now!","title",MB_OK);
+                case LIST_EXPORT_CMD:{
+                    char * filename = mGetSaveFileName(hwnd);
+                    if(filename == NULL){
+                        break;
+                    }
+
+                    FILE * stream = fopen(filename,"w");
+                    int len = model->data->array_length;
+                    for(int ix = 0; ix < len; ix ++){
+                        RedisReply item = model->data->bulks[ix];
+                        fprintf(stream,"%s\n",item->bulk->content);
+                    }
+                    fclose(stream);
+
                     break;
                 }
             }
@@ -138,15 +151,15 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
         }
 
         case WM_DT:{
-            RedisReply rp = (RedisReply)wParam;
-            updateListDataSet(listViewModel->listView,rp);
+            model->data = (RedisReply)wParam;
+            updateListDataSet(model->listView,model->data);
             break;
         }
 
 		case WM_SIZE:{
 			GetClientRect(hwnd,&rect);
-            MoveWindow(listViewModel->toolBar,0,0,rect.right-rect.left,28,TRUE);
-			MoveWindow(listViewModel->listView,0,28,rect.right-rect.left,rect.bottom-rect.top-28,TRUE);
+            MoveWindow(model->toolBar,0,0,rect.right-rect.left,28,TRUE);
+			MoveWindow(model->listView,0,28,rect.right-rect.left,rect.bottom-rect.top-28,TRUE);
 		    break;
 		}
 	}
