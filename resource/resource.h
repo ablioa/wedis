@@ -44,7 +44,7 @@
 #define IDM_EXIT                                4002
 #define IDM_ABOUT                               4004
 #define IDA_RUN                                 4014
-#define IDM_EXE_RUN                             4014
+#define IDM_EXE_RUN                             4015
 #define IDM_EXE_BRK                             4030
 #define IDB_CHIP                                5031
 #define IDC_CONNECTION_ADD                      40000
