@@ -77,6 +77,10 @@ BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 }
 
 BOOL CALLBACK dbSearchDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
+    char page[MAX_PATH] = {0};
+    char pattern[MAX_PATH] = {0};
+    char psize[MAX_PATH] = {0};
+
 	switch(msg){
 		case WM_INITDIALOG:{
 			MoveToScreenCenter(hwnd);
@@ -86,7 +90,15 @@ BOOL CALLBACK dbSearchDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
 		case WM_COMMAND:{
 			switch(wParam){
 				case IDC_DB_SEARCH_OK:
-					MessageBox(hwnd,"Search Done!!!!","search",MB_OK);
+			        GetDlgItemText(hwnd,IDE1,page,MAX_PATH);
+			        GetDlgItemText(hwnd,IDE2,pattern,MAX_PATH);
+			        GetDlgItemText(hwnd,IDE3,psize,MAX_PATH);
+
+                    char buff[1000] = {};
+                    sprintf(buff,"scan %s %s %s",page,pattern,psize);
+
+                    // TODO 在这里引入查询参数
+					MessageBox(hwnd,buff,"search",MB_OK);
 					EndDialog(hwnd,0);
 				break;
 

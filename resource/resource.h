@@ -59,6 +59,9 @@
 #define IDS_HOSTLIST                            40006
 #define IDM_PREFERENCE                          40011
 
+#define IDE1 50001
+#define IDE2 50002
+#define IDE3 50003
 
 #define IDC_DATATYPE            1017
 

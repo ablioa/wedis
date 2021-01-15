@@ -15,6 +15,7 @@
 #include "listview.h"
 #include "setview.h"
 #include "zsetview.h"
+#include "databaseview.h"
 
 #include "dataview.h"
 #include "systemview.h"

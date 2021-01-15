@@ -51,6 +51,7 @@ typedef struct data_view{
 	HWND setViewHwnd;
     HWND zsetViewHwnd;
 	HWND systemViewHwnd;
+	HWND databaseViewHwnd;
 
 	HWND visibleHwnd;
 

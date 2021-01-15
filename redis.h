@@ -26,6 +26,7 @@ typedef enum{
 	REDIS_HASH,
 	REDIS_SET,
 	REDIS_ZSET,
+	REDIS_DATABASE,
 	REDIS_SYSTEM
 }DataType;
 

@@ -9,6 +9,7 @@ void initpan(HINSTANCE hInstance){
 	init_setview(hInstance);
 	init_zsetview(hInstance);
 	init_systemview(hInstance);
+	init_database_view(hInstance);
 	initSplit(hInstance);
 
     WNDCLASSEX hSplitClass;
@@ -105,10 +106,12 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 					if(msg->idFrom == 0){
 						TreeNode * selected = getSelectedNode();
 
-						// HINSTANCE hInst = App->hInstance;
-						// DialogBox (hInst,MAKEINTRESOURCE (IDD_DB_SEARCH),hwnd,(DLGPROC)dbSearchDlgProc);
+						HINSTANCE hInst = App->hInstance;
+						DialogBox (hInst,MAKEINTRESOURCE (IDD_DB_SEARCH),hwnd,(DLGPROC)dbSearchDlgProc);
                         
 						onDataBaseSelect(selected);
+
+						return;
 					}
 					break;
 				}
@@ -215,6 +218,14 @@ void onDataNodeSelection(TreeNode * selected){
 		
 		updateNavigationInfo(selected);
 	}
+
+	if(selected->level == NODE_LEVEL_HOST){
+		s_db_info_stats(App->activeHost,"stats");
+	}
+
+	if(selected->level == NODE_LEVEL_DATABASE){
+		onDataBaseSelect(selected);
+	}
 }
 
 void onDataBaseSelect(TreeNode * selected){
@@ -224,6 +235,7 @@ void onDataBaseSelect(TreeNode * selected){
 
     if(selected->level == NODE_LEVEL_DATABASE){
 		s_db_select(selected);
+		handle_redis_data(selected,NULL);
 		s_db_get_data(selected);
     }
 }
@@ -339,7 +351,6 @@ void command(HWND hwnd,int cmd){
 
 		case IDM_EXE_RUN:
 		case IDM_SYSTEM_STAT:{
-			MessageBox(hwnd,"hello,world","title",MB_OK);
 			s_db_info_stats(App->activeHost,"stats");
 			break;
 		}

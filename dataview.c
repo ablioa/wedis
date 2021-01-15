@@ -14,6 +14,7 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 			dataView->setViewHwnd    = CreateWindowEx(0, SET_VIEW_CLASS,NULL, (!WS_VISIBLE) | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 0,0,0,0,dataHwnd, (HMENU)0, hinst, 0);;
 			dataView->zsetViewHwnd   = CreateWindowEx(0, ZSET_VIEW_CLASS,NULL, (!WS_VISIBLE) | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 0,0,0,0,dataHwnd, (HMENU)0, hinst, 0);
 			dataView->systemViewHwnd = CreateWindowEx(0, SYSTEM_VIEW_CLASS,NULL,(!WS_VISIBLE)| WS_CHILD,0,0,0,0,dataHwnd,0,hinst,NULL);
+			dataView->databaseViewHwnd = CreateWindowEx(0, DATABASE_VIEW_CLASS,NULL,(!WS_VISIBLE)| WS_CHILD,0,0,0,0,dataHwnd,0,hinst,NULL);
 
 			ShowWindow(dataView->systemViewHwnd,SW_HIDE);
 			SetWindowLongPtr(dataHwnd,GWLP_USERDATA,(LONG_PTR)dataView);
@@ -65,17 +66,12 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 			RedisReply data     = (RedisReply) wParam;
             TreeNode * datanode = (TreeNode *) lParam;
 
-			// SendMessage(dataView->keyEditHwnd,WM_SETTEXT,0,(LPARAM)(data->dataKey));
-			// SendMessage(dataView->keyNameHwnd,WM_SETTEXT,0,(LPARAM)(data->dataTypeName));
-
-            // dataView->data = data;
-            // dataView->type =  data->dataType;
-			
 			int dataType = REDIS_SYSTEM;
-			if(datanode->level != NODE_LEVEL_HOST){
-				//SendMessage(dataView->systemViewHwnd,WM_DT,(WPARAM)data,(LPARAM)(datanode));
-				// switchView(dataHwnd,datanode->data->data_type,data);
-			//}else{
+			if(datanode->level == NODE_LEVEL_HOST){
+				dataType = REDIS_SYSTEM;
+			}else if(datanode->level == NODE_LEVEL_DATABASE){
+				dataType = REDIS_DATABASE;
+			}else{
 				dataType = datanode->data->data_type;
 			}
 
@@ -92,6 +88,7 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 			MoveWindow(dataView->setViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
 			MoveWindow(dataView->zsetViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
 			MoveWindow(dataView->systemViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
+			MoveWindow(dataView->databaseViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
 			break;
 		}
 	}
@@ -126,6 +123,11 @@ void switchView(HWND hwnd,int type,RedisReply data){
 		
 		case REDIS_ZSET:{
 			dataView->visibleHwnd = dataView->zsetViewHwnd;
+			break;
+		}
+
+		case REDIS_DATABASE:{
+			dataView->visibleHwnd = dataView->databaseViewHwnd;
 			break;
 		}
 

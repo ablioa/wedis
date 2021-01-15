@@ -59,6 +59,7 @@ void s_auth(TreeNode * hodeNode,char * password){
     if(reply->type == REPLY_STATUS){
         if(strcmp("OK",reply->status->content) == 0){
             s_key_space(hodeNode);
+            App->activeHost = hodeNode;
         }
     }else if(reply->type == REPLY_ERROR){
         MessageBox(NULL,reply->error->content,"title",MB_OK);

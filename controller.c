@@ -14,7 +14,6 @@ void add_data_node(TreeNode * dbnode,RedisReply data){
     }
     
     dbnode->subHandleSize= 0;
-//	RedisReply cursor = data->bulks[0];
 	RedisReply keydata   = data->bulks[1];
 
 	int total = keydata->array_length;
