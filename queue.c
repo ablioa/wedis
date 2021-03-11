@@ -22,8 +22,6 @@ void add_node(list lst,void * value){
     }
 
     lst->size ++;
-
-    ///////////////////////////////////////
 }
 
 void * get_node(list lst){

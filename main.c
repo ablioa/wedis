@@ -270,7 +270,7 @@ TreeNode * addHostNode(RedisConnection stream,char * connectionName){
 
 	TreeNode * hostNode = build_tree_node(NULL,NODE_LEVEL_HOST);
 	hostNode->stream = stream;
-	sprintf(hostNode->host->host,"%s:%d.%d",stream->host,stream->port,hostNode->tid);
+	sprintf(hostNode->host->host,"%s:%d",stream->host,stream->port);
 
     tvinsert.hParent = NULL;
 	tvinsert.hInsertAfter=TVI_ROOT;
@@ -442,12 +442,12 @@ void buildToolBar(AppView * view){
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
 	RECT  rect;
 
-    int buttonCount = 3;
+    int buttonCount = 2;
 	
-	TBBUTTON tbtn[3] = {
+	TBBUTTON tbtn[2] = {
         {(0), IDM_CONNECTION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(1), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-		{(7), IDM_SYSTEM_STAT, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+        {(1), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}//,
+		//{(7), IDM_SYSTEM_STAT, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
        // {(8), IDM_DEBUG_GET_DATABASES, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
        ///// {(0), 0             , 0,               TBSTYLE_SEP,    {0}, 0, 0},
 	//	{(2), IDM_ADD       , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},

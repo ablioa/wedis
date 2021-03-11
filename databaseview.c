@@ -29,6 +29,24 @@ LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
 
             model->toolBar = buildDatabaseToolBar(hwnd);
+
+            /////
+
+            HINSTANCE hinst = App->hInstance;
+
+
+            HWND keyEditHwnd  = CreateWindowEx(0, WC_EDIT, ("scan 11 asas asasas"), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 5, 28, 240, 24, hwnd, (HMENU)0, hinst, 0);    
+            HWND renameBtnHwnd  = CreateWindowEx(0, WC_BUTTON, ("Rename"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 250, 28, 60, 24, hwnd, (HMENU)0, hinst, 0);     
+            HWND ttlBtnHwnd  = CreateWindowEx(0, WC_BUTTON, ("TTL"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 315, 28, 60, 24, hwnd, (HMENU)0, hinst, 0);
+            HWND removeBtnHwnd  = CreateWindowEx(0, WC_BUTTON, ("Remove"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 380, 28, 60, 24, hwnd, (HMENU)0, hinst, 0);
+            HWND reloadBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Reload"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 445, 28, 60, 24, hwnd, (HMENU)0, hinst, 0);
+
+            SendMessage(keyEditHwnd, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
+            SendMessage(renameBtnHwnd, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
+            SendMessage(ttlBtnHwnd, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
+            SendMessage(removeBtnHwnd, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
+            SendMessage(reloadBtnHwnd, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
+            /////
 		    break;
 		}
 
