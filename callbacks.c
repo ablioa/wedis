@@ -15,43 +15,6 @@ void MoveToScreenCenter(HWND hwnd){
 	MoveWindow(hwnd,(cx-rt.right+rt.left)>>1,(cy-rt.bottom+rt.top)>>1,rt.right-rt.left,rt.bottom-rt.top,TRUE);
 }
 
-/*
-BOOL CALLBACK ListItemEditProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
-	switch(message){
-        case WM_INITDIALOG:{
-			SetDialogIcon(hwnd,IDI_MAIN);
-            MoveToScreenCenter(hwnd);
-
-            HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
-            SendMessage(GetDlgItem(hwnd,IDC_LIST_OK), WM_SETFONT, (WPARAM)hfont0, FALSE);
-            SendMessage(GetDlgItem(hwnd,IDC_LIST_CANCEL), WM_SETFONT, (WPARAM)hfont0, FALSE);
-            break;
-        }
-
-		case WM_COMMAND:{
-			switch(LOWORD(wParam)){
-				case IDC_LIST_OK:{
-					EndDialog(hwnd,0);
-					break;
-				}
-
-				case IDC_LIST_CANCEL:{
-					EndDialog(hwnd,0);
-					break;
-				}
-			}
-			break;
-		}
-
-		case WM_CLOSE:{
-			EndDialog(hwnd,0);
-			break;
-		}
-	}
-
-	return FALSE;
-}*/
-
 BOOL CALLBACK SetPreferenceProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	switch(message){
 		case WM_COMMAND:
