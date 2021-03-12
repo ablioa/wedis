@@ -1,6 +1,0 @@
-#!/bin/bash
-
-echo > wedis.log
-./wedis.exe &
-tail -f wedis.log
-
