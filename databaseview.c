@@ -19,6 +19,31 @@ void init_database_view(HINSTANCE hInstance){
     RegisterClassEx(&hashViewClass);
 }
 
+void create_database_view(HWND hwnd,DatabaseViewModel * model){
+    HINSTANCE hinst = App->hInstance;
+
+    model->hwndCursorText = CreateWindowEx(0, WC_EDIT, ("0"), 
+			WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
+			5, 28, 80, 20, hwnd, (HMENU)DB_CTRL_CURSOR, hinst, 0); 
+	
+	model->hwndPatternText = CreateWindowEx(0, WC_EDIT, ("*"), 
+			WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
+			90, 28, 80, 20, hwnd, (HMENU)DB_CTRL_PATTERN, hinst, 0);    
+
+    model->hwndCountText = CreateWindowEx(0, WC_EDIT, ("10"), 
+			WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
+			175, 28, 80, 20, hwnd, (HMENU)DB_CTRL_COUNT, hinst, 0); 
+
+    model->hwndSearchButton = CreateWindowEx(0, WC_BUTTON, ("Scan"), 
+			WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
+			260, 28, 60, 20, hwnd, (HMENU)DB_CTRL_SEARCH, hinst, 0); 
+
+    SendMessage(model->hwndCursorText, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
+    SendMessage(model->hwndPatternText, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
+    SendMessage(model->hwndCountText, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
+    SendMessage(model->hwndSearchButton, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
+}
+
 LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
     RECT rect;
 	DatabaseViewModel * model = (DatabaseViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
@@ -27,27 +52,50 @@ LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
 	    case WM_CREATE:{
             model = (DatabaseViewModel*)calloc(1,sizeof(DatabaseViewModel));
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
-
             model->toolBar = buildDatabaseToolBar(hwnd);
 
-            /////
-
-            HINSTANCE hinst = App->hInstance;
-
-
-            HWND keyEditHwnd  = CreateWindowEx(0, WC_EDIT, ("scan 11 asas asasas"), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 5, 28, 240, 24, hwnd, (HMENU)0, hinst, 0);    
-            HWND renameBtnHwnd  = CreateWindowEx(0, WC_BUTTON, ("Rename"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 250, 28, 60, 24, hwnd, (HMENU)0, hinst, 0);     
-            HWND ttlBtnHwnd  = CreateWindowEx(0, WC_BUTTON, ("TTL"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 315, 28, 60, 24, hwnd, (HMENU)0, hinst, 0);
-            HWND removeBtnHwnd  = CreateWindowEx(0, WC_BUTTON, ("Remove"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 380, 28, 60, 24, hwnd, (HMENU)0, hinst, 0);
-            HWND reloadBtnHwnd = CreateWindowEx(0, WC_BUTTON, ("Reload"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 445, 28, 60, 24, hwnd, (HMENU)0, hinst, 0);
-
-            SendMessage(keyEditHwnd, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
-            SendMessage(renameBtnHwnd, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
-            SendMessage(ttlBtnHwnd, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
-            SendMessage(removeBtnHwnd, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
-            SendMessage(reloadBtnHwnd, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
-            /////
+			create_database_view(hwnd,model);
 		    break;
+		}
+
+		case WM_COMMAND:{
+			BOOL result1 = TRUE;
+			BOOL result2 = TRUE;
+			switch(LOWORD(wParam)){
+				case DB_CTRL_SEARCH:{
+					TreeNode * node = model->databaseNode;
+					node->database->cursor = GetDlgItemInt(hwnd,DB_CTRL_CURSOR,&result1,FALSE);
+					node->database->page_size = GetDlgItemInt(hwnd,DB_CTRL_COUNT,&result2,FALSE);
+					GetDlgItemText(hwnd,DB_CTRL_PATTERN,node->database->pattern,255);
+
+					if(result1 && result2){
+						s_db_get_data(model->databaseNode,
+								node->database->cursor,
+								node->database->pattern,
+								node->database->page_size);
+					}
+				}
+			}
+			break;
+		}
+
+		case WM_DT:{
+			RedisReply data     = (RedisReply) wParam;
+            TreeNode * datanode = (TreeNode *) lParam;
+			model->databaseNode = datanode;
+			
+			SetDlgItemText(hwnd,DB_CTRL_PATTERN,datanode->database->pattern);
+			SetDlgItemInt(hwnd,DB_CTRL_CURSOR,datanode->database->cursor,FALSE);
+			SetDlgItemInt(hwnd,DB_CTRL_COUNT,datanode->database->page_size,FALSE);
+			break;
+		}
+
+		case WM_DTT:{
+            TreeNode * datanode = (TreeNode *) wParam;
+			SetDlgItemInt(hwnd,DB_CTRL_CURSOR,datanode->database->cursor,FALSE);
+			//char * cursor = (char *)wParam;
+			//SetDlgItemText(hwnd,DB_CTRL_CURSOR,cursor);
+			break;
 		}
 
 		case WM_SIZE:{

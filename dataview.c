@@ -25,42 +25,38 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 			LPNMHDR msg = ((LPNMHDR) lParam);
 			switch (msg->code) {
 				case LVN_DELETEALLITEMS:{
-					MessageBox(dataHwnd,"data removed.","hello",MB_OK);
 					break;
 				}
 			}
 
-			MessageBox(dataHwnd,"data removed.","hello",MB_OK);
 			break;
 		}
 
         case WM_COMMAND:{
 			switch(LOWORD (wParam)){
 				case GENERAL_CMD_RENAME:{
-                    // TCHAR newKey[256]={0};
-                    // GetDlgItemText(dataHwnd,GENERAL_CMD_KEYEDIT,newKey,sizeof(newKey));
-				
-					// redis_rename_key(dataView->data->dataKey,newKey);
 					break;
 				}
 				
 				case GENERAL_CMD_SETTTL:{
-					DialogBox (App->hInstance,MAKEINTRESOURCE (IDD_GOTOLINE),dataHwnd,(DLGPROC)SetTtlDlgProc);
 					break;
 				}
 
 				case GENERAL_CMD_REMOVE:{
-					// redis_delete_key(dataView->data->dataKey);
 					break;
 				}
 
 				case GENERAL_CMD_RELOAD:{
-					MessageBox(dataHwnd,"reload the data","title",MB_OK);
 					break;
 				}
 			}
 			break;
         }
+
+		case WM_DTT:{
+			SendMessage(dataView->visibleHwnd,WM_DTT,wParam,lParam);
+			break;
+		}
 
 		case WM_DT:{
 			RedisReply data     = (RedisReply) wParam;
@@ -75,7 +71,7 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 				dataType = datanode->data->data_type;
 			}
 
-			switchView(dataHwnd,dataType,data);
+			switchView(dataHwnd,dataType,datanode,data);
 
 			break;
 		}
@@ -96,7 +92,7 @@ LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lPa
 	return DefWindowProc(dataHwnd, msg, wParam, lParam);
 }
 
-void switchView(HWND hwnd,int type,RedisReply data){
+void switchView(HWND hwnd,int type,TreeNode * treeNode,RedisReply data){
 	DataView * dataView = App->dataView;
 	HWND lastVisible = dataView->visibleHwnd;
 	
@@ -137,7 +133,7 @@ void switchView(HWND hwnd,int type,RedisReply data){
 		}
 	}
 
-	SendMessage(dataView->visibleHwnd,WM_DT,(WPARAM)data,(LPARAM)NULL);
+	SendMessage(dataView->visibleHwnd,WM_DT,(WPARAM)data,(LPARAM)treeNode);
 	ShowWindow(dataView->visibleHwnd,SW_SHOW);
 	if(lastVisible != dataView->visibleHwnd){
 		ShowWindow(lastVisible,SW_HIDE);

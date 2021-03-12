@@ -24,7 +24,8 @@
 #define GENERAL_CMD_RELOAD  10004
 #define GENERAL_CMD_KEYEDIT 10005
 
-#define WM_DT WM_USER+200
+#define WM_DT  WM_USER+200
+#define WM_DTT WM_USER+201
 
 typedef struct app_view{
     HWND hwnd;

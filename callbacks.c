@@ -1,8 +1,8 @@
 #include "callbacks.h"
 
 void SetDialogIcon(HWND hWnd, int idi) {
-   SendMessage(hWnd, WM_SETICON, ICON_BIG,  (LPARAM)LoadIcon((HINSTANCE) GetWindowLongPtr(hWnd, GWLP_HINSTANCE),MAKEINTRESOURCE(idi)));
-   SendMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon((HINSTANCE) GetWindowLongPtr(hWnd, GWLP_HINSTANCE),MAKEINTRESOURCE(idi)));
+    SendMessage(hWnd, WM_SETICON, ICON_BIG,  (LPARAM)LoadIcon((HINSTANCE) GetWindowLongPtr(hWnd, GWLP_HINSTANCE),MAKEINTRESOURCE(idi)));
+	SendMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon((HINSTANCE) GetWindowLongPtr(hWnd, GWLP_HINSTANCE),MAKEINTRESOURCE(idi)));
 }
 
 void MoveToScreenCenter(HWND hwnd){
@@ -15,6 +15,7 @@ void MoveToScreenCenter(HWND hwnd){
 	MoveWindow(hwnd,(cx-rt.right+rt.left)>>1,(cy-rt.bottom+rt.top)>>1,rt.right-rt.left,rt.bottom-rt.top,TRUE);
 }
 
+/*
 BOOL CALLBACK ListItemEditProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	switch(message){
         case WM_INITDIALOG:{
@@ -49,7 +50,7 @@ BOOL CALLBACK ListItemEditProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lP
 	}
 
 	return FALSE;
-}
+}*/
 
 BOOL CALLBACK SetPreferenceProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	switch(message){

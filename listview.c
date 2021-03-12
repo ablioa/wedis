@@ -113,10 +113,10 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                 case LVN_COLUMNCLICK:{
                     break;
                 }
-                case NM_DBLCLK:{
-                    DialogBox(App->hInstance,MAKEINTRESOURCE (IDD_LIST_ITEM),hwnd,(DLGPROC)ListItemEditProc);
-                    break;
-                }
+                //case NM_DBLCLK:{
+                //    DialogBox(App->hInstance,MAKEINTRESOURCE (IDD_LIST_ITEM),hwnd,(DLGPROC)ListItemEditProc);
+                //    break;
+                //}
             }
             break;
         }

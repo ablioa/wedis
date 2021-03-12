@@ -37,6 +37,9 @@ TreeNode * build_tree_node(TreeNode * parent,RedisNodeType node_type){
 
         case NODE_LEVEL_DATABASE:{
             node->database = (struct redis_database_node *) calloc(1,sizeof(struct redis_database_node));
+			node->database->cursor = 0;
+			node->database->page_size = 20;
+			sprintf(node->database->pattern,"%s","*");
             break;
         }
 
@@ -107,14 +110,22 @@ void s_db_select(TreeNode * dbnode){
     App->activeHost = dbnode->parent;
 }
 
-void s_db_get_data(TreeNode * dbnode){
+void s_db_get_data(TreeNode * dbnode,int cursor,char * pattern,int count){
+	char cursor_buff[255] = {0};
+	char pattern_buff[255] = {0};
+	char count_buff[255] = {0};
+
+	sprintf(cursor_buff,"%d",cursor);
+	sprintf(pattern_buff,"%s",pattern);
+	sprintf(count_buff,"%d",count);
+
     RedisParams keyparam = redis_build_params(6);
     redis_add_param(keyparam,redis_build_param("scan"));
-    redis_add_param(keyparam,redis_build_param("0"));
+    redis_add_param(keyparam,redis_build_param(cursor_buff));
     redis_add_param(keyparam,redis_build_param("match"));
-    redis_add_param(keyparam,redis_build_param("*"));
+    redis_add_param(keyparam,redis_build_param(pattern_buff));
     redis_add_param(keyparam,redis_build_param("count"));
-    redis_add_param(keyparam,redis_build_param("20"));
+    redis_add_param(keyparam,redis_build_param(count_buff));
 
     RedisReply kreply = redis_serialize_params(dbnode->stream,keyparam);
 

@@ -47,7 +47,6 @@ void initpan(HINSTANCE hInstance){
 void onExit(){
 }
 
-
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cmdShow){
 	MSG  msg;
 
@@ -105,12 +104,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 				case NM_DBLCLK:{
 					if(msg->idFrom == 0){
 						TreeNode * selected = getSelectedNode();
-
-						HINSTANCE hInst = App->hInstance;
-						DialogBox (hInst,MAKEINTRESOURCE (IDD_DB_SEARCH),hwnd,(DLGPROC)dbSearchDlgProc);
-                        
 						onDataBaseSelect(selected);
-
 						return;
 					}
 					break;
@@ -236,7 +230,7 @@ void onDataBaseSelect(TreeNode * selected){
     if(selected->level == NODE_LEVEL_DATABASE){
 		s_db_select(selected);
 		handle_redis_data(selected,NULL);
-		s_db_get_data(selected);
+//		s_db_get_data(selected);
     }
 }
 

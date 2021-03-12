@@ -12,7 +12,11 @@ void add_data_node(TreeNode * dbnode,RedisReply data){
     for(int ix =0; ix < dbnode->subHandleSize; ix ++){
         TreeView_DeleteItem(App->view->overviewHwnd,dbnode->subHandles[ix]);
     }
-    
+
+	RedisReply cursor = data->bulks[0];
+	dbnode->database->cursor = atoi(cursor->bulk->content);
+	SendMessage(App->view->dataviewHwnd,WM_DTT,(WPARAM)dbnode,(LPARAM)cursor->bulk->content);
+
     dbnode->subHandleSize= 0;
 	RedisReply keydata   = data->bulks[1];
 
@@ -38,6 +42,8 @@ void add_data_node(TreeNode * dbnode,RedisReply data){
         dbnode->subHandleSize ++;
         dbnode->subHandles[ix] = datanode->handle;
 	}
+
+	TreeView_Expand(App->view->overviewHwnd,dbnode->handle,TVE_EXPAND);
 }
 
 void add_database_node(TreeNode * hostNode,int dbCount){

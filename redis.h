@@ -83,7 +83,7 @@ typedef struct redis_connection * RedisConnection;
 typedef struct redis_database_node{
 	int    dbindex;
 	
-	char * pattern;
+	char   pattern[255];
 	int    cursor;
 	int    page_size;
 

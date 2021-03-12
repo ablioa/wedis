@@ -12,7 +12,7 @@ void s_auth(TreeNode * hodeNode,char * password);
 
 void s_key_space(TreeNode * hodeNode);
 
-void s_db_get_data(TreeNode * dbnode);
+void s_db_get_data(TreeNode * dbnode,int cursor,char * pattern,int count);
 
 void s_db_select(TreeNode * selected);
 
