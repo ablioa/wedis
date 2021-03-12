@@ -53,28 +53,16 @@ ID_MAIN MENU
     }
 }
 
-
-
-//
-// Dialog resources
-//
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDD_ABOUT DIALOGEX 0, 0, 200, 100
+IDD_ABOUT DIALOGEX 0, 0, 200, 60
 STYLE DS_MODALFRAME | DS_SETFONT | WS_CAPTION | WS_VISIBLE | WS_POPUP | WS_SYSMENU
 EXSTYLE WS_EX_TOOLWINDOW | WS_EX_STATICEDGE
 CAPTION "About"
 FONT 8, "Ms Shell Dlg", 0, 0, 1
 {
-    LTEXT           "About Wedis", 0, 20, 10, 102, 9, SS_LEFT, WS_EX_LEFT
-    //PUSHBUTTON      "Help", IDC_ABOUT_OK, 95, 75, 50, 14, 0, WS_EX_LEFT
-    DEFPUSHBUTTON   "OK", IDC_ABOUT_OK, 75, 75, 50, 14, 0, WS_EX_LEFT
-    //LTEXT           "Come to my window,to sing and fly away.", 0, 20, 26, 102, 9, SS_LEFT, WS_EX_LEFT
-    //LTEXT           "and yellow leaves of autumn", 0, 20, 42, 102, 9, SS_LEFT, WS_EX_LEFT
-    //LTEXT           "which have no songs", 0, 20, 58, 102, 9, SS_LEFT, WS_EX_LEFT
-    //LTEXT           "flutterd and fall there with a sign.", 0, 20, 75, 102, 9, SS_LEFT, WS_EX_LEFT
+    LTEXT           "wedis is a light weight opensource redis client,find more on https://github.com/ablioa/wedis", 0, 10, 10, 180, 20, SS_LEFT, WS_EX_LEFT
+    DEFPUSHBUTTON   "OK", IDC_ABOUT_OK, 75, 40, 50, 14, 0, WS_EX_LEFT
 }
-
-
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDD_ADD_ENTRY DIALOG 0, 0, 400, 240
