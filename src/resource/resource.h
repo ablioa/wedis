@@ -13,6 +13,7 @@
 #define IDB_TOOLBAR_STRINGTB                    116
 #define IDB_TOOLBAR_LISTTB                      117
 #define IDB_TOOLBAR_STATTB                      118
+#define IDB_TOOLBAR_DATABASETB                  119
 #define IDC_CONNECTION_HOSTVALUE                201
 #define IDC_CONNECTION_PORTVALUE                203
 #define IDC_CONNECTION_IFPASSWORD               204

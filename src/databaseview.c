@@ -100,6 +100,14 @@ LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
 					/*MessageBox(hwnd,"next search button","title",MB_OK);*/
 					break;
 				}
+
+				case 1:{
+					int result = MessageBox(hwnd,"flushdb will remove all data in the database,continue?","wedis",MB_YESNOCANCEL|MB_ICONASTERISK);
+					if(result == IDYES){
+						MessageBox(hwnd,"YES","title",MB_OK);
+					}
+					break;
+				}
 			}
 			break;
 		}
@@ -135,15 +143,15 @@ HWND buildDatabaseToolBar(HWND parent){
 	HINSTANCE hInst = App->hInstance;
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
 
-    int buttonCount = 4;
-	TBBUTTON tbtn[4] = {
-        {(0), 1, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(1), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(2), IDM_PREFERENCE+1, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(3), IDM_PREFERENCE+2, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+    int buttonCount = 1;
+	TBBUTTON tbtn[1] = {
+        {(0), 1, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}//,
+        //{(1), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        //{(2), IDM_PREFERENCE+1, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        //{(3), IDM_PREFERENCE+2, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
-	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_LISTTB));
+	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_DATABASETB));
     HIMAGELIST hIcons = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 1, buttonCount);
 	ImageList_AddMasked(hIcons, hBmp, RGB(255,255,255));
 

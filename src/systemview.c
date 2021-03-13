@@ -26,17 +26,19 @@ HWND buildStatToolBar(HWND parent){
 	HINSTANCE hInst = App->hInstance;
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
 
-    int buttonCount = 9;
-	TBBUTTON tbtn[10] = {
-        {(0), IDM_STAT_SERVER, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(1), IDM_STAT_CLIENT, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(2), IDM_STAT_MEMORY, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(3), IDM_STAT_PERSISENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(4), IDM_STAT_STATS, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(5), IDM_STAT_REPLICATION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(6), IDM_STAT_CPU, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(7), IDM_STAT_CLUSTER, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(8), IDM_STAT_KEYSPACE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+    int buttonCount = 11;
+	TBBUTTON tbtn[11] = {
+        {(0), 7777, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(0), 9999, TBSTATE_ENABLED, TBSTYLE_SEP, {0}, 0, 0},
+        {(1), IDM_STAT_SERVER, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(2), IDM_STAT_CLIENT, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(3), IDM_STAT_MEMORY, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(4), IDM_STAT_PERSISENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(5), IDM_STAT_STATS, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(6), IDM_STAT_REPLICATION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(7), IDM_STAT_CPU, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(8), IDM_STAT_CLUSTER, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(9), IDM_STAT_KEYSPACE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
 	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_STATTB));
@@ -105,7 +107,15 @@ LRESULT CALLBACK SystemViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 		}
 
         case WM_COMMAND:{
-			stat_command(hwnd,LOWORD (wParam));
+			int cmd = LOWORD(wParam);
+			if(cmd == 7777){
+			    int result = MessageBox(hwnd,"flushall will remove all data in all databases,continue?","wedis",MB_YESNOCANCEL|MB_ICONASTERISK);
+				if(result == IDYES){
+					MessageBox(hwnd,"YES","title",MB_OK);
+				}
+			}else{
+			    stat_command(hwnd,LOWORD (wParam));
+			}
 			return 0;
 		}
 
