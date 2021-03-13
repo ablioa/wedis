@@ -38,6 +38,7 @@ TreeNode * build_tree_node(TreeNode * parent,RedisNodeType node_type){
         case NODE_LEVEL_DATABASE:{
             node->database = (struct redis_database_node *) calloc(1,sizeof(struct redis_database_node));
 			node->database->cursor = 0;
+			node->database->last = 0;
 			node->database->page_size = 20;
 			sprintf(node->database->pattern,"%s","*");
             break;

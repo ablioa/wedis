@@ -38,10 +38,15 @@ void create_database_view(HWND hwnd,DatabaseViewModel * model){
 			WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
 			260, 28, 60, 20, hwnd, (HMENU)DB_CTRL_SEARCH, hinst, 0); 
 
+    model->hwndNextSearchButton = CreateWindowEx(0, WC_BUTTON, ("Next"), 
+			WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
+			325, 28, 60, 20, hwnd, (HMENU)DB_CTRL_NEXT_SEARCH, hinst, 0); 
+
     SendMessage(model->hwndCursorText, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
     SendMessage(model->hwndPatternText, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
     SendMessage(model->hwndCountText, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
     SendMessage(model->hwndSearchButton, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
+    SendMessage(model->hwndNextSearchButton, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
 }
 
 LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
@@ -62,6 +67,23 @@ LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
 			BOOL result1 = TRUE;
 			BOOL result2 = TRUE;
 			switch(LOWORD(wParam)){
+				case DB_CTRL_NEXT_SEARCH:{
+					TreeNode * node = model->databaseNode;
+					node->database->cursor = GetDlgItemInt(hwnd,DB_CTRL_CURSOR,&result1,FALSE);
+					node->database->page_size = GetDlgItemInt(hwnd,DB_CTRL_COUNT,&result2,FALSE);
+					GetDlgItemText(hwnd,DB_CTRL_PATTERN,node->database->pattern,255);
+
+					if(result1 && result2){
+						node->database->last = node->database->cursor;
+						s_db_get_data(model->databaseNode,
+								node->database->cursor,
+								node->database->pattern,
+								node->database->page_size);
+					}
+
+					break;
+				}
+
 				case DB_CTRL_SEARCH:{
 					TreeNode * node = model->databaseNode;
 					node->database->cursor = GetDlgItemInt(hwnd,DB_CTRL_CURSOR,&result1,FALSE);
@@ -70,10 +92,13 @@ LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
 
 					if(result1 && result2){
 						s_db_get_data(model->databaseNode,
-								node->database->cursor,
+								node->database->last,
 								node->database->pattern,
 								node->database->page_size);
 					}
+
+					/*MessageBox(hwnd,"next search button","title",MB_OK);*/
+					break;
 				}
 			}
 			break;
@@ -93,8 +118,6 @@ LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
 		case WM_DTT:{
             TreeNode * datanode = (TreeNode *) wParam;
 			SetDlgItemInt(hwnd,DB_CTRL_CURSOR,datanode->database->cursor,FALSE);
-			//char * cursor = (char *)wParam;
-			//SetDlgItemText(hwnd,DB_CTRL_CURSOR,cursor);
 			break;
 		}
 

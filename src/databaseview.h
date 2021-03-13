@@ -6,10 +6,11 @@
 
 #define DATABASE_VIEW_CLASS "DATABASE_VIEW_CLASS"
 
-#define DB_CTRL_CURSOR  10001
-#define DB_CTRL_PATTERN 10002
-#define DB_CTRL_COUNT   10003
-#define DB_CTRL_SEARCH  10004
+#define DB_CTRL_CURSOR       10001
+#define DB_CTRL_PATTERN      10002
+#define DB_CTRL_COUNT        10003
+#define DB_CTRL_SEARCH       10004
+#define DB_CTRL_NEXT_SEARCH  10005
 
 
 typedef struct{
@@ -20,6 +21,7 @@ typedef struct{
    HWND hwndCountText;
 
    HWND hwndSearchButton;
+   HWND hwndNextSearchButton;
 
    TreeNode * databaseNode;
 }DatabaseViewModel;

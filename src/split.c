@@ -1,6 +1,5 @@
 #include "split.h"
 
-
 static WORD _dotPatternBmp[8] = { 
     0x00aa, 0x0055, 0x00aa, 0x0055, 
     0x00aa, 0x0055, 0x00aa, 0x0055
@@ -37,13 +36,10 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
     HDC   hdc;
     RECT  rect;
 
-    ////////
     HWND parentHwnd = GetParent(hwnd);
     RECT parentRect;
     RECT splitRect;
     
-    ////////
-
     GetWindowRect(parentHwnd, &parentRect);
     GetWindowRect(hwnd,&splitRect);
 

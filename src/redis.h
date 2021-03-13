@@ -85,6 +85,7 @@ typedef struct redis_database_node{
 	
 	char   pattern[255];
 	int    cursor;
+	int    last;
 	int    page_size;
 
 	char   dbname[255];
