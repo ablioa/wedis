@@ -230,7 +230,6 @@ void onDataBaseSelect(TreeNode * selected){
     if(selected->level == NODE_LEVEL_DATABASE){
 		s_db_select(selected);
 		handle_redis_data(selected,NULL);
-//		s_db_get_data(selected);
     }
 }
 

@@ -2,15 +2,20 @@
 
 #define IDB_FORMAT_STRING 5000
 #define IDB_EXPORT_STRING 5001
+#define IDB_DELELE_STRING 5002
+#define IDB_MOVE_STRING   5003
 
 HWND buildStringToolBar(HWND parent){
 	HINSTANCE hInst = App->hInstance;
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
 
-    int buttonCount = 2;
-	TBBUTTON tbtn[10] = {
-        {(0), IDB_EXPORT_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(1), IDB_FORMAT_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+    int buttonCount = 5;
+	TBBUTTON tbtn[5] = {
+        {(0), IDB_DELELE_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(3), IDB_MOVE_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(0), 0, TBSTATE_ENABLED, TBSTYLE_SEP, {0}, 0, 0},
+        {(1), IDB_EXPORT_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(2), IDB_FORMAT_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
 	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_STRINGTB));
@@ -39,15 +44,25 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
             memset(model,0,sizeof(StringViewModel));
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
 
-			model->stringView = CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | ES_AUTOVSCROLL | WS_BORDER | WS_CHILD | WS_TABSTOP | WS_VSCROLL |ES_MULTILINE, 0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_TEXT, App->hInstance, 0);
+			model->stringView = CreateWindowEx(0, WC_EDIT, (""), 
+					WS_VISIBLE | ES_AUTOVSCROLL | WS_BORDER | WS_CHILD | WS_TABSTOP | WS_VSCROLL |ES_MULTILINE, 
+					0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_TEXT, App->hInstance, 0);
             model->toolBar = buildStringToolBar(hwnd);
             model->mode = BINARY;
             SendMessage(model->stringView, WM_SETFONT, (WPARAM)(resource->fixedWidthFont), FALSE);
+			
 		    break;
 		}
        
         case WM_COMMAND:{
             switch(LOWORD (wParam)){
+				/** move data into another database */
+				case WM_MOVEDATA_CMD:{
+					// TODO add move data operation
+					break;
+				}
+
+				/** export data */
                 case IDB_EXPORT_STRING:{
                     LPTSTR fileName = mGetSaveFileName(hwnd);
                     if(fileName == NULL){
@@ -60,6 +75,7 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                     break;
                 }
 
+				/** display data in hex dump format*/
                 case IDB_FORMAT_STRING:{
                     char * content = model->data->bulk->content;
                     if(model->mode == TEXT){
@@ -75,19 +91,30 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                     
                     break;
                 }
+
+				/** delete data item */
+				case IDB_DELELE_STRING:{
+					MessageBox(hwnd,"deleting string value now!","title",MB_OK);
+					break;
+			    }
+
+				/** trigger move data menu */
+				case IDB_MOVE_STRING:{
+					POINT pt;
+					GetCursorPos(&pt);
+					TrackPopupMenu(App->activeHost->host->db_menu,TPM_LEFTALIGN,pt.x,pt.y,0,hwnd,NULL);
+					break;
+				}
             }
             break;
         }
 
 		case WM_DT:{
-            RedisReply data = (RedisReply)wParam;
+            model->data = (RedisReply)wParam;
+			model->dataNode = (TreeNode*)lParam;
 
-            model->data = data;
-
-			SendMessage(model->stringView,EM_REPLACESEL,FALSE,(LPARAM)data->bulk->content);
-			SetWindowText(model->stringView,data->bulk->content);
-
-            //MessageBox(hwnd,data->bulk->content,"text",MB_OK);
+			SendMessage(model->stringView,EM_REPLACESEL,FALSE,(LPARAM)model->data->bulk->content);
+			SetWindowText(model->stringView,model->data->bulk->content);
             break;
         }
 

@@ -62,8 +62,11 @@ typedef struct redis_host_node{
 	char host[255];
 
 	HTREEITEM db_nodes[50];
+	int       db_count;
 	int       capacity;
 	int       used;
+
+	HMENU     db_menu;
 }RedisHostNode;
 
 struct redis_connection{

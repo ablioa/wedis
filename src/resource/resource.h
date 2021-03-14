@@ -14,6 +14,9 @@
 #define IDB_TOOLBAR_LISTTB                      117
 #define IDB_TOOLBAR_STATTB                      118
 #define IDB_TOOLBAR_DATABASETB                  119
+#define IDB_TOOLBAR_ZSETTB                      120
+#define IDB_TOOLBAR_HASHTB                      121
+#define IDB_TOOLBAR_SETTB                       122
 #define IDC_CONNECTION_HOSTVALUE                201
 #define IDC_CONNECTION_PORTVALUE                203
 #define IDC_CONNECTION_IFPASSWORD               204

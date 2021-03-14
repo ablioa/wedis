@@ -27,12 +27,10 @@ HWND buildListToolBar(HWND parent){
 	HINSTANCE hInst = App->hInstance;
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
 
-    int buttonCount = 4;
-	TBBUTTON tbtn[4] = {
-        {(0), LIST_EXPORT_CMD, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(1), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(2), IDM_PREFERENCE+1, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(3), IDM_PREFERENCE+2, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+    int buttonCount = 2;
+	TBBUTTON tbtn[2] = {
+        {(0), LIST_DELETE_CMD, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(1), LIST_EXPORT_CMD, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
 	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_LISTTB));
@@ -113,10 +111,10 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                 case LVN_COLUMNCLICK:{
                     break;
                 }
-                //case NM_DBLCLK:{
-                //    DialogBox(App->hInstance,MAKEINTRESOURCE (IDD_LIST_ITEM),hwnd,(DLGPROC)ListItemEditProc);
-                //    break;
-                //}
+                case NM_DBLCLK:{
+					MessageBox(hwnd,"handle list row message","title",MB_OK);
+                    break;
+                }
             }
             break;
         }
@@ -124,7 +122,6 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
         case WM_COMMAND:{
             switch(LOWORD (wParam)){
                 case LIST_INSERT_CMD:{
-                    MessageBox(hwnd,"insert list item right now!","title",MB_OK);
                     break;
                 }
 

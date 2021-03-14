@@ -52,6 +52,17 @@ void add_database_node(TreeNode * hostNode,int dbCount){
 	AppView * view = App->view;
     HTREEITEM parentHandle = hostNode->handle;
 
+	/** initialize connection specific data */
+	hostNode->host->db_count = dbCount;
+	hostNode->host->db_menu  = CreatePopupMenu();
+	for(int ix =0; ix < dbCount; ix ++){
+		char dbname[128]={};
+		sprintf(dbname,"db%d",ix);
+	    AppendMenu(hostNode->host->db_menu,MF_STRING,WM_MOVEDATA_CMD+ix,dbname);
+	}
+
+	/** ------------------------------------*/
+
     memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
 	tvinsert.hInsertAfter=TVI_ROOT;
 	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;

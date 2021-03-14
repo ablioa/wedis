@@ -28,21 +28,12 @@ HWND buildSetToolBar(HWND parent){
 	HINSTANCE hInst = App->hInstance;
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
 
-    int buttonCount = 10;
-	TBBUTTON tbtn[10] = {
-        {(0), 100, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(1), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-		{(7), 100, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(8), 100, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(0), 0             , 0,               TBSTYLE_SEP,    {0}, 0, 0},
-		{(2), 100       , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(3), 100    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(4), 100    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-		{(5), 100    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(6), 100    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+    int buttonCount = 1;
+	TBBUTTON tbtn[1] = {
+        {(0), 7777, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
-	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_MAIN));
+	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_SETTB));
     HIMAGELIST hIcons = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 1, buttonCount);
 	ImageList_AddMasked(hIcons, hBmp, RGB(255,255,255));
 
@@ -115,6 +106,16 @@ LRESULT CALLBACK SetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
             break;
         }
 
+		case WM_COMMAND:{
+			switch(LOWORD(wParam)){
+			    case 7777:{
+					MessageBox(hwnd,"remove set item","title",MB_OK);
+					break;
+			    }
+			}
+
+			break;
+		}
 		case WM_SIZE:{
 			GetClientRect(hwnd,&rect);
             MoveWindow(setViewModel->toolBar,0,0,rect.right-rect.left,28,TRUE);

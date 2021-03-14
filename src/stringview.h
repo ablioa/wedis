@@ -19,8 +19,12 @@ typedef struct string_data_model{
 
    HWND toolBar;
 
+   HMENU hDatabaseMenu;
+
    RedisReply data;
-   
+
+   TreeNode * dataNode;
+
    char * hex_buff;
 
    int hex_buff_size;

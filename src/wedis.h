@@ -27,6 +27,8 @@
 #define WM_DT  WM_USER+200
 #define WM_DTT WM_USER+201
 
+#define WM_MOVEDATA_CMD 10000
+
 typedef struct app_view{
     HWND hwnd;
     
