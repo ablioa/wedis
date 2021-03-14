@@ -78,17 +78,12 @@ void s_key_space(TreeNode * hodeNode){
     RedisReply reply = redis_serialize_params(hodeNode->stream,param);
 
     if(reply->type == REPLY_BULK){
-        // Keyspace space = parseKeyspace(reply->bulk->content);
-        // handleKeyspace(space);
-
         RedisParams dparam = redis_build_params(3);
         redis_add_param(dparam,redis_build_param("config"));
         redis_add_param(dparam,redis_build_param("get"));
         redis_add_param(dparam,redis_build_param("databases"));
 
         RedisReply dreply = redis_serialize_params(hodeNode->stream,dparam);
-
-        // TODO @response format
         int dbCount = atoi(dreply->bulks[1]->bulk->content);
         add_database_node(hodeNode,dbCount);
     }

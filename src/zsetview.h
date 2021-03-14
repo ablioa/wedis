@@ -14,6 +14,8 @@
 #define LIST_EXPORT_CMD 101
 #define LIST_DELETE_CMD 102
 
+#define ZSET_DELETE_DATA 9999
+
 #define ZSET_VIEW_CLASS "ZSET_VIEW_CLASS"
 
 typedef struct zset_view_model{

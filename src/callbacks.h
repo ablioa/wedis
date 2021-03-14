@@ -4,7 +4,7 @@
 #include "main.h"
 #include "resource/resource.h"
 
-void SetDialogIcon(HWND hWnd, int idi);
+void SetDialogIcon(HWND hWnd, int iconId);
 
 void MoveToScreenCenter(HWND hwnd);
 

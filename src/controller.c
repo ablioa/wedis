@@ -1,7 +1,6 @@
 #include "controller.h"
 
 void update_progress(){
-	
 }
 
 void handle_redis_data(TreeNode * datanode,RedisReply reply){
@@ -61,27 +60,17 @@ void add_database_node(TreeNode * hostNode,int dbCount){
 	    AppendMenu(hostNode->host->db_menu,MF_STRING,WM_MOVEDATA_CMD+ix,dbname);
 	}
 
-	/** ------------------------------------*/
-
     memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
 	tvinsert.hInsertAfter=TVI_ROOT;
 	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
 
-	char showName[255]={0};
 	for(int dbindex =0; dbindex < dbCount;dbindex ++){
+	    char showName[255]={0};
 		TreeNode * dbnode = build_tree_node(hostNode,NODE_LEVEL_DATABASE);
 		dbnode->database->dbindex=dbindex;
 		sprintf(dbnode->database->dbname,"db%d",dbindex);
 		dbnode->stream = hostNode->stream;
-
-		memset(showName,0,sizeof(char) * 255);
-		// Keyspace space = getKeyspaceInfo(dbnode->database->dbname);
-		// int keyCount = 0;
-		// if(space != NULL){
-		// 	keyCount = space->keys;
-		// }
 		
-		memset(showName,0,255);
 		sprintf(showName,"%s",dbnode->database->dbname);
 		tvinsert.item.iImage=1;
 		tvinsert.item.iSelectedImage=1;

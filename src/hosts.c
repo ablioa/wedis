@@ -327,7 +327,6 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lPa
                 }
 
 				case IDC_CONFIG_CONNECT:{
-					// TODO connect to new server
 					break;
 				}
 			}

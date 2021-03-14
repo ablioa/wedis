@@ -24,29 +24,32 @@ BOOL InitZsetViewColumns(HWND hWndListView) {
     return TRUE;
 }
 
-HWND buildZsetToolBar(HWND parent){
+/** TODO make it a universal function. */
+HWND buildGeneralToolBar(HWND parent,TBBUTTON * tbtn,int buttonCount){
 	HINSTANCE hInst = App->hInstance;
-	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
-
-    int buttonCount = 1;
-	TBBUTTON tbtn[1] = {
-        {(0), IDM_CONNECTION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
-    };
-
 	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_ZSETTB));
-    HIMAGELIST hIcons = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 1, buttonCount);
-	ImageList_AddMasked(hIcons, hBmp, RGB(255,255,255));
+    HIMAGELIST hImageList = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 1, buttonCount);
+	ImageList_AddMasked(hImageList, hBmp, RGB(255,255,255));
 
+	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
     HWND tb = CreateWindowEx(0L, TOOLBARCLASSNAME, "", tstyle, 16, 16, 16, 16, parent, (HMENU) 0, hInst, NULL);
-    SendMessage(tb, TB_BUTTONSTRUCTSIZE, sizeof(TBBUTTON), 0);
-    SendMessage(tb, TB_SETIMAGELIST, 0, (LPARAM) hIcons);
     SendMessage(tb, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
-    SendMessage(tb, TB_ADDBUTTONS,       (WPARAM)buttonCount,       (LPARAM)&tbtn);
+    SendMessage(tb, TB_SETIMAGELIST, 0, (LPARAM) hImageList);
+    SendMessage(tb, TB_ADDBUTTONS,  (WPARAM)buttonCount,(LPARAM)tbtn);
     SendMessage(tb, TB_AUTOSIZE, 0, 0);
 
     ShowWindow(tb,  TRUE);
+	return tb;
+}
 
-    return tb;
+
+HWND buildZsetToolBar(HWND parent){
+    int buttonCount = 1;
+	TBBUTTON tbtn[1] = {
+        {(0), ZSET_DELETE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+    };
+
+	return buildGeneralToolBar(parent,tbtn,buttonCount);
 }
 
 LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
@@ -70,6 +73,15 @@ LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
             
 			ListView_SetExtendedListViewStyle(zsetViewModel->zsetView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
 		    break;
+		}
+
+	    case WM_COMMAND:{
+			switch(LOWORD(wParam)){
+			    case ZSET_DELETE_DATA:{
+					MessageBox(hwnd,"delete zset data.","title",MB_OK);
+					break;
+				}
+			}
 		}
 
 		case WM_SIZE:{

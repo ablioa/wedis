@@ -60,7 +60,10 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
     App->hInstance = hInst;
 	App->connectionList = init_list(NULL);
 
-	HWND hwndFrame = CreateWindowEx(WS_EX_LEFT,szFrameClass, TEXT ("wedis"),WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,CW_USEDEFAULT, 0,400, 300,NULL,NULL, hInst, NULL) ;
+	HWND hwndFrame = CreateWindowEx(WS_EX_LEFT,szFrameClass, TEXT ("wedis"),
+			WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
+			CW_USEDEFAULT, 0,400, 300,
+			NULL,NULL, hInst, NULL) ;
 
 	App->mainWindowHwnd = hwndFrame;
 
@@ -164,8 +167,14 @@ void onMainFrameCreate(HWND hwnd){
 	buildStatusBar(App->view);
 
 	buildConnectionView(App->view);
-	App->view->dataviewHwnd = CreateWindowEx(0, DATAVIEW_WINDOW,NULL,(!WS_VISIBLE)|WS_CHILD,0,0,0,0,App->view->hwnd,0,App->hInstance,NULL);
-	App->view->westSplitHwnd =CreateWindowEx(0,V_SPLIT,"", (!WS_VISIBLE)|WS_CHILD,0,0,0,0,App->view->hwnd,0,hInst,0);
+	App->view->dataviewHwnd = CreateWindowEx(0, DATAVIEW_WINDOW,NULL,
+			(!WS_VISIBLE)|WS_CHILD,
+			0,0,0,0,App->view->hwnd,0,App->hInstance,NULL);
+
+	App->view->westSplitHwnd =CreateWindowEx(0,V_SPLIT,"", 
+			(!WS_VISIBLE)|WS_CHILD,
+			0,0,0,0,App->view->hwnd,0,hInst,0);
+
     SendMessage(App->view->westSplitHwnd,WM_SET_PANES_HWND,(WPARAM)App->view->overviewHwnd,(LPARAM)App->view->dataviewHwnd);
 
 	App->hConnectionMenu = CreatePopupMenu();
@@ -351,7 +360,7 @@ void command(HWND hwnd,int cmd){
 		case IDM_SYSTEM_STAT+2:{
 			TreeNode * selected = App->selectHost;
 			if(selected != NULL){
-				// 删除树节点,关闭连接
+				// TODO 删除树节点,关闭连接
 				TreeView_DeleteItem(App->view->overviewHwnd,selected->handle);
 			}
 			break;
@@ -439,15 +448,7 @@ void buildToolBar(AppView * view){
 	
 	TBBUTTON tbtn[2] = {
         {(0), IDM_CONNECTION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(1), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}//,
-		//{(7), IDM_SYSTEM_STAT, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
-       // {(8), IDM_DEBUG_GET_DATABASES, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
-       ///// {(0), 0             , 0,               TBSTYLE_SEP,    {0}, 0, 0},
-	//	{(2), IDM_ADD       , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-       // {(3), IDM_REMOVE    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-       ////// {(4), IDM_RELOAD    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-		//{(5), IDM_RENAME    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-       // {(6), IDM_TIMING    , TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+        {(1), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
 	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_MAIN));

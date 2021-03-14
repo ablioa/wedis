@@ -96,8 +96,6 @@ LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
 								node->database->pattern,
 								node->database->page_size);
 					}
-
-					/*MessageBox(hwnd,"next search button","title",MB_OK);*/
 					break;
 				}
 
@@ -145,10 +143,7 @@ HWND buildDatabaseToolBar(HWND parent){
 
     int buttonCount = 1;
 	TBBUTTON tbtn[1] = {
-        {(0), 1, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}//,
-        //{(1), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        //{(2), IDM_PREFERENCE+1, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        //{(3), IDM_PREFERENCE+2, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+        {(0), 1, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
 	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_DATABASETB));
