@@ -17,6 +17,7 @@
 #define IDB_TOOLBAR_ZSETTB                      120
 #define IDB_TOOLBAR_HASHTB                      121
 #define IDB_TOOLBAR_SETTB                       122
+#define IDB_TOOLBAR                             123
 #define IDC_CONNECTION_HOSTVALUE                201
 #define IDC_CONNECTION_PORTVALUE                203
 #define IDC_CONNECTION_IFPASSWORD               204
@@ -71,3 +72,11 @@
 
 #define IDC_DB_SEARCH_CANCEL 40012
 #define IDC_DB_SEARCH_OK     40013
+
+/** defines toolbar button id */
+#define TB_DELETE_BUTTON 0
+#define TB_EXPORT_BUTTON 10
+#define TB_FORMAT_BUTTON 11
+#define TB_MOVE_BUTTON   12
+#define TB_CONNECTION_BUTTON   13
+#define TB_PREFERENCE_BUTTON   14

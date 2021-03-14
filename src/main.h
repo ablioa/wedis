@@ -33,8 +33,6 @@
 #define CONSOLE_WINDOW      "CONSOLE_WINDOW"
 #define DATA_RENDER_WINDOW  "DATA_RENDER_WINDOW"
 
-
-
 #define MAX_SIZE	20
 #define CONNECTION_AREA_WIDTH 200
 #define SPLITER_WIDTH 2
@@ -107,6 +105,8 @@ void getSouthSpliterRect(AppView * view,RECT * rt,RECT * rect);
 void getAttributeRect(AppView * view,RECT * rt,RECT * rect);
 
 void showWindows(AppView * view);
+
+HWND buildGeneralToolBar(HWND parent,TBBUTTON * tbtn,int buttonCount);
 
 #endif
 

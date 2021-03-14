@@ -24,29 +24,10 @@ BOOL InitZsetViewColumns(HWND hWndListView) {
     return TRUE;
 }
 
-/** TODO make it a universal function. */
-HWND buildGeneralToolBar(HWND parent,TBBUTTON * tbtn,int buttonCount){
-	HINSTANCE hInst = App->hInstance;
-	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_ZSETTB));
-    HIMAGELIST hImageList = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 1, buttonCount);
-	ImageList_AddMasked(hImageList, hBmp, RGB(255,255,255));
-
-	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
-    HWND tb = CreateWindowEx(0L, TOOLBARCLASSNAME, "", tstyle, 16, 16, 16, 16, parent, (HMENU) 0, hInst, NULL);
-    SendMessage(tb, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
-    SendMessage(tb, TB_SETIMAGELIST, 0, (LPARAM) hImageList);
-    SendMessage(tb, TB_ADDBUTTONS,  (WPARAM)buttonCount,(LPARAM)tbtn);
-    SendMessage(tb, TB_AUTOSIZE, 0, 0);
-
-    ShowWindow(tb,  TRUE);
-	return tb;
-}
-
-
 HWND buildZsetToolBar(HWND parent){
     int buttonCount = 1;
 	TBBUTTON tbtn[1] = {
-        {(0), ZSET_DELETE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+        {(TB_DELETE_BUTTON), ZSET_DELETE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
 	return buildGeneralToolBar(parent,tbtn,buttonCount);

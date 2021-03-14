@@ -447,22 +447,11 @@ void buildToolBar(AppView * view){
     int buttonCount = 2;
 	
 	TBBUTTON tbtn[2] = {
-        {(0), IDM_CONNECTION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(1), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+        {(TB_CONNECTION_BUTTON), IDM_CONNECTION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TB_PREFERENCE_BUTTON), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
-	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR_MAIN));
-    HIMAGELIST hIcons = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 1, 10);
-	ImageList_AddMasked(hIcons, hBmp, RGB(255,255,255));
-
-    view->toolBarHwnd = CreateWindowEx(0L, TOOLBARCLASSNAME, "", tstyle, 16, 16, 16, 16, view->hwnd, (HMENU) 0, hInst, NULL);
-    SendMessage(view->toolBarHwnd, TB_BUTTONSTRUCTSIZE, sizeof(TBBUTTON), 0);
-    SendMessage(view->toolBarHwnd, TB_SETIMAGELIST, 0, (LPARAM) hIcons);
-    SendMessage(view->toolBarHwnd, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
-    SendMessage(view->toolBarHwnd, TB_ADDBUTTONS,       (WPARAM)buttonCount,       (LPARAM)&tbtn);
-    SendMessage(view->toolBarHwnd, TB_AUTOSIZE, 0, 0);
-
-    ShowWindow(view->toolBarHwnd,  TRUE);
+    view->toolBarHwnd = buildGeneralToolBar(view->hwnd,tbtn,buttonCount);
 	
 	GetWindowRect(view->toolBarHwnd,&rect);
 	view->toolbarHeight = rect.bottom-rect.top;
@@ -539,4 +528,21 @@ void addTreeNode(HWND treeHwnd,HTREEITEM hParent,char * nodeName){
 	tvinsert.item.iSelectedImage=0;
 
 	SendMessage(treeHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+}
+
+HWND buildGeneralToolBar(HWND parent,TBBUTTON * tbtn,int buttonCount){
+	HINSTANCE hInst = App->hInstance;
+	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR));
+    HIMAGELIST hImageList = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 1, buttonCount);
+	ImageList_AddMasked(hImageList, hBmp, RGB(255,255,255));
+
+	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
+    HWND tb = CreateWindowEx(0L, TOOLBARCLASSNAME, "", tstyle, 16, 16, 16, 16, parent, (HMENU) 0, hInst, NULL);
+    SendMessage(tb, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
+    SendMessage(tb, TB_SETIMAGELIST, 0, (LPARAM) hImageList);
+    SendMessage(tb, TB_ADDBUTTONS,  (WPARAM)buttonCount,(LPARAM)tbtn);
+    SendMessage(tb, TB_AUTOSIZE, 0, 0);
+
+    ShowWindow(tb,  TRUE);
+	return tb;
 }
