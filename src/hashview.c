@@ -27,9 +27,10 @@ BOOL InitHashViewColumns(HWND hWndListView) {
 }
 
 HWND buildHashToolBar(HWND parent){
-    int buttonCount = 1;
-	TBBUTTON tbtn[1] = {
-        {(TB_DELETE_BUTTON), 7777, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+    int buttonCount = 2;
+	TBBUTTON tbtn[2] = {
+        {(TB_DELETE_BUTTON), 7777, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TB_MOVE_BUTTON), 7777, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
     return buildGeneralToolBar(parent,tbtn,buttonCount);
@@ -71,7 +72,6 @@ BOOL updateHashDataSet(HWND hwnd,RedisReply reply){
 
     return TRUE;
 }
-
 
 LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	RECT rect;

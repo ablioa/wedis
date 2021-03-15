@@ -1,7 +1,5 @@
 #include "wedis.h"
 
-SystemResource * resource;
-
 eMsg err_list[]={
 	{0X0000,"",0},
 	{0X0001,"Can't connect to server!",MB_RETRYCANCEL},
@@ -30,8 +28,16 @@ void initResource(){
     resource = (SystemResource*)malloc(sizeof(SystemResource));
     memset(resource,0,sizeof(SystemResource));
 
-    resource->ctrlFont = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
-    resource->fixedWidthFont = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Consolas"));
+    resource->ctrlFont = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE,
+			1, 400, 0, 0, 0, ("Ms Shell Dlg"));
+
+    resource->fixedWidthFont = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE,
+			1, 400, 0, 0, 0, ("Consolas"));
+
+    HINSTANCE hInst = App->hInstance;
+	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR));
+    resource->icons = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 1, TOTAL_ICON_COUNT);
+	ImageList_AddMasked(resource->icons, hBmp, RGB(255,255,255));
 
     log_file = fopen("wedis.log","w");
 }

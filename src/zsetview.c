@@ -25,9 +25,10 @@ BOOL InitZsetViewColumns(HWND hWndListView) {
 }
 
 HWND buildZsetToolBar(HWND parent){
-    int buttonCount = 1;
-	TBBUTTON tbtn[1] = {
-        {(TB_DELETE_BUTTON), ZSET_DELETE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+    int buttonCount = 2;
+	TBBUTTON tbtn[2] = {
+        {(TB_DELETE_BUTTON), ZSET_DELETE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TB_MOVE_BUTTON), ZSET_DELETE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
 	return buildGeneralToolBar(parent,tbtn,buttonCount);

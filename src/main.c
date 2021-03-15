@@ -1,6 +1,7 @@
 #include "main.h"
 
 Application * App;
+SystemResource * resource;
 
 void initpan(HINSTANCE hInstance){
 	init_hashview(hInstance);
@@ -50,7 +51,6 @@ void onExit(){
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cmdShow){
 	MSG  msg;
 
-    initResource();
 	ginit();
     save_all();
 	initpan(hInst);
@@ -60,6 +60,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
     App->hInstance = hInst;
 	App->connectionList = init_list(NULL);
 
+    initResource();
 	HWND hwndFrame = CreateWindowEx(WS_EX_LEFT,szFrameClass, TEXT ("wedis"),
 			WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
 			CW_USEDEFAULT, 0,400, 300,
@@ -267,23 +268,9 @@ TreeNode * getSelectedNode(){
 }
 
 TreeNode * addHostNode(RedisConnection stream,char * connectionName){
-	TV_INSERTSTRUCT tvinsert;
-    memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
-
-	TreeNode * hostNode = build_tree_node(NULL,NODE_LEVEL_HOST);
+	TreeNode * hostNode = add_host_node(connectionName);
 	hostNode->stream = stream;
 	sprintf(hostNode->host->host,"%s:%d",stream->host,stream->port);
-
-    tvinsert.hParent = NULL;
-	tvinsert.hInsertAfter=TVI_ROOT;
-	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
-	tvinsert.item.iImage=0;
-	tvinsert.item.iSelectedImage=0;
-    tvinsert.item.pszText= connectionName;
-	tvinsert.item.lParam=(LPARAM)hostNode;
-
-	HTREEITEM  handle = (HTREEITEM)SendMessage(App->view->overviewHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
-	hostNode->handle = handle;
 
 	return hostNode;
 }
@@ -511,10 +498,7 @@ void buildConnectionView(AppView * view){
             rt.bottom-rt.top-TOOLBAR_HEIGHT - STATUSBAR_HEIGHT,
             view->hwnd,NULL,hinst,0);
 
-	HIMAGELIST hImageList=ImageList_Create(16,16,ILC_COLOR24,2,10);
-	HBITMAP hBitmap = LoadBitmap(hinst,MAKEINTRESOURCE(IDB_CHIP));
-	ImageList_Add(hImageList,hBitmap,NULL);
-	SendMessage(view->overviewHwnd,TVM_SETIMAGELIST,0,(LPARAM)hImageList);
+	SendMessage(view->overviewHwnd,TVM_SETIMAGELIST,0,(LPARAM)resource->icons);
 }
 
 void addTreeNode(HWND treeHwnd,HTREEITEM hParent,char * nodeName){
@@ -531,15 +515,14 @@ void addTreeNode(HWND treeHwnd,HTREEITEM hParent,char * nodeName){
 }
 
 HWND buildGeneralToolBar(HWND parent,TBBUTTON * tbtn,int buttonCount){
-	HINSTANCE hInst = App->hInstance;
-	HBITMAP hBmp = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TOOLBAR));
-    HIMAGELIST hImageList = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 1, buttonCount);
-	ImageList_AddMasked(hImageList, hBmp, RGB(255,255,255));
+    HINSTANCE hInst = App->hInstance;
 
 	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
-    HWND tb = CreateWindowEx(0L, TOOLBARCLASSNAME, "", tstyle, 16, 16, 16, 16, parent, (HMENU) 0, hInst, NULL);
+    HWND tb = CreateWindowEx(0L, TOOLBARCLASSNAME, "", tstyle,
+			16, 16, 16, 16, parent, (HMENU) 0, hInst, NULL);
+
     SendMessage(tb, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
-    SendMessage(tb, TB_SETIMAGELIST, 0, (LPARAM) hImageList);
+    SendMessage(tb, TB_SETIMAGELIST, 0, (LPARAM) resource->icons);
     SendMessage(tb, TB_ADDBUTTONS,  (WPARAM)buttonCount,(LPARAM)tbtn);
     SendMessage(tb, TB_AUTOSIZE, 0, 0);
 

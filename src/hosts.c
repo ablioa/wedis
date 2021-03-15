@@ -11,10 +11,7 @@ void buildConnectionTree(HWND hwnd){
 
     model->hostTree = GetDlgItem(hwnd,IDC_CONNECTION_TREE);
 
-	HIMAGELIST hImageList=ImageList_Create(16,16,ILC_COLOR24|ILC_MASK,2,10);
-	HBITMAP hBitmap = LoadBitmap(hinst,MAKEINTRESOURCE(IDB_CONNECTION));
-	ImageList_AddMasked(hImageList, hBitmap, RGB(255,255,255));
-	SendMessage(model->hostTree,TVM_SETIMAGELIST,0,(LPARAM)hImageList);
+	SendMessage(model->hostTree,TVM_SETIMAGELIST,0,(LPARAM)resource->icons);
 
 	TV_INSERTSTRUCT tvinsert;
     memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
@@ -22,9 +19,8 @@ void buildConnectionTree(HWND hwnd){
     tvinsert.hParent = NULL;
 	tvinsert.hInsertAfter=TVI_ROOT;
 	tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
-	tvinsert.item.iImage=0;
-	tvinsert.item.iSelectedImage=1;
-
+	tvinsert.item.iImage         = TREE_FOLDER_NODE;
+	tvinsert.item.iSelectedImage = TREE_FOLDER_NODE;
 
     char * buff = (char *)calloc(1,255);
     LoadString(App->hInstance,IDS_HOSTLIST,buff,255);

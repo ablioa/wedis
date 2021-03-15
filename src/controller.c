@@ -7,6 +7,26 @@ void handle_redis_data(TreeNode * datanode,RedisReply reply){
 	SendMessage(App->view->dataviewHwnd,WM_DT,(WPARAM)reply,(LPARAM)(datanode));
 }
 
+TreeNode * add_host_node(const char * host_name){
+	TV_INSERTSTRUCT tvinsert;
+    memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
+
+	TreeNode * hostNode = build_tree_node(NULL,NODE_LEVEL_HOST);
+
+    tvinsert.hParent             = NULL;
+	tvinsert.hInsertAfter        = TVI_ROOT;
+	tvinsert.item.mask           = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
+	tvinsert.item.iImage         = TREE_HOST_NODE;
+	tvinsert.item.iSelectedImage = TREE_HOST_NODE;
+    tvinsert.item.pszText        = host_name;
+	tvinsert.item.lParam         = (LPARAM)hostNode;
+
+	HTREEITEM  handle = (HTREEITEM)SendMessage(App->view->overviewHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+	hostNode->handle = handle;
+
+	return hostNode;
+}
+
 void add_data_node(TreeNode * dbnode,RedisReply data){
     for(int ix =0; ix < dbnode->subHandleSize; ix ++){
         TreeView_DeleteItem(App->view->overviewHwnd,dbnode->subHandles[ix]);
@@ -33,8 +53,8 @@ void add_data_node(TreeNode * dbnode,RedisReply data){
         tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
 		tvinsert.item.cchTextMax = item->bulk->length;
         tvinsert.item.pszText    = item->bulk->content;
-        tvinsert.item.iImage=2;
-        tvinsert.item.iSelectedImage=2;
+        tvinsert.item.iImage         = TREE_DATA_NODE;
+        tvinsert.item.iSelectedImage = TREE_DATA_NODE;
         tvinsert.item.lParam= (LPARAM)datanode;
 		datanode->handle = (HTREEITEM)SendMessage(App->view->overviewHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 
@@ -72,8 +92,8 @@ void add_database_node(TreeNode * hostNode,int dbCount){
 		dbnode->stream = hostNode->stream;
 		
 		sprintf(showName,"%s",dbnode->database->dbname);
-		tvinsert.item.iImage=1;
-		tvinsert.item.iSelectedImage=1;
+		tvinsert.item.iImage         = TREE_DATABASE_NODE;
+		tvinsert.item.iSelectedImage = TREE_DATABASE_NODE;
 		tvinsert.hParent= parentHandle;
 		tvinsert.hInsertAfter=TVI_LAST;
 		tvinsert.item.pszText= showName;

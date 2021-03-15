@@ -8,17 +8,8 @@
 #include "resource.h"
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDB_CHIP           BITMAP         "treenode.bmp"
-
-LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDB_CONNECTION     BITMAP         "connection.bmp"
-
-LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDB_TOOLBAR   BITMAP         "main.bmp"
 
-//
-// Menu resources
-//
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
 ID_MAIN MENU
 {
@@ -119,7 +110,7 @@ STRINGTABLE
     IDS_REGVIEW                   "Register View"
     IDS_STACKVIEW                 "Stack View"
 
-    IDS_HOSTLIST                  "Host List"
+    IDS_HOSTLIST                  "Redis Services"
 }
 
 

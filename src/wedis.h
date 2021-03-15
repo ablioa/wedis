@@ -84,12 +84,12 @@ typedef struct application{
 extern Application * App;
 
 typedef struct system_resource{
-    HFONT ctrlFont;
-    HFONT fixedWidthFont;
+    HFONT      ctrlFont;
+    HFONT      fixedWidthFont;
+	HIMAGELIST icons;
 }SystemResource;
 
 extern SystemResource * resource;
-
 
 #define ERR_NORMAL					0x0000
 #define ERR_CANNOT_CONNECTED		0X0001

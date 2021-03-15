@@ -73,6 +73,9 @@
 #define IDC_DB_SEARCH_CANCEL 40012
 #define IDC_DB_SEARCH_OK     40013
 
+/** total image list icons */
+#define TOTAL_ICON_COUNT 19
+
 /** defines toolbar button id */
 #define TB_DELETE_BUTTON 0
 #define TB_EXPORT_BUTTON 10
@@ -80,3 +83,8 @@
 #define TB_MOVE_BUTTON   12
 #define TB_CONNECTION_BUTTON   13
 #define TB_PREFERENCE_BUTTON   14
+/** redis tree node icon */
+#define TREE_HOST_NODE       15
+#define TREE_DATABASE_NODE   16
+#define TREE_DATA_NODE       17
+#define TREE_FOLDER_NODE     18
