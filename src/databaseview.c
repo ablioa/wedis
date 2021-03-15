@@ -49,6 +49,25 @@ void create_database_view(HWND hwnd,DatabaseViewModel * model){
     SendMessage(model->hwndNextSearchButton, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
 }
 
+/** search given database with parameters. */
+void search_database(HWND hwnd,DatabaseViewModel * model){
+	BOOL result1 = TRUE;
+	BOOL result2 = TRUE;
+	TreeNode * node = model->databaseNode;
+	node->database->cursor = GetDlgItemInt(hwnd,DB_CTRL_CURSOR,&result1,FALSE);
+	node->database->page_size = GetDlgItemInt(hwnd,DB_CTRL_COUNT,&result2,FALSE);
+	GetDlgItemText(hwnd,DB_CTRL_PATTERN,node->database->pattern,255);
+
+	if(result1 && result2){
+		s_db_get_data(model->databaseNode,
+				node->database->last,
+				node->database->pattern,
+				node->database->page_size);
+	}else{
+		MessageBox(hwnd,"Input Parameter Invalid!","Wedis",MB_OK);
+	}
+}
+
 LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
     RECT rect;
 	DatabaseViewModel * model = (DatabaseViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
@@ -85,24 +104,16 @@ LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
 				}
 
 				case DB_CTRL_SEARCH:{
-					TreeNode * node = model->databaseNode;
-					node->database->cursor = GetDlgItemInt(hwnd,DB_CTRL_CURSOR,&result1,FALSE);
-					node->database->page_size = GetDlgItemInt(hwnd,DB_CTRL_COUNT,&result2,FALSE);
-					GetDlgItemText(hwnd,DB_CTRL_PATTERN,node->database->pattern,255);
-
-					if(result1 && result2){
-						s_db_get_data(model->databaseNode,
-								node->database->last,
-								node->database->pattern,
-								node->database->page_size);
-					}
+					search_database(hwnd,model);
 					break;
 				}
 
 				case 1:{
 					int result = MessageBox(hwnd,"flushdb will remove all data in the database,continue?","wedis",MB_YESNOCANCEL|MB_ICONASTERISK);
 					if(result == IDYES){
-						MessageBox(hwnd,"YES","title",MB_OK);
+						TreeNode * node = model->databaseNode;
+						s_db_flushdb(node);
+						search_database(hwnd,model);
 					}
 					break;
 				}

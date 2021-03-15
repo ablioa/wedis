@@ -185,6 +185,13 @@ void s_handle_data(TreeNode * datanode,DataType dataType){
     handle_redis_data(datanode,reply);
 }
 
+/** flushdb command */
+void s_db_flushdb(TreeNode * dbnode){
+    RedisParams params = redis_build_params(1);
+    redis_add_param(params,redis_build_param("flushdb"));
+    return redis_serialize_params(dbnode->stream,params);
+}
+
 RedisReply s_db_fetch_string(TreeNode * datanode){
     RedisParams params = redis_build_params(2);
     redis_add_param(params,redis_build_param("get"));
