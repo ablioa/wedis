@@ -1,15 +1,16 @@
 #include "listview.h"
 
-const char * listColNames[2]={
+const char * listColNames[3]={
     "Row",
-    "Value"
+    "Value",
+    "Length"
 };
 
 BOOL InitListDViewColumns(HWND hWndListView) {
     LVCOLUMN lvc;
     lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
-    for (int i = 0; i < 2; i++){
+    for (int i = 0; i <= 2; i++){
         char * buff = calloc(1,255);
         strcpy(buff,listColNames[i]);
 
@@ -64,6 +65,12 @@ BOOL updateListDataSet(HWND hwnd,RedisReply reply){
 
         lvI.pszText = item->bulk->content;
         lvI.iSubItem = 1;
+        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+
+        char buff[128] = {0};
+        sprintf(buff,"%d",item->bulk->length);
+        lvI.pszText = buff;
+        lvI.iSubItem = 2;
         SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
     }
 

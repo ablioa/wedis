@@ -1,15 +1,16 @@
 #include "setview.h"
 
-const char * setColNames[2]={
+const char * setColNames[3]={
     "Row",
-	"Value"
+	"Value",
+    "Length"
 };
 
 BOOL InitSetViewColumns(HWND hWndListView) { 
     LVCOLUMN lvc;
     lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
-    for (int iCol = 0; iCol < 2; iCol++){
+    for (int iCol = 0; iCol < 3; iCol++){
         char * buff = (char*)calloc(1,255);
         strcpy(buff,setColNames[iCol]);
 
@@ -62,6 +63,12 @@ BOOL updateSetDataSet(HWND hwnd,RedisReply reply){
 
         lvI.pszText = reply->bulks[index]->bulk->content;
         lvI.iSubItem = 1;
+        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+
+        char buff[128] = {};
+        sprintf(buff,"%d",reply->bulks[index]->bulk->length);
+        lvI.pszText = buff;
+        lvI.iSubItem = 2;
         SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
     }
 
