@@ -201,7 +201,11 @@ struct key_value_pair{
 typedef struct key_value_pair KeyValuePair;
 typedef struct key_value_pair * KVPair;
 
+/** package handle */
 typedef int (*redis_pack_handle)(unsigned char *,int);
+
+/** data read progress handle */
+typedef void (*redis_read_progress_handle)(int,int);
 
 KVPair buildKVPair();
 
@@ -211,9 +215,9 @@ void setKVPair(KVPair kv,const char * text);
 
 KVPair parseKVPair(char * buffer);
 
-RedisReply read_reply(char *text,int * cur,int length);
+RedisReply read_reply(char *text,int * cur,int length,redis_read_progress_handle handle);
 
-RedisReply receive_msg(RedisConnection stream);
+RedisReply receive_msg(RedisConnection stream,redis_read_progress_handle handle);
 
 char  * parse_command(char * text,const size_t size);
 

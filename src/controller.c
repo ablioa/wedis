@@ -1,6 +1,19 @@
 #include "controller.h"
 
-void update_progress(){
+int MAX_DONE = 0;
+
+/** update data transfer progress */
+void update_transfer_progress(int done,int total){
+    if(done > total){
+        done = total;
+    }
+
+    if(done > MAX_DONE){
+        char buff[128] = {0};
+        sprintf(buff,"%d/%d",done,total);
+	    SendMessage(App->view->statusBarHwnd,SB_SETTEXT,5,(LPARAM)buff);
+        MAX_DONE = done;
+    }
 }
 
 void handle_redis_data(TreeNode * datanode,RedisReply reply){

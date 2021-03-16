@@ -46,5 +46,4 @@ RedisParams redis_delete_key(char * dataKey);
 
 RedisParams redis_rename_key(char * dataKey,char * newKey);
 
-
 #endif

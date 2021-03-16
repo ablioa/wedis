@@ -4,6 +4,11 @@
 #include "main.h"
 #include "redis.h"
 
+extern int MAX_DONE;
+
+/** update data transfer progresss */
+void update_transfer_progress(int done,int total);
+
 /** add host node to nav tree */
 TreeNode * add_host_node(const char * host_name);
 

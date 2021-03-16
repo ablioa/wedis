@@ -1,8 +1,7 @@
 #include "redis.h"
 
-#include <windows.h>
-
-RedisReply receive_msg(RedisConnection stream){
+/** read response from redis server then parse it */
+RedisReply receive_msg(RedisConnection stream,redis_read_progress_handle handle){
 	char localbuff[4096] = {0};
 	RedisReply reply = NULL;
 
@@ -27,7 +26,8 @@ RedisReply receive_msg(RedisConnection stream){
 		stream->free_size -= ret;
         
         int pos = 0;
-		reply = read_reply(stream->read_buff,&pos,(stream->capacity - stream->free_size));
+		reply = read_reply(stream->read_buff,&pos, (stream->capacity - stream->free_size),handle);
+
 	}while(reply->reply_status != REPLY_STATUS_DONE);
 
 	wedis_log(stream->read_buff);
@@ -80,6 +80,7 @@ RedisBulk buildRedisBulk(int length){
 	bulk->length = length;
 	return bulk;
 }
+
 int redis_read_pack(char * text,int length,redis_pack_handle handle){
 	return 0;
 }
@@ -92,8 +93,8 @@ int get_status_scope(char * text,int length){
 	}
 }
 
-RedisReply read_reply(char *text,int * cur,int length){
-	//int cur = 0;
+/** read reply from redis server */
+RedisReply read_reply(char *text,int * cur,int length,redis_read_progress_handle handle){
 	char ch = text[(*cur)++];
 
 	RedisReply reply = (RedisReply)calloc(1, sizeof(struct redis_reply));
@@ -153,6 +154,10 @@ RedisReply read_reply(char *text,int * cur,int length){
                 break;
 			}
 
+            if(handle != NULL){
+                handle(length,bulk_length);
+            }
+
             if((*cur) + bulk_length >= length){
                 reply->reply_status = REPLY_STATUS_PENDING;
                 break;
@@ -178,13 +183,16 @@ RedisReply read_reply(char *text,int * cur,int length){
 
             reply->bulks = (RedisReply *) calloc(reply->array_length,sizeof(RedisReply));
             for(int ix = 0; ix < reply->array_length; ix ++){
-                RedisReply mrep = read_reply(text,cur,length);
+                RedisReply mrep = read_reply(text,cur,length,NULL);
                 if(mrep->reply_status != REPLY_STATUS_DONE){
                     reply->reply_status = REPLY_STATUS_PENDING;
 					free_redis_reply(mrep);
                     break;
                 }else{
                     reply->bulks[ix] = mrep;
+                    if(handle != NULL){
+                        handle(ix+1,reply->array_length);
+                    }
                 }
             }
 
@@ -225,9 +233,7 @@ KVPair buildKVPair(){
 }
 
 void destroyKVPair(KVPair kv){
-	// TODO 释放数据
-	// TODO 释放数据索引
-	// TODO 释放自己
+	// TODO release the memory 
 }
 
 void setKVPair(KVPair kv, const char *text){

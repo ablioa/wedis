@@ -20,7 +20,9 @@ RedisReply redis_serialize_params(RedisConnection stream,RedisParams params){
         wedis_log(params->items[ix]->diagram);
     }
 
-    return receive_msg(stream);
+    RedisReply reply = receive_msg(stream,update_transfer_progress);
+    MAX_DONE = 0;
+    return reply;
 }
 
 TreeNode * build_tree_node(TreeNode * parent,RedisNodeType node_type){
