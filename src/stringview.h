@@ -38,8 +38,8 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 
 void init_stringview(HINSTANCE hInstance);
 
-char * get_output_buffer(int size);
+char * get_output_buffer(int size,int width);
 
-char * dump_text( char * text,int len);
+char * dump_text( char * text,int len,int width);
 
 #endif

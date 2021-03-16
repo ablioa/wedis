@@ -69,7 +69,7 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                         model->mode = BINARY;
                     }else{
                         int len = model->data->bulk->length;
-                        content = dump_text(model->data->bulk->content,len);
+                        content = dump_text(model->data->bulk->content,len,30);
                         model->mode = TEXT;
                     }
 
@@ -134,44 +134,51 @@ void init_stringview(HINSTANCE hInstance){
     RegisterClassEx(&stringViewClass);
 }
 
-
-char * get_output_buffer(int size){
-    int bsize = (size/16+1) * 70+1;
+char * get_output_buffer(int len,int width){
+    int bsize = (12+width+4+width*3+2) * (len / width +1) +100;
     char * buff = ( char *) malloc(sizeof( char) * bsize);
     memset(buff,0,sizeof( char) * bsize);
     return buff;
 }
 
-char * dump_text( char * text,int len){
-    char line[17]={0};
-    char * buff   = get_output_buffer(len);
-    char * output =buff;
+char * dump_text(char * text,int len,int width){
+    char * line   = (char*)calloc(1,width+1);//={0};
+    char * buff   = get_output_buffer(len,width);
+    char * output = buff;
 
     int offset =0;
     int ix = 0;
     for(ix = 0; ix < len; ix ++){
+		if(ix % width ==0){
+			sprintf(output,"%010X: ",(ix/width));
+			output += 12;
+		}
+
         sprintf(output,"%02X ",(unsigned char)(text[ix]));
         output +=3;
         line[offset++]= isprint(text[ix])?text[ix]:'.';
 
-        if(ix % 0x10 == 0x0f){
+        if(ix % width == (width-1)){
             sprintf(output,"    %s\r\n",line);
             offset=0;
-
-            memset(line,0,17);
-
-            output +=22;
+            memset(line,0,(width+1));
+            output += (width+4+2); // 16+4+2
         }
     }
 
-    if(ix % 0x10 != 0x00){
-        sprintf(output,"[ix=%d]",ix);
-        for(ix =(0x10 - len % 0x10); ix < 0x10;ix++){
-            sprintf(output,"   ");
-        }
+    if(ix % width != 0x00){
+		int left  = len % width;
+		int vleft = width - left;
 
-        sprintf(output,"    %s\r\n",line);
-        output +=22;
+		for(int iz = 0; iz < vleft; iz ++){
+		   sprintf(output,"   ");
+		   output += 3;
+		}
+
+		sprintf(output,"    %s\r\n",line);
+		offset=0;
+		memset(line,0,(width+1));
+		output += (width+4+2);
     }
 
 	return buff;
