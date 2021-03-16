@@ -39,7 +39,7 @@ TreeNode * build_tree_node(TreeNode * parent,RedisNodeType node_type){
             node->database = (struct redis_database_node *) calloc(1,sizeof(struct redis_database_node));
 			node->database->cursor = 0;
 			node->database->last = 0;
-			node->database->page_size = 20;
+			node->database->page_size = preference->db_scan_default;
 			sprintf(node->database->pattern,"%s","*");
             break;
         }
@@ -208,6 +208,7 @@ RedisReply s_db_fetch_hash(TreeNode * datanode){
     return redis_serialize_params(datanode->stream,params);
 }
 
+/** fetch list data from redis server */
 RedisReply s_db_fetch_list(TreeNode * datanode){
     RedisParams params = redis_build_params(4);
     redis_add_param(params,redis_build_param("lrange"));
@@ -218,6 +219,7 @@ RedisReply s_db_fetch_list(TreeNode * datanode){
     return redis_serialize_params(datanode->stream,params);
 }
 
+/** fetch set data from redis server */
 RedisReply s_db_fetch_set(TreeNode * datanode){
     RedisParams params = redis_build_params(2);
     redis_add_param(params,redis_build_param("smembers"));
@@ -277,6 +279,7 @@ RedisParam redis_build_param(const char * content){
     return param;
 }
 
+/** delete key from server */
 RedisParams redis_delete_key(char * dataKey){
     RedisParams params = redis_build_params(2);
     redis_add_param(params,redis_build_param("del"));

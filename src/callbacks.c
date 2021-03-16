@@ -1,5 +1,7 @@
 #include "callbacks.h"
 
+#include "json.h"
+
 void SetDialogIcon(HWND hWnd, int idi) {
 	HICON hIcon = LoadIcon((HINSTANCE) GetWindowLongPtr(hWnd, GWLP_HINSTANCE),MAKEINTRESOURCE(idi));
     SendMessage(hWnd, WM_SETICON, ICON_BIG,  (LPARAM)hIcon);
@@ -21,9 +23,27 @@ BOOL CALLBACK SetPreferenceProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 		case WM_COMMAND:
 			switch(LOWORD(wParam))
 			{
-				case IDC_CONFIG_DONE:
+				case IDC_CONFIG_DONE:{
+                    /** TODO why json_new_item doesn't work? */
+                    Json * pjson  = json_create_object();
+
+                    BOOL result = FALSE;
+                    int val = GetDlgItemInt(hwnd,IDC_PREFERENCE_SCAN_COUNT,&result,FALSE);
+                    if(result){
+                        preference->db_scan_default = val;
+                    }
+
+                    Json * pcount = json_create_number(preference->db_scan_default);
+                    json_add_item_to_object(pjson,"dbScanDefault",pcount);
+
+                    char * jsonText = json_print(pjson);
+                    FILE * file = fopen("wedis.conf","w");
+                    fprintf(file,"%s",jsonText);
+                    fclose(file);
+
 					EndDialog (hwnd, 0);
-				break;
+				    break;
+                };
 
 				case ID_CONFIG_CANCEL:{
 					EndDialog (hwnd, 0);
@@ -33,11 +53,9 @@ BOOL CALLBACK SetPreferenceProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 		break;
 
 		case WM_INITDIALOG:{
-			/** TODO use universal font */
-			HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
-            SendMessage(GetDlgItem(hwnd,IDC_CONFIG_DONE), WM_SETFONT, (WPARAM)hfont0, FALSE);
-			SendMessage(GetDlgItem(hwnd,ID_CONFIG_CANCEL), WM_SETFONT, (WPARAM)hfont0, FALSE);
-
+            /** TODO set preference value from config file */
+            SetDlgItemInt(hwnd,IDC_PREFERENCE_SCAN_COUNT,preference->db_scan_default,FALSE);
+           
 			MoveToScreenCenter(hwnd);
 			break;
 		}
@@ -50,13 +68,6 @@ BOOL CALLBACK AboutDlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam
     switch (message){
 		case WM_INITDIALOG:{
 			MoveToScreenCenter(hwnd);
-
-			HFONT hfont0   = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE, 1, 400, 0, 0, 0, ("Ms Shell Dlg"));
-            SendMessage(GetDlgItem(hwnd,IDC_ABOUT_OK), WM_SETFONT, (WPARAM)hfont0, FALSE);
-			SendMessage(GetDlgItem(hwnd,IDC_ABOUT_URL), WM_SETFONT, (WPARAM)hfont0, FALSE);
-			SendMessage(GetDlgItem(hwnd,IDC_ABOUT_NAME), WM_SETFONT, (WPARAM)hfont0, FALSE);
-			SendMessage(GetDlgItem(hwnd,IDC_ABOUT_DESCRIPTION), WM_SETFONT, (WPARAM)hfont0, FALSE);
-			SendMessage(GetDlgItem(hwnd,IDC_ABOUT_IMAGE), WM_SETFONT, (WPARAM)hfont0, FALSE);
 			break;
 		}
 

@@ -19,6 +19,11 @@ void init_database_view(HINSTANCE hInstance){
     RegisterClassEx(&hashViewClass);
 }
 
+BOOL CALLBACK enumChildProc(HWND hwnd,LPARAM lParam){
+    SendMessage(hwnd, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
+    return TRUE;
+}
+
 void create_database_view(HWND hwnd,DatabaseViewModel * model){
     HINSTANCE hinst = App->hInstance;
 
@@ -42,11 +47,7 @@ void create_database_view(HWND hwnd,DatabaseViewModel * model){
 			WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
 			325, 28, 60, 20, hwnd, (HMENU)DB_CTRL_NEXT_SEARCH, hinst, 0); 
 
-    SendMessage(model->hwndCursorText, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
-    SendMessage(model->hwndPatternText, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
-    SendMessage(model->hwndCountText, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
-    SendMessage(model->hwndSearchButton, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
-    SendMessage(model->hwndNextSearchButton, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
+    EnumChildWindows(hwnd,enumChildProc,0);
 }
 
 /** search given database with parameters. */

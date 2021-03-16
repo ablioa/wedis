@@ -15,6 +15,10 @@
 #define CONFIG_REQUIREPASS "requirepass"
 #define CONFIG_PASSWORD    "password"
 
+typedef struct wedis_preference{
+    int db_scan_default;
+}Preference;
+
 typedef struct wedis_host{
     char * name;
     char * host;
@@ -33,13 +37,12 @@ typedef struct{
 
    int seq;
 
-   //Host ** hosts;
-
    struct wedis_host * head;
    struct wedis_host * tail;
 }Config;
 
 extern Config * appConfig;
+extern Preference * preference;
 
 void add_co_host(Host * host);
 
@@ -56,6 +59,8 @@ void save_all_host_config();
 void save_host_config(int index,Host * host);
 
 Host * getHostByIndex(Config * config,int hostIndex);
+
+char * fetch_text_from_file(const char * filename,size_t * length);
 
 LONG WritePrivateProfileInt(const char * sectionname,const char *  keyname,const LONG val,const char * file);
 

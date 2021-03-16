@@ -31,6 +31,7 @@
 #define IDD_CONNECTION                          400
 #define IDC_CONFIG_DONE                         401
 #define ID_CONFIG_CANCEL                        402
+#define IDC_PREFERENCE_SCAN_COUNT               403
 #define IDC_ABOUT_OK                            500
 #define IDD_LIST_ITEM                           600
 #define IDC_LIST_STATIC                         601

@@ -28,6 +28,8 @@ typedef struct{
 
 void init_hashview(HINSTANCE hInstance);
 
+BOOL CALLBACK enumChildProc(HWND hwnd,LPARAM lParam);
+
 void create_database_view(HWND hwnd,DatabaseViewModel * model);
 
 HWND buildDatabaseToolBar(HWND parent);

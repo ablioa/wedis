@@ -1,9 +1,15 @@
 #include "config.h"
 
+#include <stdio.h>
+#include "json.h"
+#include <assert.h>
+
 #define CONFIG_REQUIREPASS "requirepass"
 #define CONFIG_PASSWORD    "password"
 
 Config * appConfig;
+
+Preference * preference;
 
 Host * getHostByIndex(Config * config,int hostIndex){
     Host * result = NULL;
@@ -74,6 +80,49 @@ void load_all(){
         read_host_config(ix,host);
         add_co_host(host);
     }
+
+    /** read from and save to json config file */
+    size_t length = 0;
+    char * json_text = fetch_text_from_file((const char *)"wedis.conf",&length);
+    Json * json = json_parse(json_text);
+
+    //Json * hosts = json_get_object_item(json,"hosts");
+    //assert(hosts);
+    //int size = json_get_array_size(hosts);
+    //for(int ix = 0; ix < size; ix ++){
+    //    Json * host = json_get_array_item(hosts,ix);
+    //    Json * hitem = json_get_object_item(host,"name");
+    //}
+
+    /** TODO read preference from config file */
+    preference = (Preference*) calloc(1,sizeof(Preference));
+    Json * sd = json_get_object_item(json,"dbScanDefault");
+    preference->db_scan_default = sd->valueint;
+}
+
+char * fetch_text_from_file(const char * filename,size_t * length){
+    FILE * fin = NULL;
+    char * buff = NULL;
+    fin = fopen(filename,"rb");
+    if(fin == NULL){
+        perror("SCRIPT OPENNING FAILED");
+        return 0;
+    }
+
+    fseek(fin,0,SEEK_END);
+    *length = ftell(fin);
+    fseek(fin,0,SEEK_SET);
+    buff = (char *)malloc(*length+1);
+    if(buff == NULL){
+        perror("MEMORY ALLOCATION[BUFF] FAILED");
+        return 0;
+    }
+
+    memset(buff,0,*length+1);
+    fread(buff,1,*length,fin);
+    fclose(fin);
+
+    return buff;
 }
 
 void read_host_config(int index,Host * host){
