@@ -2,7 +2,7 @@
 
 const char * setColNames[3]={
     "Row",
-	"Value",
+    "Value",
     "Length"
 };
 
@@ -26,11 +26,11 @@ BOOL InitSetViewColumns(HWND hWndListView) {
 }
 
 HWND buildSetToolBar(HWND parent){
-	HINSTANCE hInst = App->hInstance;
-	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
+    HINSTANCE hInst = App->hInstance;
+    DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
 
     int buttonCount = 2;
-	TBBUTTON tbtn[2] = {
+    TBBUTTON tbtn[2] = {
         {(TB_DELETE_BUTTON), 7777, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(TB_MOVE_BUTTON), 7778, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
@@ -76,54 +76,67 @@ BOOL updateSetDataSet(HWND hwnd,RedisReply reply){
 }
 
 LRESULT CALLBACK SetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
-	RECT rect;
-    SetViewModel * setViewModel = (SetViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
+    RECT rect;
+    SetViewModel * model = (SetViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
 
-	switch(message){
-	    case WM_CREATE:{
-            setViewModel = (SetViewModel*)calloc(1,sizeof(SetViewModel));
-            SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)setViewModel);
+    switch(message){
+        case WM_CREATE:{
+            model = (SetViewModel*)calloc(1,sizeof(SetViewModel));
+            SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
             
-	        setViewModel->setView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
+            model->setView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
                           WS_CHILD | WS_BORDER | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS,
                           0, 0,0,0,
                           hwnd, NULL, App->hInstance, NULL);
-            ListView_SetExtendedListViewStyle(setViewModel->setView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
-			InitSetViewColumns(setViewModel->setView);
+            ListView_SetExtendedListViewStyle(model->setView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
+            InitSetViewColumns(model->setView);
 
-            setViewModel->toolBar = buildSetToolBar(hwnd);
-		    break;
-		}
-
-        case WM_DT:{
-            RedisReply rp = (RedisReply)wParam;
-            updateSetDataSet(setViewModel->setView,rp);
+            model->toolBar = buildSetToolBar(hwnd);
             break;
         }
 
-		case WM_COMMAND:{
-			switch(LOWORD(wParam)){
-			    case 7777:{
-					MessageBox(hwnd,"remove set item","title",MB_OK);
-					break;
-			    }
-			}
+        case WM_DT:{
+            model->data = (RedisReply)wParam;
+            model->dataNode = (TreeNode*)lParam;
 
-			break;
-		}
-		case WM_SIZE:{
-			GetClientRect(hwnd,&rect);
-            MoveWindow(setViewModel->toolBar,0,0,rect.right-rect.left,28,TRUE);
-			MoveWindow(setViewModel->setView,0,28,rect.right-rect.left,rect.bottom-rect.top-28,TRUE);
-		    break;
-		}
-	}
+            if(model->data->type != REPLY_MULTI){
+                TreeNode * parent = model->dataNode->parent;
+                s_db_get_data(parent,
+                        parent->database->cursor,
+                        parent->database->pattern,
+                        parent->database->page_size);
+                handle_redis_data(parent,NULL);
+                break;
+            }
 
-	return DefWindowProc (hwnd, message, wParam, lParam);
+            updateSetDataSet(model->setView,model->data);
+            break;
+        }
+
+        case WM_COMMAND:{
+            switch(LOWORD(wParam)){
+                case 7777:{
+                    char * data_key = model->dataNode->data->data_key;
+                    s_db_delete_key(model->dataNode,data_key);
+                    break;
+                }
+            }
+
+            break;
+        }
+        case WM_SIZE:{
+            GetClientRect(hwnd,&rect);
+            MoveWindow(model->toolBar,0,0,rect.right-rect.left,28,TRUE);
+            MoveWindow(model->setView,0,28,rect.right-rect.left,rect.bottom-rect.top-28,TRUE);
+            break;
+        }
+    }
+
+    return DefWindowProc (hwnd, message, wParam, lParam);
 }
 
 void init_setview(HINSTANCE hInstance){
-	WNDCLASSEX setViewClass;
+    WNDCLASSEX setViewClass;
 
     setViewClass.cbSize        = sizeof(WNDCLASSEX);
     setViewClass.style         = 0;

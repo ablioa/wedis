@@ -14,6 +14,10 @@
 typedef struct{
    HWND hashView;
    HWND toolBar;
+
+   RedisReply data;
+
+   TreeNode * dataNode;
 }HashViewModel;
 
 HWND buildHashViewWindow(HWND parent);

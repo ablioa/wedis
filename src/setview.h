@@ -12,6 +12,10 @@
 typedef struct set_view_model{
    HWND setView;
    HWND toolBar;
+
+   RedisReply data;
+
+   TreeNode * dataNode;
 }SetViewModel;
 
 LRESULT CALLBACK SetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);

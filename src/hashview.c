@@ -2,8 +2,8 @@
 
 const char * colNames[3]={
     "Row",
-	"Key",
-	"Value"
+    "Key",
+    "Value"
 };
 
 BOOL InitHashViewColumns(HWND hWndListView) { 
@@ -28,7 +28,7 @@ BOOL InitHashViewColumns(HWND hWndListView) {
 
 HWND buildHashToolBar(HWND parent){
     int buttonCount = 2;
-	TBBUTTON tbtn[2] = {
+    TBBUTTON tbtn[2] = {
         {(TB_DELETE_BUTTON), 7777, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(TB_MOVE_BUTTON), 7777, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
@@ -74,55 +74,67 @@ BOOL updateHashDataSet(HWND hwnd,RedisReply reply){
 }
 
 LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
-	RECT rect;
-    HashViewModel * hashViewModel = (HashViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
+    RECT rect;
+    HashViewModel * model = (HashViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
 
-	switch(message){
-	    case WM_CREATE:{
-            hashViewModel = (HashViewModel*)calloc(1,sizeof(HashViewModel));
-            SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)hashViewModel);
-	        
-            hashViewModel->hashView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
+    switch(message){
+        case WM_CREATE:{
+            model = (HashViewModel*)calloc(1,sizeof(HashViewModel));
+            SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
+            
+            model->hashView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
                           WS_CHILD | WS_BORDER | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS,
                           0, 0,0,0,
                           hwnd, NULL, App->hInstance, NULL);
             
-            ListView_SetExtendedListViewStyle(hashViewModel->hashView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
-			InitHashViewColumns(hashViewModel->hashView);
+            ListView_SetExtendedListViewStyle(model->hashView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
+            InitHashViewColumns(model->hashView);
 
-            hashViewModel->toolBar = buildHashToolBar(hwnd);
-		    break;
-		}
-
-        case WM_DT:{
-            RedisReply rp = (RedisReply)wParam;
-            updateHashDataSet(hashViewModel->hashView,rp);
+            model->toolBar = buildHashToolBar(hwnd);
             break;
         }
 
-		case WM_COMMAND:{
-			switch(LOWORD(wParam)){
-			    case 7777:{
-					MessageBox(hwnd,"remove hash item","title",MB_OK);
-					break;
-			    }
-			}
+        case WM_DT:{
+            model->data = (RedisReply)wParam;
+            model->dataNode = (TreeNode*) lParam;
 
-			break;
-		}
-		case WM_SIZE:{
-			GetClientRect(hwnd,&rect);
-            MoveWindow(hashViewModel->toolBar,0,0,rect.right-rect.left,28,TRUE);
-			MoveWindow(hashViewModel->hashView,0,28,rect.right-rect.left,rect.bottom-rect.top-28,TRUE);
-		    break;
-		}
-	}
+            if(model->data->type != REPLY_MULTI){
+                TreeNode * parent = model->dataNode->parent;
+                s_db_get_data(parent,
+                        parent->database->cursor,
+                        parent->database->pattern,
+                        parent->database->page_size);
+                handle_redis_data(parent,NULL);
+                break;
+            }
+            updateHashDataSet(model->hashView,model->data);
+            break;
+        }
 
-	return DefWindowProc (hwnd, message, wParam, lParam);
+        case WM_COMMAND:{
+            switch(LOWORD(wParam)){
+                case 7777:{
+                    char * data_key = model->dataNode->data->data_key;
+                    s_db_delete_key(model->dataNode,data_key);
+                    break;
+                }
+            }
+
+            break;
+        }
+        case WM_SIZE:{
+            GetClientRect(hwnd,&rect);
+            MoveWindow(model->toolBar,0,0,rect.right-rect.left,28,TRUE);
+            MoveWindow(model->hashView,0,28,rect.right-rect.left,rect.bottom-rect.top-28,TRUE);
+            break;
+        }
+    }
+
+    return DefWindowProc (hwnd, message, wParam, lParam);
 }
 
 void init_hashview(HINSTANCE hInstance){
-	WNDCLASSEX hashViewClass;
+    WNDCLASSEX hashViewClass;
 
     hashViewClass.cbSize        = sizeof(WNDCLASSEX);
     hashViewClass.style         = 0;

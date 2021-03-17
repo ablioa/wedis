@@ -21,6 +21,10 @@
 typedef struct zset_view_model{
    HWND zsetView;
    HWND toolBar;
+   
+   RedisReply data;
+
+   TreeNode * dataNode;
 }ZsetViewModel;
 
 LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);

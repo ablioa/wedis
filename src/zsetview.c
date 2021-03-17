@@ -2,8 +2,8 @@
 
 const char * zsetColNames[3]={
     "Row",
-	"Value",
-	"Score"
+    "Value",
+    "Score"
 };
 
 BOOL InitZsetViewColumns(HWND hWndListView) { 
@@ -26,61 +26,61 @@ BOOL InitZsetViewColumns(HWND hWndListView) {
 
 HWND buildZsetToolBar(HWND parent){
     int buttonCount = 2;
-	TBBUTTON tbtn[2] = {
+    TBBUTTON tbtn[2] = {
         {(TB_DELETE_BUTTON), ZSET_DELETE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(TB_MOVE_BUTTON), ZSET_DELETE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
-	return buildGeneralToolBar(parent,tbtn,buttonCount);
+    return buildGeneralToolBar(parent,tbtn,buttonCount);
 }
 
 LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
-	RECT rect;
-    ZsetViewModel * zsetViewModel = (ZsetViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
-	switch(message){
-	    case WM_CREATE:{
-            zsetViewModel = (ZsetViewModel*)calloc(1,sizeof(ZsetViewModel));
-            SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)zsetViewModel);
+    RECT rect;
+    ZsetViewModel * model = (ZsetViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
+    switch(message){
+        case WM_CREATE:{
+            model = (ZsetViewModel*)calloc(1,sizeof(ZsetViewModel));
+            SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
 
-			HINSTANCE hinst = App->hInstance;
+            HINSTANCE hinst = App->hInstance;
             GetClientRect (hwnd, &rect); 
-	        
-            zsetViewModel->zsetView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
+            
+            model->zsetView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
                           WS_CHILD | WS_BORDER | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS,
                           0, 0,0,0,
                           hwnd, NULL, hinst, NULL);
 
-            zsetViewModel->toolBar = buildZsetToolBar(hwnd);
-			InitZsetViewColumns(zsetViewModel->zsetView);
+            model->toolBar = buildZsetToolBar(hwnd);
+            InitZsetViewColumns(model->zsetView);
             
-			ListView_SetExtendedListViewStyle(zsetViewModel->zsetView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
-		    break;
-		}
-
-	    case WM_COMMAND:{
-			switch(LOWORD(wParam)){
-			    case ZSET_DELETE_DATA:{
-					MessageBox(hwnd,"delete zset data.","title",MB_OK);
-					break;
-				}
-			}
-		}
-
-		case WM_SIZE:{
-			GetClientRect(hwnd,&rect);
-            MoveWindow(zsetViewModel->toolBar,0,0,rect.right-rect.left,28,TRUE);
-			MoveWindow(zsetViewModel->zsetView,0,28,rect.right-rect.left,rect.bottom-rect.top-28,TRUE);
-
-		    break;
-		}
-
-        case WM_DT:{
-            UpdateZsetData(zsetViewModel->zsetView,(RedisReply)wParam);
+            ListView_SetExtendedListViewStyle(model->zsetView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
             break;
         }
-	}
 
-	return DefWindowProc (hwnd, message, wParam, lParam);
+        case WM_COMMAND:{
+            switch(LOWORD(wParam)){
+                case ZSET_DELETE_DATA:{
+                    MessageBox(hwnd,"delete zset data.","title",MB_OK);
+                    break;
+                }
+            }
+        }
+
+        case WM_SIZE:{
+            GetClientRect(hwnd,&rect);
+            MoveWindow(model->toolBar,0,0,rect.right-rect.left,28,TRUE);
+            MoveWindow(model->zsetView,0,28,rect.right-rect.left,rect.bottom-rect.top-28,TRUE);
+
+            break;
+        }
+
+        case WM_DT:{
+            UpdateZsetData(model->zsetView,(RedisReply)wParam);
+            break;
+        }
+    }
+
+    return DefWindowProc (hwnd, message, wParam, lParam);
 }
 
 BOOL UpdateZsetData(HWND hwnd,RedisReply reply){
@@ -119,7 +119,7 @@ BOOL UpdateZsetData(HWND hwnd,RedisReply reply){
 }
 
 void init_zsetview(HINSTANCE hInstance){
-	WNDCLASSEX zsetViewClass;
+    WNDCLASSEX zsetViewClass;
 
     zsetViewClass.cbSize        = sizeof(WNDCLASSEX);
     zsetViewClass.style         = 0;
