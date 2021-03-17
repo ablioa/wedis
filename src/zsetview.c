@@ -60,7 +60,8 @@ LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
         case WM_COMMAND:{
             switch(LOWORD(wParam)){
                 case ZSET_DELETE_DATA:{
-                    MessageBox(hwnd,"delete zset data.","title",MB_OK);
+                    char * data_key = model->dataNode->data->data_key;
+                    s_db_delete_key(model->dataNode,data_key);
                     break;
                 }
             }
@@ -75,7 +76,20 @@ LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
         }
 
         case WM_DT:{
-            UpdateZsetData(model->zsetView,(RedisReply)wParam);
+            model->data = (RedisReply)wParam;
+            model->dataNode = (TreeNode*) lParam;
+
+            if(model->data->type != REPLY_MULTI){
+                TreeNode * parent = model->dataNode->parent;
+                s_db_get_data(parent,
+                        parent->database->cursor,
+                        parent->database->pattern,
+                        parent->database->page_size);
+                handle_redis_data(parent,NULL);
+                break;
+            }
+
+            UpdateZsetData(model->zsetView,model->data);
             break;
         }
     }
