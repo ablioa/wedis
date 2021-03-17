@@ -120,7 +120,7 @@ RedisReply read_reply(char *text,int * cur,int length,redis_read_progress_handle
 		
 		/** error */
 		case '-':{
-			reply->type = REPLY_ERROR;
+			reply->type = REPLY_DIGITAL;
 			int slen = get_status_scope(text,length);
 
 			if(slen == -1){
@@ -139,7 +139,17 @@ RedisReply read_reply(char *text,int * cur,int length,redis_read_progress_handle
 		
 		/** number */
 		case ':':{
-			MessageBox(NULL,"unsuported data type: NUMBER.","sd",MB_OK);
+			reply->type = REPLY_ERROR;
+			int slen = get_status_scope(text,length);
+
+			if(slen == -1){
+				reply->reply_status = REPLY_STATUS_PENDING;
+			}else{
+				reply->reply_status = REPLY_STATUS_DONE;
+				RedisBulk number = buildRedisBulk(slen);
+				memcpy(number->content, (text + 1), slen);
+				reply->number = number;
+			}
 			break;
 		}
 

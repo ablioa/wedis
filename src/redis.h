@@ -162,7 +162,7 @@ struct redis_reply{
 		RedisBulk    status;
     	RedisBulk    error;
     	RedisBulk    bulk;
-		
+        RedisBulk    number;
     	struct redis_reply * *   bulks;
 	};
 
