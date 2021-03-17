@@ -75,7 +75,7 @@
 #define IDC_DB_SEARCH_OK     40013
 
 /** total image list icons */
-#define TOTAL_ICON_COUNT 19
+#define TOTAL_ICON_COUNT 20
 
 /** defines toolbar button id */
 #define TB_DELETE_BUTTON 0
@@ -89,3 +89,4 @@
 #define TREE_DATABASE_NODE   16
 #define TREE_DATA_NODE       17
 #define TREE_FOLDER_NODE     18
+#define TB_WIDEN_BUTTON      19
