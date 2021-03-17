@@ -4,11 +4,13 @@
 #define IDB_EXPORT_STRING 5001
 #define IDB_DELELE_STRING 5002
 #define IDB_MOVE_STRING   5003
+#define IDB_WIDEN_STRING  5004
+
+#define MIN_HEX_WIDTH     16
+#define HEX_WIDTH_STEP    8
+#define MAX_HEX_WIDTH     48
 
 HWND buildStringToolBar(HWND parent){
-	HINSTANCE hInst = App->hInstance;
-	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
-
     int buttonCount = 6;
 	TBBUTTON tbtn[6] = {
         {(TB_DELETE_BUTTON), IDB_DELELE_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
@@ -16,11 +18,22 @@ HWND buildStringToolBar(HWND parent){
         {(0), 0, TBSTATE_ENABLED, TBSTYLE_SEP, {0}, 0, 0},
         {(TB_EXPORT_BUTTON), IDB_EXPORT_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(TB_FORMAT_BUTTON), IDB_FORMAT_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(TB_WIDEN_BUTTON), IDB_FORMAT_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+        {(TB_WIDEN_BUTTON),  IDB_WIDEN_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
     return buildGeneralToolBar(parent,tbtn,buttonCount);;
 }
+
+int get_next_hex_width(StringViewModel * model){
+    model->hex_width += HEX_WIDTH_STEP;
+
+    if(model->hex_width > MAX_HEX_WIDTH){
+        model->hex_width = MIN_HEX_WIDTH;
+    }
+
+    return model->hex_width;
+}
+
 
 LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	RECT rect;
@@ -36,7 +49,9 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 					WS_VISIBLE | ES_AUTOVSCROLL | WS_BORDER | WS_CHILD | WS_TABSTOP | WS_VSCROLL |ES_MULTILINE, 
 					0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_TEXT, App->hInstance, 0);
             model->toolBar = buildStringToolBar(hwnd);
-            model->mode = BINARY;
+            model->mode = TEXT;
+            model->hex_width=16;
+
             SendMessage(model->stringView, WM_SETFONT, (WPARAM)(resource->fixedWidthFont), FALSE);
 			
 		    break;
@@ -63,20 +78,29 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                     break;
                 }
 
+                case IDB_WIDEN_STRING:{
+                    if(model->mode == BINARY){
+                        get_next_hex_width(model);
+                        char * content = model->data->bulk->content;
+                        int len = model->data->bulk->length;
+                        content = dump_text(model->data->bulk->content,len,model->hex_width);
+                        SetWindowText(model->stringView,content);
+                    }
+                    break;
+                }
+
 				/** display data in hex dump format*/
                 case IDB_FORMAT_STRING:{
                     char * content = model->data->bulk->content;
                     if(model->mode == TEXT){
                         model->mode = BINARY;
-                    }else{
                         int len = model->data->bulk->length;
-                        content = dump_text(model->data->bulk->content,len,30);
+                        content = dump_text(model->data->bulk->content,len,model->hex_width);
+                    }else{
                         model->mode = TEXT;
                     }
 
-                    SendMessage(model->stringView,EM_REPLACESEL,FALSE,(LPARAM)content);
 			        SetWindowText(model->stringView,content);
-                    
                     break;
                 }
 
@@ -101,8 +125,12 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
             model->data = (RedisReply)wParam;
 			model->dataNode = (TreeNode*)lParam;
 
-			SendMessage(model->stringView,EM_REPLACESEL,FALSE,(LPARAM)model->data->bulk->content);
-			SetWindowText(model->stringView,model->data->bulk->content);
+            char * text = model->data->bulk->content;
+            if(model->mode == BINARY){
+                text = dump_text(model->data->bulk->content,model->data->bulk->length,model->hex_width);
+            }
+
+			SetWindowText(model->stringView,text);
             break;
         }
 

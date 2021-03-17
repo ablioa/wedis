@@ -30,9 +30,9 @@ typedef struct string_data_model{
    int hex_buff_size;
 
    DisplayMode mode;
-   
-}StringViewModel;
 
+   int hex_width;
+}StringViewModel;
 
 LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
