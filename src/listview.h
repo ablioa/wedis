@@ -20,6 +20,8 @@ typedef struct{
    HWND toolBar;
 
    RedisReply data;
+   
+   TreeNode * dataNode;
 }ListViewModel;
 
 LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);

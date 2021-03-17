@@ -12,7 +12,7 @@
 
 HWND buildStringToolBar(HWND parent){
     int buttonCount = 6;
-	TBBUTTON tbtn[6] = {
+    TBBUTTON tbtn[6] = {
         {(TB_DELETE_BUTTON), IDB_DELELE_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(TB_MOVE_BUTTON), IDB_MOVE_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(0), 0, TBSTATE_ENABLED, TBSTYLE_SEP, {0}, 0, 0},
@@ -36,36 +36,36 @@ int get_next_hex_width(StringViewModel * model){
 
 
 LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
-	RECT rect;
+    RECT rect;
     StringViewModel * model = (StringViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
 
-	switch(message){
-	    case WM_CREATE:{
+    switch(message){
+        case WM_CREATE:{
             model = (StringViewModel*)malloc(sizeof(StringViewModel));
             memset(model,0,sizeof(StringViewModel));
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
 
-			model->stringView = CreateWindowEx(0, WC_EDIT, (""), 
-					WS_VISIBLE | ES_AUTOVSCROLL | WS_BORDER | WS_CHILD | WS_TABSTOP | WS_VSCROLL |ES_MULTILINE, 
-					0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_TEXT, App->hInstance, 0);
+            model->stringView = CreateWindowEx(0, WC_EDIT, (""), 
+                    WS_VISIBLE | ES_AUTOVSCROLL | WS_BORDER | WS_CHILD | WS_TABSTOP | WS_VSCROLL |ES_MULTILINE, 
+                    0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_TEXT, App->hInstance, 0);
             model->toolBar = buildStringToolBar(hwnd);
             model->mode = TEXT;
             model->hex_width=16;
 
             SendMessage(model->stringView, WM_SETFONT, (WPARAM)(resource->fixedWidthFont), FALSE);
-			
-		    break;
-		}
+            
+            break;
+        }
        
         case WM_COMMAND:{
             switch(LOWORD (wParam)){
-				/** move data into another database */
-				case WM_MOVEDATA_CMD:{
-					// TODO add move data operation
-					break;
-				}
+                /** move data into another database */
+                case WM_MOVEDATA_CMD:{
+                    // TODO add move data operation
+                    break;
+                }
 
-				/** export data */
+                /** export data */
                 case IDB_EXPORT_STRING:{
                     LPTSTR fileName = mGetSaveFileName(hwnd);
                     if(fileName == NULL){
@@ -89,7 +89,7 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                     break;
                 }
 
-				/** display data in hex dump format*/
+                /** display data in hex dump format*/
                 case IDB_FORMAT_STRING:{
                     char * content = model->data->bulk->content;
                     if(model->mode == TEXT){
@@ -100,31 +100,31 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                         model->mode = TEXT;
                     }
 
-			        SetWindowText(model->stringView,content);
+                    SetWindowText(model->stringView,content);
                     break;
                 }
 
-				/** delete data item */
-				case IDB_DELELE_STRING:{
+                /** delete data item */
+                case IDB_DELELE_STRING:{
                     char * data_key = model->dataNode->data->data_key;
                     s_db_delete_key(model->dataNode,data_key);
-					break;
-			    }
+                    break;
+                }
 
-				/** trigger move data menu */
-				case IDB_MOVE_STRING:{
-					POINT pt;
-					GetCursorPos(&pt);
-					TrackPopupMenu(App->activeHost->host->db_menu,TPM_LEFTALIGN,pt.x,pt.y,0,hwnd,NULL);
-					break;
-				}
+                /** trigger move data menu */
+                case IDB_MOVE_STRING:{
+                    POINT pt;
+                    GetCursorPos(&pt);
+                    TrackPopupMenu(App->activeHost->host->db_menu,TPM_LEFTALIGN,pt.x,pt.y,0,hwnd,NULL);
+                    break;
+                }
             }
             break;
         }
 
-		case WM_DT:{
+        case WM_DT:{
             model->data = (RedisReply)wParam;
-			model->dataNode = (TreeNode*)lParam;
+            model->dataNode = (TreeNode*)lParam;
 
             if(model->data->type != REPLY_BULK){
                 TreeNode * parent = model->dataNode->parent;
@@ -141,23 +141,23 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                 text = dump_text(model->data->bulk->content,model->data->bulk->length,model->hex_width);
             }
 
-			SetWindowText(model->stringView,text);
+            SetWindowText(model->stringView,text);
             break;
         }
 
-		case WM_SIZE:{
-			GetClientRect(hwnd,&rect);
+        case WM_SIZE:{
+            GetClientRect(hwnd,&rect);
             MoveWindow(model->toolBar,0,0,rect.right-rect.left,28,TRUE);
-			MoveWindow(model->stringView,0,28,rect.right-rect.left,rect.bottom-rect.top-28,TRUE);
-		    break;
-		}
-	}
+            MoveWindow(model->stringView,0,28,rect.right-rect.left,rect.bottom-rect.top-28,TRUE);
+            break;
+        }
+    }
 
-	return DefWindowProc (hwnd, message, wParam, lParam);
+    return DefWindowProc (hwnd, message, wParam, lParam);
 }
 
 void init_stringview(HINSTANCE hInstance){
-	WNDCLASSEX stringViewClass;
+    WNDCLASSEX stringViewClass;
 
     stringViewClass.cbSize        = sizeof(WNDCLASSEX);
     stringViewClass.style         = 0;
@@ -189,10 +189,10 @@ char * dump_text(char * text,int len,int width){
     int offset =0;
     int ix = 0;
     for(ix = 0; ix < len; ix ++){
-		if(ix % width ==0){
-			sprintf(output,"%010X: ",(ix/width));
-			output += 12;
-		}
+        if(ix % width ==0){
+            sprintf(output,"%010X: ",(ix/width));
+            output += 12;
+        }
 
         sprintf(output,"%02X ",(unsigned char)(text[ix]));
         output +=3;
@@ -207,20 +207,20 @@ char * dump_text(char * text,int len,int width){
     }
 
     if(ix % width != 0x00){
-		int left  = len % width;
-		int vleft = width - left;
+        int left  = len % width;
+        int vleft = width - left;
 
-		for(int iz = 0; iz < vleft; iz ++){
-		   sprintf(output,"   ");
-		   output += 3;
-		}
+        for(int iz = 0; iz < vleft; iz ++){
+           sprintf(output,"   ");
+           output += 3;
+        }
 
-		sprintf(output,"    %s\r\n",line);
-		offset=0;
-		memset(line,0,(width+1));
-		output += (width+4+2);
+        sprintf(output,"    %s\r\n",line);
+        offset=0;
+        memset(line,0,(width+1));
+        output += (width+4+2);
     }
 
-	return buff;
+    return buff;
 }
 

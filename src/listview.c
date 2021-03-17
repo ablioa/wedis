@@ -25,11 +25,11 @@ BOOL InitListDViewColumns(HWND hWndListView) {
 }
 
 HWND buildListToolBar(HWND parent){
-	HINSTANCE hInst = App->hInstance;
-	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
+    HINSTANCE hInst = App->hInstance;
+    DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
 
     int buttonCount = 3;
-	TBBUTTON tbtn[3] = {
+    TBBUTTON tbtn[3] = {
         {(TB_DELETE_BUTTON), LIST_DELETE_CMD, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(TB_MOVE_BUTTON), LIST_DELETE_CMD, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(TB_EXPORT_BUTTON), LIST_EXPORT_CMD, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
@@ -81,33 +81,33 @@ BOOL updateListDataSet(HWND hwnd,RedisReply reply){
 }
 
 LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
-	RECT rect;
-	ListViewModel * model = (ListViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
+    RECT rect;
+    ListViewModel * model = (ListViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
 
     switch(message){
-	    case WM_CREATE:{
+        case WM_CREATE:{
             model = (ListViewModel*)calloc(1,sizeof(ListViewModel));
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
 
-	        model->listView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
+            model->listView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
                           WS_CHILD | WS_VISIBLE| WS_BORDER | LVS_REPORT | LVS_SHAREIMAGELISTS,
                           0, 0, 0, 0,
                           hwnd, NULL, App->hInstance, NULL);
 
             model->toolBar = buildListToolBar(hwnd);
             ListView_SetExtendedListViewStyle(model->listView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
-			InitListDViewColumns(model->listView);
-		    break;
-		}
+            InitListDViewColumns(model->listView);
+            break;
+        }
 
         case WM_NOTIFY:{
             LPNMHDR msg = ((LPNMHDR) lParam);
-			switch (msg->code) {
+            switch (msg->code) {
                 case LVN_COLUMNCLICK:{
                     break;
                 }
                 case NM_DBLCLK:{
-					MessageBox(hwnd,"handle list row message","title",MB_OK);
+                    MessageBox(hwnd,"handle list row message","title",MB_OK);
                     break;
                 }
             }
@@ -121,7 +121,8 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                 }
 
                 case LIST_DELETE_CMD:{
-                    MessageBox(hwnd,"delete list item right now!","title",MB_OK);
+                    char * data_key = model->dataNode->data->data_key;
+                    s_db_delete_key(model->dataNode,data_key);
                     break;
                 }
 
@@ -147,23 +148,35 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
         case WM_DT:{
             model->data = (RedisReply)wParam;
+            model->dataNode = (TreeNode*) lParam;
+
+            if(model->data->type != REPLY_MULTI){
+                TreeNode * parent = model->dataNode->parent;
+                s_db_get_data(parent,
+                        parent->database->cursor,
+                        parent->database->pattern,
+                        parent->database->page_size);
+                handle_redis_data(parent,NULL);
+                break;
+            }
+
             updateListDataSet(model->listView,model->data);
             break;
         }
 
-		case WM_SIZE:{
-			GetClientRect(hwnd,&rect);
+        case WM_SIZE:{
+            GetClientRect(hwnd,&rect);
             MoveWindow(model->toolBar,0,0,rect.right-rect.left,28,TRUE);
-			MoveWindow(model->listView,0,28,rect.right-rect.left,rect.bottom-rect.top-28,TRUE);
-		    break;
-		}
-	}
+            MoveWindow(model->listView,0,28,rect.right-rect.left,rect.bottom-rect.top-28,TRUE);
+            break;
+        }
+    }
 
-	return DefWindowProc (hwnd, message, wParam, lParam);
+    return DefWindowProc (hwnd, message, wParam, lParam);
 }
 
 void init_listview(HINSTANCE hInstance){
-	WNDCLASSEX listViewClass;
+    WNDCLASSEX listViewClass;
 
     listViewClass.cbSize        = sizeof(WNDCLASSEX);
     listViewClass.style         = 0;
