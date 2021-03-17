@@ -18,6 +18,8 @@ void s_db_select(TreeNode * selected);
 
 void s_handle_data(TreeNode * datanode,DataType dataType);
 
+void s_db_flushdb(TreeNode * dbnode);
+
 RedisReply s_db_fetch_string(TreeNode * datanode);
 
 RedisReply s_db_fetch_hash(TreeNode * datanode);

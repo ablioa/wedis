@@ -106,7 +106,8 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 
 				/** delete data item */
 				case IDB_DELELE_STRING:{
-					MessageBox(hwnd,"deleting string value now!","title",MB_OK);
+                    char * data_key = model->dataNode->data->data_key;
+                    s_db_delete_key(model->dataNode,data_key);
 					break;
 			    }
 
@@ -124,6 +125,16 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 		case WM_DT:{
             model->data = (RedisReply)wParam;
 			model->dataNode = (TreeNode*)lParam;
+
+            if(model->data->type != REPLY_BULK){
+                TreeNode * parent = model->dataNode->parent;
+                s_db_get_data(parent,
+                        parent->database->cursor,
+                        parent->database->pattern,
+                        parent->database->page_size);
+                handle_redis_data(parent,NULL);
+                break;
+            }
 
             char * text = model->data->bulk->content;
             if(model->mode == BINARY){
