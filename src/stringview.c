@@ -1,20 +1,22 @@
 #include "stringview.h"
 
-#define IDB_FORMAT_STRING 5000
-#define IDB_EXPORT_STRING 5001
-#define IDB_DELELE_STRING 5002
-#define IDB_MOVE_STRING   5003
-#define IDB_WIDEN_STRING  5004
+#define IDB_FORMAT_STRING   5000
+#define IDB_EXPORT_STRING   5001
+#define IDB_DELELE_STRING   5002
+#define IDB_MOVE_STRING     5003
+#define IDB_WIDEN_STRING    5004
+#define IDB_REFRESH_STRING  5005
 
 #define MIN_HEX_WIDTH     16
 #define HEX_WIDTH_STEP    8
 #define MAX_HEX_WIDTH     48
 
 HWND buildStringToolBar(HWND parent){
-    int buttonCount = 6;
-    TBBUTTON tbtn[6] = {
-        {(TB_DELETE_BUTTON), IDB_DELELE_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+    int buttonCount = 7;
+    TBBUTTON tbtn[7] = {
+        {(TB_REFRESH_BUTTON), IDB_REFRESH_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(TB_MOVE_BUTTON), IDB_MOVE_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TB_DELETE_BUTTON), IDB_DELELE_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(0), 0, TBSTATE_ENABLED, TBSTYLE_SEP, {0}, 0, 0},
         {(TB_EXPORT_BUTTON), IDB_EXPORT_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(TB_FORMAT_BUTTON), IDB_FORMAT_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
@@ -113,6 +115,12 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                     break;
                 }
 
+                case IDB_REFRESH_STRING:{
+                    TreeNode * node = model->dataNode;
+                    s_handle_data(node,node->data->data_type);
+                    //MessageBox(hwnd,"refreshing the data right now!","title",MB_OK);
+                    break;
+                }
                 /** delete data item */
                 case IDB_DELELE_STRING:{
                     char * data_key = model->dataNode->data->data_key;
