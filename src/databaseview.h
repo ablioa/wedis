@@ -27,6 +27,7 @@ typedef struct{
 }DatabaseViewModel;
 
 void init_hashview(HINSTANCE hInstance);
+void init_database_view(HINSTANCE hInstance);
 
 BOOL CALLBACK enumChildProc(HWND hwnd,LPARAM lParam);
 

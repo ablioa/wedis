@@ -48,6 +48,11 @@ void initpan(HINSTANCE hInstance){
 void onExit(){
 }
 
+VOID CALLBACK heart_beat_timer(HWND hwnd,UINT message,UINT_PTR timer,DWORD dwTime){
+    TreeNode * host = (TreeNode *) timer;
+    s_db_ping(host);
+}
+
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cmdShow){
     MSG  msg;
 
@@ -58,7 +63,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
     App = (Application *)calloc(1,sizeof(Application));
     App->dataView = (DataView *) calloc(1,sizeof(DataView));
     App->hInstance = hInst;
-    App->connectionList = init_list(NULL);
+    App->hosts = (TreeNode**) calloc(MAX_CONNECTIONS,sizeof(TreeNode*));
 
     initResource();
     HWND hwndFrame = CreateWindowEx(WS_EX_LEFT,szFrameClass, TEXT ("wedis"),
@@ -109,7 +114,6 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
                     if(msg->idFrom == 0){
                         TreeNode * selected = getSelectedNode();
                         onDataBaseSelect(selected);
-                        return;
                     }
                     break;
                 }
@@ -139,12 +143,12 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 
                     TreeNode * selected = getSelectedNode();
                     if(selected != NULL && selected->level == NODE_LEVEL_DATA){
-                        SendMessage(App->view->overviewHwnd,TVM_SETITEM,0,&item);
+                        SendMessage(App->view->overviewHwnd,TVM_SETITEM,0,(LPARAM)&item);
                     }
 
                     item.hItem = pnmtv->itemOld.hItem;
                     item.state =!TVIS_BOLD;
-                    SendMessage(App->view->overviewHwnd,TVM_SETITEM,0,&item);
+                    SendMessage(App->view->overviewHwnd,TVM_SETITEM,0,(LPARAM)&item);
                     break;
                 }
             }
@@ -311,6 +315,7 @@ void command(HWND hwnd,int cmd){
 
         TreeNode * hostNode = addHostNode(stream,host->name);
         s_auth(hostNode,host->password);
+        SetTimer(hwnd,(UINT_PTR)hostNode,5000,heart_beat_timer);
         showWindows(App->view);
         return;
     }
@@ -447,12 +452,9 @@ void onWindowResize(AppView * view){
 }
 
 void buildToolBar(AppView * view){
-    HINSTANCE hInst = App->hInstance;
-    DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
     RECT  rect;
 
     int buttonCount = 2;
-    
     TBBUTTON tbtn[2] = {
         {(TB_CONNECTION_BUTTON), IDM_CONNECTION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(TB_PREFERENCE_BUTTON), IDM_PREFERENCE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
@@ -549,3 +551,4 @@ HWND buildGeneralToolBar(HWND parent,TBBUTTON * tbtn,int buttonCount){
     ShowWindow(tb,  TRUE);
     return tb;
 }
+

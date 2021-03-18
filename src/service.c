@@ -2,7 +2,7 @@
 
 FILE * logstream;
 
-int GLOBAL_TREE_NODE_ID = 0;
+int GLOBAL_TREE_NODE_ID = 100;
 
 // TODO 记录二进制日志
 RedisReply redis_serialize_params(RedisConnection stream,RedisParams params){
@@ -188,10 +188,16 @@ void s_handle_data(TreeNode * datanode,DataType dataType){
 }
 
 /** flushdb command */
-void s_db_flushdb(TreeNode * dbnode){
+RedisReply s_db_flushdb(TreeNode * dbnode){
     RedisParams params = redis_build_params(1);
     redis_add_param(params,redis_build_param("flushdb"));
     return redis_serialize_params(dbnode->stream,params);
+}
+
+RedisReply s_db_ping(TreeNode * hostnode){
+    RedisParams params = redis_build_params(1);
+    redis_add_param(params,redis_build_param("ping"));
+    return redis_serialize_params(hostnode->stream,params);
 }
 
 RedisReply s_db_fetch_string(TreeNode * datanode){

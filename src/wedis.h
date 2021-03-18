@@ -29,6 +29,13 @@
 
 #define WM_MOVEDATA_CMD 10000
 
+#define ERR_NORMAL					0x0000
+#define ERR_CANNOT_CONNECTED		0X0001
+#define ERR_CANNOT_CREATESOCKET		0x0002
+#define ERR_SENDDATA_FAILED			0x0003
+#define ERR_LINK_BREAKDOWN			0x0004
+
+
 typedef struct app_view{
     HWND hwnd;
     
@@ -76,9 +83,12 @@ typedef struct application{
 
 	TreeNode * activeHost;
 
-	list connectionList;
-
 	TreeNode * selectHost;
+
+    TreeNode ** hosts;
+
+    int totalHosts;
+
 }Application;
 
 extern Application * App;
@@ -90,12 +100,6 @@ typedef struct system_resource{
 }SystemResource;
 
 extern SystemResource * resource;
-
-#define ERR_NORMAL					0x0000
-#define ERR_CANNOT_CONNECTED		0X0001
-#define ERR_CANNOT_CREATESOCKET		0x0002
-#define ERR_SENDDATA_FAILED			0x0003
-#define ERR_LINK_BREAKDOWN			0x0004
 
 typedef struct err_info{
 	LONG ecode;
@@ -110,6 +114,5 @@ int DumpMessage(long Err_Code);
 void initResource();
 
 void log_message(const char * message);
-
 
 #endif
