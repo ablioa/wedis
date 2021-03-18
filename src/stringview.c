@@ -197,7 +197,7 @@ void init_stringview(HINSTANCE hInstance){
 }
 
 char * get_output_buffer(int len,int width){
-    int bsize = (12+width+4+width*3+2) * (len / width +1) +100;
+    int bsize = (10+width+4+width*3+2) * (len / width +1) +100;
     char * buff = ( char *) malloc(sizeof( char) * bsize);
     memset(buff,0,sizeof( char) * bsize);
     return buff;
@@ -212,8 +212,8 @@ char * dump_text(char * text,int len,int width){
     int ix = 0;
     for(ix = 0; ix < len; ix ++){
         if(ix % width ==0){
-            sprintf(output,"%010X: ",(ix/width));
-            output += 12;
+            sprintf(output,"%08X: ",(ix/width));
+            output += 10;
         }
 
         sprintf(output,"%02X ",(unsigned char)(text[ix]));
