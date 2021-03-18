@@ -129,21 +129,22 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
                 }
 
                 case TVN_SELCHANGED:{
+                    LPNMTREEVIEW pnmtv = (LPNMTREEVIEW) lParam;
+                    TVITEMA item;
+                    memset(&item,0,sizeof(item));
+                    item.hItem = pnmtv->itemNew.hItem;
+                    item.mask = TVIF_STATE;
+                    item.state = TVIS_BOLD;
+                    item.stateMask = TVIS_BOLD;
+
                     TreeNode * selected = getSelectedNode();
                     if(selected != NULL && selected->level == NODE_LEVEL_DATA){
-                        LPNMTREEVIEW pnmtv = (LPNMTREEVIEW) lParam;
-                        TVITEMA item;
-                        memset(&item,0,sizeof(item));
-                        item.hItem = pnmtv->itemNew.hItem;
-                        item.mask = TVIF_STATE;
-                        item.state = TVIS_BOLD;
-                        item.stateMask = TVIS_BOLD;
-                        SendMessage(App->view->overviewHwnd,TVM_SETITEM,0,&item);
-
-                        item.hItem = pnmtv->itemOld.hItem;
-                        item.state =!TVIS_BOLD;
                         SendMessage(App->view->overviewHwnd,TVM_SETITEM,0,&item);
                     }
+
+                    item.hItem = pnmtv->itemOld.hItem;
+                    item.state =!TVIS_BOLD;
+                    SendMessage(App->view->overviewHwnd,TVM_SETITEM,0,&item);
                     break;
                 }
             }
