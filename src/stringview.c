@@ -132,7 +132,7 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                 case IDB_MOVE_STRING:{
                     POINT pt;
                     GetCursorPos(&pt);
-                    TrackPopupMenu(App->activeHost->host->db_menu,TPM_LEFTALIGN,pt.x,pt.y,0,hwnd,NULL);
+                    TrackPopupMenu(model->dataNode->parent->database->db_menu,TPM_LEFTALIGN,pt.x,pt.y,0,hwnd,NULL);
                     break;
                 }
             }

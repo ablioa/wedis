@@ -31,7 +31,7 @@ HWND buildListToolBar(HWND parent){
     int buttonCount = 3;
     TBBUTTON tbtn[3] = {
         {(TB_DELETE_BUTTON), LIST_DELETE_CMD, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(TB_MOVE_BUTTON), LIST_DELETE_CMD, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TB_MOVE_BUTTON), LIST_MOVE_CMD, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(TB_EXPORT_BUTTON), LIST_EXPORT_CMD, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
@@ -117,6 +117,11 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
         case WM_COMMAND:{
             switch(LOWORD (wParam)){
                 case LIST_INSERT_CMD:{
+                    break;
+                }
+
+                case LIST_MOVE_CMD:{
+                    MessageBox(hwnd,"moving data noe!!","title",MB_OK);
                     break;
                 }
 

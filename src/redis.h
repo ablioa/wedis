@@ -58,17 +58,6 @@ typedef enum redis_node_type{
 	NODE_LEVEL_DATA
 }RedisNodeType;
 
-typedef struct redis_host_node{
-	char host[255];
-
-	HTREEITEM db_nodes[50];
-	int       db_count;
-	int       capacity;
-	int       used;
-
-	HMENU     db_menu;
-}RedisHostNode;
-
 struct redis_connection{
     SOCKET socket;
     struct sockaddr_in address;
@@ -80,8 +69,22 @@ struct redis_connection{
     char * host;
     int    port;
 };
-
 typedef struct redis_connection * RedisConnection;
+
+typedef struct redis_host_node{
+	char host[255];
+
+	HTREEITEM db_nodes[50];
+
+    /** total database count in the host*/
+	int       db_count;
+   
+    HMENU     db_menu;
+
+	int       capacity;
+
+	int       used;
+}RedisHostNode;
 
 typedef struct redis_database_node{
 	int    dbindex;
@@ -96,6 +99,9 @@ typedef struct redis_database_node{
 	HTREEITEM key_nodes[50];
 	int       capacity;
 	int       used;
+
+    /** menu to other database index*/
+    HMENU  db_menu;
 }RedisDatabaseNode;
 
 typedef struct redis_data_node{
