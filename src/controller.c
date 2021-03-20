@@ -111,12 +111,6 @@ void add_database_node(TreeNode * hostNode,int dbCount){
 
 	/** initialize connection specific data */
 	hostNode->host->db_count = dbCount;
-	hostNode->host->db_menu  = CreatePopupMenu();
-	for(int ix =0; ix < dbCount; ix ++){
-		char dbname[128]={};
-		sprintf(dbname,"db%d",ix);
-	    AppendMenu(hostNode->host->db_menu,MF_STRING,WM_MOVEDATA_CMD+ix,dbname);
-	}
 
     memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
 	tvinsert.hInsertAfter=TVI_ROOT;
@@ -139,6 +133,17 @@ void add_database_node(TreeNode * hostNode,int dbCount){
 
 		HTREEITEM handle = (HTREEITEM)SendMessage(view->overviewHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 		dbnode->handle = handle;
+
+        /** add other database menu*/
+        dbnode->database->db_menu  = CreatePopupMenu();
+        for(int ix =0; ix < dbCount; ix ++){
+            if(ix == dbindex){
+                continue;
+            }
+            char dbname[128]={};
+            sprintf(dbname,"db%d",ix);
+            AppendMenu(dbnode->database->db_menu,MF_STRING,WM_MOVEDATA_CMD+ix,dbname);
+        }
 	}
 
 	SendMessage(App->view->overviewHwnd,TVM_EXPAND,(WPARAM)TVE_TOGGLE,(LPARAM)(hostNode->handle));
