@@ -50,7 +50,7 @@ void onExit(){
 
 VOID CALLBACK heart_beat_timer(HWND hwnd,UINT message,UINT_PTR timer,DWORD dwTime){
     TreeNode * host = (TreeNode *) timer;
-//    s_db_ping(host);
+    s_db_ping(host);
 }
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cmdShow){

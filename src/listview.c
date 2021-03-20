@@ -63,7 +63,8 @@ BOOL updateListDataSet(HWND hwnd,RedisReply reply){
         lvI.pszText = indexBuff; 
         ListView_InsertItem(hwnd, &lvI);
 
-        lvI.pszText = item->bulk->content;
+		char * encoded_data = encode(item->bulk->content,item->bulk->length);
+        lvI.pszText = encoded_data; 
         lvI.iSubItem = 1;
         SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
 
@@ -72,6 +73,8 @@ BOOL updateListDataSet(HWND hwnd,RedisReply reply){
         lvI.pszText = buff;
         lvI.iSubItem = 2;
         SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+		
+		free(encoded_data);
     }
 
     // TODO 这里还不能释放，需要选择合适的时机
