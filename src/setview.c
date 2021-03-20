@@ -61,7 +61,9 @@ BOOL updateSetDataSet(HWND hwnd,RedisReply reply){
         lvI.pszText = indexBuff; 
         ListView_InsertItem(hwnd, &lvI);
 
-		char * encoded_data = encode(reply->bulks[index]->bulk->content);
+
+		char * encoded_data = encode(reply->bulks[index]->bulk->content,
+				reply->bulks[index]->bulk->length);
 
         lvI.pszText = encoded_data;//reply->bulks[index]->bulk->content;
         lvI.iSubItem = 1;
