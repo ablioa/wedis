@@ -33,6 +33,8 @@ RedisReply s_db_fetch_zset(TreeNode * datanode);
 
 void s_db_data_type(TreeNode * selected);
 
+RedisReply s_db_delete_key(TreeNode * dataNode,const char * data_key);
+
 RedisReply s_db_info_stats(TreeNode * host,const char * information);
 
 RedisReply redis_serialize_params(RedisConnection stream,RedisParams params);

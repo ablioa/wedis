@@ -109,6 +109,8 @@ void showWindows(AppView * view);
 
 int is_binary_data(char * stream,size_t length);
 
+char * encode(char * chunk,int length);
+
 HWND buildGeneralToolBar(HWND parent,TBBUTTON * tbtn,int buttonCount);
 
 #endif

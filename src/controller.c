@@ -40,21 +40,6 @@ TreeNode * add_host_node(const char * host_name){
 	return hostNode;
 }
 
-char * encode(char * chunk,int length){
-	char * buff = (char*)calloc(1,length*4);
-	char * cur  = buff;
-	for(int ix = 0; ix < length; ix ++){
-		if(isprint(chunk[ix])){
-			sprintf(cur,"%c",chunk[ix]);
-			cur++;
-		}else{
-			sprintf(cur,"\\x%02x",chunk[ix]);
-			cur+=4;
-		}
-	}
-
-	return buff;
-}
 void add_data_node(TreeNode * dbnode,RedisReply data){
     for(int ix =0; ix < dbnode->subHandleSize; ix ++){
         TreeView_DeleteItem(App->view->overviewHwnd,dbnode->subHandles[ix]);

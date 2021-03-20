@@ -65,7 +65,7 @@ BOOL updateSetDataSet(HWND hwnd,RedisReply reply){
 		char * encoded_data = encode(reply->bulks[index]->bulk->content,
 				reply->bulks[index]->bulk->length);
 
-        lvI.pszText = encoded_data;//reply->bulks[index]->bulk->content;
+        lvI.pszText = encoded_data;
         lvI.iSubItem = 1;
         SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
 
