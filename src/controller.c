@@ -17,6 +17,8 @@ void update_transfer_progress(int done,int total){
 }
 
 void handle_redis_data(TreeNode * datanode,RedisReply reply){
+	// TODO handle wrong response
+	// TODO release memory for the view
 	SendMessage(App->view->dataviewHwnd,WM_DT,(WPARAM)reply,(LPARAM)(datanode));
 }
 

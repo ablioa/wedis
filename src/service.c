@@ -143,46 +143,54 @@ void s_db_data_type(TreeNode * selected){
                 selected->data->key_length));
 
     RedisReply reply = redis_serialize_params(selected->stream,param);
-
-//    if(reply->type == REPLY_STATUS && strcmp(reply->bulk->content,"none")==0){
-//        MessageBox(NULL,"data does not exist","title",MB_OK);
-//        return;
-//    }
+	if(reply->bulk->content == NULL || strcmp(reply->bulk->content,"none")==0){
+		// TODO refresh the data list
+		MessageBox(NULL,"data does not exsist any more.","title",MB_OK);
+	    return;
+	}
 
     selected->data->data_type = checkDataType(reply->bulk->content);
     strcpy(selected->data->type_name,reply->bulk->content);
     s_handle_data(selected,selected->data->data_type);
 }
 
+/**
+ * fetch corresponding type of data
+ */ 
 void s_handle_data(TreeNode * datanode,DataType dataType){
     RedisReply reply = NULL;
 	switch (dataType){
 		case REDIS_STRING:{
 			reply = s_db_fetch_string(datanode);
+			// TODO handle removed data
             datanode->data->quantity = reply->bulk->length;
 			break;
 		}
 
 		case REDIS_HASH:{
 			reply = s_db_fetch_hash(datanode);
+			// TODO handle removed data
             datanode->data->quantity = reply->array_length/2;
 			break;
 		}
 
 		case REDIS_LIST:{
 			reply = s_db_fetch_list(datanode);
+			// TODO handle removed data
             datanode->data->quantity = reply->array_length;
 			break;
 		}
 
 		case REDIS_SET:{
 			reply = s_db_fetch_set(datanode);
+			// TODO handle removed data
             datanode->data->quantity = reply->array_length;
 			break;
 		}
 
 		case REDIS_ZSET:{
 			reply = s_db_fetch_zset(datanode);
+			// TODO handle removed data
             datanode->data->quantity = reply->array_length/2;
 			break;
 		}
