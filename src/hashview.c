@@ -61,11 +61,16 @@ BOOL updateHashDataSet(HWND hwnd,RedisReply reply){
         lvI.pszText = indexBuff; 
         ListView_InsertItem(hwnd, &lvI);
 
-        lvI.pszText = reply->bulks[index*2]->bulk->content;
+		RedisBulk bulk = reply->bulks[index*2]->bulk;
+
+		char * encoded_text = encode(bulk->content,bulk->length);
+        lvI.pszText = encoded_text;
         lvI.iSubItem = 1;
         SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
 
-        lvI.pszText = reply->bulks[index*2+1]->bulk->content;
+		bulk = reply->bulks[index*2+1]->bulk;
+		encoded_text = encode(bulk->content,bulk->length);
+        lvI.pszText = encoded_text;//reply->bulks[index*2+1]->bulk->content;
         lvI.iSubItem = 2;
         SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
     }

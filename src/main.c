@@ -562,7 +562,6 @@ int is_binary_data(char * stream,size_t length){
     return 0;
 }
 
-
 char * encode(char * chunk,int length){
 	char * buff = (char*)calloc(1,length*4);
 	char * cur  = buff;
