@@ -50,7 +50,7 @@ void onExit(){
 
 VOID CALLBACK heart_beat_timer(HWND hwnd,UINT message,UINT_PTR timer,DWORD dwTime){
     TreeNode * host = (TreeNode *) timer;
-    s_db_ping(host);
+//    s_db_ping(host);
 }
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cmdShow){
@@ -550,5 +550,15 @@ HWND buildGeneralToolBar(HWND parent,TBBUTTON * tbtn,int buttonCount){
 
     ShowWindow(tb,  TRUE);
     return tb;
+}
+
+int is_binary_data(char * stream,size_t length){
+    for(size_t ix = 0;ix < length; ix ++){
+        if(stream[ix] == 0){
+            return 1;
+        }
+    }
+
+    return 0;
 }
 

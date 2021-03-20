@@ -107,6 +107,8 @@ void getAttributeRect(AppView * view,RECT * rt,RECT * rect);
 
 void showWindows(AppView * view);
 
+int is_binary_data(char * stream,size_t length);
+
 HWND buildGeneralToolBar(HWND parent,TBBUTTON * tbtn,int buttonCount);
 
 #endif

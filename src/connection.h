@@ -10,7 +10,7 @@ void ginit();
 
 RedisConnection init(char * address,int port);
 
-void sendmsg(RedisConnection stream,char * message);
+void sendmsg(RedisConnection stream,char * message,int length);
 
 void close(RedisConnection stream);
 

@@ -36,16 +36,6 @@ int get_next_hex_width(StringViewModel * model){
     return model->hex_width;
 }
 
-int is_binary_data(char * stream,size_t length){
-    for(size_t ix = 0;ix < length; ix ++){
-        if(stream[ix] == 0){
-            return 1;
-        }
-    }
-
-    return 0;
-}
-
 LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
     RECT rect;
     StringViewModel * model = (StringViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);

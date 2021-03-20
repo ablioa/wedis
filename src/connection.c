@@ -39,8 +39,8 @@ connect:
 	return stream;
 }
 
-void sendmsg(RedisConnection stream,char * message){
-    send(stream->socket, message, strlen(message), 0);
+void sendmsg(RedisConnection stream,char * message,int length){
+    send(stream->socket, message, length, 0);
 }
 
 void close(RedisConnection stream){

@@ -42,6 +42,7 @@ RedisReply redis_serialize_params(RedisConnection stream,RedisParams params);
  * 2^32最大10位+2+2+1 = 15
  **/
 RedisParam redis_build_param(const char * content);
+RedisParam redis_build_real_param(const char * content,int length);
 
 void appendTask(CommandType cmdType,const DataType dataType,const char * dataKey);
 

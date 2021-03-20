@@ -9,14 +9,16 @@ RedisReply redis_serialize_params(RedisConnection stream,RedisParams params){
     char head[128] = {0};
 
     sprintf(head,"*%d\r\n",params->param_count);
-    sendmsg(stream,head);
+    sendmsg(stream,head,strlen(head));
 
     wedis_log(head);
 
     //fwrite(head,strlen(head),1,log_file);
 
     for(int ix = 0; ix < params->param_count; ix ++){
-        sendmsg(stream,params->items[ix]->diagram);
+        char * message = params->items[ix]->diagram;
+        int length = params->items[ix]->s_length;
+        sendmsg(stream,message,length);
         wedis_log(params->items[ix]->diagram);
     }
 
@@ -137,9 +139,15 @@ void s_db_get_data(TreeNode * dbnode,int cursor,char * pattern,int count){
 void s_db_data_type(TreeNode * selected){
     RedisParams param = redis_build_params(2);
     redis_add_param(param,redis_build_param("type"));
-    redis_add_param(param,redis_build_param(selected->data->data_key));
+    redis_add_param(param,redis_build_real_param(selected->data->data_key,
+                selected->data->key_length));
 
     RedisReply reply = redis_serialize_params(selected->stream,param);
+
+//    if(reply->type == REPLY_STATUS && strcmp(reply->bulk->content,"none")==0){
+//        MessageBox(NULL,"data does not exist","title",MB_OK);
+//        return;
+//    }
 
     selected->data->data_type = checkDataType(reply->bulk->content);
     strcpy(selected->data->type_name,reply->bulk->content);
@@ -180,6 +188,7 @@ void s_handle_data(TreeNode * datanode,DataType dataType){
 		}
 
 		default:{
+            printf("hello\n");
 			break;
 		}
 	}
@@ -203,7 +212,10 @@ RedisReply s_db_ping(TreeNode * hostnode){
 RedisReply s_db_fetch_string(TreeNode * datanode){
     RedisParams params = redis_build_params(2);
     redis_add_param(params,redis_build_param("get"));
-    redis_add_param(params,redis_build_param(datanode->data->data_key));
+
+    RedisParam p = redis_build_real_param(datanode->data->data_key,
+			datanode->data->key_length);
+    redis_add_param(params,p);
 
     return redis_serialize_params(datanode->stream,params);
 }
@@ -302,6 +314,34 @@ RedisParam redis_build_param(const char * content){
 
     param->s_length = strlen(param->diagram);
      
+    return param;
+}
+
+RedisParam redis_build_real_param(const char * content,int length){
+    RedisParam param = (RedisParam) calloc(1,sizeof(struct redis_param));
+
+    param->content = content;
+    param->length  = length;//strlen(content);
+
+    char szbuff[20] = {0};
+    sprintf(szbuff,"%d",length);
+    int nsize = strlen(szbuff);
+
+    // total length = sizelength + contentlength + 5(%\r\n\r\n);
+    param->s_length = param->length + nsize + 5;
+    param->diagram = (char*)calloc(param->s_length,sizeof(char));
+
+    //sprintf(param->diagram,"$%d\r\n%s\r\n",
+    //    param->length,
+    //    param->content);
+
+    sprintf(param->diagram,"$%s\r\n",szbuff);
+    int offset = strlen(param->diagram);
+    memcpy(param->diagram+offset,content,length);
+    memcpy(param->diagram+offset+length,"\r\n",2);
+
+    //param->s_length = offset//strlen(param->diagram);
+
     return param;
 }
 

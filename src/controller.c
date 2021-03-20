@@ -40,6 +40,21 @@ TreeNode * add_host_node(const char * host_name){
 	return hostNode;
 }
 
+char * encode(char * chunk,int length){
+	char * buff = (char*)calloc(1,length*4);
+	char * cur  = buff;
+	for(int ix = 0; ix < length; ix ++){
+		if(isprint(chunk[ix])){
+			sprintf(cur,"%c",chunk[ix]);
+			cur++;
+		}else{
+			sprintf(cur,"\\x%02x",chunk[ix]);
+			cur+=4;
+		}
+	}
+
+	return buff;
+}
 void add_data_node(TreeNode * dbnode,RedisReply data){
     for(int ix =0; ix < dbnode->subHandleSize; ix ++){
         TreeView_DeleteItem(App->view->overviewHwnd,dbnode->subHandles[ix]);
@@ -56,23 +71,33 @@ void add_data_node(TreeNode * dbnode,RedisReply data){
 	for(int ix = 0; ix < total; ix ++){
 		RedisReply item = keydata->bulks[ix];
 
+        item->bulk->content = item->bulk->content;
+        item->bulk->length  = item->bulk->length;
+
         TreeNode * datanode = build_tree_node(dbnode,NODE_LEVEL_DATA);
-		datanode->data->data_key = item->bulk->content;
+		datanode->data->data_key   = item->bulk->content;
+        datanode->data->key_length = item->bulk->length;
 		datanode->stream = dbnode->stream;
 
+		char * encoded_key=encode(item->bulk->content,
+				item->bulk->length);
+
         TV_INSERTSTRUCT tvinsert;
-        tvinsert.hParent = dbnode->handle;
-        tvinsert.hInsertAfter=TVI_LAST;
-        tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
-		tvinsert.item.cchTextMax = item->bulk->length;
-        tvinsert.item.pszText    = item->bulk->content;
+        tvinsert.hParent             = dbnode->handle;
+        tvinsert.hInsertAfter        = TVI_LAST;
+        tvinsert.item.mask           = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
+		tvinsert.item.cchTextMax     = strlen(encoded_key);
+        tvinsert.item.pszText        = encoded_key;
         tvinsert.item.iImage         = TREE_DATA_NODE;
         tvinsert.item.iSelectedImage = TREE_DATA_NODE;
-        tvinsert.item.lParam= (LPARAM)datanode;
+        tvinsert.item.lParam         = (LPARAM)datanode;
+
 		datanode->handle = (HTREEITEM)SendMessage(App->view->overviewHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 
         dbnode->subHandleSize ++;
         dbnode->subHandles[ix] = datanode->handle;
+
+		free(encoded_key);
 	}
 
 	TreeView_Expand(App->view->overviewHwnd,dbnode->handle,TVE_EXPAND);

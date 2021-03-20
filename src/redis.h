@@ -100,7 +100,7 @@ typedef struct redis_database_node{
 
 typedef struct redis_data_node{
 	char * data_key;
-	char * key_length;
+	int key_length;
 	
 	DataType data_type;
 	char     type_name[255];
