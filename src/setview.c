@@ -26,15 +26,11 @@ BOOL InitSetViewColumns(HWND hWndListView) {
 }
 
 HWND buildSetToolBar(HWND parent){
-    HINSTANCE hInst = App->hInstance;
-    DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
-
     int buttonCount = 2;
     TBBUTTON tbtn[2] = {
         {(TB_DELETE_BUTTON), 7777, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(TB_MOVE_BUTTON), 7778, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
-
     return buildGeneralToolBar(parent,tbtn,buttonCount);;
 }
 

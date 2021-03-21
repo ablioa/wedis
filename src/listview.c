@@ -25,9 +25,6 @@ BOOL InitListDViewColumns(HWND hWndListView) {
 }
 
 HWND buildListToolBar(HWND parent){
-    HINSTANCE hInst = App->hInstance;
-    DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
-
     int buttonCount = 3;
     TBBUTTON tbtn[3] = {
         {(TB_DELETE_BUTTON), LIST_DELETE_CMD, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},

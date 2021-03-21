@@ -23,9 +23,6 @@ BOOL InitSetViewColumns1(HWND hWndListView) {
 }
 
 HWND buildStatToolBar(HWND parent){
-	HINSTANCE hInst = App->hInstance;
-	DWORD tstyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT;
-
     int buttonCount = 11;
 	TBBUTTON tbtn[11] = {
         {(0), 7777, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},

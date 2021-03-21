@@ -5,8 +5,6 @@
 void buildConnectionTree(HWND hwnd){
     HostModel model = (HostModel)GetWindowLongPtr(hwnd,GWLP_USERDATA);
 	RECT            rt;
-
-	HINSTANCE hinst = App->hInstance;
 	GetWindowRect(hwnd,&rt);
 
     model->hostTree = GetDlgItem(hwnd,IDC_CONNECTION_TREE);

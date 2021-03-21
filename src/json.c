@@ -660,7 +660,8 @@ static char *print_object(Json *item,int depth,int fmt){
         *ptr++=':';if (fmt) *ptr++='\t';
         strcpy(ptr,entries[i]);ptr+=strlen(entries[i]);
         if (i!=numentries-1) *ptr++=',';
-        if (fmt) *ptr++='\n';*ptr=0;
+        if (fmt) {*ptr++='\n';}
+		*ptr=0;
         json_free(names[i]);json_free(entries[i]);
     }
 
@@ -904,7 +905,9 @@ Json *json_create_double_array(const double *numbers,int count){
         if(!i)
             a->child=n;
         else
-            suffix_object(p,n);p=n;
+            suffix_object(p,n);
+
+		p=n;
     }
     return a;
 }

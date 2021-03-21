@@ -110,6 +110,9 @@ void s_db_select(TreeNode * dbnode){
     App->activeHost = dbnode->parent;
 }
 
+/**
+ * search database
+ **/;
 void s_db_get_data(TreeNode * dbnode,int cursor,char * pattern,int count){
 	char cursor_buff[255] = {0};
 	char pattern_buff[255] = {0};

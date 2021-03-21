@@ -1,6 +1,7 @@
 #ifndef setview_h
 #define setview_h
 
+#include "main.h"
 #include "wedis.h"
 #include "resource/resource.h"
 #define SET_VIEW_CLASS "SET_VIEW_CLASS"
