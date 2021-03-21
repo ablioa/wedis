@@ -25,10 +25,11 @@ BOOL InitListDViewColumns(HWND hWndListView) {
 }
 
 HWND buildListToolBar(HWND parent){
-    int buttonCount = 3;
-    TBBUTTON tbtn[3] = {
-        {(TB_DELETE_BUTTON), LIST_DELETE_CMD, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+    int buttonCount = 4;
+    TBBUTTON tbtn[4] = {
+        {(TB_REFRESH_BUTTON), LIST_REFRESH_CMD, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(TB_MOVE_BUTTON), LIST_MOVE_CMD, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TB_DELETE_BUTTON), LIST_DELETE_CMD, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(TB_EXPORT_BUTTON), LIST_EXPORT_CMD, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
@@ -128,6 +129,12 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                 case LIST_DELETE_CMD:{
                     char * data_key = model->dataNode->data->data_key;
                     s_db_delete_key(model->dataNode,data_key);
+                    break;
+                }
+
+                case LIST_REFRESH_CMD:{
+                    TreeNode * node = model->dataNode;
+                    s_handle_data(node,node->data->data_type);
                     break;
                 }
 

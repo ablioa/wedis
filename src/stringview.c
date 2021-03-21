@@ -108,7 +108,6 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                 case IDB_REFRESH_STRING:{
                     TreeNode * node = model->dataNode;
                     s_handle_data(node,node->data->data_type);
-                    //MessageBox(hwnd,"refreshing the data right now!","title",MB_OK);
                     break;
                 }
                 /** delete data item */
