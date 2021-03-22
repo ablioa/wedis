@@ -9,56 +9,51 @@ typedef struct {
 } ITEMINFO;
 
 ITEMINFO IInf[] = {
-    { 0, 0,  0, "Json"}, 
-    { 0, 0,  0, "Binary"},
-    { 0, 0,  0, "Text"} 
+    { 1, 4,  0, "Json"}, 
+    { 2, 5,  0, "Binary"},
+    { 3, 6,  0, "Text"} 
 };
 
-void initDataTypeSelector(HWND viewTypeHwnd){
-    INITCOMMONCONTROLSEX icex;
-    icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
-    icex.dwICC = ICC_USEREX_CLASSES;
-    InitCommonControlsEx(&icex);
+void AddItems(HWND hWndComboBox){
+	TCHAR Planets[5][10] =  
+	{
+		TEXT("string"), 
+		TEXT("list"), 
+		TEXT("hash"), 
+		TEXT("set"), 
+		TEXT("zset"), 
+	};
+		   
+	TCHAR A[16]; 
+	int  k = 0; 
 
-    COMBOBOXEXITEM cbei;
-    int iCnt;
-
-    // Set the mask common to all items.
-    cbei.mask = CBEIF_TEXT | CBEIF_INDENT |
-                CBEIF_IMAGE| CBEIF_SELECTEDIMAGE;
-
-    for(iCnt=0; iCnt<3; iCnt++){
-        char * buff = (char*)calloc(1,255);
-        strcpy(buff,IInf[iCnt].pszText);
-
-        cbei.iItem          = iCnt;
-        cbei.pszText        = buff;
-        cbei.cchTextMax     = sizeof(IInf[iCnt].pszText);
-        cbei.iImage         = IInf[iCnt].iImage;
-        cbei.iSelectedImage = IInf[iCnt].iSelectedImage;
-        cbei.iIndent        = IInf[iCnt].iIndent;
-        
-        SendMessage(viewTypeHwnd,CBEM_INSERTITEM,0,(LPARAM)&cbei);
-    }
-
-    HIMAGELIST hImageList=ImageList_Create(14,14,ILC_COLOR|ILC_MASK,2,10);
-    HBITMAP hBitmap = LoadBitmap(App->hInstance,MAKEINTRESOURCE(IDB_CHIP)); //
-
-    ImageList_Add(hImageList,hBitmap,NULL);
-
-    SendMessage(viewTypeHwnd,CBEM_SETIMAGELIST,0,(LPARAM)hImageList);
+	memset(&A,0,sizeof(A));       
+	for (k = 0; k <= 4; k += 1){
+		wcscpy_s(A, sizeof(A)/sizeof(TCHAR),  (TCHAR*)Planets[k]);
+		SendMessage(hWndComboBox,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM) A); 
+	}
+	  
+	SendMessage(hWndComboBox, CB_SETCURSEL, (WPARAM)0, (LPARAM)0);
 }
 
 
 BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
     switch(msg){
+		case WM_CREATE:{
+			MessageBox(hwnd,"hwnd created,,,","title",MB_OK);
+			break;
+		}
+
         case WM_INITDIALOG:{
+			HWND chwnd = GetDlgItem(hwnd,IDC_DATATYPE);
+            //initDataTypeSelector(chwnd);
+			AddItems(chwnd);
             MoveToScreenCenter(hwnd);
             break;
         }
 
         case WM_COMMAND:{
-            switch(wParam){
+            switch(LOWORD(wParam)){
                 case IDOK:{
                     EndDialog(hwnd,0);
                     break;
@@ -68,6 +63,17 @@ BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
                     EndDialog(hwnd,0);
                     break;
                 }
+
+				case IDC_DATATYPE:{ 
+					if(HIWORD(wParam) == CBN_SELCHANGE){
+						HWND chwnd = GetDlgItem(hwnd,IDC_DATATYPE);
+						int ix = SendMessage(chwnd,CB_GETCURSEL,0,0);
+						char buff[255] = {0};
+						sprintf(buff,"select: %d",ix);
+						SetWindowText(hwnd,buff);
+					}
+					break;
+				}
             }
             break;
         }
