@@ -26,8 +26,8 @@ BOOL InitSetViewColumns(HWND hWndListView) {
 }
 
 HWND buildSetToolBar(HWND parent){
-    int buttonCount = 2;
-    TBBUTTON tbtn[2] = {
+    int buttonCount = 3;
+    TBBUTTON tbtn[3] = {
         {(TB_REFRESH_BUTTON), 8888, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(TB_DELETE_BUTTON), 7777, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(TB_MOVE_BUTTON), 7778, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}

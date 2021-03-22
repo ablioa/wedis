@@ -10,7 +10,7 @@ extern int MAX_DONE;
 void update_transfer_progress(int done,int total);
 
 /** add host node to nav tree */
-TreeNode * add_host_node(const char * host_name);
+TreeNode * add_host_node(char * host_name);
 
 void add_database_node(TreeNode * dbnode,int dbCount);
 

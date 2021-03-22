@@ -22,7 +22,6 @@
 #include "callbacks.h"
 #include "resource/resource.h"
 #include "config.h"
-#include "dispatch.h"
 #include "entry.h"
 #include "split.h"
 
