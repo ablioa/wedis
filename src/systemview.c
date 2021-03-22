@@ -25,8 +25,8 @@ BOOL InitSetViewColumns1(HWND hWndListView) {
 HWND buildStatToolBar(HWND parent){
     int buttonCount = 11;
 	TBBUTTON tbtn[11] = {
-        {(0), 7777, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(0), 9999, TBSTATE_ENABLED, TBSTYLE_SEP, {0}, 0, 0},
+        {(TB_DELETE_BUTTON), TB_CMD_FLUSH_DB, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(0), 0, TBSTATE_ENABLED, TBSTYLE_SEP, {0}, 0, 0},
         {(1), IDM_STAT_SERVER, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(2), IDM_STAT_CLIENT, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(3), IDM_STAT_MEMORY, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
@@ -92,7 +92,7 @@ LRESULT CALLBACK SystemViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 
         case WM_COMMAND:{
 			int cmd = LOWORD(wParam);
-			if(cmd == 7777){
+			if(cmd == TB_CMD_FLUSH_DB){
 			    int result = MessageBox(hwnd,"flushall will remove all data in all databases,continue?","wedis",MB_YESNOCANCEL|MB_ICONASTERISK);
 				if(result == IDYES){
 					MessageBox(hwnd,"YES","title",MB_OK);

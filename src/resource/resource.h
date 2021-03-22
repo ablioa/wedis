@@ -70,9 +70,17 @@
 #define IDE3 50003
 
 #define IDC_DATATYPE            1017
-
 #define IDC_DB_SEARCH_CANCEL 40012
 #define IDC_DB_SEARCH_OK     40013
+
+/** common toolbar command */
+#define TB_CMD_REFRESH_DATA 4000
+#define TB_CMD_DELETE_DATA  4001
+#define TB_CMD_MOVE_DATA    4002
+#define TB_CMD_EXPORT_DATA  4003
+#define TB_CMD_FORMAT_DATA  4004
+#define TB_CMD_WIDEN_DATA   4005
+#define TB_CMD_FLUSH_DB     4006
 
 /** total image list icons */
 #define TOTAL_ICON_COUNT 21

@@ -1,12 +1,5 @@
 #include "stringview.h"
 
-#define IDB_FORMAT_STRING   5000
-#define IDB_EXPORT_STRING   5001
-#define IDB_DELELE_STRING   5002
-#define IDB_MOVE_STRING     5003
-#define IDB_WIDEN_STRING    5004
-#define IDB_REFRESH_STRING  5005
-
 #define MIN_HEX_WIDTH     16
 #define HEX_WIDTH_STEP    8
 #define MAX_HEX_WIDTH     48
@@ -14,13 +7,13 @@
 HWND buildStringToolBar(HWND parent){
     int buttonCount = 7;
     TBBUTTON tbtn[7] = {
-        {(TB_REFRESH_BUTTON), IDB_REFRESH_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(TB_MOVE_BUTTON), IDB_MOVE_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(TB_DELETE_BUTTON), IDB_DELELE_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TB_REFRESH_BUTTON), TB_CMD_REFRESH_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TB_MOVE_BUTTON), TB_CMD_MOVE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TB_DELETE_BUTTON), TB_CMD_MOVE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(0), 0, TBSTATE_ENABLED, TBSTYLE_SEP, {0}, 0, 0},
-        {(TB_EXPORT_BUTTON), IDB_EXPORT_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(TB_FORMAT_BUTTON), IDB_FORMAT_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(TB_WIDEN_BUTTON),  IDB_WIDEN_STRING, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+        {(TB_EXPORT_BUTTON), TB_CMD_EXPORT_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TB_FORMAT_BUTTON), TB_CMD_FORMAT_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TB_WIDEN_BUTTON),  TB_CMD_WIDEN_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
     return buildGeneralToolBar(parent,tbtn,buttonCount);;
@@ -67,7 +60,7 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                 }
 
                 /** export data */
-                case IDB_EXPORT_STRING:{
+                case TB_CMD_EXPORT_DATA:{
                     LPTSTR fileName = mGetSaveFileName(hwnd);
                     if(fileName == NULL){
                         break;
@@ -79,7 +72,7 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                     break;
                 }
 
-                case IDB_WIDEN_STRING:{
+                case TB_CMD_WIDEN_DATA:{
                     if(model->mode == BINARY){
                         get_next_hex_width(model);
                         char * content = model->data->bulk->content;
@@ -91,7 +84,7 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                 }
 
                 /** display data in hex dump format*/
-                case IDB_FORMAT_STRING:{
+                case TB_CMD_FORMAT_DATA:{
                     char * content = model->data->bulk->content;
                     if(model->mode == TEXT){
                         model->mode = BINARY;
@@ -105,20 +98,21 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                     break;
                 }
 
-                case IDB_REFRESH_STRING:{
+                case TB_CMD_REFRESH_DATA:{
                     TreeNode * node = model->dataNode;
                     s_handle_data(node,node->data->data_type);
                     break;
                 }
+
                 /** delete data item */
-                case IDB_DELELE_STRING:{
+                case TB_CMD_DELETE_DATA:{
                     char * data_key = model->dataNode->data->data_key;
                     s_db_delete_key(model->dataNode,data_key);
                     break;
                 }
 
                 /** trigger move data menu */
-                case IDB_MOVE_STRING:{
+                case TB_CMD_MOVE_DATA:{
                     POINT pt;
                     GetCursorPos(&pt);
                     TrackPopupMenu(model->dataNode->parent->database->db_menu,TPM_LEFTALIGN,pt.x,pt.y,0,hwnd,NULL);

@@ -27,10 +27,10 @@ BOOL InitListDViewColumns(HWND hWndListView) {
 HWND buildListToolBar(HWND parent){
     int buttonCount = 4;
     TBBUTTON tbtn[4] = {
-        {(TB_REFRESH_BUTTON), LIST_REFRESH_CMD, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(TB_MOVE_BUTTON), LIST_MOVE_CMD, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(TB_DELETE_BUTTON), LIST_DELETE_CMD, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(TB_EXPORT_BUTTON), LIST_EXPORT_CMD, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+        {(TB_REFRESH_BUTTON), TB_CMD_REFRESH_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TB_MOVE_BUTTON), TB_CMD_MOVE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TB_DELETE_BUTTON), TB_CMD_DELETE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TB_EXPORT_BUTTON), TB_CMD_EXPORT_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
     return buildGeneralToolBar(parent,tbtn,buttonCount);
@@ -121,24 +121,24 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                     break;
                 }
 
-                case LIST_MOVE_CMD:{
+                case TB_CMD_MOVE_DATA:{
                     MessageBox(hwnd,"moving data noe!!","title",MB_OK);
                     break;
                 }
 
-                case LIST_DELETE_CMD:{
+                case TB_CMD_DELETE_DATA:{
                     char * data_key = model->dataNode->data->data_key;
                     s_db_delete_key(model->dataNode,data_key);
                     break;
                 }
 
-                case LIST_REFRESH_CMD:{
+                case TB_CMD_REFRESH_DATA:{
                     TreeNode * node = model->dataNode;
                     s_handle_data(node,node->data->data_type);
                     break;
                 }
 
-                case LIST_EXPORT_CMD:{
+                case TB_CMD_EXPORT_DATA:{
                     char * filename = mGetSaveFileName(hwnd);
                     if(filename == NULL){
                         break;

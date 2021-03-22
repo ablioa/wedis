@@ -29,9 +29,9 @@ BOOL InitHashViewColumns(HWND hWndListView) {
 HWND buildHashToolBar(HWND parent){
     int buttonCount = 3;
     TBBUTTON tbtn[3] = {
-        {(TB_REFRESH_BUTTON), 8888, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(TB_DELETE_BUTTON), 7777, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(TB_MOVE_BUTTON), 7777, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+        {(TB_REFRESH_BUTTON), TB_CMD_REFRESH_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TB_DELETE_BUTTON), TB_CMD_DELETE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TB_MOVE_BUTTON), TB_CMD_MOVE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
     return buildGeneralToolBar(parent,tbtn,buttonCount);
@@ -119,7 +119,17 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
         case WM_COMMAND:{
             switch(LOWORD(wParam)){
-                case 7777:{
+                case TB_CMD_MOVE_DATA:{
+                    MessageBox(hwnd,"move hash data right now.","title",MB_OK);
+                    break;
+                }
+
+                case TB_CMD_REFRESH_DATA:{
+                    MessageBox(hwnd,"move refresh data right now.","title",MB_OK);
+                    break;
+                }
+
+                case TB_CMD_DELETE_DATA:{
                     char * data_key = model->dataNode->data->data_key;
                     s_db_delete_key(model->dataNode,data_key);
                     break;

@@ -27,9 +27,9 @@ BOOL InitZsetViewColumns(HWND hWndListView) {
 HWND buildZsetToolBar(HWND parent){
     int buttonCount = 3;
     TBBUTTON tbtn[3] = {
-        {(TB_REFRESH_BUTTON), 7777, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(TB_MOVE_BUTTON), ZSET_DELETE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(TB_DELETE_BUTTON), ZSET_DELETE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TB_REFRESH_BUTTON), TB_CMD_REFRESH_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TB_MOVE_BUTTON), TB_CMD_MOVE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TB_DELETE_BUTTON), TB_CMD_DELETE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
     };
 
     return buildGeneralToolBar(parent,tbtn,buttonCount);
@@ -60,7 +60,7 @@ LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
         case WM_COMMAND:{
             switch(LOWORD(wParam)){
-                case ZSET_DELETE_DATA:{
+                case TB_CMD_DELETE_DATA:{
                     char * data_key = model->dataNode->data->data_key;
                     s_db_delete_key(model->dataNode,data_key);
                     break;
