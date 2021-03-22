@@ -81,9 +81,10 @@
 #define TB_CMD_FORMAT_DATA  4004
 #define TB_CMD_WIDEN_DATA   4005
 #define TB_CMD_FLUSH_DB     4006
+#define TB_CMD_ADD_DATA     4007
 
 /** total image list icons */
-#define TOTAL_ICON_COUNT 21
+#define TOTAL_ICON_COUNT 22
 
 /** defines toolbar button id */
 #define TB_DELETE_BUTTON 0
@@ -99,3 +100,4 @@
 #define TREE_FOLDER_NODE     18
 #define TB_WIDEN_BUTTON      19
 #define TB_REFRESH_BUTTON    20
+#define TB_ADD_BUTTON        21

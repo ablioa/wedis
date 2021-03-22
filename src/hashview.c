@@ -26,7 +26,7 @@ BOOL InitHashViewColumns(HWND hWndListView) {
     return TRUE;
 }
 
-HWND buildHashToolBar(HWND parent){
+static HWND build_toolbar(HWND parent){
     int buttonCount = 3;
     TBBUTTON tbtn[3] = {
         {(TB_REFRESH_BUTTON), TB_CMD_REFRESH_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
@@ -71,7 +71,7 @@ BOOL updateHashDataSet(HWND hwnd,RedisReply reply){
 
 		bulk = reply->bulks[index*2+1]->bulk;
 		encoded_text = encode(bulk->content,bulk->length);
-        lvI.pszText = encoded_text;//reply->bulks[index*2+1]->bulk->content;
+        lvI.pszText = encoded_text;
         lvI.iSubItem = 2;
         SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
     }
@@ -96,7 +96,7 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
             ListView_SetExtendedListViewStyle(model->hashView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
             InitHashViewColumns(model->hashView);
 
-            model->toolBar = buildHashToolBar(hwnd);
+            model->toolbar = build_toolbar(hwnd);
             break;
         }
 
@@ -140,7 +140,7 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
         }
         case WM_SIZE:{
             GetClientRect(hwnd,&rect);
-            MoveWindow(model->toolBar,0,0,rect.right-rect.left,28,TRUE);
+            MoveWindow(model->toolbar,0,0,rect.right-rect.left,28,TRUE);
             MoveWindow(model->hashView,0,28,rect.right-rect.left,rect.bottom-rect.top-28,TRUE);
             break;
         }

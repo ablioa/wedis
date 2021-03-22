@@ -19,8 +19,21 @@ void init_database_view(HINSTANCE hInstance){
     RegisterClassEx(&hashViewClass);
 }
 
+static HWND buildDatabaseToolBar(HWND parent){
+    int buttonCount = 2;
+    TBBUTTON tbtn[2] = {
+        {(TB_DELETE_BUTTON), TB_CMD_DELETE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TB_ADD_BUTTON), TB_CMD_ADD_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+    };
+    return buildGeneralToolBar(parent,tbtn,buttonCount);
+}
+
 BOOL CALLBACK enumChildProc(HWND hwnd,LPARAM lParam){
     SendMessage(hwnd, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
+    // Edit|Button|ComboBox etc.
+    //char buff[250]={0};
+    //GetClassName(hwnd,buff,250);
+
     return TRUE;
 }
 
@@ -77,7 +90,7 @@ LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
         case WM_CREATE:{
             model = (DatabaseViewModel*)calloc(1,sizeof(DatabaseViewModel));
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
-            model->toolBar = buildDatabaseToolBar(hwnd);
+            model->toolbar = buildDatabaseToolBar(hwnd);
 
             create_database_view(hwnd,model);
             break;
@@ -109,13 +122,18 @@ LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
                     break;
                 }
 
-                case 1:{
+                case TB_CMD_DELETE_DATA:{
                     int result = MessageBox(hwnd,"flushdb will remove all data in the database,continue?","wedis",MB_YESNOCANCEL|MB_ICONASTERISK);
                     if(result == IDYES){
                         TreeNode * node = model->databaseNode;
                         s_db_flushdb(node);
                         search_database(hwnd,model);
                     }
+                    break;
+                }
+
+                case TB_CMD_ADD_DATA:{
+                    DialogBox (App->hInstance,MAKEINTRESOURCE (IDD_ADD_ENTRY),hwnd,(DLGPROC)entryDlgProc);
                     break;
                 }
             }
@@ -140,7 +158,7 @@ LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
 
         case WM_SIZE:{
             GetClientRect(hwnd,&rect);
-            MoveWindow(model->toolBar,0,0,rect.right-rect.left,28,TRUE);
+            MoveWindow(model->toolbar,0,0,rect.right-rect.left,28,TRUE);
             break;
         }
     }
@@ -148,11 +166,3 @@ LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
     return DefWindowProc (hwnd, message, wParam, lParam);
 }
 
-HWND buildDatabaseToolBar(HWND parent){
-    int buttonCount = 1;
-    TBBUTTON tbtn[1] = {
-        {(TB_DELETE_BUTTON), 1, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
-    };
-
-    return buildGeneralToolBar(parent,tbtn,buttonCount);
-}

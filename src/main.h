@@ -38,7 +38,6 @@
 
 #define IDM_TIMING              1000
 #define IDM_SYSTEM_STAT         1001
-#define IDM_ADD                 1002
 #define IDM_DEBUG_GET_DATABASES 1003
 #define IDM_RELOAD              1004
 #define IDM_RENAME              1005

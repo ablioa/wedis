@@ -25,7 +25,7 @@ BOOL InitSetViewColumns(HWND hWndListView) {
     return TRUE;
 }
 
-HWND buildSetToolBar(HWND parent){
+static HWND build_toolbar(HWND parent){
     int buttonCount = 3;
     TBBUTTON tbtn[3] = {
         {(TB_REFRESH_BUTTON), TB_CMD_REFRESH_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
@@ -94,7 +94,7 @@ LRESULT CALLBACK SetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
             ListView_SetExtendedListViewStyle(model->setView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
             InitSetViewColumns(model->setView);
 
-            model->toolBar = buildSetToolBar(hwnd);
+            model->toolBar = build_toolbar(hwnd);
             break;
         }
 

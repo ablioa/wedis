@@ -4,7 +4,7 @@
 #define HEX_WIDTH_STEP    8
 #define MAX_HEX_WIDTH     48
 
-HWND buildStringToolBar(HWND parent){
+static HWND build_toolbar(HWND parent){
     int buttonCount = 7;
     TBBUTTON tbtn[7] = {
         {(TB_REFRESH_BUTTON), TB_CMD_REFRESH_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
@@ -42,7 +42,10 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
             model->stringView = CreateWindowEx(0, WC_EDIT, (""), 
                     WS_VISIBLE | ES_AUTOVSCROLL | WS_BORDER | WS_CHILD | WS_TABSTOP | WS_VSCROLL |ES_MULTILINE, 
                     0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_TEXT, App->hInstance, 0);
-            model->toolBar = buildStringToolBar(hwnd);
+			model->propertyView   = CreateWindowEx(0, STRING_VIEW_PROP_CLASS,NULL, 
+					(WS_VISIBLE) | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 
+					0,0,0,0,hwnd, (HMENU)0, App->hInstance, 0);
+            model->toolBar = build_toolbar(hwnd);
             model->mode = TEXT;
             model->hex_width=16;
 
@@ -153,7 +156,40 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
         case WM_SIZE:{
             GetClientRect(hwnd,&rect);
             MoveWindow(model->toolBar,0,0,rect.right-rect.left,28,TRUE);
-            MoveWindow(model->stringView,0,28,rect.right-rect.left,rect.bottom-rect.top-28,TRUE);
+            MoveWindow(model->stringView,0,28,rect.right-rect.left,rect.bottom-rect.top-28-200,TRUE);
+            MoveWindow(model->propertyView,0,rect.bottom-rect.top-200,rect.right-rect.left,200,TRUE);
+            break;
+        }
+    }
+
+    return DefWindowProc (hwnd, message, wParam, lParam);
+}
+
+LRESULT CALLBACK stringViewPropWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
+    switch(message){
+        case WM_CREATE:{
+            HINSTANCE hinst = App->hInstance;
+            CreateWindowEx(0, WC_EDIT, ("0"), 
+                    WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
+                    5, 5, 80, 20, hwnd, (HMENU)DB_CTRL_CURSOR, hinst, 0); 
+            
+            CreateWindowEx(0, WC_EDIT, ("*"), 
+                    WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
+                    90, 5, 80, 20, hwnd, (HMENU)DB_CTRL_PATTERN, hinst, 0);    
+
+            CreateWindowEx(0, WC_EDIT, ("10"), 
+                    WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
+                    175, 5, 80, 20, hwnd, (HMENU)DB_CTRL_COUNT, hinst, 0); 
+
+            CreateWindowEx(0, WC_BUTTON, ("Scan"), 
+                    WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
+                    260, 5, 60, 20, hwnd, (HMENU)DB_CTRL_SEARCH, hinst, 0); 
+
+            CreateWindowEx(0, WC_BUTTON, ("Next"), 
+                    WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
+                    325, 5, 60, 20, hwnd, (HMENU)DB_CTRL_NEXT_SEARCH, hinst, 0); 
+
+            EnumChildWindows(hwnd,enumChildProc,0);
             break;
         }
     }
@@ -166,16 +202,24 @@ void init_stringview(HINSTANCE hInstance){
 
     stringViewClass.cbSize        = sizeof(WNDCLASSEX);
     stringViewClass.style         = 0;
-    stringViewClass.lpfnWndProc   = StringViewWndProc;
     stringViewClass.cbClsExtra    = 0;
     stringViewClass.cbWndExtra    = 0;
-    stringViewClass.hInstance     = hInstance;
+    stringViewClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     stringViewClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     stringViewClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
     stringViewClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
     stringViewClass.lpszMenuName  = 0;
+
     stringViewClass.lpszClassName = STRING_VIEW_CLASS;
-    stringViewClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
+    stringViewClass.lpfnWndProc   = StringViewWndProc;
+    stringViewClass.hInstance     = hInstance;
+
+    RegisterClassEx(&stringViewClass);
+    
+    stringViewClass.lpszClassName = STRING_VIEW_PROP_CLASS;
+    stringViewClass.lpfnWndProc   = stringViewPropWndProc;
+    stringViewClass.hInstance     = hInstance;
+
     RegisterClassEx(&stringViewClass);
 }
 

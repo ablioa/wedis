@@ -8,6 +8,7 @@
 #include "resource/resource.h"
 
 #define STRING_VIEW_CLASS "STRING_VIEW_CLASS"
+#define STRING_VIEW_PROP_CLASS "STRING_VIEW_PROP_CLASS"
 
 typedef enum display_mode{
 	TEXT,
@@ -16,6 +17,7 @@ typedef enum display_mode{
 
 typedef struct string_data_model{
    HWND stringView;
+   HWND propertyView;
 
    HWND toolBar;
 

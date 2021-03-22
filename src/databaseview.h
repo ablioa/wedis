@@ -14,7 +14,7 @@
 
 
 typedef struct{
-   HWND toolBar;
+   HWND toolbar;
 
    HWND hwndCursorText;
    HWND hwndPatternText;
@@ -32,8 +32,6 @@ void init_database_view(HINSTANCE hInstance);
 BOOL CALLBACK enumChildProc(HWND hwnd,LPARAM lParam);
 
 void create_database_view(HWND hwnd,DatabaseViewModel * model);
-
-HWND buildDatabaseToolBar(HWND parent);
 
 LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 

@@ -29,7 +29,7 @@ void initSplit(HINSTANCE hInstance){
 }
 
 LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
-	SplitModel * splitModel = (SplitModel*)GetWindowLongPtr(hwnd,GWLP_USERDATA);
+    SplitModel * splitModel = (SplitModel*)GetWindowLongPtr(hwnd,GWLP_USERDATA);
     static BOOL fDragMode = FALSE;
 
     POINT pt;
@@ -49,18 +49,18 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
     switch(msg){
         case WM_CREATE:{
             splitModel = (SplitModel*)calloc(1,sizeof(SplitModel));
-			splitModel->leftSize  = 0;
-			splitModel->rightSize = 0;
+            splitModel->leftSize  = 0;
+            splitModel->rightSize = 0;
 
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)splitModel);
             break;
         }
 
-		case WM_SET_PANES_HWND:{
-			splitModel->left[splitModel->leftSize++] = (HWND)wParam;
-			splitModel->right[splitModel->rightSize++] = (HWND)lParam;
+        case WM_SET_PANES_HWND:{
+            splitModel->left[splitModel->leftSize++] = (HWND)wParam;
+            splitModel->right[splitModel->rightSize++] = (HWND)lParam;
             break;
-		}
+        }
 
         case WM_LBUTTONUP:{
             if(fDragMode == FALSE){break;}
@@ -80,8 +80,8 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
              }
 
             RECT rect1;
-			POINT pp;
-			POINT qq;
+            POINT pp;
+            POINT qq;
 
             hdc = GetWindowDC(parentHwnd);
             DrawXorBar(hdc, oldx,shadowTop, SPLIT_WIDTH ,shadowHeight);
@@ -101,51 +101,51 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
             ReleaseCapture();
 
 
-			for(int ix = 0; ix < splitModel->leftSize; ix ++){
-				HWND hwnd = splitModel->left[ix];
-				GetWindowRect(hwnd,&rect1);
+            for(int ix = 0; ix < splitModel->leftSize; ix ++){
+                HWND hwnd = splitModel->left[ix];
+                GetWindowRect(hwnd,&rect1);
 
-				pp.x = rect1.left;
-				pp.y = rect1.top;
-				ScreenToClient(parentHwnd,&pp);
+                pp.x = rect1.left;
+                pp.y = rect1.top;
+                ScreenToClient(parentHwnd,&pp);
 
-				qq.x = rect1.right;
-				qq.y = rect1.bottom;
-				ScreenToClient(parentHwnd,&qq);
+                qq.x = rect1.right;
+                qq.y = rect1.bottom;
+                ScreenToClient(parentHwnd,&qq);
 
-				MoveWindow(hwnd,pp.x,pp.y,nSplitterPos-pp.x,qq.y - pp.y,TRUE);
+                MoveWindow(hwnd,pp.x,pp.y,nSplitterPos-pp.x,qq.y - pp.y,TRUE);
                 SendMessage(hwnd,WM_SIZE,(WPARAM)NULL,(LPARAM)NULL);
-			}
-			
-			for(int ix = 0; ix < splitModel->rightSize; ix ++){
-				HWND hwnd = splitModel->right[ix];
-				GetWindowRect(hwnd,&rect1);
+            }
+            
+            for(int ix = 0; ix < splitModel->rightSize; ix ++){
+                HWND hwnd = splitModel->right[ix];
+                GetWindowRect(hwnd,&rect1);
 
-				pp.x = rect1.left;
-				pp.y = rect1.top;
-				ScreenToClient(parentHwnd,&pp);
+                pp.x = rect1.left;
+                pp.y = rect1.top;
+                ScreenToClient(parentHwnd,&pp);
 
-				qq.x = rect1.right;
-				qq.y = rect1.bottom;
-				ScreenToClient(parentHwnd,&qq);
+                qq.x = rect1.right;
+                qq.y = rect1.bottom;
+                ScreenToClient(parentHwnd,&qq);
 
-				MoveWindow(hwnd,nSplitterPos+SPLIT_WIDTH,pp.y,
-					qq.x - (nSplitterPos+SPLIT_WIDTH),
-					qq.y - pp.y,TRUE);
+                MoveWindow(hwnd,nSplitterPos+SPLIT_WIDTH,pp.y,
+                    qq.x - (nSplitterPos+SPLIT_WIDTH),
+                    qq.y - pp.y,TRUE);
                 
                 SendMessage(hwnd,WM_SIZE,(WPARAM)NULL,(LPARAM)NULL);
-			}
+            }
 
             GetWindowRect(hwnd,&rect1);
             pp.x = rect1.left;
-			pp.y = rect1.top;
-			ScreenToClient(parentHwnd,&pp);
+            pp.y = rect1.top;
+            ScreenToClient(parentHwnd,&pp);
 
-			qq.x = rect1.right;
-			qq.y = rect1.bottom;
-			ScreenToClient(parentHwnd,&qq);
+            qq.x = rect1.right;
+            qq.y = rect1.bottom;
+            ScreenToClient(parentHwnd,&qq);
 
-			MoveWindow(hwnd,nSplitterPos,pp.y,SPLIT_WIDTH,qq.y-pp.y,TRUE);
+            MoveWindow(hwnd,nSplitterPos,pp.y,SPLIT_WIDTH,qq.y-pp.y,TRUE);
         }
         break;
 
@@ -214,20 +214,17 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
- void WINAPI DrawXorBar(HDC hdc, int x, int y, int width, int height){
-     HBITMAP hbitmap;
-     HBRUSH hbrush,hbrushOld;
-  
-     hbitmap = CreateBitmap(8,8,1,1,_dotPatternBmp);
-     hbrush = CreatePatternBrush(hbitmap);
-  
-     SetBrushOrgEx(hdc,x,y,0);
-     hbrushOld = (HBRUSH)SelectObject(hdc,hbrush);
+void WINAPI DrawXorBar(HDC hdc, int x, int y, int width, int height){
+    HBITMAP hbitmap;
+    HBRUSH hbrush,hbrushOld;
 
-     PatBlt(hdc,x,y,width,height,PATINVERT);
-  
-     SelectObject(hdc,hbrushOld);
-  
-     DeleteObject(hbrush);
-     DeleteObject(hbitmap);
- }
+    hbitmap = CreateBitmap(8,8,1,1,_dotPatternBmp);
+    hbrush = CreatePatternBrush(hbitmap);
+    
+    SetBrushOrgEx(hdc,x,y,0);
+    hbrushOld = (HBRUSH)SelectObject(hdc,hbrush);
+    PatBlt(hdc,x,y,width,height,PATINVERT);
+    SelectObject(hdc,hbrushOld);
+    DeleteObject(hbrush);
+    DeleteObject(hbitmap);
+}

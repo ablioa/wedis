@@ -321,11 +321,6 @@ void command(HWND hwnd,int cmd){
     }
 
     switch (cmd){
-        case IDM_ADD:{
-            DialogBox (hInst,MAKEINTRESOURCE (IDD_ADD_ENTRY),hwnd,(DLGPROC)entryDlgProc);
-            break;
-        }
-
         case IDM_CONNECTION_POOL:{
             DialogBox (hInst,MAKEINTRESOURCE (IDD_CONNECTION),hwnd,(DLGPROC)conectionConfigDlgProc);
             break;

@@ -13,17 +13,16 @@
 
 typedef struct{
    HWND hashView;
-   HWND toolBar;
+
+   HWND toolbar;
 
    RedisReply data;
 
    TreeNode * dataNode;
 }HashViewModel;
 
-HWND buildHashViewWindow(HWND parent);
+void init_hashview(HINSTANCE hInstance);
 
 LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
-
-void init_hashview(HINSTANCE hInstance);
 
 #endif
