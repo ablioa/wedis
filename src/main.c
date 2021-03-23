@@ -559,17 +559,17 @@ int is_binary_data(char * stream,size_t length){
 }
 
 char * encode(char * chunk,int length){
-	char * buff = (char*)calloc(1,length*4);
-	char * cur  = buff;
-	for(int ix = 0; ix < length; ix ++){
-		if(isprint(chunk[ix])){
-			sprintf(cur,"%c",chunk[ix]);
-			cur++;
-		}else{
-			sprintf(cur,"\\x%02x",chunk[ix]);
-			cur+=4;
-		}
-	}
+    char * buff = (char*)calloc(1,length*4);
+    char * cur  = buff;
+    for(int ix = 0; ix < length; ix ++){
+        if(isprint(chunk[ix])){
+            sprintf(cur,"%c",chunk[ix]);
+            cur++;
+        }else{
+            sprintf(cur,"\\x%02x",chunk[ix]);
+            cur+=4;
+        }
+    }
 
-	return buff;
+    return buff;
 }

@@ -179,8 +179,8 @@ void save_config(){
 }
 
 LONG WritePrivateProfileInt(const char * sectionname,const char *  keyname,const LONG val,const char * iniFile){
-	char tmp[MAX_PATH];
-	wsprintf(tmp,"%d",val);
-	WritePrivateProfileString(sectionname,keyname,tmp,iniFile);
-	return 0;
+    char tmp[MAX_PATH];
+    wsprintf(tmp,"%d",val);
+    WritePrivateProfileString(sectionname,keyname,tmp,iniFile);
+    return 0;
 }

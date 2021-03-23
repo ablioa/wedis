@@ -11,7 +11,7 @@ static void AddItems(HWND hWndComboBox){
 }
 
 LRESULT CALLBACK stringEditorWndProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam){
-	return DefWindowProc(dataHwnd, msg, wParam, lParam);
+    return DefWindowProc(dataHwnd, msg, wParam, lParam);
 }
 
 BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
@@ -24,9 +24,9 @@ BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
             
 
 
-			    CreateWindowEx(0, WINDOW_CONTAINER,NULL, 
-					WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 
-					5,20+rand() % 50,200,200,hwnd, (HMENU)0, App->hInstance, 0);
+                CreateWindowEx(0, WINDOW_CONTAINER,NULL, 
+                    WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 
+                    5,20+rand() % 50,200,200,hwnd, (HMENU)0, App->hInstance, 0);
             ///////////////////////////
             break;
         }
