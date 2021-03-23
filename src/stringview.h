@@ -40,6 +40,10 @@ typedef struct string_data_model{
    int hex_width;
 }StringViewModel;
 
+typedef struct data_property_model{
+    HWND ttlSetButton;
+}PropertyModel;
+
 LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 void init_stringview(HINSTANCE hInstance);

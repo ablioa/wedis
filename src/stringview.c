@@ -161,31 +161,50 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
     return DefWindowProc (hwnd, message, wParam, lParam);
 }
 
+/** TODO formula design */
 LRESULT CALLBACK stringViewPropWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
+    PropertyModel * model = (PropertyModel*)GetWindowLongPtr(hwnd,GWLP_USERDATA);
     switch(message){
         case WM_CREATE:{
             HINSTANCE hinst = App->hInstance;
-            CreateWindowEx(0, WC_EDIT, ("0"), 
-                    WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
-                    0, 5, 80, 20, hwnd, (HMENU)DB_CTRL_CURSOR, hinst, 0); 
+            model = (PropertyModel*) calloc(1,sizeof(PropertyModel));
+            SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
+
+            CreateWindowEx(0, WC_STATIC, ("Key"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT, 
+                    0, 5, 40, 20, hwnd, (HMENU)0, hinst, 0);
             
-            CreateWindowEx(0, WC_EDIT, ("*"), 
-                    WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
-                    85, 5, 80, 20, hwnd, (HMENU)DB_CTRL_PATTERN, hinst, 0);    
+            // long field
+            CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
+                    45, 5, 100, 20, hwnd, (HMENU)DB_CTRL_PATTERN, hinst, 0);    
 
-            CreateWindowEx(0, WC_EDIT, ("10"), 
-                    WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
-                    170, 5, 80, 20, hwnd, (HMENU)DB_CTRL_COUNT, hinst, 0); 
-
-            CreateWindowEx(0, WC_BUTTON, ("Scan"), 
-                    WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
+            CreateWindowEx(0, WC_BUTTON, ("import"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
                     255, 5, 60, 20, hwnd, (HMENU)DB_CTRL_SEARCH, hinst, 0); 
 
-            CreateWindowEx(0, WC_BUTTON, ("Next"), 
-                    WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
+            model->ttlSetButton = CreateWindowEx(0, WC_BUTTON, ("update"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
                     320, 5, 60, 20, hwnd, (HMENU)DB_CTRL_NEXT_SEARCH, hinst, 0); 
 
+            /** ttl controls */
+            CreateWindowEx(0, WC_STATIC, ("TTL:"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT, 
+                    0, 35, 40, 20, hwnd, (HMENU)0, hinst, 0);
+            
+            // long feild
+            CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
+                    45, 35, 100, 20, hwnd, (HMENU)DB_CTRL_PATTERN, hinst, 0);    
+            
+            CreateWindowEx(0, WC_BUTTON, ("milisecond"), WS_VISIBLE | WS_CHILD | WS_TABSTOP | 0x00000003, 
+                    170, 35, 80, 20, hwnd, (HMENU)0, hinst, 0);
+
+            CreateWindowEx(0, WC_BUTTON, ("update"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
+                    255, 35, 60, 20, hwnd, (HMENU)DB_CTRL_SEARCH, hinst, 0); 
+
+            CreateWindowEx(0, WC_BUTTON, ("persis"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
+                    320, 35, 60, 20, hwnd, (HMENU)DB_CTRL_NEXT_SEARCH, hinst, 0); 
+
             EnumChildWindows(hwnd,enumChildProc,0);
+            break;
+        }
+
+        case WM_SIZE:{
             break;
         }
     }
