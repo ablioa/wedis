@@ -24,7 +24,7 @@ BOOL InitSetViewColumns1(HWND hWndListView) {
 
 HWND buildStatToolBar(HWND parent){
     int buttonCount = 11;
-	TBBUTTON tbtn[11] = {
+    TBBUTTON tbtn[11] = {
         {(TB_DELETE_BUTTON), TB_CMD_FLUSH_DB, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(0), 0, TBSTATE_ENABLED, TBSTYLE_SEP, {0}, 0, 0},
         {(1), IDM_STAT_SERVER, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
@@ -69,39 +69,39 @@ BOOL updateConfigDataSet(HWND hwnd,KVPair kv){
 }
 
 LRESULT CALLBACK SystemViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
-	RECT rect;
+    RECT rect;
     SystemViewModel model = (SystemViewModel)GetWindowLongPtr(hwnd,GWLP_USERDATA);
 
-	switch(message){
-	    case WM_CREATE:{
+    switch(message){
+        case WM_CREATE:{
             model = (SystemViewModel)calloc(1,sizeof(struct system_view_model));
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
             
             GetClientRect (hwnd, &rect); 
 
-	        model->paramViewHwnd = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
+            model->paramViewHwnd = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
                           WS_CHILD | WS_BORDER | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS,
                           0, 0,0,0,
                           hwnd, NULL, App->hInstance, NULL);
             model->toolBar = buildStatToolBar(hwnd);
             
             ListView_SetExtendedListViewStyle(model->paramViewHwnd,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
-			InitSetViewColumns1(model->paramViewHwnd);
-		    break;
-		}
+            InitSetViewColumns1(model->paramViewHwnd);
+            break;
+        }
 
         case WM_COMMAND:{
-			int cmd = LOWORD(wParam);
-			if(cmd == TB_CMD_FLUSH_DB){
-			    int result = MessageBox(hwnd,"flushall will remove all data in all databases,continue?","wedis",MB_YESNOCANCEL|MB_ICONASTERISK);
-				if(result == IDYES){
-					MessageBox(hwnd,"YES","title",MB_OK);
-				}
-			}else{
-			    stat_command(hwnd,LOWORD (wParam));
-			}
-			return 0;
-		}
+            int cmd = LOWORD(wParam);
+            if(cmd == TB_CMD_FLUSH_DB){
+                int result = MessageBox(hwnd,"flushall will remove all data in all databases,continue?","wedis",MB_YESNOCANCEL|MB_ICONASTERISK);
+                if(result == IDYES){
+                    MessageBox(hwnd,"YES","title",MB_OK);
+                }
+            }else{
+                stat_command(hwnd,LOWORD (wParam));
+            }
+            return 0;
+        }
 
         case WM_DT:{
             RedisReply data     = (RedisReply) wParam;
@@ -113,23 +113,23 @@ LRESULT CALLBACK SystemViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
             break;
         }
        
-		case WM_SIZE:{
-			GetClientRect(hwnd,&rect);
+        case WM_SIZE:{
+            GetClientRect(hwnd,&rect);
             MoveWindow(hwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
-			// MoveWindow(model->paramViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
+            // MoveWindow(model->paramViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
             MoveWindow(model->toolBar,0,0,rect.right-rect.left,28,TRUE);
-			MoveWindow(model->paramViewHwnd,0,28,rect.right-rect.left,rect.bottom-rect.top-28,TRUE);
-		    break;
-		}
-	}
+            MoveWindow(model->paramViewHwnd,0,28,rect.right-rect.left,rect.bottom-rect.top-28,TRUE);
+            break;
+        }
+    }
 
-	return DefWindowProc (hwnd, message, wParam, lParam);
+    return DefWindowProc (hwnd, message, wParam, lParam);
 }
 
 void stat_command(HWND hwnd,int cmd){
     const char * statcmd = "stats";
     switch (cmd){
-		case IDM_STAT_SERVER:{statcmd = "server";break;}
+        case IDM_STAT_SERVER:{statcmd = "server";break;}
         case IDM_STAT_CLIENT:{statcmd = "clients";break;}
         case IDM_STAT_MEMORY:{statcmd = "memory";break;}
         case IDM_STAT_PERSISENCE:{statcmd = "persistence";break;}
@@ -144,7 +144,7 @@ void stat_command(HWND hwnd,int cmd){
 };
 
 void init_systemview(HINSTANCE hInstance){
-	WNDCLASSEX stringViewClass;
+    WNDCLASSEX stringViewClass;
 
     stringViewClass.cbSize        = sizeof(WNDCLASSEX);
     stringViewClass.style         = 0;

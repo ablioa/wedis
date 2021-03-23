@@ -1,9 +1,5 @@
 #include "stringview.h"
 
-#define MIN_HEX_WIDTH     16
-#define HEX_WIDTH_STEP    8
-#define MAX_HEX_WIDTH     48
-
 static HWND build_toolbar(HWND parent){
     int buttonCount = 7;
     TBBUTTON tbtn[7] = {
@@ -171,23 +167,23 @@ LRESULT CALLBACK stringViewPropWndProc(HWND hwnd, UINT message, WPARAM wParam, L
             HINSTANCE hinst = App->hInstance;
             CreateWindowEx(0, WC_EDIT, ("0"), 
                     WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
-                    5, 5, 80, 20, hwnd, (HMENU)DB_CTRL_CURSOR, hinst, 0); 
+                    0, 5, 80, 20, hwnd, (HMENU)DB_CTRL_CURSOR, hinst, 0); 
             
             CreateWindowEx(0, WC_EDIT, ("*"), 
                     WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
-                    90, 5, 80, 20, hwnd, (HMENU)DB_CTRL_PATTERN, hinst, 0);    
+                    85, 5, 80, 20, hwnd, (HMENU)DB_CTRL_PATTERN, hinst, 0);    
 
             CreateWindowEx(0, WC_EDIT, ("10"), 
                     WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
-                    175, 5, 80, 20, hwnd, (HMENU)DB_CTRL_COUNT, hinst, 0); 
+                    170, 5, 80, 20, hwnd, (HMENU)DB_CTRL_COUNT, hinst, 0); 
 
             CreateWindowEx(0, WC_BUTTON, ("Scan"), 
                     WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
-                    260, 5, 60, 20, hwnd, (HMENU)DB_CTRL_SEARCH, hinst, 0); 
+                    255, 5, 60, 20, hwnd, (HMENU)DB_CTRL_SEARCH, hinst, 0); 
 
             CreateWindowEx(0, WC_BUTTON, ("Next"), 
                     WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
-                    325, 5, 60, 20, hwnd, (HMENU)DB_CTRL_NEXT_SEARCH, hinst, 0); 
+                    320, 5, 60, 20, hwnd, (HMENU)DB_CTRL_NEXT_SEARCH, hinst, 0); 
 
             EnumChildWindows(hwnd,enumChildProc,0);
             break;
@@ -251,7 +247,7 @@ char * dump_text(char * text,int len,int width){
             sprintf(output,"    %s\r\n",line);
             offset=0;
             memset(line,0,(width+1));
-            output += (width+4+2); // 16+4+2
+            output += (width+4+2); 
         }
     }
 

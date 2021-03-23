@@ -10,6 +10,10 @@
 #define STRING_VIEW_CLASS "STRING_VIEW_CLASS"
 #define STRING_VIEW_PROP_CLASS "STRING_VIEW_PROP_CLASS"
 
+#define MIN_HEX_WIDTH     16
+#define HEX_WIDTH_STEP    8
+#define MAX_HEX_WIDTH     48
+
 typedef enum display_mode{
 	TEXT,
 	BINARY

@@ -11,6 +11,7 @@ void initpan(HINSTANCE hInstance){
     init_zsetview(hInstance);
     init_systemview(hInstance);
     init_database_view(hInstance);
+    init_editor_view(hInstance);
     initSplit(hInstance);
 
     WNDCLASSEX hSplitClass;

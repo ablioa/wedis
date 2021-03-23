@@ -1,26 +1,17 @@
 #include "main.h"
 #include "entry.h"
 
-void AddItems(HWND hWndComboBox){
-    TCHAR Planets[5][10] =  
-    {
-        TEXT("string"), 
-        TEXT("list"), 
-        TEXT("hash"), 
-        TEXT("set"), 
-        TEXT("zset"), 
-    };
-           
-    TCHAR A[16]; 
-    int  k = 0; 
-
-    memset(&A,0,sizeof(A));       
-    for (k = 0; k <= 4; k += 1){
-        wcscpy_s(A, sizeof(A)/sizeof(TCHAR),  (TCHAR*)Planets[k]);
-        SendMessage(hWndComboBox,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM) A); 
+static void AddItems(HWND hWndComboBox){
+    const char * types[5]= {"- string","- list","- hash","- set","- zset"};
+    for (int k = 0; k <= 4; k++){
+        SendMessage(hWndComboBox,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM) types[k]); 
     }
       
     SendMessage(hWndComboBox, CB_SETCURSEL, (WPARAM)0, (LPARAM)0);
+}
+
+LRESULT CALLBACK stringEditorWndProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam){
+	return DefWindowProc(dataHwnd, msg, wParam, lParam);
 }
 
 BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
@@ -29,6 +20,14 @@ BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
             HWND chwnd = GetDlgItem(hwnd,IDC_DATATYPE);
             AddItems(chwnd);
             MoveToScreenCenter(hwnd);
+            /////////////////////////
+            
+
+
+			    CreateWindowEx(0, WINDOW_CONTAINER,NULL, 
+					WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 
+					5,20+rand() % 50,200,200,hwnd, (HMENU)0, App->hInstance, 0);
+            ///////////////////////////
             break;
         }
 
@@ -65,4 +64,24 @@ BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
     }
 
     return FALSE;
+}
+
+void init_editor_view(HINSTANCE hInstance){
+    WNDCLASSEX stringViewClass;
+
+    stringViewClass.cbSize        = sizeof(WNDCLASSEX);
+    stringViewClass.style         = 0;
+    stringViewClass.cbClsExtra    = 0;
+    stringViewClass.cbWndExtra    = 0;
+    stringViewClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
+    stringViewClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
+    stringViewClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
+    stringViewClass.hbrBackground = CreateSolidBrush(RGB(240,0,0));
+    stringViewClass.lpszMenuName  = 0;
+
+    stringViewClass.lpszClassName = WINDOW_CONTAINER;
+    stringViewClass.lpfnWndProc   = stringEditorWndProc;
+    stringViewClass.hInstance     = hInstance;
+
+    RegisterClassEx(&stringViewClass);
 }
