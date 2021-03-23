@@ -28,7 +28,7 @@ RedisReply redis_serialize_params(RedisConnection stream,RedisParams params){
 }
 
 TreeNode * build_tree_node(TreeNode * parent,RedisNodeType node_type){
-	TreeNode * node = (TreeNode *) calloc(1,sizeof(TreeNode));
+    TreeNode * node = (TreeNode *) calloc(1,sizeof(TreeNode));
     node->level = node_type;
     node->parent = parent;
     node->tid = GLOBAL_TREE_NODE_ID++;
@@ -41,10 +41,10 @@ TreeNode * build_tree_node(TreeNode * parent,RedisNodeType node_type){
 
         case NODE_LEVEL_DATABASE:{
             node->database = (struct redis_database_node *) calloc(1,sizeof(struct redis_database_node));
-			node->database->cursor = 0;
-			node->database->last = 0;
-			node->database->page_size = preference->db_scan_default;
-			sprintf(node->database->pattern,"%s","*");
+            node->database->cursor = 0;
+            node->database->last = 0;
+            node->database->page_size = preference->db_scan_default;
+            sprintf(node->database->pattern,"%s","*");
             break;
         }
 
@@ -53,7 +53,7 @@ TreeNode * build_tree_node(TreeNode * parent,RedisNodeType node_type){
             break;
         }
     }
-	
+    
     return node;
 }
 
@@ -62,7 +62,7 @@ void s_auth(TreeNode * hodeNode,char * password){
     redis_add_param(param,redis_build_param("auth"));
     redis_add_param(param,redis_build_param(password));
 
-	RedisReply reply = redis_serialize_params(hodeNode->stream,param);
+    RedisReply reply = redis_serialize_params(hodeNode->stream,param);
 
     if(reply->type == REPLY_STATUS){
         if(strcmp("OK",reply->status->content) == 0){
@@ -114,13 +114,13 @@ void s_db_select(TreeNode * dbnode){
  * search database
  **/;
 void s_db_get_data(TreeNode * dbnode,int cursor,char * pattern,int count){
-	char cursor_buff[255] = {0};
-	char pattern_buff[255] = {0};
-	char count_buff[255] = {0};
+    char cursor_buff[255] = {0};
+    char pattern_buff[255] = {0};
+    char count_buff[255] = {0};
 
-	sprintf(cursor_buff,"%d",cursor);
-	sprintf(pattern_buff,"%s",pattern);
-	sprintf(count_buff,"%d",count);
+    sprintf(cursor_buff,"%d",cursor);
+    sprintf(pattern_buff,"%s",pattern);
+    sprintf(count_buff,"%d",count);
 
     RedisParams keyparam = redis_build_params(6);
     redis_add_param(keyparam,redis_build_param("scan"));
@@ -146,11 +146,11 @@ void s_db_data_type(TreeNode * selected){
                 selected->data->key_length));
 
     RedisReply reply = redis_serialize_params(selected->stream,param);
-	if(reply->bulk->content == NULL || strcmp(reply->bulk->content,"none")==0){
-		// TODO refresh the data list
-		MessageBox(NULL,"data does not exsist any more.","title",MB_OK);
-	    return;
-	}
+    if(reply->bulk->content == NULL || strcmp(reply->bulk->content,"none")==0){
+        // TODO refresh the data list
+        MessageBox(NULL,"data does not exsist any more.","title",MB_OK);
+        return;
+    }
 
     selected->data->data_type = checkDataType(reply->bulk->content);
     strcpy(selected->data->type_name,reply->bulk->content);
@@ -162,47 +162,47 @@ void s_db_data_type(TreeNode * selected){
  */ 
 void s_handle_data(TreeNode * datanode,DataType dataType){
     RedisReply reply = NULL;
-	switch (dataType){
-		case REDIS_STRING:{
-			reply = s_db_fetch_string(datanode);
-			// TODO handle removed data
+    switch (dataType){
+        case REDIS_STRING:{
+            reply = s_db_fetch_string(datanode);
+            // TODO handle removed data
             datanode->data->quantity = reply->bulk->length;
-			break;
-		}
+            break;
+        }
 
-		case REDIS_HASH:{
-			reply = s_db_fetch_hash(datanode);
-			// TODO handle removed data
+        case REDIS_HASH:{
+            reply = s_db_fetch_hash(datanode);
+            // TODO handle removed data
             datanode->data->quantity = reply->array_length/2;
-			break;
-		}
+            break;
+        }
 
-		case REDIS_LIST:{
-			reply = s_db_fetch_list(datanode);
-			// TODO handle removed data
+        case REDIS_LIST:{
+            reply = s_db_fetch_list(datanode);
+            // TODO handle removed data
             datanode->data->quantity = reply->array_length;
-			break;
-		}
+            break;
+        }
 
-		case REDIS_SET:{
-			reply = s_db_fetch_set(datanode);
-			// TODO handle removed data
+        case REDIS_SET:{
+            reply = s_db_fetch_set(datanode);
+            // TODO handle removed data
             datanode->data->quantity = reply->array_length;
-			break;
-		}
+            break;
+        }
 
-		case REDIS_ZSET:{
-			reply = s_db_fetch_zset(datanode);
-			// TODO handle removed data
+        case REDIS_ZSET:{
+            reply = s_db_fetch_zset(datanode);
+            // TODO handle removed data
             datanode->data->quantity = reply->array_length/2;
-			break;
-		}
+            break;
+        }
 
-		default:{
+        default:{
             printf("hello\n");
-			break;
-		}
-	}
+            break;
+        }
+    }
 
     handle_redis_data(datanode,reply);
 }
@@ -225,7 +225,7 @@ RedisReply s_db_fetch_string(TreeNode * datanode){
     redis_add_param(params,redis_build_param("get"));
 
     RedisParam p = redis_build_real_param(datanode->data->data_key,
-			datanode->data->key_length);
+    datanode->data->key_length);
     redis_add_param(params,p);
 
     return redis_serialize_params(datanode->stream,params);
@@ -332,26 +332,19 @@ RedisParam redis_build_real_param(const char * content,int length){
     RedisParam param = (RedisParam) calloc(1,sizeof(struct redis_param));
 
     param->content = content;
-    param->length  = length;//strlen(content);
+    param->length  = length;
 
     char szbuff[20] = {0};
     sprintf(szbuff,"%d",length);
     int nsize = strlen(szbuff);
 
-    // total length = sizelength + contentlength + 5(%\r\n\r\n);
     param->s_length = param->length + nsize + 5;
     param->diagram = (char*)calloc(param->s_length,sizeof(char));
-
-    //sprintf(param->diagram,"$%d\r\n%s\r\n",
-    //    param->length,
-    //    param->content);
 
     sprintf(param->diagram,"$%s\r\n",szbuff);
     int offset = strlen(param->diagram);
     memcpy(param->diagram+offset,content,length);
     memcpy(param->diagram+offset+length,"\r\n",2);
-
-    //param->s_length = offset//strlen(param->diagram);
 
     return param;
 }
