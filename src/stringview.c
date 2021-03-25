@@ -188,21 +188,6 @@ LRESULT CALLBACK stringViewPropWndProc(HWND hwnd, UINT message, WPARAM wParam, L
             model = (PropertyModel*) calloc(1,sizeof(PropertyModel));
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
 
-           // CreateWindowEx(0, WC_STATIC, ("Key"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT, 
-           //         0, 5, 40, 20, hwnd, (HMENU)0, hinst, 0);
-           // 
-           // // long field
-           // CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
-           //         45, 5, 100, 20, hwnd, (HMENU)DB_CTRL_PATTERN, hinst, 0);    
-           //
-           // CreateWindowEx(0, WC_BUTTON, ("import"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
-           //         255, 5, 60, 20, hwnd, (HMENU)DB_CTRL_SEARCH, hinst, 0); 
-           //
-           // model->ttlSetButton = CreateWindowEx(0, WC_BUTTON, ("update"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
-           //         320, 5, 60, 20, hwnd, (HMENU)DB_CTRL_NEXT_SEARCH, hinst, 0); 
-           //
-            /** ttl controls */
-
             for(int ix = 0; ix < 5; ix ++){
                 create_widget(hwnd,hinst,&ttl_row[ix]);
             }
