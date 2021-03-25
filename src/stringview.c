@@ -161,6 +161,29 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
     return DefWindowProc (hwnd, message, wParam, lParam);
 }
 
+widget ttls[5]={
+    {NULL,{0,  5,40,20},WC_STATIC,"TTL:",WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT,(HMENU)1},
+    {NULL,{45, 5,-1,20},WC_EDIT,"*",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL,(HMENU)2},
+    {NULL,{170,5,80,20},WC_BUTTON,"ms",WS_VISIBLE | WS_CHILD | WS_TABSTOP | 0x00000003,(HMENU)3},
+    {NULL,{255,5,60,20},WC_BUTTON,"Update",WS_VISIBLE | WS_CHILD | WS_TABSTOP,(HMENU)4},
+    {NULL,{320,5,60,20},WC_BUTTON,"Persist",WS_VISIBLE | WS_CHILD | WS_TABSTOP,(HMENU)5}
+};
+
+void create_widget(HWND parent,HINSTANCE hinst,widget * wgt){
+    // TODO error handle
+    wgt->hwnd = CreateWindowEx(0, 
+            wgt->window_class, 
+            wgt->name, 
+            wgt->style, 
+            wgt->position.left,
+            wgt->position.top,
+            wgt->position.right,
+            wgt->position.bottom,
+            parent, 
+            (HMENU)(wgt->id), 
+            hinst, 
+            0);
+}
 /** TODO formula design */
 LRESULT CALLBACK stringViewPropWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
     PropertyModel * model = (PropertyModel*)GetWindowLongPtr(hwnd,GWLP_USERDATA);
@@ -170,41 +193,58 @@ LRESULT CALLBACK stringViewPropWndProc(HWND hwnd, UINT message, WPARAM wParam, L
             model = (PropertyModel*) calloc(1,sizeof(PropertyModel));
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
 
-            CreateWindowEx(0, WC_STATIC, ("Key"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT, 
-                    0, 5, 40, 20, hwnd, (HMENU)0, hinst, 0);
-            
-            // long field
-            CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
-                    45, 5, 100, 20, hwnd, (HMENU)DB_CTRL_PATTERN, hinst, 0);    
-
-            CreateWindowEx(0, WC_BUTTON, ("import"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
-                    255, 5, 60, 20, hwnd, (HMENU)DB_CTRL_SEARCH, hinst, 0); 
-
-            model->ttlSetButton = CreateWindowEx(0, WC_BUTTON, ("update"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
-                    320, 5, 60, 20, hwnd, (HMENU)DB_CTRL_NEXT_SEARCH, hinst, 0); 
-
+           // CreateWindowEx(0, WC_STATIC, ("Key"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT, 
+           //         0, 5, 40, 20, hwnd, (HMENU)0, hinst, 0);
+           // 
+           // // long field
+           // CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
+           //         45, 5, 100, 20, hwnd, (HMENU)DB_CTRL_PATTERN, hinst, 0);    
+           //
+           // CreateWindowEx(0, WC_BUTTON, ("import"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
+           //         255, 5, 60, 20, hwnd, (HMENU)DB_CTRL_SEARCH, hinst, 0); 
+           //
+           // model->ttlSetButton = CreateWindowEx(0, WC_BUTTON, ("update"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
+           //         320, 5, 60, 20, hwnd, (HMENU)DB_CTRL_NEXT_SEARCH, hinst, 0); 
+           //
             /** ttl controls */
-            CreateWindowEx(0, WC_STATIC, ("TTL:"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT, 
-                    0, 35, 40, 20, hwnd, (HMENU)0, hinst, 0);
-            
-            // long feild
-            CreateWindowEx(0, WC_EDIT, (""), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
-                    45, 35, 100, 20, hwnd, (HMENU)DB_CTRL_PATTERN, hinst, 0);    
-            
-            CreateWindowEx(0, WC_BUTTON, ("milisecond"), WS_VISIBLE | WS_CHILD | WS_TABSTOP | 0x00000003, 
-                    170, 35, 80, 20, hwnd, (HMENU)0, hinst, 0);
 
-            CreateWindowEx(0, WC_BUTTON, ("update"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
-                    255, 35, 60, 20, hwnd, (HMENU)DB_CTRL_SEARCH, hinst, 0); 
-
-            CreateWindowEx(0, WC_BUTTON, ("persis"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
-                    320, 35, 60, 20, hwnd, (HMENU)DB_CTRL_NEXT_SEARCH, hinst, 0); 
+            for(int ix = 0; ix < 5; ix ++){
+                create_widget(hwnd,hinst,&ttls[ix]);
+            }
 
             EnumChildWindows(hwnd,enumChildProc,0);
             break;
         }
 
         case WM_SIZE:{
+            RECT prect;
+            GetClientRect(hwnd,&prect);
+            int totalwidth = 0;
+            int cpx = 0;
+            for(int ix = 0; ix < 5; ix ++){
+                if(ttls[ix].position.right != -1){
+                    totalwidth += ttls[ix].position.right;
+                }
+                ttls[ix].position.left = cpx+5;
+
+                cpx = ttls[ix].position.left + ttls[ix].position.right;
+            }
+            totalwidth += (5+1) * 5;
+
+            int twidth = prect.right - totalwidth;
+           
+            for(int ix = 0; ix < 5; ix ++){
+                widget wgt = ttls[ix];
+                if(wgt.position.right != -1){
+                    RECT pos = wgt.position;
+                    MoveWindow(wgt.hwnd,pos.left,pos.top,pos.right,pos.bottom,TRUE);
+                }else{
+                    RECT pos = wgt.position;
+                    MoveWindow(wgt.hwnd,pos.left,pos.top,twidth,pos.bottom,TRUE);
+                }
+            }
+
+
             break;
         }
     }

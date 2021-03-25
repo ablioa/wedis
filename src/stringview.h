@@ -19,6 +19,24 @@ typedef enum display_mode{
 	BINARY
 }DisplayMode;
 
+typedef struct widget{
+    HWND   hwnd;
+    RECT   position;
+    char * window_class;
+    char * name;
+    int    style;
+    HMENU  id;
+}widget;
+
+
+void create_widget(HWND parent,HINSTANCE hinst,widget * wgt);
+
+typedef struct widget_layout{
+    HWND * widgets;
+    int  * width;
+    int    top;
+}WidgetLayout;
+
 typedef struct string_data_model{
    HWND stringView;
    HWND propertyView;
@@ -42,6 +60,12 @@ typedef struct string_data_model{
 
 typedef struct data_property_model{
     HWND ttlSetButton;
+
+    HWND ttlLabelHwnd;
+    HWND ttlEditHwnd;
+    HWND ttlUnitHwnd;
+    HWND ttlUpdateHwnd;
+    HWND ttlPersistHwnd;
 }PropertyModel;
 
 LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
