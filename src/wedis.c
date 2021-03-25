@@ -39,7 +39,7 @@ void initResource(){
     resource->icons = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 1, TOTAL_ICON_COUNT);
     ImageList_AddMasked(resource->icons, hBmp, RGB(255,255,255));
 
-    resource->brush = CreateSolidBrush(RGB(240,240,0));
+    resource->brush = CreateSolidBrush(RGB(240,240,240));
     log_file = fopen("wedis.log","w");
 }
 
