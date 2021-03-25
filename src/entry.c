@@ -76,7 +76,7 @@ void init_editor_view(HINSTANCE hInstance){
     stringViewClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     stringViewClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     stringViewClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    stringViewClass.hbrBackground = CreateSolidBrush(RGB(240,0,0));
+    stringViewClass.hbrBackground = resource->brush; 
     stringViewClass.lpszMenuName  = 0;
 
     stringViewClass.lpszClassName = WINDOW_CONTAINER;

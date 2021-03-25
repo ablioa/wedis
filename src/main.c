@@ -23,7 +23,7 @@ void initpan(HINSTANCE hInstance){
     hSplitClass.hInstance     = hInstance;
     hSplitClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     hSplitClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    hSplitClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
+    hSplitClass.hbrBackground = resource->brush; 
     hSplitClass.lpszMenuName  = 0;
     hSplitClass.lpszClassName = DATAVIEW_WINDOW;
     hSplitClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
@@ -40,7 +40,7 @@ void initpan(HINSTANCE hInstance){
     mainClass.lpszMenuName = MAKEINTRESOURCE (ID_MAIN);
     mainClass.cbClsExtra = 0;
     mainClass.cbWndExtra = 0;
-    mainClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
+    mainClass.hbrBackground = resource->brush; 
     mainClass.hCursor = LoadCursor (0, IDC_ARROW);
     
     RegisterClassEx(&mainClass);
@@ -59,14 +59,14 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
 
     ginit();
     save_all();
-    initpan(hInst);
 
     App = (Application *)calloc(1,sizeof(Application));
     App->dataView = (DataView *) calloc(1,sizeof(DataView));
     App->hInstance = hInst;
     App->hosts = (TreeNode**) calloc(MAX_CONNECTIONS,sizeof(TreeNode*));
-
     initResource();
+    initpan(hInst);
+
     HWND hwndFrame = CreateWindowEx(WS_EX_LEFT,szFrameClass, TEXT ("wedis"),
             WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
             CW_USEDEFAULT, 0,400, 300,

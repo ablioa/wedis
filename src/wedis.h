@@ -96,7 +96,8 @@ extern Application * App;
 typedef struct system_resource{
     HFONT      ctrlFont;
     HFONT      fixedWidthFont;
-	HIMAGELIST icons;
+    HIMAGELIST icons;
+    HBRUSH     brush;
 }SystemResource;
 
 extern SystemResource * resource;

@@ -144,7 +144,7 @@ void init_zsetview(HINSTANCE hInstance){
     zsetViewClass.hInstance     = hInstance;
     zsetViewClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     zsetViewClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    zsetViewClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
+    zsetViewClass.hbrBackground = resource->brush; 
     zsetViewClass.lpszMenuName  = 0;
     zsetViewClass.lpszClassName = ZSET_VIEW_CLASS;
     zsetViewClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));

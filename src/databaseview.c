@@ -11,7 +11,7 @@ void init_database_view(HINSTANCE hInstance){
     hashViewClass.hInstance     = hInstance;
     hashViewClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     hashViewClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    hashViewClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
+    hashViewClass.hbrBackground = resource->brush; 
     hashViewClass.lpszMenuName  = 0;
     hashViewClass.lpszClassName = DATABASE_VIEW_CLASS;
     hashViewClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));

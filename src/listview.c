@@ -198,7 +198,7 @@ void init_listview(HINSTANCE hInstance){
     listViewClass.hInstance     = hInstance;
     listViewClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     listViewClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    listViewClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
+    listViewClass.hbrBackground = resource->brush; 
     listViewClass.lpszMenuName  = 0;
     listViewClass.lpszClassName = LIST_VIEW_CLASS;
     listViewClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));

@@ -21,7 +21,7 @@ void initSplit(HINSTANCE hInstance){
     vSplitClass.hInstance     = hInstance;
     vSplitClass.hIcon         = LoadIcon(NULL, IDI_APPLICATION);
     vSplitClass.hCursor       = LoadCursor (NULL, IDC_SIZEWE);
-    vSplitClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
+    vSplitClass.hbrBackground = resource->brush; 
     vSplitClass.lpszMenuName  = 0;
     vSplitClass.lpszClassName = V_SPLIT;
     vSplitClass.hIconSm       = LoadIcon (NULL, IDI_APPLICATION);

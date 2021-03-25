@@ -159,7 +159,7 @@ void init_setview(HINSTANCE hInstance){
     setViewClass.hInstance     = hInstance;
     setViewClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     setViewClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    setViewClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
+    setViewClass.hbrBackground = resource->brush; 
     setViewClass.lpszMenuName  = 0;
     setViewClass.lpszClassName = SET_VIEW_CLASS;
     setViewClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));

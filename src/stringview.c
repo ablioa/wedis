@@ -222,7 +222,7 @@ void init_stringview(HINSTANCE hInstance){
     stringViewClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     stringViewClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     stringViewClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    stringViewClass.hbrBackground = CreateSolidBrush(RGB(240,240,240));
+    stringViewClass.hbrBackground = resource->brush; 
     stringViewClass.lpszMenuName  = 0;
 
     stringViewClass.lpszClassName = STRING_VIEW_CLASS;
