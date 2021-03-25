@@ -19,15 +19,21 @@ typedef enum display_mode{
 	BINARY
 }DisplayMode;
 
-typedef struct widget{
-    HWND   hwnd;
-    RECT   position;
-    char * window_class;
-    char * name;
-    int    style;
-    HMENU  id;
-}widget;
+typedef struct dimension{
+    int left;
+    int top;
+    int width;
+    int height;
+}dimension;
 
+typedef struct widget{
+    HWND      hwnd;
+    dimension position;
+    const char *    window_class;
+    const char *    name;
+    int       style;
+    HMENU     id;
+}widget;
 
 void create_widget(HWND parent,HINSTANCE hinst,widget * wgt);
 
@@ -75,5 +81,7 @@ void init_stringview(HINSTANCE hInstance);
 char * get_output_buffer(int size,int width);
 
 char * dump_text( char * text,int len,int width);
+
+void arrange_widgets(HWND hwnd,widget wgts[],int length);
 
 #endif

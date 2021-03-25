@@ -1,5 +1,22 @@
 #include "stringview.h"
 
+#define GAP_WIDTH 5
+
+widget ttl_row[5]={
+    {NULL,{0,  30,40,20},WC_STATIC,"TTL:",WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT,(HMENU)1},
+    {NULL,{45, 30,-1,20},WC_EDIT,"",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL,(HMENU)2},
+    {NULL,{170,30,40,20},WC_BUTTON,"ms",WS_VISIBLE | WS_CHILD | WS_TABSTOP | 0x00000003,(HMENU)3},
+    {NULL,{255,30,60,20},WC_BUTTON,"Update",WS_VISIBLE | WS_CHILD | WS_TABSTOP,(HMENU)4},
+    {NULL,{320,30,60,20},WC_BUTTON,"Persist",WS_VISIBLE | WS_CHILD | WS_TABSTOP,(HMENU)5}
+};
+
+widget keys_row[4]={
+    {NULL,{0,  5,40,20},WC_STATIC,"KEY:",WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT,(HMENU)1},
+    {NULL,{45, 5,-1,20},WC_EDIT,"",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL,(HMENU)2},
+    {NULL,{255,5,60,20},WC_BUTTON,"Import",WS_VISIBLE | WS_CHILD | WS_TABSTOP,(HMENU)3},
+    {NULL,{320,5,60,20},WC_BUTTON,"Update",WS_VISIBLE | WS_CHILD | WS_TABSTOP,(HMENU)4}
+};
+
 static HWND build_toolbar(HWND parent){
     int buttonCount = 7;
     TBBUTTON tbtn[7] = {
@@ -152,8 +169,8 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
         case WM_SIZE:{
             GetClientRect(hwnd,&rect);
             MoveWindow(model->toolBar,0,0,rect.right-rect.left,28,TRUE);
-            MoveWindow(model->stringView,0,28,rect.right-rect.left,rect.bottom-rect.top-28-200,TRUE);
-            MoveWindow(model->propertyView,0,rect.bottom-rect.top-200,rect.right-rect.left,200,TRUE);
+            MoveWindow(model->stringView,0,28,rect.right-rect.left,rect.bottom-rect.top-28-100,TRUE);
+            MoveWindow(model->propertyView,0,rect.bottom-rect.top-100,rect.right-rect.left,100,TRUE);
             break;
         }
     }
@@ -161,29 +178,7 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
     return DefWindowProc (hwnd, message, wParam, lParam);
 }
 
-widget ttls[5]={
-    {NULL,{0,  5,40,20},WC_STATIC,"TTL:",WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT,(HMENU)1},
-    {NULL,{45, 5,-1,20},WC_EDIT,"*",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL,(HMENU)2},
-    {NULL,{170,5,80,20},WC_BUTTON,"ms",WS_VISIBLE | WS_CHILD | WS_TABSTOP | 0x00000003,(HMENU)3},
-    {NULL,{255,5,60,20},WC_BUTTON,"Update",WS_VISIBLE | WS_CHILD | WS_TABSTOP,(HMENU)4},
-    {NULL,{320,5,60,20},WC_BUTTON,"Persist",WS_VISIBLE | WS_CHILD | WS_TABSTOP,(HMENU)5}
-};
 
-void create_widget(HWND parent,HINSTANCE hinst,widget * wgt){
-    // TODO error handle
-    wgt->hwnd = CreateWindowEx(0, 
-            wgt->window_class, 
-            wgt->name, 
-            wgt->style, 
-            wgt->position.left,
-            wgt->position.top,
-            wgt->position.right,
-            wgt->position.bottom,
-            parent, 
-            (HMENU)(wgt->id), 
-            hinst, 
-            0);
-}
 /** TODO formula design */
 LRESULT CALLBACK stringViewPropWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
     PropertyModel * model = (PropertyModel*)GetWindowLongPtr(hwnd,GWLP_USERDATA);
@@ -209,7 +204,11 @@ LRESULT CALLBACK stringViewPropWndProc(HWND hwnd, UINT message, WPARAM wParam, L
             /** ttl controls */
 
             for(int ix = 0; ix < 5; ix ++){
-                create_widget(hwnd,hinst,&ttls[ix]);
+                create_widget(hwnd,hinst,&ttl_row[ix]);
+            }
+
+            for(int ix = 0; ix < 4; ix ++){
+                create_widget(hwnd,hinst,&keys_row[ix]);
             }
 
             EnumChildWindows(hwnd,enumChildProc,0);
@@ -217,34 +216,8 @@ LRESULT CALLBACK stringViewPropWndProc(HWND hwnd, UINT message, WPARAM wParam, L
         }
 
         case WM_SIZE:{
-            RECT prect;
-            GetClientRect(hwnd,&prect);
-            int totalwidth = 0;
-            int cpx = 0;
-            for(int ix = 0; ix < 5; ix ++){
-                if(ttls[ix].position.right != -1){
-                    totalwidth += ttls[ix].position.right;
-                }
-                ttls[ix].position.left = cpx+5;
-
-                cpx = ttls[ix].position.left + ttls[ix].position.right;
-            }
-            totalwidth += (5+1) * 5;
-
-            int twidth = prect.right - totalwidth;
-           
-            for(int ix = 0; ix < 5; ix ++){
-                widget wgt = ttls[ix];
-                if(wgt.position.right != -1){
-                    RECT pos = wgt.position;
-                    MoveWindow(wgt.hwnd,pos.left,pos.top,pos.right,pos.bottom,TRUE);
-                }else{
-                    RECT pos = wgt.position;
-                    MoveWindow(wgt.hwnd,pos.left,pos.top,twidth,pos.bottom,TRUE);
-                }
-            }
-
-
+            arrange_widgets(hwnd,keys_row,4);
+            arrange_widgets(hwnd,ttl_row,5);
             break;
         }
     }
@@ -326,5 +299,52 @@ char * dump_text(char * text,int len,int width){
     }
 
     return buff;
+}
+
+void create_widget(HWND parent,HINSTANCE hinst,widget * wgt){
+    // TODO error handle
+    wgt->hwnd = CreateWindowEx(0, 
+            wgt->window_class, 
+            wgt->name, 
+            wgt->style, 
+            wgt->position.left,
+            wgt->position.top,
+            wgt->position.width,
+            wgt->position.height,
+            parent, 
+            (HMENU)(wgt->id), 
+            hinst, 
+            0);
+}
+
+void arrange_widgets(HWND hwnd,widget wgts[],int length){
+    RECT prect;
+    GetClientRect(hwnd,&prect);
+    int totalwidth = 0;
+
+    for(int ix = 0; ix < length; ix ++){
+        widget wgt = wgts[ix];
+        if(wgt.position.width != -1){
+            totalwidth += wgt.position.width;
+        }
+    }
+
+    totalwidth += (length+1) * GAP_WIDTH;
+    int twidth = prect.right - totalwidth;
+   
+    int next_left = 0;
+    for(int ix = 0; ix < length; ix ++){
+        widget wgt = wgts[ix];
+        dimension pos = wgt.position;
+
+        next_left += GAP_WIDTH;
+        if(pos.width == -1){
+            pos.width = twidth;
+        }
+
+        MoveWindow(wgt.hwnd,next_left,pos.top,
+                pos.width,pos.height,TRUE);
+        next_left += pos.width;
+    }
 }
 
