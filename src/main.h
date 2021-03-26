@@ -25,16 +25,15 @@
 #include "entry.h"
 #include "split.h"
 
-
 #define szFrameClass "MdiFrame"
 
 #define DATAVIEW_WINDOW     "DATA_VIEW_WINDOW"
 #define CONSOLE_WINDOW      "CONSOLE_WINDOW"
 #define DATA_RENDER_WINDOW  "DATA_RENDER_WINDOW"
 
-#define MAX_SIZE	20
+#define MAX_SIZE	          20
 #define CONNECTION_AREA_WIDTH 200
-#define SPLITER_WIDTH 2
+#define SPLITER_WIDTH         2
 
 #define IDM_TIMING              1000
 #define IDM_SYSTEM_STAT         1001
@@ -58,12 +57,66 @@
 #define TOOLBAR_HEIGHT    20
 #define STATUSBAR_HEIGHT  20
 
-#define MAX_CONNECTIONS 200
+#define MAX_CONNECTIONS   200
+
+/**
+ * string data edit entry
+ */
+typedef struct string_entry{
+    char * data;
+    char * length;
+}string_entry;
+
+/**
+ * list data edit entry
+ */
+typedef struct list_entry{
+    string_entry ** data;
+    int length;
+}list_entry;
+
+/**
+ * hash data edit entry
+ */
+typedef struct hash_entry{
+    string_entry ** keys;
+    string_entry ** data;
+    int length;
+}hash_entry;
+
+/**
+ * set data edit entry
+ */
+typedef struct set_entry{
+    string_entry ** data;
+    int length;
+}set_entry;
+
+/**
+ * zset data edit entry
+ */
+typedef struct zset_entry{
+    string_entry ** data;
+    double       *  score;
+}zset_entry;
 
 
+/**
+ * data edit entry
+ * TODO any better description?
+ */
 typedef struct entry{
     char * key;
-    char * data;
+
+    union{
+        string_entry * string_data;
+        list_entry   * list_data;
+        hash_entry   * hash_data;
+        set_entry    * set_data;
+        zset_entry   * zset_data;
+    };
+
+    int    data_type;
 }entry;
 
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);

@@ -30,6 +30,12 @@ static HWND buildDatabaseToolBar(HWND parent){
 
 BOOL CALLBACK enumChildProc(HWND hwnd,LPARAM lParam){
     SendMessage(hwnd, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
+
+    char buff[255] = {0};
+    GetClassName(hwnd,buff,255);
+    if(strcmp(buff,"Button") == 0){
+        SetWindowLongPtr(hwnd,GWL_STYLE,WS_VISIBLE | WS_CHILD | WS_TABSTOP);
+    }
     return TRUE;
 }
 

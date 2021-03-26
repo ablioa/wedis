@@ -15,6 +15,31 @@ widget entry_pane[5]={
     {NULL,{5,30,40,20},WDS_PANE,"",WS_CHILD | WS_TABSTOP,(HMENU)1},
 };
 
+/** string editor layout */
+widget string_editor_pane[2]={
+    {NULL,{0,0,200,20},WC_BUTTON,"Import",WS_VISIBLE | WS_CHILD | WS_TABSTOP,(HMENU)9999},
+    {NULL,{0,25,100,100},WC_EDIT,"",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL,(HMENU)9}
+};
+
+/** string editor layout */
+widget string_list_pane[1]={
+    {NULL,{0,0,200,200},WC_EDIT,"",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL,(HMENU)9}
+};
+
+/** string editor layout */
+widget string_hash_pane[1]={
+    {NULL,{0,0,300,300},WC_EDIT,"",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL,(HMENU)9}
+};
+
+/** string editor layout */
+widget string_set_pane[1]={
+    {NULL,{0,0,400,400},WC_EDIT,"",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL,(HMENU)9}
+};
+
+/** string editor layout */
+widget string_zset_pane[1]={
+    {NULL,{0,0,500,500},WC_EDIT,"",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL,(HMENU)9}
+};
 static void set_default_style(HWND hwnd){
     EnumChildWindows(hwnd,enumChildProc,0);
 }
@@ -28,10 +53,62 @@ static void AddItems(HWND hWndComboBox){
     SendMessage(hWndComboBox, CB_SETCURSEL, (WPARAM)0, (LPARAM)0);
 }
 
-LRESULT CALLBACK stringEditorWndProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam){
+LRESULT CALLBACK default_entry_proc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam){
     return DefWindowProc(dataHwnd, msg, wParam, lParam);
 }
 
+LRESULT CALLBACK stringEditorWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
+    switch(msg){
+        case WM_ENTRY_STRING:{
+            RECT hrect;
+            GetClientRect(hwnd,&hrect);
+            for(int ix = 0; ix < 2; ix ++){
+                widget * wgt = &string_editor_pane[ix];
+                create_widget(hwnd,App->hInstance,wgt);
+                dimension pos = wgt->position;
+                pos.width  = hrect.right - hrect.left - 10;
+                MoveWindow(wgt->hwnd,pos.left,pos.top,pos.width,pos.height,FALSE);
+            }
+            break;
+        }
+        case WM_ENTRY_LIST:{
+            create_widget(hwnd,App->hInstance,string_list_pane);
+            break;
+        }
+
+        case WM_ENTRY_HASH:{
+            create_widget(hwnd,App->hInstance,string_hash_pane);
+            break;
+        }
+
+        case WM_ENTRY_SET:{
+            create_widget(hwnd,App->hInstance,string_set_pane);
+            break;
+        }
+
+        case WM_ENTRY_ZSET:{
+            create_widget(hwnd,App->hInstance,string_zset_pane);
+            break;
+        }
+
+        case WM_COMMAND:{
+            switch(LOWORD(wParam)){
+                /** import file as data */
+                case 9999:{
+                    break;
+                }
+            }
+
+            break;
+        }
+    }
+
+    return DefWindowProc(hwnd, msg, wParam, lParam);
+}
+
+/**
+ * switch editor pane among difference data type.
+ */ 
 static void switch_editor_pane(int index){
     for(int ix = 0; ix < 5;ix ++){
         widget wgt = entry_pane[ix];
@@ -41,7 +118,6 @@ static void switch_editor_pane(int index){
             ShowWindow(wgt.hwnd,SW_HIDE);
         }
     }
-
 }
 
 BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
@@ -59,9 +135,25 @@ BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
                 dimension pos = wgt->position;
                 pos.width  = hrect.right - hrect.left - 10;
                 pos.height = hrect.bottom - hrect.top - 65;
-                MoveWindow(wgt->hwnd,pos.left,pos.top+ix * 10,pos.width,pos.height,FALSE);
+                MoveWindow(wgt->hwnd,pos.left,pos.top,pos.width,pos.height,FALSE);
             }
 
+            ///////////////////////
+            SetWindowLongPtr(entry_pane[0].hwnd,GWLP_WNDPROC,(LONG_PTR)stringEditorWndProc);
+            SendMessage(entry_pane[0].hwnd,WM_ENTRY_STRING,0,0);
+
+            SetWindowLongPtr(entry_pane[1].hwnd,GWLP_WNDPROC,(LONG_PTR)stringEditorWndProc);
+            SendMessage(entry_pane[1].hwnd,WM_ENTRY_LIST,0,0);
+
+            SetWindowLongPtr(entry_pane[2].hwnd,GWLP_WNDPROC,(LONG_PTR)stringEditorWndProc);
+            SendMessage(entry_pane[2].hwnd,WM_ENTRY_HASH,0,0);
+
+            SetWindowLongPtr(entry_pane[3].hwnd,GWLP_WNDPROC,(LONG_PTR)stringEditorWndProc);
+            SendMessage(entry_pane[3].hwnd,WM_ENTRY_SET,0,0);
+
+            SetWindowLongPtr(entry_pane[4].hwnd,GWLP_WNDPROC,(LONG_PTR)stringEditorWndProc);
+            SendMessage(entry_pane[4].hwnd,WM_ENTRY_ZSET,0,0);
+            //////
             for(int ix = 0; ix < 3; ix ++){
                 create_widget(hwnd,App->hInstance,&key_row[ix]);
             }
@@ -126,7 +218,7 @@ void init_editor_view(HINSTANCE hInstance){
     stringViewClass.lpszMenuName  = 0;
 
     stringViewClass.lpszClassName = WDS_PANE;
-    stringViewClass.lpfnWndProc   = stringEditorWndProc;
+    stringViewClass.lpfnWndProc   = default_entry_proc;
     stringViewClass.hInstance     = hInstance;
 
     RegisterClassEx(&stringViewClass);

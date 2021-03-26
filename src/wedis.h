@@ -24,8 +24,13 @@
 #define GENERAL_CMD_RELOAD  10004
 #define GENERAL_CMD_KEYEDIT 10005
 
-#define WM_DT  WM_USER+200
-#define WM_DTT WM_USER+201
+#define WM_DT              WM_USER+200
+#define WM_DTT             WM_USER+201
+#define WM_ENTRY_STRING    WM_USER+202
+#define WM_ENTRY_LIST      WM_USER+203
+#define WM_ENTRY_HASH      WM_USER+204
+#define WM_ENTRY_SET       WM_USER+205
+#define WM_ENTRY_ZSET      WM_USER+206
 
 #define WM_MOVEDATA_CMD 10000
 

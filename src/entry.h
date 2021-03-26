@@ -9,4 +9,5 @@ BOOL CALLBACK entryDlgProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lParam);
 
 void init_editor_view(HINSTANCE hInstance);
 
+LRESULT CALLBACK default_entry_proc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 #endif
