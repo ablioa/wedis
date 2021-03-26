@@ -30,10 +30,6 @@ static HWND buildDatabaseToolBar(HWND parent){
 
 BOOL CALLBACK enumChildProc(HWND hwnd,LPARAM lParam){
     SendMessage(hwnd, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
-    // Edit|Button|ComboBox etc.
-    //char buff[250]={0};
-    //GetClassName(hwnd,buff,250);
-
     return TRUE;
 }
 
@@ -133,7 +129,12 @@ LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
                 }
 
                 case TB_CMD_ADD_DATA:{
-                    DialogBox (App->hInstance,MAKEINTRESOURCE (IDD_ADD_ENTRY),hwnd,(DLGPROC)entryDlgProc);
+                    entry *ety = (entry *) calloc(1,sizeof(entry));
+                    DialogBoxParam (App->hInstance,MAKEINTRESOURCE (IDD_ADD_ENTRY),hwnd,(DLGPROC)entryDlgProc,(LPARAM)ety);
+                    
+                    if(ety->key != NULL){
+                        MessageBox(hwnd,ety->key,"Title",MB_OK); 
+                    }
                     break;
                 }
             }

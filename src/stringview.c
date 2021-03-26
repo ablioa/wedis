@@ -178,7 +178,6 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
     return DefWindowProc (hwnd, message, wParam, lParam);
 }
 
-
 /** TODO formula design */
 LRESULT CALLBACK stringViewPropWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
     PropertyModel * model = (PropertyModel*)GetWindowLongPtr(hwnd,GWLP_USERDATA);
@@ -286,12 +285,12 @@ char * dump_text(char * text,int len,int width){
     return buff;
 }
 
+/**
+ * build widget window
+ */
 void create_widget(HWND parent,HINSTANCE hinst,widget * wgt){
-    // TODO error handle
     wgt->hwnd = CreateWindowEx(0, 
-            wgt->window_class, 
-            wgt->name, 
-            wgt->style, 
+            wgt->window_class, wgt->name, wgt->style, 
             wgt->position.left,
             wgt->position.top,
             wgt->position.width,
@@ -300,6 +299,10 @@ void create_widget(HWND parent,HINSTANCE hinst,widget * wgt){
             (HMENU)(wgt->id), 
             hinst, 
             0);
+
+    if(wgt->hwnd == NULL){
+        DumpMessage(0x0005);
+    }
 }
 
 void arrange_widgets(HWND hwnd,widget wgts[],int length){

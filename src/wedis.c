@@ -6,6 +6,7 @@ eMsg err_list[]={
     {0x0002,"Create Socket Failed!",MB_OK},
     {0x0003,"Send data failed!",MB_RETRYCANCEL},
     {0x0004,"TCP-Server have broken down!",MB_OK},
+    {0x0005,"Create Window failed.",MB_OK},
 };
 
 int DumpMessage(long Err_Code){

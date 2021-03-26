@@ -3,7 +3,7 @@
 
 #include "resource/resource.h"
 
-#define WINDOW_CONTAINER "window.container"
+#define WDS_PANE "window.container"
 
 BOOL CALLBACK entryDlgProc(HWND hWin,UINT msg,WPARAM wParam,LPARAM lParam);
 

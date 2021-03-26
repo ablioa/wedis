@@ -59,6 +59,13 @@
 #define STATUSBAR_HEIGHT  20
 
 #define MAX_CONNECTIONS 200
+
+
+typedef struct entry{
+    char * key;
+    char * data;
+}entry;
+
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
