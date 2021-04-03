@@ -3,6 +3,7 @@
 
 #include <windows.h>
 
+#include "json.h"
 #define INI_NAME ".\\wedis.ini"
 
 #define GENERAL_CONFIG "General"
@@ -15,10 +16,6 @@
 #define CONFIG_REQUIREPASS "requirepass"
 #define CONFIG_PASSWORD    "password"
 
-typedef struct wedis_preference{
-    int db_scan_default;
-}Preference;
-
 typedef struct wedis_host{
     char * name;
     char * host;
@@ -28,7 +25,6 @@ typedef struct wedis_host{
     char * description;
 
     int    hostIndex;
-
     struct wedis_host * next;
 }Host;
 
@@ -41,6 +37,10 @@ typedef struct{
    struct wedis_host * tail;
 }Config;
 
+typedef struct wedis_preference{
+    int db_scan_default;
+}Preference;
+
 extern Config * appConfig;
 extern Preference * preference;
 
@@ -48,7 +48,7 @@ void add_co_host(Host * host);
 
 void remove_host_config(int hostIndex);
 
-void read_host_config(int index,Host * host);
+void read_host_config(Json * node,Host * host);
 
 void save_all();
 

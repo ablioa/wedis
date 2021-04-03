@@ -57,19 +57,22 @@ TreeNode * build_tree_node(TreeNode * parent,RedisNodeType node_type){
     return node;
 }
 
-void s_auth(TreeNode * hodeNode,char * password){
+void s_auth(TreeNode * hostNode,char * password){
     RedisParams param = redis_build_params(2);
     redis_add_param(param,redis_build_param("auth"));
     redis_add_param(param,redis_build_param(password));
 
-    RedisReply reply = redis_serialize_params(hodeNode->stream,param);
+    RedisReply reply = redis_serialize_params(hostNode->stream,param);
 
     if(reply->type == REPLY_STATUS){
         if(strcmp("OK",reply->status->content) == 0){
-            s_key_space(hodeNode);
-            App->activeHost = hodeNode;
+            s_key_space(hostNode);
+            App->activeHost = hostNode;
         }
     }else if(reply->type == REPLY_ERROR){
+        MessageBox(NULL,reply->error->content,"title",MB_OK);
+    }else {
+        // TODO 处理错误密码的情况
         MessageBox(NULL,reply->error->content,"title",MB_OK);
     }
 }
