@@ -80,12 +80,14 @@ void load_all(){
     preference->db_scan_default = sd->valueint;
 
     Json * hosts = json_get_object_item(json,"hosts");
-    int host_count = json_get_array_size(hosts);
-    for(int ix = 0; ix < host_count; ix ++){
-        Host * host = (Host *) calloc(1,sizeof(Host));
-        Json * hitem = json_get_array_item(hosts,ix);
-        read_host_config(hitem,host);
-        add_co_host(host);
+    if(hosts){
+        int host_count = json_get_array_size(hosts);
+        for(int ix = 0; ix < host_count; ix ++){
+            Host * host = (Host *) calloc(1,sizeof(Host));
+            Json * hitem = json_get_array_item(hosts,ix);
+            read_host_config(hitem,host);
+            add_co_host(host);
+        }
     }
 }
 
@@ -149,14 +151,20 @@ void save_host_config(int index,Host * host){
     //WritePrivateProfileInt(section_name,CONFIG_REQUIREPASS,host->requirepass,INI_NAME);
 }
 
-void save_all_host_config(){
-    //WritePrivateProfileInt(GENERAL_CONFIG,TOTAL_HOST,appConfig->total_host,INI_NAME);
+Json* save_preference(Json * parent){
+    Json * pcount = json_create_number(preference->db_scan_default);
+    json_add_item_to_object(parent,"dbScanDefault",pcount);
+    return pcount;
+}
 
-    //Host * start = appConfig->head;
-    //while(start != NULL){
-    //    save_host_config(start->hostIndex,start);
-    //    start = start->next;
-    //}
+void save_all_host_config(){
+    Json * root  = json_create_object();
+    save_preference(root);
+
+    char * jsonText = json_print(root);
+    FILE * file = fopen("wedis.conf","w");
+    fprintf(file,"%s",jsonText);
+    fclose(file);
 }
 
 void save_all(){

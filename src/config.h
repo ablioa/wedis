@@ -2,9 +2,7 @@
 #define _smconfig_h
 
 #include <windows.h>
-
 #include "json.h"
-#define INI_NAME ".\\wedis.ini"
 
 #define GENERAL_CONFIG "General"
 #define TOTAL_HOST     "total_host"
@@ -61,7 +59,5 @@ void save_host_config(int index,Host * host);
 Host * getHostByIndex(Config * config,int hostIndex);
 
 char * fetch_text_from_file(const char * filename,size_t * length);
-
-LONG WritePrivateProfileInt(const char * sectionname,const char *  keyname,const LONG val,const char * file);
 
 #endif

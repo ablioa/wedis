@@ -25,7 +25,6 @@ BOOL CALLBACK SetPreferenceProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
             {
                 case IDC_CONFIG_DONE:{
                     /** TODO why json_new_item doesn't work? */
-                    Json * pjson  = json_create_object();
 
                     BOOL result = FALSE;
                     int val = GetDlgItemInt(hwnd,IDC_PREFERENCE_SCAN_COUNT,&result,FALSE);
@@ -33,13 +32,7 @@ BOOL CALLBACK SetPreferenceProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
                         preference->db_scan_default = val;
                     }
 
-                    Json * pcount = json_create_number(preference->db_scan_default);
-                    json_add_item_to_object(pjson,"dbScanDefault",pcount);
-
-                    char * jsonText = json_print(pjson);
-                    FILE * file = fopen("wedis.conf","w");
-                    fprintf(file,"%s",jsonText);
-                    fclose(file);
+                    save_all_host_config();
 
                     EndDialog (hwnd, 0);
                     break;
