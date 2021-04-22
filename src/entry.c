@@ -20,7 +20,7 @@ widget entry_pane[5]={
 
 /** string editor layout */
 widget string_editor_pane[2]={
-    {NULL,{0,0,200,20},WC_BUTTON,"Import",WS_VISIBLE | WS_CHILD | WS_TABSTOP,(HMENU)IMPORT_STRING_DATA_BUTTON},
+    {NULL,{0,0,200,20},TOOLBARCLASSNAME,"",WS_VISIBLE | WS_CHILD | TBSTYLE_TOOLTIPS|TBSTYLE_FLAT,(HMENU)IMPORT_STRING_DATA_BUTTON},
     {NULL,{0,25,100,100},WC_EDIT,"",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL,(HMENU)IMPORT_STRING_DATA_EDITOR}
 };
 
@@ -41,24 +41,10 @@ widget string_zset_pane[1]={
 };
 
 
-const char * list_entry_column[2]={
-    "index",
-    "item"
-};
-
-const char * set_entry_column[1]={
-    "item"
-};
-
-const char * hash_entry_column[2]={
-    "key",
-    "value"
-};
-
-const char * zset_entry_column[2]={
-    "score",
-    "item"
-};
+const char * list_entry_column[2] = {"index","item"};
+const char * set_entry_column[1]  = {"item"};
+const char * hash_entry_column[2] = {"key","value"};
+const char * zset_entry_column[2] = {"score","item"};
 
 BOOL init_list_column_name(HWND hWndListView,const char ** item,const int columns) {
     LVCOLUMN lvc;
@@ -95,24 +81,35 @@ LRESULT CALLBACK default_entry_proc(HWND dataHwnd, UINT msg, WPARAM wParam, LPAR
     return DefWindowProc(dataHwnd, msg, wParam, lParam);
 }
 
+int buttonCount = 1;
+TBBUTTON string_toolbar_buttons[1] = {
+    {(TB_ADD_BUTTON), TB_CMD_ADD_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+};
+
 LRESULT CALLBACK stringEntryEditorWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
-    RECT hrect;
+    RECT rect;
     switch(msg){
         case WM_INIT_ENTRY:{
-            GetClientRect(hwnd,&hrect);
+            GetClientRect(hwnd,&rect);
             for(int ix = 0; ix < 2; ix ++){
                 widget * wgt = &string_editor_pane[ix];
                 create_widget(hwnd,App->hInstance,wgt);
-                dimension pos = wgt->position;
-                pos.width  = hrect.right - hrect.left - 10;
-                MoveWindow(wgt->hwnd,pos.left,pos.top,pos.width,pos.height,FALSE);
             }
+        
+            HWND tb = string_editor_pane[0].hwnd;
+            SendMessage(tb, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
+            SendMessage(tb, TB_SETIMAGELIST, 0, (LPARAM) resource->icons);
+            SendMessage(tb, TB_ADDBUTTONS,  (WPARAM)buttonCount,(LPARAM)string_toolbar_buttons);
+            SendMessage(tb, TB_AUTOSIZE, 0, 0);
+
+            MoveWindow(string_editor_pane[0].hwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,FALSE);
+            MoveWindow(string_editor_pane[1].hwnd,0,28,rect.right-rect.left,rect.bottom-rect.top-28,FALSE);
             break;
         }
 
         case WM_COMMAND:{
             switch(LOWORD(wParam)){
-                case 9999:{
+                case TB_CMD_ADD_DATA:{
                     MessageBox(hwnd,"导入文本数据","Title",MB_OK);  
                     break;
                 }
