@@ -300,6 +300,10 @@ void create_widget(HWND parent,HINSTANCE hinst,widget * wgt){
             hinst, 
             0);
 
+    if(wgt->editorProc != NULL){
+        SetWindowLongPtr(wgt->hwnd,GWLP_WNDPROC,(LONG_PTR)wgt->editorProc);
+    }
+
     if(wgt->hwnd == NULL){
         DumpMessage(0x0005);
     }

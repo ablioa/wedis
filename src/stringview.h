@@ -5,6 +5,8 @@
 #include "wedis.h"
 #include "redis.h"
 
+#include "entry.h"
+
 #include "resource/resource.h"
 
 #define STRING_VIEW_CLASS "STRING_VIEW_CLASS"
@@ -18,22 +20,6 @@ typedef enum display_mode{
 	TEXT,
 	BINARY
 }DisplayMode;
-
-typedef struct dimension{
-    int left;
-    int top;
-    int width;
-    int height;
-}dimension;
-
-typedef struct widget{
-    HWND      hwnd;
-    dimension position;
-    const char *    window_class;
-    const char *    name;
-    int       style;
-    HMENU     id;
-}widget;
 
 void create_widget(HWND parent,HINSTANCE hinst,widget * wgt);
 
