@@ -254,11 +254,6 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lPa
 
         case WM_COMMAND:{
             switch(wParam){
-                case 9999:{
-                    MessageBox(hwnd,"sdsd","title",MB_OK);
-                    break;
-                }
-
                 case IDC_CONNECTION_ADD:{
                     TV_INSERTSTRUCT tvinsert;
                     memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));

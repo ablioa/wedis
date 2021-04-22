@@ -24,25 +24,60 @@ widget string_editor_pane[2]={
     {NULL,{0,25,100,100},WC_EDIT,"",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL,(HMENU)IMPORT_STRING_DATA_EDITOR}
 };
 
-/** string editor layout */
 widget string_list_pane[1]={
-    {NULL,{0,0,200,200},WC_EDIT,"",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL,(HMENU)9}
+    {NULL,{0,0,200,200},"SysListView32","",WS_VISIBLE | WS_CHILD | WS_BORDER | LVS_REPORT|LVS_SHAREIMAGELISTS,(HMENU)9}
 };
 
-/** string editor layout */
 widget string_hash_pane[1]={
-    {NULL,{0,0,300,300},WC_EDIT,"",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL,(HMENU)9}
+    {NULL,{0,0,0,0},"SysListView32","",WS_VISIBLE | WS_CHILD | WS_BORDER | LVS_REPORT | LVS_EDITLABELS,(HMENU)9}
 };
 
-/** string editor layout */
 widget string_set_pane[1]={
-    {NULL,{0,0,400,400},WC_EDIT,"",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL,(HMENU)9}
+    {NULL,{0,0,0,0},"SysListView32","",WS_VISIBLE | WS_CHILD | WS_BORDER | LVS_REPORT,(HMENU)9}
 };
 
-/** string editor layout */
 widget string_zset_pane[1]={
-    {NULL,{0,0,500,500},WC_EDIT,"",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL,(HMENU)9}
+    {NULL,{0,0,0,0},"SysListView32","",WS_VISIBLE | WS_CHILD | WS_BORDER | LVS_REPORT,(HMENU)9}
 };
+
+
+const char * list_entry_column[2]={
+    "index",
+    "item"
+};
+
+const char * set_entry_column[1]={
+    "item"
+};
+
+const char * hash_entry_column[2]={
+    "key",
+    "value"
+};
+
+const char * zset_entry_column[2]={
+    "score",
+    "item"
+};
+
+BOOL init_list_column_name(HWND hWndListView,const char ** item,const int columns) {
+    LVCOLUMN lvc;
+    lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
+
+    for (int i = 0; i < columns; i++){
+        char * buff = calloc(1,255);
+        strcpy(buff,item[i]);
+
+        lvc.pszText  = buff;
+        lvc.cx       = 100;
+        lvc.iSubItem = i;
+        lvc.fmt      = LVCFMT_LEFT;
+        ListView_InsertColumn(hWndListView, i, &lvc);
+    }
+    
+    return TRUE;
+}
+
 static void set_default_style(HWND hwnd){
     EnumChildWindows(hwnd,enumChildProc,0);
 }
@@ -63,7 +98,7 @@ LRESULT CALLBACK default_entry_proc(HWND dataHwnd, UINT msg, WPARAM wParam, LPAR
 LRESULT CALLBACK stringEntryEditorWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
     RECT hrect;
     switch(msg){
-        case WM_ENTRY_STRING:{
+        case WM_INIT_ENTRY:{
             GetClientRect(hwnd,&hrect);
             for(int ix = 0; ix < 2; ix ++){
                 widget * wgt = &string_editor_pane[ix];
@@ -91,19 +126,34 @@ LRESULT CALLBACK stringEntryEditorWndProc(HWND hwnd, UINT msg, WPARAM wParam, LP
 }
 
 LRESULT CALLBACK listEntryEditorWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
+    RECT rect;
     switch(msg){
-        case WM_ENTRY_LIST:{
+        case WM_INIT_ENTRY:{
             create_widget(hwnd,App->hInstance,string_list_pane);
+            HWND list_hwnd = string_list_pane[0].hwnd;
+            ListView_SetExtendedListViewStyle(list_hwnd,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
+            init_list_column_name(list_hwnd,list_entry_column,2);
+
+            GetClientRect(hwnd,&rect);
+            MoveWindow(list_hwnd,0,0,rect.right-rect.left,rect.bottom - rect.top,TRUE);
             break;
         }
     }
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
+
 LRESULT CALLBACK setEntryEditorWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
+    RECT rect;
     switch(msg){
-        case WM_ENTRY_SET:{
+        case WM_INIT_ENTRY:{
             create_widget(hwnd,App->hInstance,string_set_pane);
+            HWND widget_hwnd = string_set_pane[0].hwnd;
+            ListView_SetExtendedListViewStyle(widget_hwnd,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
+            init_list_column_name(widget_hwnd,set_entry_column,1);
+
+            GetClientRect(hwnd,&rect);
+            MoveWindow(widget_hwnd,0,0,rect.right-rect.left,rect.bottom - rect.top,TRUE);
             break;
         }
     }
@@ -111,9 +161,16 @@ LRESULT CALLBACK setEntryEditorWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARA
 }
 
 LRESULT CALLBACK zetEntryEditorWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
+    RECT rect;
     switch(msg){
-        case WM_ENTRY_ZSET:{
+        case WM_INIT_ENTRY:{
             create_widget(hwnd,App->hInstance,string_zset_pane);
+            HWND widget_hwnd = string_zset_pane[0].hwnd;
+            ListView_SetExtendedListViewStyle(widget_hwnd,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
+            init_list_column_name(widget_hwnd,zset_entry_column,2);
+
+            GetClientRect(hwnd,&rect);
+            MoveWindow(widget_hwnd,0,0,rect.right-rect.left,rect.bottom - rect.top,TRUE);
             break;
         }
     }
@@ -121,9 +178,16 @@ LRESULT CALLBACK zetEntryEditorWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARA
 }
 
 LRESULT CALLBACK hashEntryEditorWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
+    RECT rect;
     switch(msg){
-        case WM_ENTRY_HASH:{
+        case WM_INIT_ENTRY:{
             create_widget(hwnd,App->hInstance,string_hash_pane);
+            HWND widget_hwnd = string_hash_pane[0].hwnd;
+            ListView_SetExtendedListViewStyle(widget_hwnd,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
+            init_list_column_name(widget_hwnd,hash_entry_column,2);
+
+            GetClientRect(hwnd,&rect);
+            MoveWindow(widget_hwnd,0,0,rect.right-rect.left,rect.bottom - rect.top,TRUE);
             break;
         }
     }
@@ -131,7 +195,6 @@ LRESULT CALLBACK hashEntryEditorWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 }
 
 LRESULT CALLBACK stringEditorWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
-    RECT hrect;
     switch(msg){
         case WM_COMMAND:{
             switch(LOWORD(wParam)){
@@ -179,13 +242,9 @@ BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
                 pos.width  = hrect.right - hrect.left - 10;
                 pos.height = hrect.bottom - hrect.top - 65;
                 MoveWindow(wgt->hwnd,pos.left,pos.top,pos.width,pos.height,FALSE);
-            }
 
-            SendMessage(entry_pane[0].hwnd,WM_ENTRY_STRING,0,0);
-            SendMessage(entry_pane[1].hwnd,WM_ENTRY_LIST,0,0);
-            SendMessage(entry_pane[2].hwnd,WM_ENTRY_HASH,0,0);
-            SendMessage(entry_pane[3].hwnd,WM_ENTRY_SET,0,0);
-            SendMessage(entry_pane[4].hwnd,WM_ENTRY_ZSET,0,0);
+                SendMessage(wgt->hwnd,WM_INIT_ENTRY,0,0);
+            }
 
             for(int ix = 0; ix < 3; ix ++){
                 create_widget(hwnd,App->hInstance,&key_row[ix]);
@@ -195,7 +254,6 @@ BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
             AddItems(chwnd);
 
             set_default_style(hwnd);
-
             arrange_widgets(hwnd,key_row,3);
 
             MoveToScreenCenter(hwnd);

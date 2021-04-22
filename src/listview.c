@@ -91,7 +91,7 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
 
             model->listView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
-                          WS_CHILD | WS_VISIBLE| WS_BORDER | LVS_REPORT | LVS_SHAREIMAGELISTS,
+                          WS_CHILD | WS_VISIBLE| WS_BORDER | LVS_REPORT | LVS_EDITLABELS | LVS_SHAREIMAGELISTS,
                           0, 0, 0, 0,
                           hwnd, NULL, App->hInstance, NULL);
 
@@ -107,6 +107,11 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                 case LVN_COLUMNCLICK:{
                     break;
                 }
+                                     
+                case LVN_ENDLABELEDIT:{
+                    break;
+                }
+
                 case NM_DBLCLK:{
                     MessageBox(hwnd,"handle list row message","title",MB_OK);
                     break;
