@@ -50,11 +50,7 @@ void read_host_config(Json * node,Host * host);
 
 void save_all();
 
-void save_config();
-
 void save_all_host_config();
-
-void save_host_config(int index,Host * host);
 
 Host * getHostByIndex(Config * config,int hostIndex);
 

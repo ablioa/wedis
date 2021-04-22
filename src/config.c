@@ -6,6 +6,8 @@
 #define CONFIG_REQUIREPASS "requirepass"
 #define CONFIG_PASSWORD    "password"
 
+#define CONFIG_FILENAME "wedis.json"
+
 Config * appConfig;
 
 Preference * preference;
@@ -70,9 +72,8 @@ void load_all(){
     appConfig->head = NULL;
     appConfig->tail = NULL;
 
-    /** read from and save to json config file */
     size_t length = 0;
-    char * json_text = fetch_text_from_file((const char *)"wedis.conf",&length);
+    char * json_text = fetch_text_from_file((const char *)CONFIG_FILENAME,&length);
     Json * json = json_parse(json_text);
 
     preference = (Preference*) calloc(1,sizeof(Preference));
@@ -138,19 +139,6 @@ void read_host_config(Json * node,Host * host){
     host->requirepass = item->valueint;
 }
 
-void save_host_config(int index,Host * host){
-    //char section_name[MAX_PATH]={0};
-    //wsprintf(section_name,"host/%d",index);
-    //
-    //WritePrivateProfileString(section_name,CONFIG_NAME,host->name,INI_NAME);
-    //WritePrivateProfileString(section_name,CONFIG_HOST,host->host,INI_NAME);
-    //WritePrivateProfileString(section_name,CONFIG_PASSWORD,host->password,INI_NAME);
-    //WritePrivateProfileString(section_name,CONFIG_DESC,host->description,INI_NAME);
-
-    //WritePrivateProfileInt(section_name,CONFIG_PORT,host->port,INI_NAME);
-    //WritePrivateProfileInt(section_name,CONFIG_REQUIREPASS,host->requirepass,INI_NAME);
-}
-
 Json* save_preference(Json * parent){
     Json * pcount = json_create_number(preference->db_scan_default);
     json_add_item_to_object(parent,"dbScanDefault",pcount);
@@ -161,17 +149,43 @@ void save_all_host_config(){
     Json * root  = json_create_object();
     save_preference(root);
 
+    Host * host = appConfig->head;
+    Json * host_array_item = json_create_array();
+    while(host){
+        Json * host_item  = json_create_object();
+
+        Json * name_node = json_create_string(host->name);
+        json_add_item_to_object(host_item,"name",name_node);
+
+        Json * host_node = json_create_string(host->host);
+        json_add_item_to_object(host_item,"host",host_node);
+
+        Json * port_node = json_create_number(host->port);
+        json_add_item_to_object(host_item,"port",port_node);
+
+        Json * password_node = json_create_string(host->password);
+        json_add_item_to_object(host_item,"password",password_node);
+
+        Json * requirepass_node = json_create_bool(host->requirepass);
+        json_add_item_to_object(host_item,"requirepass",requirepass_node);
+
+        Json * description_node = json_create_string(host->description);
+        json_add_item_to_object(host_item,"description",description_node);
+
+        json_add_item_reference_to_array(host_array_item,host_item);
+
+        host = host->next;
+    }
+
+    json_add_item_to_object(root,"hosts",host_array_item);
+
     char * jsonText = json_print(root);
-    FILE * file = fopen("wedis.conf","w");
+    FILE * file = fopen(CONFIG_FILENAME,"w");
     fprintf(file,"%s",jsonText);
     fclose(file);
 }
 
 void save_all(){
     load_all();
-}
-
-void save_config(){
-    MessageBox(NULL,"service config!","title",MB_OK);    
 }
 
