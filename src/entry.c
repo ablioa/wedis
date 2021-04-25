@@ -1,6 +1,14 @@
 #include "main.h"
 #include "entry.h"
 
+#define IMPORT_STRING_DATA_BUTTON 9999
+#define IMPORT_STRING_DATA_EDITOR 8888
+
+const char * list_entry_column[2] = {"index","item"};
+const char * set_entry_column[1]  = {"item"};
+const char * hash_entry_column[2] = {"key","value"};
+const char * zset_entry_column[2] = {"score","item"};
+
 widget key_row[3] = {
     {NULL,{5, 5,-1,20},WC_EDIT,"",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL,(HMENU)9},
     {NULL,{110,5,40,20},WC_BUTTON,"...",WS_VISIBLE | WS_CHILD | WS_TABSTOP,(HMENU)3},
@@ -14,9 +22,6 @@ widget entry_pane[5]={
     {NULL,{5,30,40,20},WDS_PANE,"",WS_CHILD | WS_TABSTOP,(HMENU)1,setEntryEditorWndProc},
     {NULL,{5,30,40,20},WDS_PANE,"",WS_CHILD | WS_TABSTOP,(HMENU)1,zetEntryEditorWndProc}
 };
-
-#define IMPORT_STRING_DATA_BUTTON 9999
-#define IMPORT_STRING_DATA_EDITOR 8888
 
 /** string editor layout */
 widget string_editor_pane[2]={
@@ -39,12 +44,6 @@ widget string_set_pane[1]={
 widget string_zset_pane[1]={
     {NULL,{0,0,0,0},"SysListView32","",WS_VISIBLE | WS_CHILD | WS_BORDER | LVS_REPORT,(HMENU)9}
 };
-
-
-const char * list_entry_column[2] = {"index","item"};
-const char * set_entry_column[1]  = {"item"};
-const char * hash_entry_column[2] = {"key","value"};
-const char * zset_entry_column[2] = {"score","item"};
 
 BOOL init_list_column_name(HWND hWndListView,const char ** item,const int columns) {
     LVCOLUMN lvc;
