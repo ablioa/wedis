@@ -88,6 +88,7 @@ TBBUTTON string_toolbar_buttons[1] = {
 
 LRESULT CALLBACK stringEntryEditorWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
     RECT rect;
+    
     switch(msg){
         case WM_INIT_ENTRY:{
             GetClientRect(hwnd,&rect);
@@ -114,11 +115,21 @@ LRESULT CALLBACK stringEntryEditorWndProc(HWND hwnd, UINT msg, WPARAM wParam, LP
                     if(fileName == NULL){
                         break;
                     }
-                    
-                    MessageBox(hwnd,fileName,"get string data file",MB_OK);
+   
+                    HWND parentHwnd = GetParent(hwnd);
+                    SendMessage(parentHwnd,WM_DATA_VALUE,(WPARAM)NULL,(LPARAM)NULL);
                     break;
                 }
             }
+
+            switch(HIWORD(wParam)){
+                case EN_CHANGE:{
+                    HWND parentHwnd = GetParent(hwnd);
+                    SendMessage(parentHwnd,WM_DATA_VALUE,(WPARAM)NULL,(LPARAM)NULL);
+                    break;
+                }
+            }
+
 
             break;
         }
@@ -262,6 +273,16 @@ BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
             break;
         }
 
+        case WM_DATA_KEY:{
+            // TODO on data key updated
+            break;
+        }
+
+        case WM_DATA_VALUE:{
+            // TODO on data value updated
+            break;
+        }
+
         case WM_COMMAND:{
             switch(LOWORD(wParam)){
                 case IDOK:{
@@ -272,12 +293,13 @@ BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
                 }
 
                 case 3:{
-                    LPTSTR fileName = mGetOpenFileName(hwnd);
-                    if(fileName == NULL){
+                    LPTSTR file_name = mGetOpenFileName(hwnd);
+                    if(file_name == NULL){
                         break;
                     }
-                    
-                    MessageBox(hwnd,fileName,"getKeyfile",MB_OK);
+              
+                    ety->key = fetch_text_from_file(file_name,&(ety->key_length));
+                    SendMessage(hwnd,WM_DATA_KEY,(WPARAM)NULL,(LPARAM)NULL);
                     break;
                 }
 
@@ -294,6 +316,11 @@ BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
                     }
                     break;
                 }
+            }
+            switch(HIWORD(wParam)){
+                case EN_CHANGE:
+                    SendMessage(hwnd,WM_DATA_KEY,(WPARAM)NULL,(LPARAM)NULL);
+                break;
             }
             break;
         }

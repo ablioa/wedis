@@ -7,8 +7,11 @@
 
 typedef struct dimension{
     int left;
+
     int top;
+
     int width;
+
     int height;
 }dimension;
 

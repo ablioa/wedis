@@ -103,10 +103,10 @@ typedef struct zset_entry{
 
 /**
  * data edit entry
- * TODO any better description?
  */
 typedef struct entry{
     char * key;
+    size_t key_length;
 
     union{
         string_entry * string_data;

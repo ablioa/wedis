@@ -27,6 +27,8 @@
 #define WM_DT              WM_USER+200
 #define WM_DTT             WM_USER+201
 #define WM_INIT_ENTRY      WM_USER+202
+#define WM_DATA_KEY        WM_USER+203
+#define WM_DATA_VALUE      WM_USER+204
 
 #define WM_MOVEDATA_CMD 10000
 

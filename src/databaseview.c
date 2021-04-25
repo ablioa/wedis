@@ -139,7 +139,7 @@ LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
                     DialogBoxParam (App->hInstance,MAKEINTRESOURCE (IDD_ADD_ENTRY),hwnd,(DLGPROC)entryDlgProc,(LPARAM)ety);
                     
                     if(ety->key != NULL){
-                        MessageBox(hwnd,ety->key,"Title",MB_OK); 
+                       // MessageBox(hwnd,ety->key,"Title",MB_OK); 
                     }
                     break;
                 }
