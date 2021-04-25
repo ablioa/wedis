@@ -24,15 +24,13 @@ BOOL CALLBACK SetPreferenceProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
             switch(LOWORD(wParam))
             {
                 case IDC_CONFIG_DONE:{
-                    /** TODO why json_new_item doesn't work? */
-
                     BOOL result = FALSE;
                     int val = GetDlgItemInt(hwnd,IDC_PREFERENCE_SCAN_COUNT,&result,FALSE);
                     if(result){
                         preference->db_scan_default = val;
                     }
 
-                    save_all_host_config();
+                    save_config();
 
                     EndDialog (hwnd, 0);
                     break;

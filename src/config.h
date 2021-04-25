@@ -42,17 +42,13 @@ typedef struct wedis_preference{
 extern Config * appConfig;
 extern Preference * preference;
 
-void add_co_host(Host * host);
+void save_config();
+void load_config();
 
+void add_host(Host * host);
 void remove_host_config(int hostIndex);
-
 void read_host_config(Json * node,Host * host);
-
-void save_all();
-
-void save_all_host_config();
-
-Host * getHostByIndex(Config * config,int hostIndex);
+Host * get_host_by_index(Config * config,int hostIndex);
 
 char * fetch_text_from_file(const char * filename,size_t * length);
 

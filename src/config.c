@@ -12,7 +12,7 @@ Config * appConfig;
 
 Preference * preference;
 
-Host * getHostByIndex(Config * config,int hostIndex){
+Host * get_host_by_index(Config * config,int hostIndex){
     Host * result = NULL;
 
     Host * start = appConfig->head;
@@ -29,7 +29,7 @@ Host * getHostByIndex(Config * config,int hostIndex){
     return result;
 }
 
-void add_co_host(Host * host){
+void add_host(Host * host){
     if(appConfig->tail == NULL){
         appConfig->tail = host;
         appConfig->head = host;
@@ -66,7 +66,7 @@ void remove_host_config(int hostIndex){
     }
 }
 
-void load_all(){
+void load_config(){
     appConfig = (Config*)calloc(1,sizeof(Config));
 
     appConfig->head = NULL;
@@ -87,7 +87,7 @@ void load_all(){
             Host * host = (Host *) calloc(1,sizeof(Host));
             Json * hitem = json_get_array_item(hosts,ix);
             read_host_config(hitem,host);
-            add_co_host(host);
+            add_host(host);
         }
     }
 }
@@ -145,7 +145,7 @@ Json* save_preference(Json * parent){
     return pcount;
 }
 
-void save_all_host_config(){
+void save_config(){
     Json * root  = json_create_object();
     save_preference(root);
 
@@ -183,9 +183,5 @@ void save_all_host_config(){
     FILE * file = fopen(CONFIG_FILENAME,"w");
     fprintf(file,"%s",jsonText);
     fclose(file);
-}
-
-void save_all(){
-    load_all();
 }
 

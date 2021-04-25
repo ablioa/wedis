@@ -54,7 +54,7 @@ LRESULT CALLBACK nameEditProc(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam
     switch (message){
         case WM_KEYUP:{
             char buff[MAX_PATH] = {0};
-            Host * host = getHostByIndex(appConfig,model->hostIndex);
+            Host * host = get_host_by_index(appConfig,model->hostIndex);
             GetDlgItemText(hParent,IDC_CONNECTION_VALUE,buff,MAX_PATH);
             memcpy(host->name,buff,MAX_PATH);
             break;
@@ -75,7 +75,7 @@ LRESULT CALLBACK hostEditProc(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam
     switch (message){
         case WM_KEYUP:{
             char buff[MAX_PATH] = {0};
-            Host * host = getHostByIndex(appConfig,model->hostIndex);
+            Host * host = get_host_by_index(appConfig,model->hostIndex);
             GetDlgItemText(hParent,IDC_CONNECTION_HOSTVALUE,buff,MAX_PATH);
             memcpy(host->host,buff,MAX_PATH);
             break;
@@ -95,7 +95,7 @@ LRESULT CALLBACK portEditProc(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam
     BOOL result = TRUE;
     switch (message){
         case WM_KEYUP:{
-            Host * host = getHostByIndex(appConfig,model->hostIndex);
+            Host * host = get_host_by_index(appConfig,model->hostIndex);
             UINT port   = GetDlgItemInt(hParent,IDC_CONNECTION_PORTVALUE,&result,FALSE);
             if(result){
                 host->port = port;
@@ -118,7 +118,7 @@ LRESULT CALLBACK passwordEditProc(HWND hwnd,UINT message,WPARAM wParam,LPARAM lP
 
     switch (message){
         case WM_KEYUP:{
-            Host * host = getHostByIndex(appConfig,model->hostIndex);
+            Host * host = get_host_by_index(appConfig,model->hostIndex);
 
             char buff[MAX_PATH] = {0};
             GetDlgItemText(hParent,IDC_CONNECTION_PASSWORDVALUE,buff,MAX_PATH);
@@ -140,7 +140,7 @@ LRESULT CALLBACK descEditProc(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam
 
     switch (message){
         case WM_KEYUP:{
-            Host * host = getHostByIndex(appConfig,model->hostIndex);
+            Host * host = get_host_by_index(appConfig,model->hostIndex);
 
             char buff[MAX_PATH] = {0};
             GetDlgItemText(hParent,IDC_CONNECTION_DESCRIPTION,buff,MAX_PATH);
@@ -275,7 +275,7 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lPa
                     host->requirepass = 1;
                     host->port=1990;
 
-                    add_co_host(host);
+                    add_host(host);
 
                     tvinsert.item.pszText  = host->name;
                     tvinsert.item.lParam   = (LPARAM)host;
@@ -293,7 +293,7 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lPa
                 }
 
                 case IDOK:{
-                    save_all_host_config();
+                    save_config();
                     EndDialog(hwnd,0);
                     break;
                 }
@@ -304,7 +304,7 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lPa
 
                 case IDC_CONNECTION_IFPASSWORD:{
                     UINT status =  IsDlgButtonChecked(hwnd,IDC_CONNECTION_IFPASSWORD);
-                    Host * host = getHostByIndex(appConfig,model->hostIndex);
+                    Host * host = get_host_by_index(appConfig,model->hostIndex);
                     if(status){
                         EnableWindow(GetDlgItem(hwnd, IDC_CONNECTION_PASSWORDVALUE), TRUE);
                         host->requirepass = 1;

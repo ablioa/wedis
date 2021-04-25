@@ -58,7 +58,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
     MSG  msg;
 
     ginit();
-    save_all();
+    load_config();
 
     App = (Application *)calloc(1,sizeof(Application));
     App->dataView = (DataView *) calloc(1,sizeof(DataView));
@@ -304,7 +304,7 @@ void command(HWND hwnd,int cmd){
     HINSTANCE hInst = App->hInstance;
 
     if(cmd > 900 && cmd < 1000){
-        Host * host = getHostByIndex(appConfig,cmd - IDM_CUSTOMER_HOST -1);
+        Host * host = get_host_by_index(appConfig,cmd - IDM_CUSTOMER_HOST -1);
         if(host == NULL){
             return;
         }
