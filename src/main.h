@@ -64,7 +64,7 @@
  */
 typedef struct string_entry{
     char * data;
-    char * length;
+    int    length;
 }string_entry;
 
 /**
@@ -107,6 +107,9 @@ typedef struct zset_entry{
 typedef struct entry{
     char * key;
     size_t key_length;
+
+    int data_key_set;
+    int data_value_set;
 
     union{
         string_entry * string_data;

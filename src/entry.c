@@ -124,8 +124,10 @@ LRESULT CALLBACK stringEntryEditorWndProc(HWND hwnd, UINT msg, WPARAM wParam, LP
 
             switch(HIWORD(wParam)){
                 case EN_CHANGE:{
+                    char * buff = (char*) calloc(1,MAX_PATH);
+                    int size = GetDlgItemText(hwnd,IMPORT_STRING_DATA_EDITOR,buff,MAX_PATH);
                     HWND parentHwnd = GetParent(hwnd);
-                    SendMessage(parentHwnd,WM_DATA_VALUE,(WPARAM)NULL,(LPARAM)NULL);
+                    SendMessage(parentHwnd,WM_DATA_VALUE,(WPARAM)buff,(LPARAM)size);
                     break;
                 }
             }
@@ -274,20 +276,21 @@ BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
         }
 
         case WM_DATA_KEY:{
-            // TODO on data key updated
+            ety->key = (char *) wParam;
+            ety->key_length = (int) lParam;
             break;
         }
 
         case WM_DATA_VALUE:{
-            // TODO on data value updated
+            ety->string_data = (string_entry*) calloc(1,sizeof(string_entry));
+            ety->string_data->data = (char *) wParam;
+            ety->string_data->length = (int) lParam;
             break;
         }
 
         case WM_COMMAND:{
             switch(LOWORD(wParam)){
                 case IDOK:{
-                    ety->key=(char*)calloc(255,1);
-                    sprintf(ety->key,"hello,from dialog");
                     EndDialog(hwnd,0);
                     break;
                 }
@@ -298,8 +301,9 @@ BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
                         break;
                     }
               
-                    ety->key = fetch_text_from_file(file_name,&(ety->key_length));
-                    SendMessage(hwnd,WM_DATA_KEY,(WPARAM)NULL,(LPARAM)NULL);
+                    size_t len;
+                    char * key = fetch_text_from_file(file_name,&len);
+                    SendMessage(hwnd,WM_DATA_KEY,(WPARAM)key,(LPARAM)len);
                     break;
                 }
 
@@ -318,9 +322,12 @@ BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
                 }
             }
             switch(HIWORD(wParam)){
-                case EN_CHANGE:
-                    SendMessage(hwnd,WM_DATA_KEY,(WPARAM)NULL,(LPARAM)NULL);
-                break;
+                case EN_CHANGE:{
+                    char * buff = (char*) calloc(1,MAX_PATH);
+                    int size = GetDlgItemText(hwnd,9,buff,MAX_PATH);
+                    SendMessage(hwnd,WM_DATA_KEY,(WPARAM)buff,(LPARAM)size);
+                    break;
+                }
             }
             break;
         }
