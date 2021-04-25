@@ -110,7 +110,12 @@ LRESULT CALLBACK stringEntryEditorWndProc(HWND hwnd, UINT msg, WPARAM wParam, LP
         case WM_COMMAND:{
             switch(LOWORD(wParam)){
                 case TB_CMD_ADD_DATA:{
-                    MessageBox(hwnd,"导入文本数据","Title",MB_OK);  
+                    LPTSTR fileName = mGetOpenFileName(hwnd);
+                    if(fileName == NULL){
+                        break;
+                    }
+                    
+                    MessageBox(hwnd,fileName,"get string data file",MB_OK);
                     break;
                 }
             }
@@ -263,6 +268,16 @@ BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
                     ety->key=(char*)calloc(255,1);
                     sprintf(ety->key,"hello,from dialog");
                     EndDialog(hwnd,0);
+                    break;
+                }
+
+                case 3:{
+                    LPTSTR fileName = mGetOpenFileName(hwnd);
+                    if(fileName == NULL){
+                        break;
+                    }
+                    
+                    MessageBox(hwnd,fileName,"getKeyfile",MB_OK);
                     break;
                 }
 
