@@ -2,6 +2,8 @@
 
 #include "json.h"
 
+#include <windowsx.h>
+
 void SetDialogIcon(HWND hWnd, int idi) {
     HICON hIcon = LoadIcon((HINSTANCE) GetWindowLongPtr(hWnd, GWLP_HINSTANCE),MAKEINTRESOURCE(idi));
     SendMessage(hWnd, WM_SETICON, ICON_BIG,  (LPARAM)hIcon);
@@ -30,8 +32,9 @@ BOOL CALLBACK SetPreferenceProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
                         preference->db_scan_default = val;
                     }
 
-                    save_config();
+                    preference->log_network_traffic = IsDlgButtonChecked(hwnd,87);
 
+                    save_config();
                     EndDialog (hwnd, 0);
                     break;
                 };
@@ -44,9 +47,10 @@ BOOL CALLBACK SetPreferenceProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
         break;
 
         case WM_INITDIALOG:{
-            /** TODO set preference value from config file */
             SetDlgItemInt(hwnd,IDC_PREFERENCE_SCAN_COUNT,preference->db_scan_default,FALSE);
-           
+            Button_SetCheck(GetDlgItem(hwnd,87),
+                    preference->log_network_traffic);
+
             MoveToScreenCenter(hwnd);
             break;
         }

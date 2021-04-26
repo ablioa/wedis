@@ -35,8 +35,15 @@ typedef struct{
    struct wedis_host * tail;
 }Config;
 
+/**
+ * preference
+ */
 typedef struct wedis_preference{
+    /** default size for data query*/
     int db_scan_default;
+
+    /** whether to log network traffic*/
+    int log_network_traffic;
 }Preference;
 
 extern Config * appConfig;

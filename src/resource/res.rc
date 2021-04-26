@@ -86,7 +86,7 @@ FONT 8, "Ms Shell Dlg", 0, 0, 1
     DEFPUSHBUTTON   "OK", IDC_CONFIG_DONE, 260, 220, 50, 14, 0, WS_EX_LEFT
     AUTOCHECKBOX    "Display help message", 0, 45, 20, 84, 8, 0, WS_EX_LEFT
     AUTOCHECKBOX    "Reload automatically", 0, 45, 35, 81, 8, 0, WS_EX_LEFT
-    AUTOCHECKBOX    "Log network traffics", 0, 45, 50, 78, 8, 0, WS_EX_LEFT
+    AUTOCHECKBOX    "Log network traffics", 87, 45, 50, 78, 8, 0, WS_EX_LEFT
     CONTROL         "", IDC_STATIC, WC_STATIC, SS_ETCHEDHORZ, 1, 215, 370, 1, WS_EX_LEFT
 }
 

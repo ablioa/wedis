@@ -77,8 +77,11 @@ void load_config(){
     Json * json = json_parse(json_text);
 
     preference = (Preference*) calloc(1,sizeof(Preference));
-    Json * sd = json_get_object_item(json,"dbScanDefault");
-    preference->db_scan_default = sd->valueint;
+    Json * node = json_get_object_item(json,"dbScanDefault");
+    preference->db_scan_default = node->valueint;
+
+    node = json_get_object_item(json,"logNetworkTraffic");
+    preference->log_network_traffic = node->valueint;
 
     Json * hosts = json_get_object_item(json,"hosts");
     if(hosts){
@@ -140,9 +143,11 @@ void read_host_config(Json * node,Host * host){
 }
 
 Json* save_preference(Json * parent){
-    Json * pcount = json_create_number(preference->db_scan_default);
-    json_add_item_to_object(parent,"dbScanDefault",pcount);
-    return pcount;
+    Json * db_scan_count = json_create_number(preference->db_scan_default);
+    json_add_item_to_object(parent,"dbScanDefault",db_scan_count);
+
+    Json * log_network_traffic = json_create_number(preference->log_network_traffic);
+    json_add_item_to_object(parent,"logNetworkTraffic",log_network_traffic);
 }
 
 void save_config(){
