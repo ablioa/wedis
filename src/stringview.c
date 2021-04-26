@@ -2,6 +2,8 @@
 
 #define GAP_WIDTH 5
 
+const char * data_remove_msg = "Do you want to remove data item?";
+
 widget ttl_row[5]={
     {NULL,{0,  30,40,20},WC_STATIC,"TTL:",WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT,(HMENU)1},
     {NULL,{45, 30,-1,20},WC_EDIT,"",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL,(HMENU)2},
@@ -122,8 +124,11 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 
                 /** delete data item */
                 case TB_CMD_DELETE_DATA:{
-                    char * data_key = model->dataNode->data->data_key;
-                    s_db_delete_key(model->dataNode,data_key);
+                    int result = MessageBox(hwnd,data_remove_msg,"wedis",MB_YESNOCANCEL|MB_ICONASTERISK);
+                    if(result == IDYES){
+                        char * data_key = model->dataNode->data->data_key;
+                        s_db_delete_key(model->dataNode,data_key);
+                    }
                     break;
                 }
 
