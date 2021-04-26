@@ -22,7 +22,7 @@ static HWND build_toolbar(HWND parent){
     TBBUTTON tbtn[7] = {
         {(TB_REFRESH_BUTTON), TB_CMD_REFRESH_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(TB_MOVE_BUTTON), TB_CMD_MOVE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(TB_DELETE_BUTTON), TB_CMD_MOVE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TB_DELETE_BUTTON), TB_CMD_DELETE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(0), 0, TBSTATE_ENABLED, TBSTYLE_SEP, {0}, 0, 0},
         {(TB_EXPORT_BUTTON), TB_CMD_EXPORT_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(TB_FORMAT_BUTTON), TB_CMD_FORMAT_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
@@ -55,9 +55,9 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
             model->stringView = CreateWindowEx(0, WC_EDIT, (""), 
                     WS_VISIBLE | ES_AUTOVSCROLL | WS_BORDER | WS_CHILD | WS_TABSTOP | WS_VSCROLL |ES_MULTILINE, 
                     0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_TEXT, App->hInstance, 0);
-			model->propertyView   = CreateWindowEx(0, STRING_VIEW_PROP_CLASS,NULL, 
-					(WS_VISIBLE) | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 
-					0,0,0,0,hwnd, (HMENU)0, App->hInstance, 0);
+            model->propertyView   = CreateWindowEx(0, STRING_VIEW_PROP_CLASS,NULL, 
+                    (WS_VISIBLE) | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 
+                    0,0,0,0,hwnd, (HMENU)0, App->hInstance, 0);
             model->toolBar = build_toolbar(hwnd);
             model->mode = TEXT;
             model->hex_width=16;
