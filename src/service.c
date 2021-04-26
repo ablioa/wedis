@@ -77,6 +77,18 @@ void s_auth(TreeNode * hostNode,char * password){
     }
 }
 
+void s_add_string(TreeNode * db_node,char * key,int key_length,char * value,int value_length){
+    RedisParams param = redis_build_params(3);
+    redis_add_param(param,redis_build_param("set"));
+    redis_add_param(param,redis_build_param(key));
+    redis_add_param(param,redis_build_param(value));
+
+    RedisReply reply = redis_serialize_params(db_node->stream,param);
+    if(reply->type != REPLY_STATUS){
+        log_message("add string data failed.");
+    }
+}
+
 void s_key_space(TreeNode * hodeNode){
     RedisParams param = redis_build_params(2);
     redis_add_param(param,redis_build_param("info"));
@@ -115,7 +127,7 @@ void s_db_select(TreeNode * dbnode){
 
 /**
  * search database
- **/;
+ **/
 void s_db_get_data(TreeNode * dbnode,int cursor,char * pattern,int count){
     char cursor_buff[255] = {0};
     char pattern_buff[255] = {0};

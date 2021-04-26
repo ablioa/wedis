@@ -12,6 +12,8 @@ void s_auth(TreeNode * hodeNode,char * password);
 
 void s_key_space(TreeNode * hodeNode);
 
+void s_add_string(TreeNode * db_node,char * key,int key_length,char * value,int value_length);
+
 void s_db_get_data(TreeNode * dbnode,int cursor,char * pattern,int count);
 
 void s_db_select(TreeNode * selected);
@@ -19,6 +21,7 @@ void s_db_select(TreeNode * selected);
 void s_handle_data(TreeNode * datanode,DataType dataType);
 
 RedisReply s_db_flushdb(TreeNode * dbnode);
+
 RedisReply s_db_ping(TreeNode * dbnode);
 
 RedisReply s_db_fetch_string(TreeNode * datanode);

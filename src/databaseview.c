@@ -136,11 +136,20 @@ LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
 
                 case TB_CMD_ADD_DATA:{
                     entry *ety = (entry *) calloc(1,sizeof(entry));
+                    TreeNode * node = model->databaseNode;
                     DialogBoxParam (App->hInstance,MAKEINTRESOURCE (IDD_ADD_ENTRY),hwnd,(DLGPROC)entryDlgProc,(LPARAM)ety);
                     
                     if(ety->key != NULL){
-                       //MessageBox(hwnd,ety->key,"data.key",MB_OK); 
-                       //MessageBox(hwnd,ety->string_data->data,"data.value",MB_OK); 
+                        s_add_string(node,
+                                ety->key,
+                                ety->key_length,
+                                ety->string_data->data,
+                                ety->string_data->length);
+
+                        s_db_get_data(node,
+                                node->database->cursor,
+                                node->database->pattern,
+                                node->database->page_size);
                     }
                     break;
                 }

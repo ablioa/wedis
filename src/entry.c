@@ -67,7 +67,7 @@ static void set_default_style(HWND hwnd){
     EnumChildWindows(hwnd,enumChildProc,0);
 }
 
-static void AddItems(HWND hWndComboBox){
+static void add_items(HWND hWndComboBox){
     const char * types[5]= {"- string","- list","- hash","- set","- zset"};
     for (int k = 0; k <= 4; k++){
         SendMessage(hWndComboBox,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM) types[k]); 
@@ -265,7 +265,7 @@ BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
             }
 
             HWND chwnd = GetDlgItem(hwnd,IDC_DATATYPE);
-            AddItems(chwnd);
+            add_items(chwnd);
 
             set_default_style(hwnd);
             arrange_widgets(hwnd,key_row,3);
