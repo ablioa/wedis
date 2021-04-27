@@ -81,7 +81,11 @@ void load_config(){
     preference->db_scan_default = node->valueint;
 
     node = json_get_object_item(json,"logNetworkTraffic");
-    preference->log_network_traffic = node->valueint;
+    if(node == NULL){
+        preference->log_network_traffic = 0;
+    }else{
+        preference->log_network_traffic = node->valueint;
+    }
 
     Json * hosts = json_get_object_item(json,"hosts");
     if(hosts){
@@ -142,7 +146,7 @@ void read_host_config(Json * node,Host * host){
     host->requirepass = item->valueint;
 }
 
-Json* save_preference(Json * parent){
+void save_preference(Json * parent){
     Json * db_scan_count = json_create_number(preference->db_scan_default);
     json_add_item_to_object(parent,"dbScanDefault",db_scan_count);
 

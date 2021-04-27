@@ -133,7 +133,8 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
                 case TB_CMD_DELETE_DATA:{
                     char * data_key = model->dataNode->data->data_key;
-                    s_db_delete_key(model->dataNode,data_key);
+                    //s_db_delete_key(model->dataNode,data_key);
+                    delete_data_node(model->dataNode,data_key);
                     break;
                 }
 

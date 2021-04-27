@@ -3,6 +3,8 @@
 Application * App;
 SystemResource * resource;
 
+const char * data_remove_msg = "Do you want to remove data item?";
+
 void initpan(HINSTANCE hInstance){
     init_hashview(hInstance);
     init_stringview(hInstance);
@@ -573,3 +575,11 @@ char * encode(char * chunk,int length){
 
     return buff;
 }
+
+void delete_data_node(TreeNode * db_node,const char * key){
+    int result = MessageBox(NULL,data_remove_msg,"wedis",MB_YESNOCANCEL|MB_ICONASTERISK);
+    if(result == IDYES){
+        s_db_delete_key(db_node,key);
+    }
+}
+

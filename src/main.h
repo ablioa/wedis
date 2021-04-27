@@ -174,5 +174,7 @@ char * encode(char * chunk,int length);
 
 HWND buildGeneralToolBar(HWND parent,TBBUTTON * tbtn,int buttonCount);
 
+void delete_data_node(TreeNode * db_node,const char * key);
+
 #endif
 
