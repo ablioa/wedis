@@ -1,5 +1,7 @@
 #include "stringview.h"
 
+#include <windowsx.h>
+
 #define GAP_WIDTH 5
 
 
@@ -64,7 +66,7 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
             model->hex_width=16;
 
             SendMessage(model->stringView, WM_SETFONT, (WPARAM)(resource->fixedWidthFont), FALSE);
-            
+            Edit_SetReadOnly(model->stringView,TRUE);
             break;
         }
        

@@ -2,6 +2,14 @@
 
 const char * db_flush_msg = "flushdb will remove all data in the database,continue?";
 
+widget query_row[5]={
+    {NULL,{5,  28,80,20},WC_EDIT,"0",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER|ES_AUTOHSCROLL,(HMENU)DB_CTRL_CURSOR},
+    {NULL,{90, 28,-1,20},WC_EDIT,"*",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER|ES_AUTOHSCROLL,(HMENU)DB_CTRL_PATTERN},
+    {NULL,{175,28,80,20},WC_EDIT,"10",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER|ES_AUTOHSCROLL,(HMENU)DB_CTRL_COUNT},
+    {NULL,{260,28,60,20},WC_BUTTON,"Scan",WS_VISIBLE | WS_CHILD | WS_TABSTOP,(HMENU)DB_CTRL_SEARCH},
+    {NULL,{325,28,60,20},WC_BUTTON,"Next",WS_VISIBLE | WS_CHILD | WS_TABSTOP,(HMENU)DB_CTRL_NEXT_SEARCH}
+};
+
 void init_database_view(HINSTANCE hInstance){
     WNDCLASSEX hashViewClass;
 
@@ -44,25 +52,15 @@ BOOL CALLBACK enumChildProc(HWND hwnd,LPARAM lParam){
 void create_database_view(HWND hwnd,DatabaseViewModel * model){
     HINSTANCE hinst = App->hInstance;
 
-    model->hwndCursorText = CreateWindowEx(0, WC_EDIT, ("0"), 
-            WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
-            5, 28, 80, 20, hwnd, (HMENU)DB_CTRL_CURSOR, hinst, 0); 
+    for(int ix = 0; ix < 5; ix ++){
+        create_widget(hwnd,hinst,&query_row[ix]);
+    }
     
-    model->hwndPatternText = CreateWindowEx(0, WC_EDIT, ("*"), 
-            WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
-            90, 28, 80, 20, hwnd, (HMENU)DB_CTRL_PATTERN, hinst, 0);    
-
-    model->hwndCountText = CreateWindowEx(0, WC_EDIT, ("10"), 
-            WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 
-            175, 28, 80, 20, hwnd, (HMENU)DB_CTRL_COUNT, hinst, 0); 
-
-    model->hwndSearchButton = CreateWindowEx(0, WC_BUTTON, ("Scan"), 
-            WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
-            260, 28, 60, 20, hwnd, (HMENU)DB_CTRL_SEARCH, hinst, 0); 
-
-    model->hwndNextSearchButton = CreateWindowEx(0, WC_BUTTON, ("Next"), 
-            WS_VISIBLE | WS_CHILD | WS_TABSTOP, 
-            325, 28, 60, 20, hwnd, (HMENU)DB_CTRL_NEXT_SEARCH, hinst, 0); 
+    model->hwndCursorText       = query_row[0].hwnd; 
+    model->hwndPatternText      = query_row[1].hwnd; 
+    model->hwndCountText        = query_row[2].hwnd; 
+    model->hwndSearchButton     = query_row[3].hwnd; 
+    model->hwndNextSearchButton = query_row[4].hwnd; 
 
     EnumChildWindows(hwnd,enumChildProc,0);
 }
@@ -178,6 +176,9 @@ LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
         case WM_SIZE:{
             GetClientRect(hwnd,&rect);
             MoveWindow(model->toolbar,0,0,rect.right-rect.left,28,TRUE);
+
+            arrange_widgets(hwnd,query_row,5);
+            // TODO 更新布局
             break;
         }
     }
