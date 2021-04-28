@@ -8,96 +8,96 @@ add_big_bin_string(){
 }
 
 add_bin_list(){
-	idx=0
-	while [ ${idx} -lt 20 ];
-	do
+    idx=0
+    while [ ${idx} -lt 20 ];
+    do
         ${redis_bin_cmd} lpush bin_list_data < small.pdf 2>/dev/null;
-		(( idx ++ ))
-	done
+        (( idx ++ ))
+    done
 }
 
 add_big_set(){
-	idx=0
-	while [ ${idx} -lt 200 ];
-	do
-		set_data_item="num${idx}";
+    idx=0
+    while [ ${idx} -lt 200 ];
+    do
+        set_data_item="num${idx}";
         ${redis_cmd} sadd big_set_data "${set_data_item}" 2>/dev/null;
-		(( idx ++ ))
-	done
+        (( idx ++ ))
+    done
 }
 
 add_bin_key_data(){
     ${redis_cmd} set tempkey data 2>/dev/null;
-	${redis_bin_cmd} rename tempkey < small.pdf
+    ${redis_bin_cmd} rename tempkey < small.pdf
 }
 
 add_hash(){
-	idx=0
-	while [ ${idx} -lt 10 ];
-	do
-		idy=0
-		pkey=$(printf "hash_name_${idx}");
-		while [ ${idy} -lt 10 ];
-		do
-			pval=$(printf "val_${idy}");
+    idx=0
+    while [ ${idx} -lt 10 ];
+    do
+        idy=0
+        pkey=$(printf "hash_name_${idx}");
+        while [ ${idy} -lt 10 ];
+        do
+            pval=$(printf "val_${idy}");
             ${redis_cmd} hset "${pkey}" "${pkey}.${pval}" "${pval}";
-			(( idy ++));
-		done
+            (( idy ++));
+        done
 
-		(( idx ++ ));
-	done
+        (( idx ++ ));
+    done
 }
 
 add_zset(){
-	idx=0
-	while [ ${idx} -lt 5 ];
-	do
-		idy=0
-		pkey=$(printf "zset_${idx}");
-		while [ ${idy} -lt 10 ];
-		do
-			pval=$(printf "val_${idy}");
-			${redis_cmd} hset "${pkey}" "${pkey}.${pval}" "${pval}";
-			(( idy ++));
-		done
+    idx=0
+    while [ ${idx} -lt 5 ];
+    do
+        idy=0
+        pkey=$(printf "zset_${idx}");
+        while [ ${idy} -lt 10 ];
+        do
+            pval=$(printf "val_${idy}");
+            ${redis_cmd} hset "${pkey}" "${pkey}.${pval}" "${pval}";
+            (( idy ++));
+        done
 
-		(( idx ++ ));
-	done
+        (( idx ++ ));
+    done
 }
 
 add_many(){
-	idx=0
-	while [ ${idx} -lt 30 ];
-	do
-		mkey=$(printf "K%05d" ${idx});
-		mdata="data_of_num_${idx}";
-		echo "${mkey} - ${mdata}";
-		${redis_cmd} set "${mkey}" "${mdata}";
-		(( idx ++ ))
-	done
+    idx=0
+    while [ ${idx} -lt 30 ];
+    do
+        mkey=$(printf "K%05d" ${idx});
+        mdata="data_of_num_${idx}";
+        echo "${mkey} - ${mdata}";
+        ${redis_cmd} set "${mkey}" "${mdata}";
+        (( idx ++ ))
+    done
 }
 
 usage(){
     echo "Usage: $0 [option]";
-	echo "  -b add binary string";
-	echo "  -l add list data";
-	echo "  -s add set data";
-	echo "  -t add binary key data";
-	echo "  -h add hash data";
-	echo "  -z add zset data";
-	echo "  -m add many string data";
+    echo "  -b add binary string";
+    echo "  -l add list data";
+    echo "  -s add set data";
+    echo "  -t add binary key data";
+    echo "  -h add hash data";
+    echo "  -z add zset data";
+    echo "  -m add many string data";
 }
 
 while getopts "blsthzm" opt; do
     case ${opt} in
-	    h) { add_hash; exit; };;
-	    m) { add_many; exit; };;
-	    z) { add_zset; exit; };;
-	    b) { add_big_bin_string; exit;};;
-	    l) { add_bin_list; exit;};;
-	    s) { add_big_set; exit;};;
-	    t) { add_bin_key_data; exit;};;
-	esac
+        h) { add_hash; exit; };;
+        m) { add_many; exit; };;
+        z) { add_zset; exit; };;
+        b) { add_big_bin_string; exit;};;
+        l) { add_bin_list; exit;};;
+        s) { add_big_set; exit;};;
+        t) { add_bin_key_data; exit;};;
+    esac
 done
 
 usage;
