@@ -306,14 +306,27 @@ RedisReply s_db_delete_key(TreeNode * dataNode,const char * data_key){
     return reply;
 }
 
-RedisParams redis_rename_key(char * dataKey,char * newKey){
+RedisReply redis_get_ttl(TreeNode * dataNode,char * dataKey){
+    RedisParams params = redis_build_params(2);
+    redis_add_param(params,redis_build_param("ttl"));
+    redis_add_param(params,redis_build_param(dataKey));
+
+    RedisReply reply = redis_serialize_params(dataNode->stream,params);
+    handle_redis_data(dataNode,reply);
+    return reply;
+}
+
+RedisReply redis_rename_key(TreeNode * dataNode,char * dataKey,char * newKey){
     RedisParams params = redis_build_params(3);
     redis_add_param(params,redis_build_param("rename"));
     redis_add_param(params,redis_build_param(dataKey));
     redis_add_param(params,redis_build_param(newKey));
 
-    return params;
+    RedisReply reply = redis_serialize_params(dataNode->stream,params);
+    handle_redis_data(dataNode,reply);
+    return reply;
 }
+
 RedisParams redis_build_params(int count){
     RedisParams params = (RedisParams)calloc(1,sizeof(struct redis_params));
     params->items = (RedisParam*)calloc(count,sizeof(struct redis_param));

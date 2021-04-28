@@ -58,6 +58,11 @@ typedef struct data_property_model{
     HWND ttlUnitHwnd;
     HWND ttlUpdateHwnd;
     HWND ttlPersistHwnd;
+
+
+   RedisReply data;
+
+   TreeNode * dataNode;
 }PropertyModel;
 
 LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);

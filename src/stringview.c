@@ -14,10 +14,10 @@ widget ttl_row[5]={
 };
 
 widget keys_row[4]={
-    {NULL,{0,  5,40,20},WC_STATIC,"KEY:",WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT,(HMENU)1},
-    {NULL,{45, 5,-1,20},WC_EDIT,"",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL,(HMENU)2},
-    {NULL,{255,5,60,20},WC_BUTTON,"Import",WS_VISIBLE | WS_CHILD | WS_TABSTOP,(HMENU)3},
-    {NULL,{320,5,60,20},WC_BUTTON,"Update",WS_VISIBLE | WS_CHILD | WS_TABSTOP,(HMENU)4}
+    {NULL,{0,  5,40,20},WC_STATIC,"KEY:",WS_VISIBLE | WS_CHILD | WS_GROUP | SS_LEFT,(HMENU)6},
+    {NULL,{45, 5,-1,20},WC_EDIT,"",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL,(HMENU)7},
+    {NULL,{255,5,60,20},WC_BUTTON,"Import",WS_VISIBLE | WS_CHILD | WS_TABSTOP,(HMENU)8},
+    {NULL,{320,5,60,20},WC_BUTTON,"Update",WS_VISIBLE | WS_CHILD | WS_TABSTOP,(HMENU)9}
 };
 
 static HWND build_toolbar(HWND parent){
@@ -155,6 +155,7 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                 break;
             }
 
+            SendMessage(model->propertyView,WM_DT,(WPARAM)model->data,(LPARAM)model->dataNode);
             char * text = model->data->bulk->content;
             int length  = model->data->bulk->length;
             if(is_binary_data(text,length)){
@@ -164,6 +165,8 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
             if(model->mode == BINARY){
                 text = dump_text(text,length,model->hex_width);
             }
+
+            // get ttl
 
             SetWindowText(model->stringView,text);
             break;
@@ -200,6 +203,37 @@ LRESULT CALLBACK stringViewPropWndProc(HWND hwnd, UINT message, WPARAM wParam, L
 
             EnumChildWindows(hwnd,enumChildProc,0);
             break;
+        }
+
+        case WM_COMMAND:{
+            switch(LOWORD(wParam)){
+                case 8:{
+                    LPTSTR file_name = mGetOpenFileName(hwnd);
+                    if(file_name == NULL){
+                        break;
+                    }
+                    MessageBox(hwnd,"Import a new key","Title",MB_OK);
+                    break;
+                }
+
+                case 9:{
+                    char * buff = (char*) calloc(1,MAX_PATH);
+                    GetDlgItemText(hwnd,7,buff,MAX_PATH);
+
+                    char * old_key = model->dataNode->data->data_key;
+                    redis_rename_key(model->dataNode,old_key,buff);
+                    break;
+                }
+            }
+
+            break;
+        }
+
+        case WM_DT:{
+            model->data = (RedisReply)wParam;
+            model->dataNode = (TreeNode*)lParam;
+            
+            SetDlgItemText(hwnd,7,model->dataNode->data->data_key);
         }
 
         case WM_SIZE:{

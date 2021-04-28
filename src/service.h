@@ -53,6 +53,6 @@ void appendTask(CommandType cmdType,const DataType dataType,const char * dataKey
 
 RedisParams redis_delete_key(char * dataKey);
 
-RedisParams redis_rename_key(char * dataKey,char * newKey);
+RedisReply redis_rename_key(TreeNode * dataNode,char * dataKey,char * newKey);
 
 #endif
