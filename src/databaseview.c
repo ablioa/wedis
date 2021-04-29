@@ -176,9 +176,7 @@ LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
         case WM_SIZE:{
             GetClientRect(hwnd,&rect);
             MoveWindow(model->toolbar,0,0,rect.right-rect.left,28,TRUE);
-
             arrange_widgets(hwnd,query_row,5);
-            // TODO 更新布局
             break;
         }
     }

@@ -29,6 +29,8 @@ typedef struct widget{
     HMENU     id;
 
     WNDPROC   editorProc;
+    
+    int type;
 }widget;
 
 LRESULT CALLBACK stringEntryEditorWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);

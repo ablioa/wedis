@@ -208,24 +208,6 @@ LRESULT CALLBACK hashEntryEditorWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
-LRESULT CALLBACK stringEditorWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
-    switch(msg){
-        case WM_COMMAND:{
-            switch(LOWORD(wParam)){
-                /** import file as data */
-                case 9999:{
-                    MessageBox(hwnd,"hello,world","Title",MB_OK);  
-                    break;
-                }
-            }
-
-            break;
-        }
-    }
-
-    return DefWindowProc(hwnd, msg, wParam, lParam);
-}
-
 /**
  * switch editor pane among difference data type.
  */ 
