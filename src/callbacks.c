@@ -63,6 +63,8 @@ BOOL CALLBACK AboutDlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam
     switch (message){
         case WM_INITDIALOG:{
             MoveToScreenCenter(hwnd);
+            HICON hIcon = LoadIcon((HINSTANCE) GetWindowLongPtr(hwnd, GWLP_HINSTANCE),MAKEINTRESOURCE(IDI_MAIN));
+            SendDlgItemMessage(hwnd, 8888, STM_SETICON,(WPARAM) hIcon, 0);
             break;
         }
 
