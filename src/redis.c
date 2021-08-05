@@ -1,37 +1,39 @@
 #include "redis.h"
 
+#define BUFF_INCR_SIZE 4096
+
 /** read response from redis server then parse it */
 RedisReply receive_msg(RedisConnection stream,redis_read_progress_handle handle){
-    char localbuff[4096] = {0};
+    char localbuff[BUFF_INCR_SIZE] = {0};
     RedisReply reply = NULL;
 
-    stream->capacity  = 4096;
+    stream->capacity  = BUFF_INCR_SIZE;
     stream->free_size = stream->capacity;
     stream->read_buff = (char*) calloc(stream->capacity,sizeof(char));
-    
+
     do{
         if(reply){
             free_redis_reply(reply);
             reply=NULL;
         }
-        int ret = recv(stream->socket, localbuff, 4096, 0);
+        int ret = recv(stream->socket, localbuff, BUFF_INCR_SIZE, 0);
 
         if(stream->free_size <= ret){
-            stream->capacity  += 4096;
-            stream->free_size += 4096;
+            stream->capacity  += BUFF_INCR_SIZE;
+            stream->free_size += BUFF_INCR_SIZE;
             stream->read_buff = (char*) realloc(stream->read_buff,stream->capacity);
         }
 
         memcpy(stream->read_buff + ((stream->capacity - stream->free_size)),localbuff,ret);
         stream->free_size -= ret;
-        
+
         int pos = 0;
         reply = read_reply(stream->read_buff,&pos, (stream->capacity - stream->free_size),handle);
 
     }while(reply->reply_status != REPLY_STATUS_DONE);
 
     wedis_log(stream->read_buff);
-    free(stream->read_buff); 
+    free(stream->read_buff);
 
     return reply;
 }
@@ -51,7 +53,7 @@ void free_redis_reply(RedisReply reply){
 
                 free(reply->bulk);
             }
-            
+
             break;
         break;
 
@@ -66,7 +68,7 @@ void free_redis_reply(RedisReply reply){
                 }
             }
         break;
-        
+
         default:
             break;
     }
@@ -117,7 +119,7 @@ RedisReply read_reply(char *text,int * cur,int length,redis_read_progress_handle
 
             break;
         }
-        
+
         /** error */
         case '-':{
             reply->type = REPLY_DIGITAL;
@@ -136,7 +138,7 @@ RedisReply read_reply(char *text,int * cur,int length,redis_read_progress_handle
 
             break;
         }
-        
+
         /** number */
         case ':':{
             reply->type = REPLY_ERROR;
@@ -172,14 +174,14 @@ RedisReply read_reply(char *text,int * cur,int length,redis_read_progress_handle
                 reply->reply_status = REPLY_STATUS_PENDING;
                 break;
             }
-            
+
             reply->bulk = buildRedisBulk(bulk_length);
             memcpy(reply->bulk->content, (text + *cur), bulk_length);
             (*cur) = (*cur) + bulk_length + 2;
 
             break;
         }
-        
+
         /** multibulk */
         case '*':{
             reply->type = REPLY_MULTI;
@@ -243,7 +245,7 @@ KVPair buildKVPair(){
 }
 
 void destroyKVPair(KVPair kv){
-    // TODO release the memory 
+    // TODO release the memory
 }
 
 void setKVPair(KVPair kv, const char *text){

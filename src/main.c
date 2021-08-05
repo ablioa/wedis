@@ -44,13 +44,16 @@ void initpan(HINSTANCE hInstance){
     mainClass.cbWndExtra = 0;
     mainClass.hbrBackground = resource->brush; 
     mainClass.hCursor = LoadCursor (0, IDC_ARROW);
-    
+
     RegisterClassEx(&mainClass);
 }
 
 void onExit(){
 }
 
+/**
+ * heart beat to keep the tcp connection alive.
+ */ 
 VOID CALLBACK heart_beat_timer(HWND hwnd,UINT message,UINT_PTR timer,DWORD dwTime){
     TreeNode * host = (TreeNode *) timer;
     s_db_ping(host);
@@ -121,20 +124,6 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
                     break;
                 }
 
-                case NM_RCLICK:{
-                    if(msg->idFrom == 0){
-                        POINT pt;
-                        GetCursorPos(&pt);
-
-                        TreeNode * selected = getSelectedNode();
-                        if(selected != NULL && selected->level == NODE_LEVEL_HOST){
-                            App->selectHost = selected;
-                            TrackPopupMenu(App->hServerInfoMenu,TPM_LEFTALIGN,pt.x,pt.y,0,hwnd,NULL);
-                        }
-                    }
-                    break;
-                }
-
                 case TVN_SELCHANGED:{
                     LPNMTREEVIEW pnmtv = (LPNMTREEVIEW) lParam;
                     TVITEMA item;
@@ -185,6 +174,7 @@ void showWindows(AppView * v){
     ShowWindow(v->dataviewHwnd,SW_SHOW);
 }
 
+// TODO update connection menu item list when configuration altered.
 void onMainFrameCreate(HWND hwnd){
     HINSTANCE hInst = App->hInstance;
 
@@ -214,12 +204,6 @@ void onMainFrameCreate(HWND hwnd){
         AppendMenu(App->hConnectionMenu,MF_STRING,(start->hostIndex + IDM_CUSTOMER_HOST+1),start->name);
         start = start->next;
     }
-    
-    App->hServerInfoMenu = CreatePopupMenu();
-    AppendMenu(App->hServerInfoMenu,MF_STRING,IDM_SYSTEM_STAT,"Server Status");
-    AppendMenu(App->hServerInfoMenu,MF_SEPARATOR,0,"");
-    AppendMenu(App->hServerInfoMenu,MF_STRING,IDM_SYSTEM_STAT+1,"Commands");
-    AppendMenu(App->hServerInfoMenu,MF_STRING,IDM_SYSTEM_STAT+2,"Disconnect");
 }
 
 void updateNavigationInfo(TreeNode * node){
@@ -246,7 +230,6 @@ void onDataNodeSelection(TreeNode * selected){
         TreeNode * dbnode = selected->parent;
         s_db_select(dbnode);
         s_db_data_type(selected);
-        
         updateNavigationInfo(selected);
     }
 
@@ -370,7 +353,7 @@ void command(HWND hwnd,int cmd){
         case IDM_SYSTEM_STAT+2:{
             TreeNode * selected = App->selectHost;
             if(selected != NULL){
-                // TODO 删除树节点,关闭连接
+                // TODO release memory
                 TreeView_DeleteItem(App->view->overviewHwnd,selected->handle);
             }
             break;
@@ -388,6 +371,7 @@ void command(HWND hwnd,int cmd){
     }
 }
 
+// TODO fix the memory issue
 LPTSTR mGetOpenFileName(HWND hwnd){
     LPSTR retVal = NULL;
     OPENFILENAME * ofn = (OPENFILENAME *)calloc(1,sizeof(OPENFILENAME));
@@ -408,6 +392,7 @@ LPTSTR mGetOpenFileName(HWND hwnd){
     return retVal;
 }
 
+// TODO fix the memory issue
 LPTSTR mGetSaveFileName(HWND hwnd){
     LPSTR retVal      = NULL;
     OPENFILENAME * ofn = (OPENFILENAME *)calloc(1,sizeof(OPENFILENAME));

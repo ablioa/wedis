@@ -77,7 +77,7 @@ typedef struct application{
 	DataView    * dataView;
 
 	HMENU hConnectionMenu;
-	HMENU hServerInfoMenu;
+//	HMENU hServerInfoMenu;
 
     HINSTANCE hInstance;
 
