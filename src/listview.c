@@ -37,7 +37,7 @@ HWND buildListToolBar(HWND parent){
 }
 
 BOOL updateListDataSet(HWND hwnd,RedisReply reply){
-    char indexBuff[256] = {0};
+    char indexBuff[4096] = {0};
     LVITEM lvI;
 
     lvI.pszText   = LPSTR_TEXTCALLBACK;
@@ -50,29 +50,31 @@ BOOL updateListDataSet(HWND hwnd,RedisReply reply){
 
     for(int ix = 0; ix < reply->array_length; ix ++){
         RedisReply item = reply->bulks[ix];
-        
+
         lvI.iItem  = ix;
         lvI.iImage = ix;
         lvI.iSubItem = 0;
 
-        memset(indexBuff,0,256);
+        memset(indexBuff,0,4096);
         sprintf(indexBuff,"%d",(ix +1));
 
-        lvI.pszText = indexBuff; 
+        lvI.pszText = indexBuff;
         ListView_InsertItem(hwnd, &lvI);
 
-		char * encoded_data = encode(item->bulk->content,item->bulk->length);
-        lvI.pszText = encoded_data; 
+		//char * encoded_data = encode(item->bulk->content,item->bulk->length);
+        lvI.pszText = item->bulk->content;//encoded_data;
+        lvI.cchTextMax = 5;
         lvI.iSubItem = 1;
+        
         SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
 
-        char buff[128] = {0};
-        sprintf(buff,"%d",item->bulk->length);
-        lvI.pszText = buff;
-        lvI.iSubItem = 2;
-        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
-		
-		free(encoded_data);
+       char buff[128] = {0};
+       sprintf(buff,"%d",item->bulk->length);
+       lvI.pszText = buff;
+       lvI.iSubItem = 2;
+       SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+
+		// free(encoded_data);
     }
 
     // TODO 这里还不能释放，需要选择合适的时机
@@ -107,7 +109,7 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                 case LVN_COLUMNCLICK:{
                     break;
                 }
-                                     
+
                 case LVN_ENDLABELEDIT:{
                     break;
                 }
