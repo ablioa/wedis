@@ -108,6 +108,20 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
         case WM_NOTIFY:{
             LPNMHDR msg = ((LPNMHDR) lParam);
             switch (msg->code) {
+                case TTN_GETDISPINFO:{
+                    LPTOOLTIPTEXT lpttt = (LPTOOLTIPTEXT)lParam;
+                    lpttt->hinst = App->hInstance;
+                    UINT_PTR idButton = lpttt->hdr.idFrom;
+                    switch(idButton){
+                        case IDM_CONNECTION:
+                            lpttt->lpszText = "Connection";
+                            break;
+                        case IDM_PREFERENCE:
+                            lpttt->lpszText = "Preference";
+                            break;
+                    }
+                    break;
+                }
                 case NM_CLICK:{
                     if(msg->idFrom == 0){
                         TreeNode * selected = getSelectedNode();
@@ -259,7 +273,7 @@ TreeNode * getSelectedNode(){
     pt.x = LOWORD(dwPos);
     pt.y = HIWORD(dwPos);
     ScreenToClient(App->view->overviewHwnd, &pt);
-    
+
     TVHITTESTINFO ht = {0};
     ht.pt = pt;
     ht.flags = TVHT_ONITEM;
@@ -311,7 +325,7 @@ void command(HWND hwnd,int cmd){
             DialogBox (hInst,MAKEINTRESOURCE (IDD_CONNECTION),hwnd,(DLGPROC)conectionConfigDlgProc);
             break;
         }
-        
+
         case IDM_PREFERENCE:{
             DialogBox (hInst,MAKEINTRESOURCE (IDD_PREFERENCE),hwnd,(DLGPROC)SetPreferenceProc);
             break;
@@ -338,7 +352,7 @@ void command(HWND hwnd,int cmd){
             log_message("remove");
             break;
         }
-        
+
         case IDM_ABOUT:{
             DialogBox (hInst,MAKEINTRESOURCE (IDD_ABOUT),hwnd,(DLGPROC)AboutDlgProc);
             break;
@@ -397,7 +411,7 @@ LPTSTR mGetSaveFileName(HWND hwnd){
     LPSTR retVal      = NULL;
     OPENFILENAME * ofn = (OPENFILENAME *)calloc(1,sizeof(OPENFILENAME));
     LPSTR    fname      = (LPSTR)calloc(MAX_PATH,sizeof(char));
-    
+
     ofn->lStructSize = sizeof(OPENFILENAME);
     ofn->hwndOwner = hwnd;
     ofn->hInstance = App->hInstance;
@@ -418,18 +432,18 @@ void onWindowResize(AppView * view){
     RECT connctionRect;
     RECT dataRect;
     RECT spliterRect;
-    
+
     GetClientRect(view->hwnd,&rt);
     MoveWindow(view->toolBarHwnd,0,0,rt.right,TOOLBAR_HEIGHT,TRUE);
     MoveWindow(view->statusBarHwnd,0,rt.bottom-STATUSBAR_HEIGHT,rt.right,STATUSBAR_HEIGHT,TRUE);
     SendMessage(view->statusBarHwnd,WM_SIZE,0,0);
-    
+
     getConnectionRect(view,&rt,&connctionRect);
     MoveWindow(view->overviewHwnd,connctionRect.left,connctionRect.top,connctionRect.right,connctionRect.bottom,TRUE);
-    
+
     getDataRect(view,&rt,&dataRect);
     MoveWindow(view->dataviewHwnd,dataRect.left,dataRect.top,dataRect.right,dataRect.bottom,TRUE);
-    
+
     getSpliterRect(view,&rt,&spliterRect);
     MoveWindow(view->westSplitHwnd,spliterRect.left,spliterRect.top,spliterRect.right,spliterRect.bottom,TRUE);
 }
@@ -444,7 +458,7 @@ void buildToolBar(AppView * view){
     };
 
     view->toolBarHwnd = buildGeneralToolBar(view->hwnd,tbtn,buttonCount);
-    
+
     GetWindowRect(view->toolBarHwnd,&rect);
     view->toolbarHeight = rect.bottom-rect.top;
 }
@@ -563,15 +577,11 @@ char * encode(char * chunk,int length,int * outlength){
         }
     }
 
-    char * out = (char *) calloc(1,mlen+1);
-    memcpy(out,buff,mlen);
-    free(buff);
-
     if(outlength != NULL){
         * outlength = mlen;
     }
 
-    return out;
+    return buff;
 }
 
 void delete_data_node(TreeNode * db_node,const char * key){

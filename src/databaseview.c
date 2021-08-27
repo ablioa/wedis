@@ -25,7 +25,7 @@ void init_database_view(HINSTANCE hInstance){
     hashViewClass.lpszMenuName  = 0;
     hashViewClass.lpszClassName = DATABASE_VIEW_CLASS;
     hashViewClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
-    
+
     RegisterClassEx(&hashViewClass);
 }
 
@@ -98,6 +98,27 @@ LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
             break;
         }
 
+        case WM_NOTIFY:{
+            LPNMHDR msg = ((LPNMHDR) lParam);
+            switch(msg->code){
+                case TTN_GETDISPINFO:{
+                    LPTOOLTIPTEXT lpttt = (LPTOOLTIPTEXT)lParam;
+                    lpttt->hinst = App->hInstance;
+                    UINT_PTR idButton = lpttt->hdr.idFrom;
+                    switch(idButton){
+                        case TB_CMD_DELETE_DATA:
+                            lpttt->lpszText = "Truncate database/flushdb";
+                            break;
+                        case TB_CMD_ADD_DATA:
+                            lpttt->lpszText = "Add data item";
+                            break;
+                    }
+                }
+                break;
+            }
+
+            break;
+        }
         case WM_COMMAND:{
             BOOL result1 = TRUE;
             BOOL result2 = TRUE;

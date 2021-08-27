@@ -62,9 +62,9 @@ BOOL updateListDataSet(HWND hwnd,RedisReply reply){
         ListView_InsertItem(hwnd, &lvI);
 
         int xlen;
-		char * encoded_data = encode(item->bulk->content,item->bulk->length,&xlen);
+        char * encoded_data = encode(item->bulk->content,item->bulk->length,&xlen);
         lvI.pszText    = encoded_data;
-        //lvI.cchTextMax = xlen;//item->bulk->length;
+        lvI.cchTextMax = xlen;
         lvI.iSubItem   = 1;
 
         SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
@@ -75,11 +75,8 @@ BOOL updateListDataSet(HWND hwnd,RedisReply reply){
        lvI.iSubItem = 2;
        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
 
-	   //free(encoded_data);
+	     free(encoded_data);
     }
-
-        //MessageBox(NULL,"hello","xxx",MB_OK);
-
 
     // TODO 这里还不能释放，需要选择合适的时机
     // free_redis_reply(reply);
@@ -122,6 +119,19 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                     MessageBox(hwnd,"handle list row message","title",MB_OK);
                     break;
                 }
+
+                case TTN_GETDISPINFO:{
+                    LPTOOLTIPTEXT lpttt = (LPTOOLTIPTEXT)lParam;
+                    lpttt->hinst = App->hInstance;
+                    UINT_PTR idButton = lpttt->hdr.idFrom;
+                    switch(idButton){
+                        case TB_CMD_REFRESH_DATA:{lpttt->lpszText = "Refresh list data";break;}
+                        case TB_CMD_MOVE_DATA:{lpttt->lpszText = "Move data item";break;};
+                        case TB_CMD_DELETE_DATA:{lpttt->lpszText = "Delete data item";break;}
+                        case TB_CMD_EXPORT_DATA:{lpttt->lpszText = "Export data into file";break;}
+                    }
+                }
+                break;
             }
             break;
         }

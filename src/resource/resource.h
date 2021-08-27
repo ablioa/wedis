@@ -63,6 +63,11 @@
 #define IDS_REGVIEW                             40004
 #define IDS_STACKVIEW                           40005
 #define IDS_HOSTLIST                            40006
+
+#define IDS_TB_REFRESH_SET_DATA                 40007
+#define IDS_TB_MOVE_SET_DATA                    40008
+#define IDS_TB_DELETE_SET_DATA                  40009
+
 #define IDM_PREFERENCE                          40011
 
 #define IDE1 50001

@@ -18,7 +18,7 @@ BOOL InitSetViewColumns1(HWND hWndListView) {
         ListView_InsertColumn(hWndListView, iCol, &lvc);
         ListView_SetColumnWidth(hWndListView,iCol,(iCol+1) * 200);
     }
-    
+
     return TRUE;
 }
 
@@ -51,7 +51,7 @@ BOOL updateConfigDataSet(HWND hwnd,KVPair kv){
     lvI.state     = 0;
 
     SendMessage(hwnd,LVM_DELETEALLITEMS,(WPARAM)NULL,(LPARAM)NULL);
-    
+
     for (int index = 0; index < kv->count; index++){
         lvI.iItem  = index;
         lvI.iImage = index;
@@ -76,7 +76,7 @@ LRESULT CALLBACK SystemViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
         case WM_CREATE:{
             model = (SystemViewModel)calloc(1,sizeof(struct system_view_model));
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
-            
+
             GetClientRect (hwnd, &rect); 
 
             model->paramViewHwnd = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
@@ -84,12 +84,37 @@ LRESULT CALLBACK SystemViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                           0, 0,0,0,
                           hwnd, NULL, App->hInstance, NULL);
             model->toolBar = buildStatToolBar(hwnd);
-            
+
             ListView_SetExtendedListViewStyle(model->paramViewHwnd,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
             InitSetViewColumns1(model->paramViewHwnd);
             break;
         }
 
+        case WM_NOTIFY:{
+            LPNMHDR msg = ((LPNMHDR) lParam);
+            switch(msg->code){
+                case TTN_GETDISPINFO:{
+                    LPTOOLTIPTEXT lpttt = (LPTOOLTIPTEXT)lParam;
+                    lpttt->hinst = App->hInstance;
+                    UINT_PTR idButton = lpttt->hdr.idFrom;
+                    switch(idButton){
+                        case TB_CMD_FLUSH_DB:{lpttt->lpszText = "flush all database";break;}
+                        case IDM_STAT_SERVER:{lpttt->lpszText = "server status";break;};
+                        case IDM_STAT_CLIENT:{lpttt->lpszText = "client status";break;}
+                        case IDM_STAT_MEMORY:{lpttt->lpszText = "memeory information";break;}
+                        case IDM_STAT_PERSISENCE:{lpttt->lpszText = "persistence";break;}
+                        case IDM_STAT_STATS:{lpttt->lpszText = "statistics information";break;}
+                        case IDM_STAT_REPLICATION:{lpttt->lpszText = "replication configuration";break;}
+                        case IDM_STAT_CPU:{lpttt->lpszText = "cpu information";break;}
+                        case IDM_STAT_CLUSTER:{lpttt->lpszText = "cluster configuration";break;}
+                        case IDM_STAT_KEYSPACE:{lpttt->lpszText = "keyspace";break;}
+                    }
+                }
+                break;
+            }
+
+            break;
+        }
         case WM_COMMAND:{
             int cmd = LOWORD(wParam);
             if(cmd == TB_CMD_FLUSH_DB){
@@ -112,7 +137,7 @@ LRESULT CALLBACK SystemViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
             updateConfigDataSet(model->paramViewHwnd,kp);
             break;
         }
-       
+
         case WM_SIZE:{
             GetClientRect(hwnd,&rect);
             MoveWindow(hwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
