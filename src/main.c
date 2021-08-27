@@ -545,20 +545,33 @@ int is_binary_data(char * stream,size_t length){
     return 0;
 }
 
-char * encode(char * chunk,int length){
-    char * buff = (char*)calloc(1,length*4);
+char * encode(char * chunk,int length,int * outlength){
+    char * buff = (char*)calloc(length*4+1,1);
     char * cur  = buff;
+
+    int mlen =0;
     for(int ix = 0; ix < length; ix ++){
-        if(isprint(chunk[ix])){
-            sprintf(cur,"%c",chunk[ix]);
+        char key = chunk[ix];
+        if(isprint(key)){
+            sprintf(cur,"%c",key);
             cur++;
+            mlen ++;
         }else{
-            sprintf(cur,"\\x%02x",chunk[ix]);
+            sprintf(cur,"\\x%02X",(unsigned char)key);
             cur+=4;
+            mlen += 4;
         }
     }
 
-    return buff;
+    char * out = (char *) calloc(1,mlen+1);
+    memcpy(out,buff,mlen);
+    free(buff);
+
+    if(outlength != NULL){
+        * outlength = mlen;
+    }
+
+    return out;
 }
 
 void delete_data_node(TreeNode * db_node,const char * key){

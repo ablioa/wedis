@@ -37,7 +37,7 @@ HWND buildListToolBar(HWND parent){
 }
 
 BOOL updateListDataSet(HWND hwnd,RedisReply reply){
-    char indexBuff[4096] = {0};
+    char indexBuff[128] = {0};
     LVITEM lvI;
 
     lvI.pszText   = LPSTR_TEXTCALLBACK;
@@ -55,17 +55,18 @@ BOOL updateListDataSet(HWND hwnd,RedisReply reply){
         lvI.iImage = ix;
         lvI.iSubItem = 0;
 
-        memset(indexBuff,0,4096);
+        memset(indexBuff,0,128);
         sprintf(indexBuff,"%d",(ix +1));
 
         lvI.pszText = indexBuff;
         ListView_InsertItem(hwnd, &lvI);
 
-		//char * encoded_data = encode(item->bulk->content,item->bulk->length);
-        lvI.pszText = item->bulk->content;//encoded_data;
-        lvI.cchTextMax = 5;
-        lvI.iSubItem = 1;
-        
+        int xlen;
+		char * encoded_data = encode(item->bulk->content,item->bulk->length,&xlen);
+        lvI.pszText    = encoded_data;
+        //lvI.cchTextMax = xlen;//item->bulk->length;
+        lvI.iSubItem   = 1;
+
         SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
 
        char buff[128] = {0};
@@ -74,8 +75,11 @@ BOOL updateListDataSet(HWND hwnd,RedisReply reply){
        lvI.iSubItem = 2;
        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
 
-		// free(encoded_data);
+	   //free(encoded_data);
     }
+
+        //MessageBox(NULL,"hello","xxx",MB_OK);
+
 
     // TODO 这里还不能释放，需要选择合适的时机
     // free_redis_reply(reply);

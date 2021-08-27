@@ -66,14 +66,14 @@ void add_data_node(TreeNode * dbnode,RedisReply data){
         datanode->data->key_length = item->bulk->length;
         datanode->stream = dbnode->stream;
 
-        char * encoded_key=encode(item->bulk->content,
-                item->bulk->length);
+        int tlen;
+        char * encoded_key=encode(item->bulk->content,item->bulk->length,&tlen);
 
         TV_INSERTSTRUCT tvinsert;
         tvinsert.hParent             = dbnode->handle;
         tvinsert.hInsertAfter        = TVI_LAST;
         tvinsert.item.mask           = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
-        tvinsert.item.cchTextMax     = strlen(encoded_key);
+        tvinsert.item.cchTextMax     = tlen;
         tvinsert.item.pszText        = encoded_key;
         tvinsert.item.iImage         = TREE_DATA_NODE;
         tvinsert.item.iSelectedImage = TREE_DATA_NODE;

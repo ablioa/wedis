@@ -170,7 +170,7 @@ void showWindows(AppView * view);
 
 int is_binary_data(char * stream,size_t length);
 
-char * encode(char * chunk,int length);
+char * encode(char * chunk,int length,int * mlen);
 
 HWND buildGeneralToolBar(HWND parent,TBBUTTON * tbtn,int buttonCount);
 

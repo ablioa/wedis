@@ -58,10 +58,8 @@ BOOL updateSetDataSet(HWND hwnd,RedisReply reply){
         lvI.pszText = indexBuff; 
         ListView_InsertItem(hwnd, &lvI);
 
-
-		char * encoded_data = encode(reply->bulks[index]->bulk->content,
-				reply->bulks[index]->bulk->length);
-
+        int xlen;
+        char * encoded_data = encode(reply->bulks[index]->bulk->content,reply->bulks[index]->bulk->length,&xlen);
         lvI.pszText = encoded_data;
         lvI.iSubItem = 1;
         SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
@@ -72,7 +70,7 @@ BOOL updateSetDataSet(HWND hwnd,RedisReply reply){
         lvI.iSubItem = 2;
         SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
 
-		free(encoded_data);
+        free(encoded_data);
     }
 
     return TRUE;
