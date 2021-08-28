@@ -98,16 +98,16 @@ LRESULT CALLBACK SystemViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                     lpttt->hinst = App->hInstance;
                     UINT_PTR idButton = lpttt->hdr.idFrom;
                     switch(idButton){
-                        case TB_CMD_FLUSH_DB:{lpttt->lpszText = "flush all database";break;}
-                        case IDM_STAT_SERVER:{lpttt->lpszText = "server status";break;};
-                        case IDM_STAT_CLIENT:{lpttt->lpszText = "client status";break;}
-                        case IDM_STAT_MEMORY:{lpttt->lpszText = "memeory information";break;}
-                        case IDM_STAT_PERSISENCE:{lpttt->lpszText = "persistence";break;}
-                        case IDM_STAT_STATS:{lpttt->lpszText = "statistics information";break;}
-                        case IDM_STAT_REPLICATION:{lpttt->lpszText = "replication configuration";break;}
-                        case IDM_STAT_CPU:{lpttt->lpszText = "cpu information";break;}
-                        case IDM_STAT_CLUSTER:{lpttt->lpszText = "cluster configuration";break;}
-                        case IDM_STAT_KEYSPACE:{lpttt->lpszText = "keyspace";break;}
+                        case TB_CMD_FLUSH_DB:{lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_SYS_FLUSH_ALL);break;}
+                        case IDM_STAT_SERVER:{lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_SYS_SERVER);break;};
+                        case IDM_STAT_CLIENT:{lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_SYS_CLIENTS);break;}
+                        case IDM_STAT_MEMORY:{lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_SYS_MEMORY);break;}
+                        case IDM_STAT_PERSISENCE:{lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_SYS_PERSISTENCE);break;}
+                        case IDM_STAT_STATS:{lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_SYS_STATS);break;}
+                        case IDM_STAT_REPLICATION:{lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_SYS_REPLICATION);break;}
+                        case IDM_STAT_CPU:{lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_SYS_CPU);break;}
+                        case IDM_STAT_CLUSTER:{lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_SYS_CLUSTER);break;}
+                        case IDM_STAT_KEYSPACE:{lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_SYS_KEYSPACE);break;}
                     }
                 }
                 break;

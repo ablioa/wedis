@@ -67,14 +67,35 @@
 #define IDS_TB_REFRESH_SET_DATA                 40007
 #define IDS_TB_MOVE_SET_DATA                    40008
 #define IDS_TB_DELETE_SET_DATA                  40009
+#define IDS_TB_ADD_DATA_ITEM                    40010
+#define IDS_TB_DELETE_DATA_ITEM                 40011
 
-#define IDM_PREFERENCE                          40011
+#define IDS_TB_MAIN_CONNECTION                  40012 
+#define IDS_TB_MAIN_PREFERENCE                  40013
+#define IDM_PREFERENCE                          40014
+
+#define IDS_TB_REFRESH_LIST_DATA                40015 
+#define IDS_TB_MOVE_LIST_DATA                   40016
+#define IDS_TB_DELETE_LIST_DATA                 40017
+#define IDS_TB_EXPORT_LIST_DATA                 40018
+
+#define IDS_TB_SYS_FLUSH_ALL                    40019          
+#define IDS_TB_SYS_SERVER                       40020
+#define IDS_TB_SYS_CLIENTS                      40021
+#define IDS_TB_SYS_MEMORY                       40022
+#define IDS_TB_SYS_PERSISTENCE                  40023
+#define IDS_TB_SYS_STATS                        40024
+#define IDS_TB_SYS_REPLICATION                  40025
+#define IDS_TB_SYS_CPU                          40026
+#define IDS_TB_SYS_MODULES                      40027
+#define IDS_TB_SYS_CLUSTER                      40028
+#define IDS_TB_SYS_KEYSPACE                     40029
 
 #define IDE1 50001
 #define IDE2 50002
 #define IDE3 50003
 
-#define IDC_DATATYPE            1017
+#define IDC_DATATYPE         1017
 #define IDC_DB_SEARCH_CANCEL 40012
 #define IDC_DB_SEARCH_OK     40013
 

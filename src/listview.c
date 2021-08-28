@@ -125,10 +125,22 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                     lpttt->hinst = App->hInstance;
                     UINT_PTR idButton = lpttt->hdr.idFrom;
                     switch(idButton){
-                        case TB_CMD_REFRESH_DATA:{lpttt->lpszText = "Refresh list data";break;}
-                        case TB_CMD_MOVE_DATA:{lpttt->lpszText = "Move data item";break;};
-                        case TB_CMD_DELETE_DATA:{lpttt->lpszText = "Delete data item";break;}
-                        case TB_CMD_EXPORT_DATA:{lpttt->lpszText = "Export data into file";break;}
+                        case TB_CMD_REFRESH_DATA:{
+                            lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_REFRESH_LIST_DATA);
+                            break;
+                        }
+                        case TB_CMD_MOVE_DATA:{
+                            lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_MOVE_LIST_DATA);
+                            break;
+                        };
+                        case TB_CMD_DELETE_DATA:{
+                            lpttt->lpszText =MAKEINTRESOURCE(IDS_TB_DELETE_LIST_DATA);
+                            break;
+                        }
+                        case TB_CMD_EXPORT_DATA:{
+                            lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_EXPORT_LIST_DATA);
+                            break;
+                        }
                     }
                 }
                 break;

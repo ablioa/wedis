@@ -114,10 +114,10 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
                     UINT_PTR idButton = lpttt->hdr.idFrom;
                     switch(idButton){
                         case IDM_CONNECTION:
-                            lpttt->lpszText = "Connection";
+                            lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_MAIN_CONNECTION);
                             break;
                         case IDM_PREFERENCE:
-                            lpttt->lpszText = "Preference";
+                            lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_MAIN_PREFERENCE);
                             break;
                     }
                     break;

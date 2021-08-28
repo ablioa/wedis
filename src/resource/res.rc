@@ -108,16 +108,34 @@ STRINGTABLE
 
     IDS_HOSTLIST                  "Redis Services"
 
-    IDS_TB_REFRESH_SET_DATA       "刷新集合数据"
-    IDS_TB_MOVE_SET_DATA          "移动集合数据"
-    IDS_TB_DELETE_SET_DATA        "删除集合数据"
+    IDS_TB_REFRESH_SET_DATA       "Refresh SET data"
+    IDS_TB_MOVE_SET_DATA          "Move SET data"
+    IDS_TB_DELETE_SET_DATA        "Delete SET data"
+
+    IDS_TB_ADD_DATA_ITEM          "Add data item"
+    IDS_TB_DELETE_DATA_ITEM       "Truncate database/flushdb"
+
+    IDS_TB_MAIN_CONNECTION        "Connection"
+    IDS_TB_MAIN_PREFERENCE        "Preference"
+    
+    IDS_TB_REFRESH_LIST_DATA      "Refresh LIST data"
+    IDS_TB_MOVE_LIST_DATA         "Move LIST data"
+    IDS_TB_DELETE_LIST_DATA       "Delete LIST data"
+    IDS_TB_EXPORT_LIST_DATA       "Export LIST data"
+
+    IDS_TB_SYS_FLUSH_ALL          "Flush all database"
+    IDS_TB_SYS_SERVER             "Server"
+    IDS_TB_SYS_CLIENTS            "Connected Clients"
+    IDS_TB_SYS_MEMORY             "Memory"
+    IDS_TB_SYS_PERSISTENCE        "Persistence"
+    IDS_TB_SYS_STATS              "Statistics"
+    IDS_TB_SYS_REPLICATION        "Replication"
+    IDS_TB_SYS_CPU                "CPU xxx"
+    IDS_TB_SYS_MODULES            "Modules"
+    IDS_TB_SYS_CLUSTER            "Cluster"
+    IDS_TB_SYS_KEYSPACE           "keyspace"
 }
 
-
-
-//
-// Accelerator resources
-//
 IDA_RUN ACCELERATORS
 {
     VK_F7,         IDM_EXE_RUN, VIRTKEY

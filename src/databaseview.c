@@ -107,10 +107,10 @@ LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
                     UINT_PTR idButton = lpttt->hdr.idFrom;
                     switch(idButton){
                         case TB_CMD_DELETE_DATA:
-                            lpttt->lpszText = "Truncate database/flushdb";
+                            lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_DELETE_DATA_ITEM);//;"Truncate database/flushdb";
                             break;
                         case TB_CMD_ADD_DATA:
-                            lpttt->lpszText = "Add data item";
+                            lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_ADD_DATA_ITEM);//"Add data item";
                             break;
                     }
                 }
