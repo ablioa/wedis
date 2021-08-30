@@ -134,6 +134,14 @@ STRINGTABLE
     IDS_TB_SYS_MODULES            "Modules"
     IDS_TB_SYS_CLUSTER            "Cluster"
     IDS_TB_SYS_KEYSPACE           "keyspace"
+
+
+    IDS_TB_STR_REFRESH_DATA       "Refresh"
+    IDS_TB_STR_MOVE_DATA          "Move"
+    IDS_TB_STR_DELETE_DATA        "Delete"
+    IDS_TB_STR_EXPORT_DATA        "Export"
+    IDS_TB_STR_FORMAT_DATA        "Format"
+    IDS_TB_STR_WIDEN_DATA         "Widen"
 }
 
 IDA_RUN ACCELERATORS

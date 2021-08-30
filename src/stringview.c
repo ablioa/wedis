@@ -70,6 +70,40 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
             break;
         }
        
+        case WM_NOTIFY:{
+            LPNMHDR msg = ((LPNMHDR) lParam);
+            switch(msg->code){
+                case TTN_GETDISPINFO:{
+                    LPTOOLTIPTEXT lpttt = (LPTOOLTIPTEXT)lParam;
+                    lpttt->hinst = App->hInstance;
+                    UINT_PTR idButton = lpttt->hdr.idFrom;
+                    switch(idButton){
+                        case TB_CMD_REFRESH_DATA:
+                            lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_STR_DELETE_DATA);
+                        break;
+                        case TB_CMD_MOVE_DATA:
+                            lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_STR_MOVE_DATA);
+                        break;
+                        case TB_CMD_DELETE_DATA:
+                            lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_STR_DELETE_DATA);
+                        break;
+                        case TB_CMD_EXPORT_DATA:
+                            lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_STR_EXPORT_DATA);
+                        break;
+                        case TB_CMD_FORMAT_DATA:
+                            lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_STR_FORMAT_DATA);
+                        break;
+                        case TB_CMD_WIDEN_DATA:
+                            lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_STR_WIDEN_DATA);
+                        break;
+                    }
+                }
+                break;
+            }
+
+            break;
+        }
+
         case WM_COMMAND:{
             switch(LOWORD (wParam)){
                 /** move data into another database */

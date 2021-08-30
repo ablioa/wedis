@@ -91,6 +91,13 @@
 #define IDS_TB_SYS_CLUSTER                      40028
 #define IDS_TB_SYS_KEYSPACE                     40029
 
+#define IDS_TB_STR_REFRESH_DATA                 40030
+#define IDS_TB_STR_MOVE_DATA                    40031
+#define IDS_TB_STR_DELETE_DATA                  40032
+#define IDS_TB_STR_EXPORT_DATA                  40033
+#define IDS_TB_STR_FORMAT_DATA                  40034
+#define IDS_TB_STR_WIDEN_DATA                   40035
+
 #define IDE1 50001
 #define IDE2 50002
 #define IDE3 50003
