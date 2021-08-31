@@ -123,7 +123,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
             return 0;
         }
 
-        case 1812:{
+        case WM_NEW_CONNECTION:{
             int hostIndex = (int)wParam;
             sigin_in_host(hwnd,hostIndex);
             break;
@@ -139,10 +139,10 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
                     switch(idButton){
                         case IDM_CONNECTION:
                             lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_MAIN_CONNECTION);
-                            break;
+                        break;
                         case IDM_PREFERENCE:
                             lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_MAIN_PREFERENCE);
-                            break;
+                        break;
                     }
                     break;
                 }
