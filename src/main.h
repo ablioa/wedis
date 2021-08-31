@@ -133,6 +133,8 @@ void onDataNodeSelection(TreeNode * node);
 
 void onDataBaseSelect(TreeNode * node);
 
+TreeNode * addHostNode(RedisConnection stream,char * connectionName);
+
 TreeNode * getSelectedNode();
 
 void networkHandle(LPARAM lParam);
@@ -175,6 +177,8 @@ char * encode(char * chunk,int length,int * mlen);
 HWND buildGeneralToolBar(HWND parent,TBBUTTON * tbtn,int buttonCount);
 
 void delete_data_node(TreeNode * db_node,const char * key);
+
+void sigin_in_host(HWND hwnd,int hostIndex);
 
 #endif
 

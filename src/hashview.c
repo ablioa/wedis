@@ -22,7 +22,7 @@ BOOL InitHashViewColumns(HWND hWndListView) {
 
         ListView_InsertColumn(hWndListView, iCol, &lvc);
     }
-    
+
     return TRUE;
 }
 
@@ -89,12 +89,12 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
         case WM_CREATE:{
             model = (HashViewModel*)calloc(1,sizeof(HashViewModel));
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
-            
+
             model->hashView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
                           WS_CHILD | WS_BORDER | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS,
                           0, 0,0,0,
                           hwnd, NULL, App->hInstance, NULL);
-            
+
             ListView_SetExtendedListViewStyle(model->hashView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
             InitHashViewColumns(model->hashView);
 
@@ -102,6 +102,30 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
             break;
         }
 
+        case WM_NOTIFY:{
+            LPNMHDR msg = ((LPNMHDR) lParam);
+            switch(msg->code){
+                case TTN_GETDISPINFO:{
+                    LPTOOLTIPTEXT lpttt = (LPTOOLTIPTEXT)lParam;
+                    lpttt->hinst = App->hInstance;
+                    UINT_PTR idButton = lpttt->hdr.idFrom;
+                    switch(idButton){
+                        case TB_CMD_REFRESH_DATA:
+                            lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_HSH_REFRESH_DATA);
+                        break;
+                        case TB_CMD_MOVE_DATA:
+                            lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_HSH_MOVE_DATA);
+                        break;
+                        case TB_CMD_DELETE_DATA:
+                            lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_HSH_DELETE_DATA);
+                        break;
+                    }
+                }
+                break;
+            }
+
+            break;
+        }
         case WM_DT:{
             model->data = (RedisReply)wParam;
             model->dataNode = (TreeNode*) lParam;

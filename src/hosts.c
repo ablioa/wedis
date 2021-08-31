@@ -30,7 +30,7 @@ void buildConnectionTree(HWND hwnd){
     Host * start = appConfig->head;
     while(start != NULL){
         Host * host = start;
-    
+
         tvinsert.hParent             = model->parentTree;
         tvinsert.hInsertAfter        = TVI_ROOT;
         tvinsert.item.mask           = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
@@ -38,7 +38,7 @@ void buildConnectionTree(HWND hwnd){
         tvinsert.item.iSelectedImage = 2;
         tvinsert.item.pszText        = host->name;
         tvinsert.item.lParam         = (LPARAM)host;
-        
+
         HTREEITEM item = (HTREEITEM)SendMessage(model->hostTree,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
         SendMessage(model->hostTree,TVM_SELECTITEM,(WPARAM)TVGN_CARET,(LPARAM) item);
 
@@ -165,9 +165,9 @@ void updateConfigure(HWND hwnd,Host * host){
     SetDlgItemText(hwnd,IDC_CONNECTION_PASSWORDVALUE,host->password);
     SetDlgItemText(hwnd,IDC_CONNECTION_VALUE,host->name);
     SetDlgItemText(hwnd,IDC_CONNECTION_DESCRIPTION,host->description);
-    
+
     SetDlgItemInt(hwnd,IDC_CONNECTION_PORTVALUE,host->port,FALSE);
-    
+
     Button_SetCheck(GetDlgItem(hwnd,IDC_CONNECTION_IFPASSWORD),host->requirepass);
     if (!host->requirepass){
         EnableWindow(GetDlgItem(hwnd, IDC_CONNECTION_PASSWORDVALUE), FALSE);
@@ -204,7 +204,7 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lPa
                      TVITEM item;
                      item.mask = TVIF_PARAM;
                      item.hItem = pNMTreeView->itemNew.hItem;
-                     
+
                      TreeView_GetItem(model->hostTree,&item);
                      Host * host = (Host*)item.lParam;
 
@@ -316,6 +316,10 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lPa
                 }
 
                 case IDC_CONFIG_CONNECT:{
+                    save_config();
+                    EndDialog(hwnd,0);
+                    // TODO update message notation 
+                    SendMessage(GetParent(hwnd),1812,(WPARAM)model->hostIndex,(LPARAM)NULL);
                     break;
                 }
             }

@@ -79,7 +79,7 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                     UINT_PTR idButton = lpttt->hdr.idFrom;
                     switch(idButton){
                         case TB_CMD_REFRESH_DATA:
-                            lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_STR_DELETE_DATA);
+                            lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_STR_REFRESH_DATA);
                         break;
                         case TB_CMD_MOVE_DATA:
                             lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_STR_MOVE_DATA);

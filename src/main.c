@@ -93,6 +93,24 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
     return msg.wParam;
 }
 
+
+void sigin_in_host(HWND hwnd,int hostIndex){
+    Host * host = get_host_by_index(appConfig,hostIndex);
+    if(host == NULL){
+        return;
+    }
+
+    RedisConnection stream = init(host->host,host->port);
+    if(stream == NULL){
+        return;
+    }
+
+    TreeNode * hostNode = addHostNode(stream,host->name);
+    s_auth(hostNode,host->password);
+    SetTimer(hwnd,(UINT_PTR)hostNode,5000,heart_beat_timer);
+    showWindows(App->view);
+}
+
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
     switch (message){
         case WM_CREATE:{
@@ -103,6 +121,12 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
         case WM_COMMAND:{
             command(hwnd,LOWORD (wParam));
             return 0;
+        }
+
+        case 1812:{
+            int hostIndex = (int)wParam;
+            sigin_in_host(hwnd,hostIndex);
+            break;
         }
 
         case WM_NOTIFY:{
@@ -303,20 +327,8 @@ void command(HWND hwnd,int cmd){
     HINSTANCE hInst = App->hInstance;
 
     if(cmd > 900 && cmd < 1000){
-        Host * host = get_host_by_index(appConfig,cmd - IDM_CUSTOMER_HOST -1);
-        if(host == NULL){
-            return;
-        }
-
-        RedisConnection stream = init(host->host,host->port);
-        if(stream == NULL){
-            return;
-        }
-
-        TreeNode * hostNode = addHostNode(stream,host->name);
-        s_auth(hostNode,host->password);
-        SetTimer(hwnd,(UINT_PTR)hostNode,5000,heart_beat_timer);
-        showWindows(App->view);
+        int hostIndex = cmd - IDM_CUSTOMER_HOST - 1;
+        sigin_in_host(hwnd,hostIndex);
         return;
     }
 

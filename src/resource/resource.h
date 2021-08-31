@@ -98,6 +98,10 @@
 #define IDS_TB_STR_FORMAT_DATA                  40034
 #define IDS_TB_STR_WIDEN_DATA                   40035
 
+#define IDS_TB_HSH_REFRESH_DATA                 40036
+#define IDS_TB_HSH_MOVE_DATA                    40037
+#define IDS_TB_HSH_DELETE_DATA                  40038
+
 #define IDE1 50001
 #define IDE2 50002
 #define IDE3 50003

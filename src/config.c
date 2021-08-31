@@ -17,7 +17,7 @@ Host * get_host_by_index(Config * config,int hostIndex){
 
     Host * start = appConfig->head;
     while(start != NULL){
-        
+
         if(start->hostIndex == hostIndex){
             result = start;
             break;
