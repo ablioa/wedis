@@ -247,6 +247,43 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lPa
 
                     break;
                 }
+
+                // TODO remove redundant code
+                case NM_DBLCLK:{
+                    DWORD dwPos = GetMessagePos();
+                    POINT pt;
+                    pt.x = LOWORD(dwPos);
+                    pt.y = HIWORD(dwPos);
+                    ScreenToClient(GetDlgItem(hwnd,IDC_CONNECTION_TREE), &pt);
+
+                    TVHITTESTINFO ht = {0};
+                    ht.pt = pt;
+                    ht.flags = TVHT_ONITEM;
+                    HTREEITEM hItem = TreeView_HitTest(GetDlgItem(hwnd,IDC_CONNECTION_TREE), &ht);
+
+                    /** 未选中任何节点 */
+                    if(hItem == NULL){
+                        break;
+                    }
+
+                    TVITEM ti = {0};
+                    ti.mask = TVIF_HANDLE | TVIF_PARAM;
+                    ti.hItem = hItem;
+                    TreeView_GetItem(App->view->overviewHwnd, &ti);
+
+                    Host * host = (Host *) ti.lParam;
+                    if(host != NULL){
+                        updateConfigure(hwnd,host);
+                    }
+
+                    HostModel model = (HostModel)GetWindowLongPtr(hwnd,GWLP_USERDATA);
+                    
+                    save_config();
+                    EndDialog(hwnd,0);
+                    // TODO update message notation 
+                    SendMessage(GetParent(hwnd),1812,(WPARAM)model->hostIndex,(LPARAM)NULL);
+                    break;
+                }
             }
 
             break;
