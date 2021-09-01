@@ -12,6 +12,8 @@ RedisConnection init(char * address,int port);
 
 void sendmsg(RedisConnection stream,char * message,int length);
 
+char * get_real_host(const char * hostname);
+
 void close(RedisConnection stream);
 
 #endif

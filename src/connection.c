@@ -8,11 +8,25 @@ void ginit(){
     }
 }
 
+char * get_real_host(const char * hostname){
+    struct hostent * host = gethostbyname(hostname);
+    if(!host){
+        return NULL;
+    }
+
+    return inet_ntoa(*(struct in_addr*)host->h_addr_list[0]);
+}
+
 RedisConnection init(char * address,int port){
+    char * realhost = get_real_host(address);
+    if(realhost == NULL){
+        realhost = address;
+    }
+
     RedisConnection stream = (RedisConnection)calloc(1,sizeof(struct redis_connection));
 
     stream->host = (char*)calloc(255,sizeof(char));
-    strcpy(stream->host,address);
+    strcpy(stream->host,realhost);
     stream->port = port;
 
     stream->socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -23,7 +37,7 @@ RedisConnection init(char * address,int port){
 
     stream->address.sin_family = AF_INET;
     stream->address.sin_port = htons(port);
-    stream->address.sin_addr.S_un.S_addr = inet_addr(address);
+    stream->address.sin_addr.S_un.S_addr = inet_addr(realhost);
 
 connect:
     if (connect(stream->socket, (struct sockaddr *)&(stream->address), sizeof(stream->address)) == SOCKET_ERROR){
