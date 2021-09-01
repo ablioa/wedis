@@ -26,7 +26,7 @@ RedisConnection init(char * address,int port){
     RedisConnection stream = (RedisConnection)calloc(1,sizeof(struct redis_connection));
 
     stream->host = (char*)calloc(255,sizeof(char));
-    strcpy(stream->host,realhost);
+    strcpy(stream->host,address);
     stream->port = port;
 
     stream->socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
