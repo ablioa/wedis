@@ -43,26 +43,26 @@ void add_host(Host * host){
 }
 
 void remove_host_config(int hostIndex){
-    Host * start = appConfig->head;
+    Host * target = appConfig->head;
 
     Host * pre = NULL;
-    while(start != NULL){
+    while(target != NULL){
 
-        if(start->hostIndex == hostIndex){
+        if(target->hostIndex == hostIndex){
             if(pre == NULL){
-                appConfig->head = start->next;
+                appConfig->head = target->next;
             }else{
-                pre->next = start->next;
+                pre->next = target->next;
             }
 
-            // TODO 释放被删除节点的内存
-
             appConfig->total_host --;
+
+            free(target);
             break;
         }
 
-        pre = start;
-        start = start->next;
+        pre = target;
+        target = target->next;
     }
 }
 
