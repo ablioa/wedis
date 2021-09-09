@@ -69,7 +69,7 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
             Edit_SetReadOnly(model->stringView,TRUE);
             break;
         }
-       
+
         case WM_NOTIFY:{
             LPNMHDR msg = ((LPNMHDR) lParam);
             switch(msg->code){
@@ -118,7 +118,7 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                     if(fileName == NULL){
                         break;
                     }
-                    
+
                     FILE * stream = fopen(fileName,"wb");
                     fwrite(model->data->bulk->content,1,model->data->bulk->length,stream);
                     fclose(stream);
@@ -176,6 +176,8 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
         }
 
         case WM_DT:{
+            free_redis_reply(model->data);
+
             model->data = (RedisReply)wParam;
             model->dataNode = (TreeNode*)lParam;
 
@@ -198,11 +200,12 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 
             if(model->mode == BINARY){
                 text = dump_text(text,length,model->hex_width);
+                SetWindowText(model->stringView,text);
+                free(text);
+            }else{
+                SetWindowText(model->stringView,text);
             }
 
-            // get ttl
-
-            SetWindowText(model->stringView,text);
             break;
         }
 
@@ -298,7 +301,7 @@ void init_stringview(HINSTANCE hInstance){
     stringViewClass.hInstance     = hInstance;
 
     RegisterClassEx(&stringViewClass);
-    
+
     stringViewClass.lpszClassName = STRING_VIEW_PROP_CLASS;
     stringViewClass.lpfnWndProc   = stringViewPropWndProc;
     stringViewClass.hInstance     = hInstance;
@@ -314,7 +317,7 @@ char * get_output_buffer(int len,int width){
 }
 
 char * dump_text(char * text,int len,int width){
-    char * line   = (char*)calloc(1,width+1);//={0};
+    char * line   = (char*)calloc(1,width+1);
     char * buff   = get_output_buffer(len,width);
     char * output = buff;
 
@@ -352,6 +355,8 @@ char * dump_text(char * text,int len,int width){
         memset(line,0,(width+1));
         output += (width+4+2);
     }
+
+    free(line);
 
     return buff;
 }

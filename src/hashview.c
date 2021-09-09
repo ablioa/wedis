@@ -39,6 +39,8 @@ static HWND build_toolbar(HWND parent){
 
 BOOL updateHashDataSet(HWND hwnd,RedisReply reply){
     char indexBuff[256] = {0};
+    int xlen;
+    char * encoded_text;
     LVITEM lvI;
 
     lvI.pszText   = LPSTR_TEXTCALLBACK;
@@ -64,8 +66,7 @@ BOOL updateHashDataSet(HWND hwnd,RedisReply reply){
 
         RedisBulk bulk = reply->bulks[index*2]->bulk;
 
-        int xlen;
-        char * encoded_text = encode(bulk->content,bulk->length,&xlen);
+        encoded_text = encode(bulk->content,bulk->length,&xlen);
         lvI.pszText = encoded_text;
         lvI.iSubItem = 1;
         SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
@@ -127,6 +128,8 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
             break;
         }
         case WM_DT:{
+            free_redis_reply(model->data);
+
             model->data = (RedisReply)wParam;
             model->dataNode = (TreeNode*) lParam;
 
@@ -139,6 +142,7 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                 handle_redis_data(parent,NULL);
                 break;
             }
+
             updateHashDataSet(model->hashView,model->data);
             break;
         }

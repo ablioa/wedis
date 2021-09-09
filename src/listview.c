@@ -38,6 +38,8 @@ HWND buildListToolBar(HWND parent){
 
 BOOL updateListDataSet(HWND hwnd,RedisReply reply){
     char indexBuff[128] = {0};
+    char * encoded_data;
+    int xlen;
     LVITEM lvI;
 
     lvI.pszText   = LPSTR_TEXTCALLBACK;
@@ -61,8 +63,7 @@ BOOL updateListDataSet(HWND hwnd,RedisReply reply){
         lvI.pszText = indexBuff;
         ListView_InsertItem(hwnd, &lvI);
 
-        int xlen;
-        char * encoded_data = encode(item->bulk->content,item->bulk->length,&xlen);
+        encoded_data = encode(item->bulk->content,item->bulk->length,&xlen);
         lvI.pszText    = encoded_data;
         lvI.cchTextMax = xlen;
         lvI.iSubItem   = 1;
@@ -77,9 +78,6 @@ BOOL updateListDataSet(HWND hwnd,RedisReply reply){
 
 	     free(encoded_data);
     }
-
-    // TODO 这里还不能释放，需要选择合适的时机
-    // free_redis_reply(reply);
 
     return TRUE;
 }
@@ -193,6 +191,8 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
         }
 
         case WM_DT:{
+            free_redis_reply(model->data);
+
             model->data = (RedisReply)wParam;
             model->dataNode = (TreeNode*) lParam;
 

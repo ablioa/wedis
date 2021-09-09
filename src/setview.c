@@ -114,6 +114,7 @@ LRESULT CALLBACK SetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
             break;
         }
         case WM_DT:{
+            free_redis_reply(model->data);
             model->data = (RedisReply)wParam;
             model->dataNode = (TreeNode*)lParam;
 
