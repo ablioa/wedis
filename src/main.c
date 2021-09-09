@@ -397,44 +397,43 @@ void command(HWND hwnd,int cmd){
     }
 }
 
-// TODO fix the memory issue
-LPTSTR mGetOpenFileName(HWND hwnd){
-    LPSTR retVal = NULL;
-    OPENFILENAME * ofn = (OPENFILENAME *)calloc(1,sizeof(OPENFILENAME));
-    LPSTR    fname = (LPSTR)calloc(MAX_PATH,sizeof(char));
-
+OPENFILENAME * getOpenFileObject(HWND hwnd,char * filename){
+    OPENFILENAME * ofn = (OPENFILENAME*) calloc(1,sizeof(OPENFILENAME));
+    
     ofn->lStructSize = sizeof(OPENFILENAME);
     ofn->hwndOwner   = hwnd;
     ofn->hInstance   = App->hInstance;
     ofn->lpstrFilter = "All Files\0*.*\0HexFiles\0*.hex\0\0";
-    ofn->lpstrFile   = fname;
+    ofn->lpstrFile   = filename;
     ofn->nMaxFile    = MAX_PATH;
     ofn->Flags = OFN_FILEMUSTEXIST |OFN_PATHMUSTEXIST | OFN_LONGNAMES | OFN_EXPLORER |OFN_HIDEREADONLY;
+
+    return ofn;
+}
+
+LPTSTR mGetOpenFileName(HWND hwnd){
+    LPSTR retVal = NULL;
+    LPSTR    fname = (LPSTR)calloc(MAX_PATH,sizeof(char));
+    OPENFILENAME  * ofn = getOpenFileObject(hwnd,fname);
 
     if(GetOpenFileName(ofn)){
         retVal = fname;
     }
 
+    free(ofn)
     return retVal;
 }
 
-// TODO fix the memory issue
 LPTSTR mGetSaveFileName(HWND hwnd){
     LPSTR retVal      = NULL;
-    OPENFILENAME * ofn = (OPENFILENAME *)calloc(1,sizeof(OPENFILENAME));
-    LPSTR    fname      = (LPSTR)calloc(MAX_PATH,sizeof(char));
-
-    ofn->lStructSize = sizeof(OPENFILENAME);
-    ofn->hwndOwner = hwnd;
-    ofn->hInstance = App->hInstance;
-    ofn->lpstrFilter = "All Files\0*.*\0HexFiles\0*.hex\0\0";
-    ofn->lpstrFile = fname;
-    ofn->nMaxFile =MAX_PATH;
-    ofn->Flags = OFN_FILEMUSTEXIST |OFN_PATHMUSTEXIST |OFN_LONGNAMES | OFN_EXPLORER |OFN_HIDEREADONLY;
+    LPSTR    fname  = (LPSTR)calloc(MAX_PATH,sizeof(char));
+    OPENFILENAME  * ofn = getOpenFileObject(hwnd,fname);
 
     if(GetSaveFileName(ofn)){
         retVal = fname;
     }
+    
+    free(ofn);
 
     return retVal;
 }
