@@ -420,7 +420,7 @@ LPTSTR mGetOpenFileName(HWND hwnd){
         retVal = fname;
     }
 
-    free(ofn)
+    free(ofn);
     return retVal;
 }
 
