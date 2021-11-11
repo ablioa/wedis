@@ -42,13 +42,13 @@
 
 typedef struct app_view{
     HWND hwnd;
-    
+
     HWND toolBarHwnd;
     HWND statusBarHwnd;
-    
+
     HWND overviewHwnd;
     HWND dataviewHwnd;
-    
+
     HWND westSplitHwnd;
 
 	int statusbarHeight;

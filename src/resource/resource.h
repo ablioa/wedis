@@ -102,6 +102,20 @@
 #define IDS_TB_HSH_MOVE_DATA                    40037
 #define IDS_TB_HSH_DELETE_DATA                  40038
 
+#define IDS_LV_COLUMN_PROPERTY                  40039
+#define IDS_LV_COLUMN_VALUE                     40040   
+#define IDS_LV_COLUMN_NOTE                      40041
+
+#define IDS_LV_COLUMN_LIST_INDEX                40042
+#define IDS_LV_COLUMN_LIST_VALUE                40043   
+#define IDS_LV_COLUMN_LIST_LENGTH               40044
+
+#define IDS_SYSTEM_NOTE_OS                      40045
+#define IDS_SYSTEM_NOTE_COMPILER                40048
+#define IDS_SYSTEM_NOT_PROCESSID                40047
+#define IDS_SYSTEM_CONNECTED_CLIENTS            40048
+#define IDS_SYSTEM_MEM_ALLOCATOR                40049
+
 #define IDE1 50001
 #define IDE2 50002
 #define IDE3 50003

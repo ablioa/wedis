@@ -217,21 +217,22 @@ void onMainFrameCreate(HWND hwnd){
     HINSTANCE hInst = App->hInstance;
 
     App->view = (AppView *)calloc(1,sizeof(AppView));
-    App->view->hwnd = hwnd;
+    AppView * app_view = App->view;
+    app_view->hwnd = hwnd;
 
     buildToolBar(App->view);
     buildStatusBar(App->view);
 
     buildConnectionView(App->view);
-    App->view->dataviewHwnd = CreateWindowEx(0, DATAVIEW_WINDOW,NULL,
+    app_view->dataviewHwnd = CreateWindowEx(0, DATAVIEW_WINDOW,NULL,
             (!WS_VISIBLE)|WS_CHILD,
             0,0,0,0,App->view->hwnd,0,App->hInstance,NULL);
 
-    App->view->westSplitHwnd =CreateWindowEx(0,V_SPLIT,"", 
+    app_view->westSplitHwnd =CreateWindowEx(0,V_SPLIT,"", 
             (!WS_VISIBLE)|WS_CHILD,
             0,0,0,0,App->view->hwnd,0,hInst,0);
 
-    SendMessage(App->view->westSplitHwnd,WM_SET_PANES_HWND,(WPARAM)App->view->overviewHwnd,(LPARAM)App->view->dataviewHwnd);
+    SendMessage(app_view->westSplitHwnd,WM_SET_PANES_HWND,(WPARAM)app_view->overviewHwnd,(LPARAM)app_view->dataviewHwnd);
 
     App->hConnectionMenu = CreatePopupMenu();
     AppendMenu(App->hConnectionMenu,MF_STRING,IDM_CONNECTION_POOL,"Connections");
@@ -399,7 +400,7 @@ void command(HWND hwnd,int cmd){
 
 OPENFILENAME * getOpenFileObject(HWND hwnd,char * filename){
     OPENFILENAME * ofn = (OPENFILENAME*) calloc(1,sizeof(OPENFILENAME));
-    
+
     ofn->lStructSize = sizeof(OPENFILENAME);
     ofn->hwndOwner   = hwnd;
     ofn->hInstance   = App->hInstance;
@@ -432,7 +433,7 @@ LPTSTR mGetSaveFileName(HWND hwnd){
     if(GetSaveFileName(ofn)){
         retVal = fname;
     }
-    
+
     free(ofn);
 
     return retVal;

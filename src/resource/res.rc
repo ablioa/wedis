@@ -3,149 +3,10 @@
 #include <richedit.h>
 #include "resource.h"
 
+//#define chinese_resource
+
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDB_TOOLBAR   BITMAP         "main.bmp"
-
-LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
-ID_MAIN MENU
-{
-    POPUP "&File"
-    {
-        MENUITEM "&Connction", IDM_CONNECTION_POOL
-        MENUITEM SEPARATOR
-        MENUITEM "&Preference", IDM_PREFERENCE
-        MENUITEM SEPARATOR
-        MENUITEM "&Exit", IDM_EXIT
-    }
-    POPUP "&Help"
-    {
-        MENUITEM "&About...", IDM_ABOUT
-    }
-}
-
-LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDD_ABOUT DIALOGEX 0, 0, 200, 65
-STYLE DS_MODALFRAME | DS_SETFONT | WS_CAPTION | WS_VISIBLE | WS_POPUP | WS_SYSMENU
-EXSTYLE WS_EX_TOOLWINDOW | WS_EX_STATICEDGE
-CAPTION "About"
-FONT 8, "Ms Shell Dlg", 0, 0, 1
-{
-    CONTROL         "", 8888, WC_STATIC, SS_ICON, 5, 15, 30, 30, WS_EX_LEFT
-    LTEXT           "wedis 0.0.1", 0, 40, 10, 180, 20, SS_LEFT, WS_EX_LEFT
-    LTEXT           "Copyright(C) 2020-2021 wangzh", 1, 40, 20, 180, 20, SS_LEFT, WS_EX_LEFT
-    LTEXT           "Homepage: https://github.com/ablioa/wedis/", 2, 40, 30, 180, 20, SS_LEFT, WS_EX_LEFT
-    DEFPUSHBUTTON   "OK", IDC_ABOUT_OK, 75, 45, 50, 14, 0, WS_EX_LEFT
-}
-
-LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDD_ADD_ENTRY DIALOG 0, 0, 400, 240
-STYLE DS_3DLOOK | DS_CENTER | DS_MODALFRAME | DS_SHELLFONT | WS_CAPTION | WS_VISIBLE | WS_POPUP | WS_SYSMENU
-CAPTION "Add Entry"
-FONT 8, "Ms Shell Dlg"
-{
-    PUSHBUTTON      "Cancel", IDCANCEL, 340, 222, 50, 14, 0, WS_EX_LEFT
-    DEFPUSHBUTTON   "OK", IDOK, 285, 222, 50, 14, 0, WS_EX_LEFT
-}
-
-LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDD_CONNECTION DIALOGEX 0, 0, 411, 238
-STYLE DS_MODALFRAME | DS_SYSMODAL | DS_SETFONT | WS_CAPTION | WS_POPUP | WS_SYSMENU
-EXSTYLE WS_EX_TOOLWINDOW | WS_EX_STATICEDGE
-CAPTION "Connection"
-FONT 8, "Ms Shell Dlg", 0, 0, 1
-{
-    EDITTEXT        IDC_CONNECTION_DESCRIPTION, 215, 100, 190, 105, ES_AUTOHSCROLL, WS_EX_LEFT
-    AUTOCHECKBOX    "Require Password", IDC_CONNECTION_IFPASSWORD, 250, 57, 73, 8, 0, WS_EX_LEFT
-    LTEXT           "Name", 0, 215, 14, 35, 9, SS_LEFT, WS_EX_LEFT
-    CONTROL         "", IDC_CONNECTION_TREE, WC_TREEVIEW, WS_TABSTOP | WS_BORDER | TVS_HASLINES | TVS_LINESATROOT | TVS_INFOTIP | TVS_NOSCROLL, 10, 15, 180, 160, WS_EX_LEFT
-    PUSHBUTTON      "Add", IDC_CONNECTION_ADD, 15, 180, 50, 14, 0, WS_EX_LEFT
-    LTEXT           "Select Connection", 0, 10, 5, 59, 9, SS_LEFT, WS_EX_LEFT
-    PUSHBUTTON      "Cancel", IDCANCEL, 335, 220, 50, 14, 0, WS_EX_LEFT
-    DEFPUSHBUTTON   "OK", IDOK, 225, 220, 50, 14, 0, WS_EX_LEFT
-    DEFPUSHBUTTON   "Connect", IDC_CONFIG_CONNECT, 280, 220, 50, 14, 0, WS_EX_LEFT
-    PUSHBUTTON      "Delete", IDC_CONNECTION_DELETE, 75, 180, 50, 14, 0, WS_EX_LEFT
-    LTEXT           "Host", 0, 215, 29, 35, 9, SS_LEFT, WS_EX_LEFT
-    EDITTEXT        IDC_CONNECTION_VALUE, 250, 10, 150, 13, ES_AUTOHSCROLL, WS_EX_LEFT
-    LTEXT           "Port", 0, 215, 44, 35, 9, SS_LEFT, WS_EX_LEFT
-    LTEXT           "Password", 0, 215, 71, 35, 9, SS_LEFT, WS_EX_LEFT
-    EDITTEXT        IDC_CONNECTION_HOSTVALUE, 250, 25, 150, 13, ES_AUTOHSCROLL, WS_EX_LEFT
-    EDITTEXT        IDC_CONNECTION_PORTVALUE, 250, 40, 150, 13, ES_AUTOHSCROLL, WS_EX_LEFT
-    EDITTEXT        IDC_CONNECTION_PASSWORDVALUE, 250, 67, 150, 13, ES_AUTOHSCROLL | ES_PASSWORD, WS_EX_LEFT
-    LTEXT           "Comment", 0, 215, 87, 35, 9, SS_LEFT, WS_EX_LEFT
-    CONTROL         "", IDC_CONNECTION_SPLIT, WC_STATIC, SS_ETCHEDHORZ, 5, 215, 395, 1, WS_EX_LEFT
-   // PUSHBUTTON      "Test", IDC_CONNECTION_TEST, 135, 180, 45, 14, 0, WS_EX_LEFT
-}
-
-LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDD_PREFERENCE DIALOGEX 0, 0, 372, 237
-STYLE DS_MODALFRAME | DS_SYSMODAL | DS_SETFONT | WS_CAPTION | WS_POPUP | WS_SYSMENU
-EXSTYLE WS_EX_TOOLWINDOW | WS_EX_STATICEDGE
-CAPTION "Preference"
-FONT 8, "Ms Shell Dlg", 0, 0, 1
-{
-    EDITTEXT        IDC_PREFERENCE_SCAN_COUNT, 45, 3, 84, 13, ES_AUTOHSCROLL, WS_EX_LEFT
-    LTEXT           "Page Size:", IDC_PREFERENCE_SCAN_COUNT, 5, 5, 35, 9, SS_LEFT, WS_EX_LEFT
-    PUSHBUTTON      "Cancel", ID_CONFIG_CANCEL, 315, 220, 50, 14, 0, WS_EX_LEFT
-    DEFPUSHBUTTON   "OK", IDC_CONFIG_DONE, 260, 220, 50, 14, 0, WS_EX_LEFT
-    AUTOCHECKBOX    "Display help message", 0, 45, 20, 84, 8, 0, WS_EX_LEFT
-    AUTOCHECKBOX    "Reload automatically", 0, 45, 35, 81, 8, 0, WS_EX_LEFT
-    AUTOCHECKBOX    "Log network traffics", 87, 45, 50, 78, 8, 0, WS_EX_LEFT
-    CONTROL         "", IDC_STATIC, WC_STATIC, SS_ETCHEDHORZ, 1, 215, 370, 1, WS_EX_LEFT
-}
-
-//
-// String Table resources
-//
-LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
-STRINGTABLE
-{
-    ID_COLOR_SPLITBAR             "Split bar"
-    ID_COLOR_CURLINE              "Current line"
-    IDS_DATAVIEW                  "数据"
-    IDS_CODEVIEW                  "Code View"
-    IDS_REGVIEW                   "Register View"
-    IDS_STACKVIEW                 "Stack View"
-
-    IDS_HOSTLIST                  "Redis Services"
-
-    IDS_TB_REFRESH_SET_DATA       "Refresh SET data"
-    IDS_TB_MOVE_SET_DATA          "Move SET data"
-    IDS_TB_DELETE_SET_DATA        "Delete SET data"
-
-    IDS_TB_ADD_DATA_ITEM          "Add data item"
-    IDS_TB_DELETE_DATA_ITEM       "Truncate database/flushdb"
-
-    IDS_TB_MAIN_CONNECTION        "Connection"
-    IDS_TB_MAIN_PREFERENCE        "Preference"
-    
-    IDS_TB_REFRESH_LIST_DATA      "Refresh LIST data"
-    IDS_TB_MOVE_LIST_DATA         "Move LIST data"
-    IDS_TB_DELETE_LIST_DATA       "Delete LIST data"
-    IDS_TB_EXPORT_LIST_DATA       "Export LIST data"
-
-    IDS_TB_SYS_FLUSH_ALL          "Flush all database"
-    IDS_TB_SYS_SERVER             "Server"
-    IDS_TB_SYS_CLIENTS            "Connected Clients"
-    IDS_TB_SYS_MEMORY             "Memory"
-    IDS_TB_SYS_PERSISTENCE        "Persistence"
-    IDS_TB_SYS_STATS              "Statistics"
-    IDS_TB_SYS_REPLICATION        "Replication"
-    IDS_TB_SYS_CPU                "CPU xxx"
-    IDS_TB_SYS_MODULES            "Modules"
-    IDS_TB_SYS_CLUSTER            "Cluster"
-    IDS_TB_SYS_KEYSPACE           "keyspace"
-
-    IDS_TB_STR_REFRESH_DATA       "Refresh"
-    IDS_TB_STR_MOVE_DATA          "Move"
-    IDS_TB_STR_DELETE_DATA        "Delete"
-    IDS_TB_STR_EXPORT_DATA        "Export"
-    IDS_TB_STR_FORMAT_DATA        "Format"
-    IDS_TB_STR_WIDEN_DATA         "Widen"
-
-    IDS_TB_HSH_REFRESH_DATA       "Refresh HASH data"          
-    IDS_TB_HSH_MOVE_DATA          "Move HASH data"
-    IDS_TB_HSH_DELETE_DATA        "Delete HASH data"
-}
 
 IDA_RUN ACCELERATORS
 {
@@ -153,9 +14,15 @@ IDA_RUN ACCELERATORS
     VK_F9,         IDM_EXE_BRK, VIRTKEY
 }
 
-
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDI_MAIN           ICON           "main.ico"
+
+#ifdef chinese_resource
+#include "wedis_cn.rc1"
+#else
+#include "wedis_en.rc1"
+#endif
+
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 VS_VERSION_INFO VERSIONINFO
@@ -190,3 +57,7 @@ VS_VERSION_INFO VERSIONINFO
         VALUE "Translation", 0x0804, 0x04B0
     }
 }
+
+#ifndef NO_MANIFESTS
+1 RT_MANIFEST "wedis.mft"
+#endif

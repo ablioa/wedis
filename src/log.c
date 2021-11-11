@@ -13,7 +13,7 @@ int wedis_log(const char *fmt, ...){
     time(&sec);
     target_time = localtime(&sec);
     memset(log_time_stamp,0,25);
-  
+
     sprintf(log_time_stamp,time_fmt,
             target_time->tm_year+1900,
             target_time->tm_mon+1,
@@ -32,6 +32,6 @@ int wedis_log(const char *fmt, ...){
     fflush(log_file);
 
     fprintf(stdout,"%s\n", buffer);
-    
+
     return(cnt);
 }

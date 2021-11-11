@@ -1,22 +1,58 @@
- #include "systemview.h"
+#include "systemview.h"
 
-const char * cfgColNames[2]={"Property","Value"};
+#define NOTE_COUNT 5
+typedef struct note_table{
+    int          noteid;
+    const char * name;
+    char       *  message;
+}NoteTable;
+
+NoteTable notes[NOTE_COUNT]={
+    {IDS_SYSTEM_NOTE_OS,"os",NULL},
+    {IDS_SYSTEM_NOTE_COMPILER,"gcc_version",NULL},
+    {IDS_SYSTEM_NOT_PROCESSID,"process_id",NULL},
+    {IDS_SYSTEM_CONNECTED_CLIENTS,"connected_clients",NULL},
+    {IDS_SYSTEM_MEM_ALLOCATOR,"mem_allocator",NULL}
+};
+
+const int cids[3]={IDS_LV_COLUMN_PROPERTY,IDS_LV_COLUMN_VALUE,IDS_LV_COLUMN_NOTE};
+
+char * find_message(const char * name){
+    for(int ix = 0; ix < NOTE_COUNT; ix ++){
+        if(strcmp(name,notes[ix].name) == 0){
+            return notes[ix].message;
+        }
+    }
+
+    return NULL;
+}
+
+void init_message(){
+    for(int ix = 0; ix < NOTE_COUNT; ix ++){
+       notes[ix].message = (char *)calloc(1,500);
+       LoadString(App->hInstance,notes[ix].noteid,notes[ix].message,500);
+    }
+}
+
 
 BOOL InitSetViewColumns1(HWND hWndListView) { 
     LVCOLUMN lvc;
     int iCol;
     lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
-    for (iCol = 0; iCol < 2; iCol++){
+    for (iCol = 0; iCol < 3; iCol++){
         char * buff = (char *)calloc(1,255);
-        strcpy(buff,cfgColNames[iCol]);
+        LoadString(App->hInstance,cids[iCol],buff,255);
+ 
         lvc.iSubItem = iCol;
         lvc.pszText = buff;
         lvc.cx = 100;
         lvc.fmt = LVCFMT_LEFT;
 
         ListView_InsertColumn(hWndListView, iCol, &lvc);
-        ListView_SetColumnWidth(hWndListView,iCol,(iCol+1) * 200);
+        //ListView_SetColumnWidth(hWndListView,iCol,(iCol+1) * 200);
+
+        free(buff);
     }
 
     return TRUE;
@@ -62,7 +98,15 @@ BOOL updateConfigDataSet(HWND hwnd,KVPair kv){
 
         lvI.pszText = kv->array[index]->value;
         lvI.iSubItem = 1;
+        //ListView_InsertItem(hwnd, &lvI);
         SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+
+        char * msg = find_message(kv->array[index]->key);
+        if(msg != NULL){
+            lvI.pszText = msg;
+            lvI.iSubItem = 2;
+            SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+        }
     }
 
     return TRUE;
@@ -87,6 +131,8 @@ LRESULT CALLBACK SystemViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 
             ListView_SetExtendedListViewStyle(model->paramViewHwnd,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
             InitSetViewColumns1(model->paramViewHwnd);
+
+            init_message();
             break;
         }
 
