@@ -3,7 +3,7 @@
 #include <richedit.h>
 #include "resource.h"
 
-#define chinese_resource
+//#define chinese_resource
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDB_TOOLBAR   BITMAP         "main.bmp"

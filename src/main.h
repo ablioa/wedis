@@ -180,5 +180,6 @@ void delete_data_node(TreeNode * db_node,const char * key);
 
 void sigin_in_host(HWND hwnd,int hostIndex);
 
+void appendDynamicMenu();
 #endif
 

@@ -24,12 +24,13 @@
 #define GENERAL_CMD_RELOAD  10004
 #define GENERAL_CMD_KEYEDIT 10005
 
-#define WM_DT              WM_USER+200
-#define WM_DTT             WM_USER+201
-#define WM_INIT_ENTRY      WM_USER+202
-#define WM_DATA_KEY        WM_USER+203
-#define WM_DATA_VALUE      WM_USER+204
-#define WM_NEW_CONNECTION  WM_USER+205
+#define WM_DT                      WM_USER+200
+#define WM_DTT                     WM_USER+201
+#define WM_INIT_ENTRY              WM_USER+202
+#define WM_DATA_KEY                WM_USER+203
+#define WM_DATA_VALUE              WM_USER+204
+#define WM_NEW_CONNECTION          WM_USER+205
+#define WM_UPDATE_CONNECTION_LIST  WM_USER+206
 
 #define WM_MOVEDATA_CMD 10000
 
@@ -78,9 +79,8 @@ typedef struct application{
 	DataView    * dataView;
 
 	HMENU hConnectionMenu;
-//	HMENU hServerInfoMenu;
 
-    HINSTANCE hInstance;
+  HINSTANCE hInstance;
 
 	HWND mainWindowHwnd;
 	int spaceCount;
@@ -89,9 +89,9 @@ typedef struct application{
 
 	TreeNode * selectHost;
 
-    TreeNode ** hosts;
+  TreeNode ** hosts;
 
-    int totalHosts;
+  int totalHosts;
 
 }Application;
 

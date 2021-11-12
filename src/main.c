@@ -129,6 +129,16 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
             break;
         }
 
+        case WM_UPDATE_CONNECTION_LIST:{
+            int ret = DeleteMenu(App->hConnectionMenu,1,MF_BYPOSITION);
+            while(ret != 0){
+                ret = DeleteMenu(App->hConnectionMenu,1,MF_BYPOSITION);
+            }
+
+            appendDynamicMenu();
+            break;
+        }
+
         case WM_NOTIFY:{
             LPNMHDR msg = ((LPNMHDR) lParam);
             switch (msg->code) {
@@ -212,7 +222,17 @@ void showWindows(AppView * v){
     ShowWindow(v->dataviewHwnd,SW_SHOW);
 }
 
-// TODO update connection menu item list when configuration altered.
+void appendDynamicMenu(){
+    if(appConfig->total_host != 0){
+        AppendMenu(App->hConnectionMenu,MF_SEPARATOR,0,"");
+        Host * start = appConfig->head;
+        while (start != NULL){
+            AppendMenu(App->hConnectionMenu,MF_STRING,(start->hostIndex + IDM_CUSTOMER_HOST+1),start->name);
+            start = start->next;
+        }
+    }
+}
+
 void onMainFrameCreate(HWND hwnd){
     HINSTANCE hInst = App->hInstance;
 
@@ -234,15 +254,12 @@ void onMainFrameCreate(HWND hwnd){
 
     SendMessage(app_view->westSplitHwnd,WM_SET_PANES_HWND,(WPARAM)app_view->overviewHwnd,(LPARAM)app_view->dataviewHwnd);
 
+    char * cbuff =(char *) calloc(1,255);
+    LoadString(hInst,IDS_TB_MAIN_CONNECTION,cbuff,255);
     App->hConnectionMenu = CreatePopupMenu();
-    AppendMenu(App->hConnectionMenu,MF_STRING,IDM_CONNECTION_POOL,"Connections");
-    AppendMenu(App->hConnectionMenu,MF_SEPARATOR,0,"");
+    AppendMenu(App->hConnectionMenu,MF_STRING,IDM_CONNECTION_POOL,cbuff);
 
-    Host * start = appConfig->head;
-    while (start != NULL){
-        AppendMenu(App->hConnectionMenu,MF_STRING,(start->hostIndex + IDM_CUSTOMER_HOST+1),start->name);
-        start = start->next;
-    }
+    appendDynamicMenu();
 }
 
 void updateNavigationInfo(TreeNode * node){

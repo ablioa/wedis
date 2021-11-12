@@ -303,6 +303,7 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lPa
                 case IDOK:{
                     save_config();
                     EndDialog(hwnd,0);
+                    SendMessage(GetParent(hwnd),WM_UPDATE_CONNECTION_LIST,(WPARAM)NULL,(LPARAM)NULL);
                     break;
                 }
 
