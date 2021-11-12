@@ -8,6 +8,8 @@
 
 #define CONFIG_FILENAME "wedis.json"
 
+#define DEFAULT_CONFIG_FILE "{\"dbScanDefault\":15,\"logNetworkTraffic\":1,\"hosts\":[]}"
+
 Config * appConfig;
 
 Preference * preference;
@@ -99,13 +101,19 @@ void load_config(){
     }
 }
 
+char * get_default_config(size_t * dlen){
+    char * buff =(char *)calloc(1,500);
+    * dlen = strlen(DEFAULT_CONFIG_FILE);
+    memcpy(buff,DEFAULT_CONFIG_FILE,*dlen);
+    return buff;
+}
+
 char * fetch_text_from_file(const char * filename,size_t * length){
     FILE * fin = NULL;
     char * buff = NULL;
     fin = fopen(filename,"rb");
     if(fin == NULL){
-        perror("SCRIPT OPENNING FAILED");
-        return 0;
+        return get_default_config(length);
     }
 
     fseek(fin,0,SEEK_END);
@@ -113,8 +121,7 @@ char * fetch_text_from_file(const char * filename,size_t * length){
     fseek(fin,0,SEEK_SET);
     buff = (char *)malloc(*length+1);
     if(buff == NULL){
-        perror("MEMORY ALLOCATION[BUFF] FAILED");
-        return 0;
+        return get_default_config(length);
     }
 
     memset(buff,0,*length+1);
