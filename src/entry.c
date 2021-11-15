@@ -59,7 +59,7 @@ BOOL init_list_column_name(HWND hWndListView,const char ** item,const int column
         lvc.fmt      = LVCFMT_LEFT;
         ListView_InsertColumn(hWndListView, i, &lvc);
     }
-    
+
     return TRUE;
 }
 
@@ -72,7 +72,7 @@ static void add_items(HWND hWndComboBox){
     for (int k = 0; k <= 4; k++){
         SendMessage(hWndComboBox,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM) types[k]); 
     }
-      
+
     SendMessage(hWndComboBox, CB_SETCURSEL, (WPARAM)0, (LPARAM)0);
 }
 
@@ -332,7 +332,7 @@ void init_editor_view(HINSTANCE hInstance){
     stringViewClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     stringViewClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     stringViewClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    stringViewClass.hbrBackground = resource->brush; 
+    stringViewClass.hbrBackground = resource->brush;
     stringViewClass.lpszMenuName  = 0;
 
     stringViewClass.lpszClassName = WDS_PANE;

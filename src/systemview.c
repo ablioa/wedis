@@ -234,9 +234,9 @@ BOOL InitSetViewColumns1(HWND hWndListView) {
 }
 
 HWND buildStatToolBar(HWND parent){
-    int buttonCount = 11;
-    TBBUTTON tbtn[11] = {
-        {(TB_DELETE_BUTTON), TB_CMD_FLUSH_DB, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+    int buttonCount = 13;
+    TBBUTTON tbtn[13] = {
+        {(TB_DISCONNECT_BUTTON), TB_CMD_DISCONNECT, TBSTATE_ENABLED, TBSTYLE_BUTTON, {-1}, 0, 0},
         {(0), 0, TBSTATE_ENABLED, TBSTYLE_SEP, {0}, 0, 0},
         {(1), IDM_STAT_SERVER, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(2), IDM_STAT_CLIENT, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
@@ -246,7 +246,9 @@ HWND buildStatToolBar(HWND parent){
         {(6), IDM_STAT_REPLICATION, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(7), IDM_STAT_CPU, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
         {(8), IDM_STAT_CLUSTER, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(9), IDM_STAT_KEYSPACE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+        {(9), IDM_STAT_KEYSPACE, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(10), 0, TBSTATE_ENABLED, TBSTYLE_SEP, {0}, 0, 0},
+        {(TB_DELETE_BUTTON), TB_CMD_FLUSH_DB, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
     };
 
     return buildGeneralToolBar(parent,tbtn,buttonCount);;
@@ -320,6 +322,7 @@ LRESULT CALLBACK SystemViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                     UINT_PTR idButton = lpttt->hdr.idFrom;
                     switch(idButton){
                         case TB_CMD_FLUSH_DB:{lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_SYS_FLUSH_ALL);break;}
+                        case TB_CMD_DISCONNECT:{lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_SYS_DISCONNECT);break;}
                         case IDM_STAT_SERVER:{lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_SYS_SERVER);break;};
                         case IDM_STAT_CLIENT:{lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_SYS_CLIENTS);break;}
                         case IDM_STAT_MEMORY:{lpttt->lpszText = MAKEINTRESOURCE(IDS_TB_SYS_MEMORY);break;}
@@ -343,7 +346,11 @@ LRESULT CALLBACK SystemViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                 if(result == IDYES){
                     MessageBox(hwnd,"YES","title",MB_OK);
                 }
-            }else{
+            }
+            else if(cmd == TB_CMD_DISCONNECT){
+                MessageBox(hwnd,"disconnect from server.","Title",MB_OK);  
+            }
+            else{
                 stat_command(hwnd,LOWORD (wParam));
             }
             return 0;

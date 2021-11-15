@@ -80,6 +80,7 @@
 #define IDS_TB_EXPORT_LIST_DATA                 40018
 
 #define IDS_TB_SYS_FLUSH_ALL                    40019          
+#define IDS_TB_SYS_DISCONNECT                   41019          
 #define IDS_TB_SYS_SERVER                       40020
 #define IDS_TB_SYS_CLIENTS                      40021
 #define IDS_TB_SYS_MEMORY                       40022
@@ -322,9 +323,10 @@
 #define TB_CMD_WIDEN_DATA   4005
 #define TB_CMD_FLUSH_DB     4006
 #define TB_CMD_ADD_DATA     4007
+#define TB_CMD_DISCONNECT   4008
 
 /** total image list icons */
-#define TOTAL_ICON_COUNT 22
+#define TOTAL_ICON_COUNT 23
 
 /** defines toolbar button id */
 #define TB_DELETE_BUTTON 0
@@ -341,3 +343,4 @@
 #define TB_WIDEN_BUTTON      19
 #define TB_REFRESH_BUTTON    20
 #define TB_ADD_BUTTON        21
+#define TB_DISCONNECT_BUTTON 22

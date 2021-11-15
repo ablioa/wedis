@@ -112,6 +112,7 @@ STRINGTABLE
     IDS_TB_EXPORT_LIST_DATA       "Export LIST data"
 
     IDS_TB_SYS_FLUSH_ALL          "Flush all database"
+    IDS_TB_SYS_DISCONNECT         "Disconnect from server"
     IDS_TB_SYS_SERVER             "Server"
     IDS_TB_SYS_CLIENTS            "Connected Clients"
     IDS_TB_SYS_MEMORY             "Memory"

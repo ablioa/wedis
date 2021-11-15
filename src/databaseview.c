@@ -21,7 +21,7 @@ void init_database_view(HINSTANCE hInstance){
     hashViewClass.hInstance     = hInstance;
     hashViewClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     hashViewClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    hashViewClass.hbrBackground = resource->brush; 
+    hashViewClass.hbrBackground = resource->brush;
     hashViewClass.lpszMenuName  = 0;
     hashViewClass.lpszClassName = DATABASE_VIEW_CLASS;
     hashViewClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
@@ -55,12 +55,12 @@ void create_database_view(HWND hwnd,DatabaseViewModel * model){
     for(int ix = 0; ix < 5; ix ++){
         create_widget(hwnd,hinst,&query_row[ix]);
     }
-    
-    model->hwndCursorText       = query_row[0].hwnd; 
-    model->hwndPatternText      = query_row[1].hwnd; 
-    model->hwndCountText        = query_row[2].hwnd; 
-    model->hwndSearchButton     = query_row[3].hwnd; 
-    model->hwndNextSearchButton = query_row[4].hwnd; 
+
+    model->hwndCursorText       = query_row[0].hwnd;
+    model->hwndPatternText      = query_row[1].hwnd;
+    model->hwndCountText        = query_row[2].hwnd;
+    model->hwndSearchButton     = query_row[3].hwnd;
+    model->hwndNextSearchButton = query_row[4].hwnd;
 
     EnumChildWindows(hwnd,enumChildProc,0);
 }
@@ -159,7 +159,7 @@ LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
                     entry *ety = (entry *) calloc(1,sizeof(entry));
                     TreeNode * node = model->databaseNode;
                     DialogBoxParam (App->hInstance,MAKEINTRESOURCE (IDD_ADD_ENTRY),hwnd,(DLGPROC)entryDlgProc,(LPARAM)ety);
-                    
+
                     if(ety->key != NULL){
                         s_add_string(node,
                                 ety->key,
@@ -181,7 +181,7 @@ LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
         case WM_DT:{
             TreeNode * datanode = (TreeNode *) lParam;
             model->databaseNode = datanode;
-            
+
             SetDlgItemText(hwnd,DB_CTRL_PATTERN,datanode->database->pattern);
             SetDlgItemInt(hwnd,DB_CTRL_CURSOR,datanode->database->cursor,FALSE);
             SetDlgItemInt(hwnd,DB_CTRL_COUNT,datanode->database->page_size,FALSE);
