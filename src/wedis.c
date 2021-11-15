@@ -17,7 +17,7 @@ int DumpMessage(long Err_Code){
     param->hwndOwner   = App->mainWindowHwnd;
     param->lpszCaption = "ERROR";
     param->lpszIcon    = MAKEINTRESOURCE(IDI_MAIN);
-    param->dwStyle     = MB_OKCANCEL;    
+    param->dwStyle     = MB_OKCANCEL;
 
     param->lpszText = err_list[Err_Code].Messag;
     param->dwStyle  = err_list[Err_Code].Style | MB_USERICON ;

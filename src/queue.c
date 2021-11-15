@@ -32,13 +32,13 @@ void * get_node(list lst){
     list ret = lst->head;
 
     lst->head = lst->head->next;
-    
+
     if(lst->head == NULL){
         lst->tail = NULL;
     }
 
     lst->size --;
-    
+
     void * data = ret->value;
     free_list(ret);
 

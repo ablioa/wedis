@@ -6,7 +6,7 @@ const char * setColNames[3]={
     "Length"
 };
 
-BOOL InitSetViewColumns(HWND hWndListView) { 
+BOOL InitSetViewColumns(HWND hWndListView) {
     LVCOLUMN lvc;
     lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
@@ -21,7 +21,7 @@ BOOL InitSetViewColumns(HWND hWndListView) {
         lvc.fmt = LVCFMT_LEFT;
         ListView_InsertColumn(hWndListView, iCol, &lvc);
     }
-    
+
     return TRUE;
 }
 
@@ -55,7 +55,7 @@ BOOL updateSetDataSet(HWND hwnd,RedisReply reply){
         memset(indexBuff,0,256);
         sprintf(indexBuff,"%d",(index +1));
 
-        lvI.pszText = indexBuff; 
+        lvI.pszText = indexBuff;
         ListView_InsertItem(hwnd, &lvI);
 
         int xlen;
@@ -84,7 +84,7 @@ LRESULT CALLBACK SetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
         case WM_CREATE:{
             model = (SetViewModel*)calloc(1,sizeof(SetViewModel));
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
-            
+
             model->setView = CreateWindowEx(!WS_EX_CLIENTEDGE, "SysListView32", NULL,
                           WS_CHILD | WS_BORDER | WS_VISIBLE | LVS_REPORT | LVS_SHAREIMAGELISTS,
                           0, 0,0,0,

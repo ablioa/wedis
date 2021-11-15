@@ -7,9 +7,9 @@ typedef struct column_attribute{
 }ColumnAttribute;
 
 const ColumnAttribute ca[3] ={
-    {40, IDS_LV_COLUMN_LIST_INDEX},
-    {500,IDS_LV_COLUMN_LIST_VALUE},
-    {40, IDS_LV_COLUMN_LIST_LENGTH}
+    {50, IDS_LV_COLUMN_LIST_INDEX},
+    {450,IDS_LV_COLUMN_LIST_VALUE},
+    {60, IDS_LV_COLUMN_LIST_LENGTH}
 };
 
 HWND buildListToolBar(HWND parent){
@@ -40,24 +40,24 @@ BOOL updateListDataSet(HWND hwnd,RedisReply reply){
 
     for(int ix = 0; ix < reply->array_length; ix ++){
        RedisReply item = reply->bulks[ix];
-       
+
        lvI.iItem  = ix;
        lvI.iImage = ix;
        lvI.iSubItem = 0;
-       
+
        memset(indexBuff,0,128);
        sprintf(indexBuff,"%d",(ix +1));
-       
+
        lvI.pszText = indexBuff;
        ListView_InsertItem(hwnd, &lvI);
-       
+
        encoded_data = encode(item->bulk->content,item->bulk->length,&xlen);
        lvI.pszText    = encoded_data;
        lvI.cchTextMax = xlen;
        lvI.iSubItem   = 1;
-       
+
        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
-       
+
        char buff[128] = {0};
        sprintf(buff,"%d",item->bulk->length);
        lvI.pszText = buff;
@@ -73,7 +73,7 @@ BOOL updateListDataSet(HWND hwnd,RedisReply reply){
 LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
     RECT rect;
     ListViewModel * model = (ListViewModel *)GetWindowLongPtr(hwnd,GWLP_USERDATA);
-    
+
     switch(message){
         case WM_CREATE:{
             model = (ListViewModel*)calloc(1,sizeof(ListViewModel));
@@ -89,11 +89,11 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
             // init list columns
             LVCOLUMN lvc;
-            lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;   
+            lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
             for (int i = 0; i <= 2; i++){
                 char * buff = (char *)calloc(1,255);
                 LoadString(App->hInstance,ca[i].columnId,buff,255);
-            
+
                 lvc.pszText  = buff;
                 lvc.cx       = ca[i].width;
                 lvc.iSubItem = i;
@@ -226,10 +226,10 @@ void init_listview(HINSTANCE hInstance){
     listViewClass.hInstance     = hInstance;
     listViewClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
     listViewClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    listViewClass.hbrBackground = resource->brush; 
+    listViewClass.hbrBackground = resource->brush;
     listViewClass.lpszMenuName  = 0;
     listViewClass.lpszClassName = LIST_VIEW_CLASS;
     listViewClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
-    
+
     RegisterClassEx(&listViewClass);
 }
