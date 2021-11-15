@@ -2,25 +2,34 @@
 #define queue_h
 
 #include <stdlib.h>
+#include <stdio.h>
 
-struct redis_list{
+struct wedis_list{
     int size;
 
     void * value;
 
-    struct redis_list * next;
-    struct redis_list * prev;
-
-    struct redis_list * head;
-    struct redis_list * tail;
+    struct wedis_list * next;
+    struct wedis_list * prev;
 };
 
-typedef struct redis_list * list;
+typedef struct wedis_list * list;
 
-list init_list(void * value);
+typedef struct wedis_list * list_node;
+
+typedef int (* node_match)(void * param1,void * param2);
+
+typedef void (* print_node)(void * node);
+
+list build_list();
 
 void add_node(list lst,void * value);
 
 void * get_node(list lst);
 
+void * find_from_list(list head,node_match match,void * param);
+
+void free_list(list list);
+
+void print_list(list head,print_node p);
 #endif

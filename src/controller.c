@@ -22,11 +22,11 @@ void handle_redis_data(TreeNode * datanode,RedisReply reply){
     SendMessage(App->view->dataviewHwnd,WM_DT,(WPARAM)reply,(LPARAM)(datanode));
 }
 
-TreeNode * add_host_node(char * host_name){
+TreeNode * add_host_node(char * host_name,TreeNode * hostNode){
     TV_INSERTSTRUCT tvinsert;
     memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
 
-    TreeNode * hostNode = build_tree_node(NULL,NODE_LEVEL_HOST);
+    //TreeNode * hostNode = build_tree_node(NULL,NODE_LEVEL_HOST);
 
     tvinsert.hParent             = NULL;
     tvinsert.hInsertAfter        = TVI_ROOT;

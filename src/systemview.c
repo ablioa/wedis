@@ -348,7 +348,9 @@ LRESULT CALLBACK SystemViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
                 }
             }
             else if(cmd == TB_CMD_DISCONNECT){
-                MessageBox(hwnd,"disconnect from server.","Title",MB_OK);  
+                char buff[255] = {};
+                sprintf(buff,"tid:%d",App->activeHost->tid);
+                MessageBox(hwnd,buff,"Title",MB_OK);  
             }
             else{
                 stat_command(hwnd,LOWORD (wParam));

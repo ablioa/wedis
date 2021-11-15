@@ -69,6 +69,9 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
     App->dataView = (DataView *) calloc(1,sizeof(DataView));
     App->hInstance = hInst;
     App->hosts = (TreeNode**) calloc(MAX_CONNECTIONS,sizeof(TreeNode*));
+    App->totalHosts=0;
+
+    App->hostList = build_list();
     initResource();
     initpan(hInst);
 
@@ -106,9 +109,24 @@ void sigin_in_host(HWND hwnd,int hostIndex){
     }
 
     TreeNode * hostNode = addHostNode(stream,host->name);
-    s_auth(hostNode,host->password);
-    SetTimer(hwnd,(UINT_PTR)hostNode,5000,heart_beat_timer);
-    showWindows(App->view);
+    int ret = s_auth(hostNode,host->password);
+    if(ret == 0){
+        char buff1[255] = {};
+        sprintf(buff1,"%s-%d",host->name,hostNode->tid);
+        add_host_node(buff1,hostNode);
+        s_key_space(hostNode);
+        App->activeHost = hostNode;
+
+        add_node(App->hostList,hostNode);
+        
+        //char buff[255] = {};
+        //sprintf(buff,"count of host: %d",App->hostList->size);
+        //MessageBox(NULL,buff,"Title",MB_OK);  
+        
+        // TODO add function to maintain host list
+        SetTimer(hwnd,(UINT_PTR)hostNode,5000,heart_beat_timer);
+        showWindows(App->view);
+    }
 }
 
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
@@ -290,6 +308,7 @@ void onDataNodeSelection(TreeNode * selected){
     }
 
     if(selected->level == NODE_LEVEL_HOST){
+        App->activeHost = selected;
         s_db_info_stats(App->activeHost,"stats");
     }
 
@@ -333,10 +352,13 @@ TreeNode * getSelectedNode(){
     return tn;
 }
 
+// TODO rename to build host node
 TreeNode * addHostNode(RedisConnection stream,char * connectionName){
-    TreeNode * hostNode = add_host_node(connectionName);
+    TreeNode * hostNode = build_tree_node(NULL,NODE_LEVEL_HOST);
     hostNode->stream = stream;
     sprintf(hostNode->host->host,"%s:%d",stream->host,stream->port);
+
+    App->hosts[App->totalHosts++]=hostNode;
 
     return hostNode;
 }

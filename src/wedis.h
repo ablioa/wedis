@@ -93,6 +93,7 @@ typedef struct application{
 
   int totalHosts;
 
+  list hostList;
 }Application;
 
 extern Application * App;

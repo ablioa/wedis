@@ -53,11 +53,12 @@ TreeNode * build_tree_node(TreeNode * parent,RedisNodeType node_type){
             break;
         }
     }
-    
+ 
     return node;
 }
 
-void s_auth(TreeNode * hostNode,char * password){
+// TODO add callback on auth down
+int s_auth(TreeNode * hostNode,char * password){
     RedisParams param = redis_build_params(2);
     redis_add_param(param,redis_build_param("auth"));
     redis_add_param(param,redis_build_param(password));
@@ -66,8 +67,7 @@ void s_auth(TreeNode * hostNode,char * password){
 
     if(reply->type == REPLY_STATUS){
         if(strcmp("OK",reply->status->content) == 0){
-            s_key_space(hostNode);
-            App->activeHost = hostNode;
+            return 0;
         }
     }else if(reply->type == REPLY_ERROR){
         MessageBox(NULL,reply->error->content,"title",MB_OK);
@@ -75,6 +75,8 @@ void s_auth(TreeNode * hostNode,char * password){
         // TODO 处理错误密码的情况
         MessageBox(NULL,reply->error->content,"title",MB_OK);
     }
+
+    return 1;
 }
 
 void s_add_string(TreeNode * db_node,char * key,int key_length,char * value,int value_length){

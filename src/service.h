@@ -8,7 +8,7 @@
 
 extern FILE * logstream;
 
-void s_auth(TreeNode * hodeNode,char * password);
+int s_auth(TreeNode * hodeNode,char * password);
 
 void s_key_space(TreeNode * hodeNode);
 
