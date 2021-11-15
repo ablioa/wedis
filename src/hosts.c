@@ -168,6 +168,12 @@ void updateConfigure(HWND hwnd,Host * host){
 
     SetDlgItemInt(hwnd,IDC_CONNECTION_PORTVALUE,host->port,FALSE);
 
+    EnableWindow(GetDlgItem(hwnd, IDC_CONNECTION_HOSTVALUE), TRUE);
+    EnableWindow(GetDlgItem(hwnd, IDC_CONNECTION_VALUE), TRUE);
+    EnableWindow(GetDlgItem(hwnd, IDC_CONNECTION_PORTVALUE), TRUE);
+    EnableWindow(GetDlgItem(hwnd, IDC_CONNECTION_IFPASSWORD), TRUE);
+    EnableWindow(GetDlgItem(hwnd, IDC_CONNECTION_DESCRIPTION), TRUE);
+
     Button_SetCheck(GetDlgItem(hwnd,IDC_CONNECTION_IFPASSWORD),host->requirepass);
     if (!host->requirepass){
         EnableWindow(GetDlgItem(hwnd, IDC_CONNECTION_PASSWORDVALUE), FALSE);
@@ -193,6 +199,13 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lPa
 
             MoveToScreenCenter(hwnd);
             buildConnectionTree(hwnd);
+
+            EnableWindow(GetDlgItem(hwnd, IDC_CONNECTION_HOSTVALUE), FALSE);
+            EnableWindow(GetDlgItem(hwnd, IDC_CONNECTION_VALUE), FALSE);
+            EnableWindow(GetDlgItem(hwnd, IDC_CONNECTION_PORTVALUE), FALSE);
+            EnableWindow(GetDlgItem(hwnd, IDC_CONNECTION_PASSWORDVALUE), FALSE);
+            EnableWindow(GetDlgItem(hwnd, IDC_CONNECTION_IFPASSWORD), FALSE);
+            EnableWindow(GetDlgItem(hwnd, IDC_CONNECTION_DESCRIPTION), FALSE);
             break;
         }
 
