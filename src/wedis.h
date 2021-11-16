@@ -31,6 +31,7 @@
 #define WM_DATA_VALUE              WM_USER+204
 #define WM_NEW_CONNECTION          WM_USER+205
 #define WM_UPDATE_CONNECTION_LIST  WM_USER+206
+#define WM_REMOVE_CONNECTION       WM_USER+207
 
 #define WM_MOVEDATA_CMD 10000
 
@@ -80,7 +81,7 @@ typedef struct application{
 
 	HMENU hConnectionMenu;
 
-  HINSTANCE hInstance;
+    HINSTANCE hInstance;
 
 	HWND mainWindowHwnd;
 	int spaceCount;

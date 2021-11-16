@@ -128,7 +128,6 @@ typedef struct column_attribute{
     char columnName[255];
 }ColumnAttribute;
 
-extern const ColumnAttribute ca[3];
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -176,6 +175,7 @@ void getSouthSpliterRect(AppView * view,RECT * rt,RECT * rect);
 void getAttributeRect(AppView * view,RECT * rt,RECT * rect);
 
 void showWindows(AppView * view);
+void hideWindows(AppView * v);
 
 int is_binary_data(char * stream,size_t length);
 

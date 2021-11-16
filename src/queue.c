@@ -45,6 +45,8 @@ void * find_from_list(list head,node_match match,void * param){
                 cur->next->prev = cur->prev;
             }
 
+            head->size --;
+
             void * val = cur->value;
             free(cur);
             return val;

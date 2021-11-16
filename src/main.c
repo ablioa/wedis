@@ -129,6 +129,28 @@ void sigin_in_host(HWND hwnd,int hostIndex){
     }
 }
 
+int match_host_node(void * tnode,void * target){
+    if(((TreeNode *)tnode)->tid == ((TreeNode *)target)->tid){
+        return 1;
+    }
+    return 0;
+}
+
+void remove_connection(TreeNode * host){
+    TreeNode * tnode = (TreeNode *)find_from_list(App->hostList,match_host_node,host);
+    
+    if(tnode == NULL){
+        return;
+    }
+
+    TreeView_DeleteItem(App->view->overviewHwnd,tnode->handle);
+    // TODO release connection
+
+    if(App->hostList->size == 0){
+        hideWindows(App->view);
+    }
+}
+
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
     switch (message){
         case WM_CREATE:{
@@ -144,6 +166,12 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
         case WM_NEW_CONNECTION:{
             int hostIndex = (int)wParam;
             sigin_in_host(hwnd,hostIndex);
+            break;
+        }
+
+        case WM_REMOVE_CONNECTION:{
+            TreeNode * host = (TreeNode *)wParam;
+            remove_connection(host);
             break;
         }
 
@@ -239,6 +267,13 @@ void showWindows(AppView * v){
     ShowWindow(v->westSplitHwnd,SW_SHOW);
     ShowWindow(v->dataviewHwnd,SW_SHOW);
 }
+
+void hideWindows(AppView * v){
+    ShowWindow(v->overviewHwnd,SW_HIDE);
+    ShowWindow(v->westSplitHwnd,SW_HIDE);
+    ShowWindow(v->dataviewHwnd,SW_HIDE);
+}
+
 
 void appendDynamicMenu(){
     if(appConfig->total_host != 0){

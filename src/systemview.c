@@ -350,7 +350,10 @@ LRESULT CALLBACK SystemViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
             else if(cmd == TB_CMD_DISCONNECT){
                 char buff[255] = {};
                 sprintf(buff,"total: %d,tid:%d",App->hostList->size,App->activeHost->tid);
-                MessageBox(hwnd,buff,"Title",MB_OK);  
+                //MessageBox(hwnd,buff,"Title",MB_OK);
+
+                //SendMessage();
+                SendMessage(GetParent(GetParent(hwnd)),WM_REMOVE_CONNECTION,(WPARAM)App->activeHost,(LPARAM)NULL);
             }
             else{
                 stat_command(hwnd,LOWORD (wParam));
