@@ -122,6 +122,13 @@ typedef struct entry{
     int    data_type;
 }entry;
 
+typedef struct column_attribute{
+    int width;
+    int columnId;
+    char columnName[255];
+}ColumnAttribute;
+
+extern const ColumnAttribute ca[3];
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK dataViewProc(HWND dataHwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

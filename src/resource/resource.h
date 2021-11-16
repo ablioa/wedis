@@ -107,9 +107,18 @@
 #define IDS_LV_COLUMN_VALUE                     40040   
 #define IDS_LV_COLUMN_NOTE                      40041
 
-#define IDS_LV_COLUMN_LIST_INDEX                40042
-#define IDS_LV_COLUMN_LIST_VALUE                40043   
-#define IDS_LV_COLUMN_LIST_LENGTH               40044
+//#define IDS_LV_COLUMN_LIST_INDEX                40042
+#define IDS_LV_COLUMN_LIST_ITEM                 40043   
+//#define IDS_LV_COLUMN_LIST_LENGTH               40044
+
+#define IDS_LV_COLUMN_HASH_INDEX                40045
+#define IDS_LV_COLUMN_HASH_KEY                  40046   
+#define IDS_LV_COLUMN_HASH_VALUE                40047
+
+#define IDS_LV_COLUMN_ZSET_SCORE                40048
+#define IDS_LV_COLUMN_ZSET_ELEMENT              40049
+
+#define IDS_LV_COLUMN_SET_ELEMENT               40050
 
 //#define IDS_SYSTEM_NOTE_OS                      40045
 //#define IDS_SYSTEM_NOTE_COMPILER                40048

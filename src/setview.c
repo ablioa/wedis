@@ -1,29 +1,8 @@
 #include "setview.h"
 
-const char * setColNames[3]={
-    "Row",
-    "Value",
-    "Length"
+const ColumnAttribute set_column[1] ={
+    {200,IDS_LV_COLUMN_SET_ELEMENT}
 };
-
-BOOL InitSetViewColumns(HWND hWndListView) {
-    LVCOLUMN lvc;
-    lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
-
-    for (int iCol = 0; iCol < 3; iCol++){
-        char * buff = (char*)calloc(1,255);
-        strcpy(buff,setColNames[iCol]);
-
-        lvc.iSubItem = iCol;
-        lvc.pszText = buff;
-        lvc.cx = 100;
-
-        lvc.fmt = LVCFMT_LEFT;
-        ListView_InsertColumn(hWndListView, iCol, &lvc);
-    }
-
-    return TRUE;
-}
 
 static HWND build_toolbar(HWND parent){
     int buttonCount = 3;
@@ -36,7 +15,6 @@ static HWND build_toolbar(HWND parent){
 }
 
 BOOL updateSetDataSet(HWND hwnd,RedisReply reply){
-    char indexBuff[256] = {0};
     LVITEM lvI;
 
     lvI.pszText   = LPSTR_TEXTCALLBACK;
@@ -50,25 +28,12 @@ BOOL updateSetDataSet(HWND hwnd,RedisReply reply){
     for (int index = 0; index < (reply->array_length); index++){
         lvI.iItem  = index;
         lvI.iImage = index;
-        lvI.iSubItem = 0;
-
-        memset(indexBuff,0,256);
-        sprintf(indexBuff,"%d",(index +1));
-
-        lvI.pszText = indexBuff;
-        ListView_InsertItem(hwnd, &lvI);
-
+        
         int xlen;
         char * encoded_data = encode(reply->bulks[index]->bulk->content,reply->bulks[index]->bulk->length,&xlen);
         lvI.pszText = encoded_data;
-        lvI.iSubItem = 1;
-        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
-
-        char buff[128] = {};
-        sprintf(buff,"%d",reply->bulks[index]->bulk->length);
-        lvI.pszText = buff;
-        lvI.iSubItem = 2;
-        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+        lvI.iSubItem = 0;
+        ListView_InsertItem(hwnd, &lvI);
 
         free(encoded_data);
     }
@@ -90,7 +55,20 @@ LRESULT CALLBACK SetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
                           0, 0,0,0,
                           hwnd, NULL, App->hInstance, NULL);
             ListView_SetExtendedListViewStyle(model->setView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
-            InitSetViewColumns(model->setView);
+
+            LVCOLUMN lvc;
+            lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
+            for (int i = 0; i < 1; i++){
+                char * buff = (char *)calloc(1,255);
+                LoadString(App->hInstance,set_column[i].columnId,buff,255);
+
+                lvc.pszText  = buff;
+                lvc.cx       = set_column[i].width;
+                lvc.iSubItem = i;
+                lvc.fmt      = LVCFMT_LEFT;
+                ListView_InsertColumn(model->setView, i, &lvc);
+                free(buff);
+            }
 
             model->toolBar = build_toolbar(hwnd);
             break;

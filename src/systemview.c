@@ -349,7 +349,7 @@ LRESULT CALLBACK SystemViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
             }
             else if(cmd == TB_CMD_DISCONNECT){
                 char buff[255] = {};
-                sprintf(buff,"tid:%d",App->activeHost->tid);
+                sprintf(buff,"total: %d,tid:%d",App->hostList->size,App->activeHost->tid);
                 MessageBox(hwnd,buff,"Title",MB_OK);  
             }
             else{

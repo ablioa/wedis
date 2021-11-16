@@ -139,9 +139,18 @@ STRINGTABLE
 	IDS_LV_COLUMN_VALUE           "值"
     IDS_LV_COLUMN_NOTE            "说明"
 
-	IDS_LV_COLUMN_LIST_INDEX      "索引"
-    IDS_LV_COLUMN_LIST_VALUE      "值"  
-    IDS_LV_COLUMN_LIST_LENGTH     "长度"
+	//IDS_LV_COLUMN_LIST_INDEX      "索引"
+    IDS_LV_COLUMN_LIST_ITEM       "项目"  
+    //IDS_LV_COLUMN_LIST_LENGTH     "长度"
+
+    IDS_LV_COLUMN_HASH_INDEX      "索引"
+    IDS_LV_COLUMN_HASH_KEY        "键"   
+    IDS_LV_COLUMN_HASH_VALUE      "值"
+
+	IDS_LV_COLUMN_ZSET_SCORE      "得分"
+    IDS_LV_COLUMN_ZSET_ELEMENT    "元素"
+
+	IDS_LV_COLUMN_SET_ELEMENT     "元素"
 
     IDS_NOTE_SERVER_REDIS_VERSION       "Redis Server版本"
     IDS_NOTE_SERVER_REDIS_GIT_SHA1      "Git SHA1摘要"

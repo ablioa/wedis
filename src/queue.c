@@ -2,7 +2,7 @@
 
 list_node build_list_node(void * value){
     list_node node = (list)calloc(1,sizeof(struct wedis_list));
-    
+
     node->value = value;
     node->next = NULL;
     node->prev = NULL;
@@ -39,7 +39,7 @@ void * find_from_list(list head,node_match match,void * param){
 
     while(cur != NULL){
         if(match(cur->value,param) == 1){
-            
+
             cur->prev->next = cur->next;
             if(cur->next != NULL){
                 cur->next->prev = cur->prev;
@@ -75,6 +75,7 @@ void * get_node_from_head(list head){
 
 void print_list(list head,print_node p){
     list cur = head->next;
+
     while(cur != NULL){
         p(cur->value);
         cur = cur->next;

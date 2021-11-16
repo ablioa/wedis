@@ -1,15 +1,7 @@
 #include "listview.h"
 
-typedef struct column_attribute{
-    int width;
-    int columnId;
-    char columnName[255];
-}ColumnAttribute;
-
-const ColumnAttribute ca[3] ={
-    {50, IDS_LV_COLUMN_LIST_INDEX},
-    {450,IDS_LV_COLUMN_LIST_VALUE},
-    {60, IDS_LV_COLUMN_LIST_LENGTH}
+const ColumnAttribute list_column[1] ={
+    {450,IDS_LV_COLUMN_LIST_ITEM}
 };
 
 HWND buildListToolBar(HWND parent){
@@ -25,7 +17,6 @@ HWND buildListToolBar(HWND parent){
 }
 
 BOOL updateListDataSet(HWND hwnd,RedisReply reply){
-    char indexBuff[128] = {0};
     char * encoded_data;
     int xlen;
     LVITEM lvI;
@@ -45,26 +36,12 @@ BOOL updateListDataSet(HWND hwnd,RedisReply reply){
        lvI.iImage = ix;
        lvI.iSubItem = 0;
 
-       memset(indexBuff,0,128);
-       sprintf(indexBuff,"%d",(ix +1));
-
-       lvI.pszText = indexBuff;
+       encoded_data = encode(item->bulk->content,item->bulk->length,&xlen);
+       lvI.pszText = encoded_data;
+       lvI.cchTextMax = xlen;
        ListView_InsertItem(hwnd, &lvI);
 
-       encoded_data = encode(item->bulk->content,item->bulk->length,&xlen);
-       lvI.pszText    = encoded_data;
-       lvI.cchTextMax = xlen;
-       lvI.iSubItem   = 1;
-
-       SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
-
-       char buff[128] = {0};
-       sprintf(buff,"%d",item->bulk->length);
-       lvI.pszText = buff;
-       lvI.iSubItem = 2;
-       SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
-
-	     free(encoded_data);
+	   free(encoded_data);
     }
 
     return TRUE;
@@ -90,12 +67,12 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
             // init list columns
             LVCOLUMN lvc;
             lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
-            for (int i = 0; i <= 2; i++){
+            for (int i = 0; i < 1; i++){
                 char * buff = (char *)calloc(1,255);
-                LoadString(App->hInstance,ca[i].columnId,buff,255);
+                LoadString(App->hInstance,list_column[i].columnId,buff,255);
 
                 lvc.pszText  = buff;
-                lvc.cx       = ca[i].width;
+                lvc.cx       = list_column[i].width;
                 lvc.iSubItem = i;
                 lvc.fmt      = LVCFMT_LEFT;
                 ListView_InsertColumn(model->listView, i, &lvc);

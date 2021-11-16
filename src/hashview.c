@@ -1,30 +1,9 @@
 #include "hashview.h"
 
-const char * colNames[3]={
-    "Row",
-    "Key",
-    "Value"
+const ColumnAttribute hash_column[2] ={
+    {200,IDS_LV_COLUMN_HASH_KEY},
+    {200, IDS_LV_COLUMN_HASH_VALUE}
 };
-
-BOOL InitHashViewColumns(HWND hWndListView) { 
-    LVCOLUMN lvc;
-    int iCol;
-
-    lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
-
-    for (iCol = 0; iCol < 3; iCol++){
-        char * buff = (char *)calloc(1,255);
-        strcpy(buff,colNames[iCol]);
-        lvc.iSubItem = iCol;
-        lvc.pszText = buff;
-        lvc.cx = 100;
-        lvc.fmt = LVCFMT_LEFT;
-
-        ListView_InsertColumn(hWndListView, iCol, &lvc);
-    }
-
-    return TRUE;
-}
 
 static HWND build_toolbar(HWND parent){
     int buttonCount = 3;
@@ -38,10 +17,9 @@ static HWND build_toolbar(HWND parent){
 }
 
 BOOL updateHashDataSet(HWND hwnd,RedisReply reply){
-    char indexBuff[256] = {0};
     int xlen;
-    char * encoded_text;
     LVITEM lvI;
+    char * encode_content = NULL;
 
     lvI.pszText   = LPSTR_TEXTCALLBACK;
     lvI.mask      = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE;
@@ -56,27 +34,24 @@ BOOL updateHashDataSet(HWND hwnd,RedisReply reply){
     for(int index =0; index < (total/2); index ++){
         lvI.iItem  = index;
         lvI.iImage = index;
-        lvI.iSubItem = 0;
-
-        memset(indexBuff,0,256);
-        sprintf(indexBuff,"%d",(index +1));
-
-        lvI.pszText = indexBuff; 
-        ListView_InsertItem(hwnd, &lvI);
 
         RedisBulk bulk = reply->bulks[index*2]->bulk;
+        encode_content = encode(bulk->content,bulk->length,&xlen);
+        lvI.pszText = encode_content;
+        lvI.cchTextMax = xlen;
+        lvI.iSubItem = 0;
+        ListView_InsertItem(hwnd, &lvI);
 
-        encoded_text = encode(bulk->content,bulk->length,&xlen);
-        lvI.pszText = encoded_text;
+        free(encode_content);
+ 
+        bulk = reply->bulks[index*2+1]->bulk;
+        encode_content = encode(bulk->content,bulk->length,&xlen);
+        lvI.pszText = encode_content;
+        lvI.cchTextMax = xlen;
         lvI.iSubItem = 1;
         SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
 
-        bulk = reply->bulks[index*2+1]->bulk;
-        int len;
-        encoded_text = encode(bulk->content,bulk->length,&len);
-        lvI.pszText = encoded_text;
-        lvI.iSubItem = 2;
-        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
+        free(encode_content);
     }
 
     return TRUE;
@@ -97,7 +72,22 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                           hwnd, NULL, App->hInstance, NULL);
 
             ListView_SetExtendedListViewStyle(model->hashView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
-            InitHashViewColumns(model->hashView);
+            //InitHashViewColumns(model->hashView);
+
+            // init list columns
+            LVCOLUMN lvc;
+            lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
+            for (int i = 0; i < 2; i++){
+                char * buff = (char *)calloc(1,255);
+                LoadString(App->hInstance,hash_column[i].columnId,buff,255);
+
+                lvc.pszText  = buff;
+                lvc.cx       = hash_column[i].width;
+                lvc.iSubItem = i;
+                lvc.fmt      = LVCFMT_LEFT;
+                ListView_InsertColumn(model->hashView, i, &lvc);
+                free(buff);
+            }
 
             model->toolbar = build_toolbar(hwnd);
             break;

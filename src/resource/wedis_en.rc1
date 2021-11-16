@@ -139,15 +139,18 @@ STRINGTABLE
 	IDS_LV_COLUMN_VALUE           "Value" 
 	IDS_LV_COLUMN_NOTE            "Note"
 	
-    IDS_LV_COLUMN_LIST_INDEX      "Index"
-    IDS_LV_COLUMN_LIST_VALUE      "Value"  
-    IDS_LV_COLUMN_LIST_LENGTH     "Length"
+    //IDS_LV_COLUMN_LIST_INDEX      "Index"
+    IDS_LV_COLUMN_LIST_ITEM       "Value"  
+    //IDS_LV_COLUMN_LIST_LENGTH     "Length"
 
-	//IDS_SYSTEM_NOTE_OS                  "Operating System"
-    //IDS_SYSTEM_NOTE_COMPILER                  "Compiler Version"
-    //IDS_SYSTEM_NOT_PROCESSID                  "process id"
-	//IDS_SYSTEM_CONNECTED_CLIENTS   "Connected Clients"
-	//IDS_SYSTEM_MEM_ALLOCATOR       "Memory allocator"
+    IDS_LV_COLUMN_HASH_INDEX      "Index"
+    IDS_LV_COLUMN_HASH_KEY        "Key"   
+    IDS_LV_COLUMN_HASH_VALUE      "Value"
+
+	IDS_LV_COLUMN_ZSET_SCORE      "Score"
+    IDS_LV_COLUMN_ZSET_ELEMENT    "Element"
+
+	IDS_LV_COLUMN_SET_ELEMENT     "Element"
 
     IDS_NOTE_SERVER_REDIS_VERSION       "Version of the Redis server"
     IDS_NOTE_SERVER_REDIS_GIT_SHA1      "Git SHA1"

@@ -1,28 +1,9 @@
 #include "zsetview.h"
 
-const char * zsetColNames[3]={
-    "Row",
-    "Value",
-    "Score"
+const ColumnAttribute zset_column[2] ={
+    {200,IDS_LV_COLUMN_ZSET_ELEMENT},
+    {200, IDS_LV_COLUMN_ZSET_SCORE}
 };
-
-BOOL InitZsetViewColumns(HWND hWndListView) { 
-    LVCOLUMN lvc;
-    lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
-
-    for (int iCol = 0; iCol < 3; iCol++){
-        char * buff = (char*)calloc(1,255);
-        strcpy(buff,zsetColNames[iCol]);
-
-        lvc.iSubItem = iCol;
-        lvc.pszText = buff;
-        lvc.cx = 100;
-        lvc.fmt = LVCFMT_LEFT;
-        ListView_InsertColumn(hWndListView, iCol, &lvc);
-    }
-    
-    return TRUE;
-}
 
 HWND buildZsetToolBar(HWND parent){
     int buttonCount = 3;
@@ -52,9 +33,22 @@ LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                           hwnd, NULL, hinst, NULL);
 
             model->toolBar = buildZsetToolBar(hwnd);
-            InitZsetViewColumns(model->zsetView);
-            
             ListView_SetExtendedListViewStyle(model->zsetView,LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_GRIDLINES);
+            
+            LVCOLUMN lvc;
+            lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
+            for (int i = 0; i < 2; i++){
+                char * buff = (char *)calloc(1,255);
+                LoadString(App->hInstance,zset_column[i].columnId,buff,255);
+
+                lvc.pszText  = buff;
+                lvc.cx       = zset_column[i].width;
+                lvc.iSubItem = i;
+                lvc.fmt      = LVCFMT_LEFT;
+                ListView_InsertColumn(model->zsetView, i, &lvc);
+                free(buff);
+            }
+
             break;
         }
 
@@ -100,7 +94,6 @@ LRESULT CALLBACK ZsetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 }
 
 BOOL UpdateZsetData(HWND hwnd,RedisReply reply){
-    char indexBuff[256] = {0};
     LVITEM lvI;
 
     lvI.pszText   = LPSTR_TEXTCALLBACK;
@@ -114,20 +107,14 @@ BOOL UpdateZsetData(HWND hwnd,RedisReply reply){
     for (int index = 0; index < (reply->array_length / 2); index++){
         lvI.iItem  = index;
         lvI.iImage = index;
+
         lvI.iSubItem = 0;
 
-        memset(indexBuff,0,256);
-        sprintf(indexBuff,"%d",(index +1));
-
-        lvI.pszText = indexBuff; 
+        lvI.pszText = reply->bulks[index * 2]->bulk->content; 
         ListView_InsertItem(hwnd, &lvI);
 
-        lvI.pszText = reply->bulks[index * 2]->bulk->content;
+        lvI.pszText = reply->bulks[index *2+1]->bulk->content;;
         lvI.iSubItem = 1;
-        SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
-
-        lvI.pszText = reply->bulks[index *2+1]->bulk->content;
-        lvI.iSubItem = 2;
         SendMessage(hwnd,LVM_SETITEM,(WPARAM)NULL,(LPARAM)&lvI);
     }
 
