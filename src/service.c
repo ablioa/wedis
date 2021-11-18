@@ -164,8 +164,7 @@ void s_db_data_type(TreeNode * selected){
 
     RedisReply reply = redis_serialize_params(selected->stream,param);
     if(reply->bulk->content == NULL || strcmp(reply->bulk->content,"none")==0){
-        // TODO refresh the data list
-        MessageBox(NULL,"data does not exsist any more.","title",MB_OK);
+        DumpMessage(0x0009);
         return;
     }
 

@@ -140,12 +140,10 @@ LRESULT CALLBACK HashViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
         case WM_COMMAND:{
             switch(LOWORD(wParam)){
                 case TB_CMD_MOVE_DATA:{
-                    MessageBox(hwnd,"move hash data right now.","title",MB_OK);
                     break;
                 }
 
                 case TB_CMD_REFRESH_DATA:{
-                    MessageBox(hwnd,"move refresh data right now.","title",MB_OK);
                     break;
                 }
 
@@ -184,7 +182,6 @@ void init_hashview(HINSTANCE hInstance){
     hashViewClass.lpszMenuName  = 0;
     hashViewClass.lpszClassName = HASH_VIEW_CLASS;
     hashViewClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
-    
     RegisterClassEx(&hashViewClass);
 }
 

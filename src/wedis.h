@@ -81,7 +81,7 @@ typedef struct application{
 
 	HMENU hConnectionMenu;
 
-    HINSTANCE hInstance;
+  HINSTANCE hInstance;
 
 	HWND mainWindowHwnd;
 	int spaceCount;

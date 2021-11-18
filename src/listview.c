@@ -125,7 +125,6 @@ LRESULT CALLBACK ListViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                 }
 
                 case TB_CMD_MOVE_DATA:{
-                    MessageBox(hwnd,"moving data noe!!","title",MB_OK);
                     break;
                 }
 

@@ -7,6 +7,10 @@ eMsg err_list[]={
     {0x0003,"Send data failed!",MB_RETRYCANCEL},
     {0x0004,"TCP-Server have broken down!",MB_OK},
     {0x0005,"Create Window failed.",MB_OK},
+    {0x0006,"Flushall will remove all databases,continiue?",MB_YESNOCANCEL|MB_ICONASTERISK},
+    {0x0007,"Do you want to remove the data item?",MB_YESNOCANCEL|MB_ICONASTERISK},
+    {0x0008,"实施?Flushdb will remove all data in the database,continue.",MB_YESNOCANCEL|MB_ICONASTERISK},
+    {0x0009,"Data does not exist anymore.",MB_OK}
 };
 
 int DumpMessage(long Err_Code){
@@ -45,5 +49,4 @@ void initResource(){
 }
 
 void log_message(const char * message){
-    MessageBox(NULL,message,"message",MB_OK);
 }

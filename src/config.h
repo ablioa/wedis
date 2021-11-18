@@ -44,6 +44,10 @@ typedef struct wedis_preference{
 
     /** whether to log network traffic*/
     int log_network_traffic;
+
+    int lwidth;
+
+    int lheight;
 }Preference;
 
 extern Config * appConfig;

@@ -12,6 +12,8 @@
 
 static const char *ep;
 
+#define IDENT ' '
+
 const char * json_get_error_ptr(void) {
     return ep;
 }
@@ -224,7 +226,7 @@ static const char *parse_string(Json *item,const char *str){
                     *ptr2++='\r';
                 break;
                 case 't':
-                     *ptr2++='\t';
+                     *ptr2++=IDENT;
                 break;
                 case 'u':
                     uc=parse_hex4(ptr+1);
@@ -321,7 +323,7 @@ static char *print_string_ptr(const char *str){
                 case '\r':
                     *ptr2++='r';
                 break;
-                case '\t':
+                case IDENT:
                     *ptr2++='t';
                 break;
                 default:
@@ -619,7 +621,7 @@ static char *print_object(Json *item,int depth,int fmt){
             if (!out)
                 return 0;
             ptr=out;*ptr++='{';
-            if (fmt) {*ptr++='\n';for (i=0;i<depth-1;i++) *ptr++='\t';}
+            if (fmt) {*ptr++='\n';for (i=0;i<depth-1;i++) *ptr++=IDENT;}
             *ptr++='}';*ptr++=0;
             return out;
     }
@@ -652,12 +654,12 @@ static char *print_object(Json *item,int depth,int fmt){
     for (i=0;i<numentries;i++){
         if (fmt){
             for (j=0;j<depth;j++){
-                *ptr++='\t';
+                *ptr++=IDENT;
             }
         }
 
         strcpy(ptr,names[i]);ptr+=strlen(names[i]);
-        *ptr++=':';if (fmt) *ptr++='\t';
+        *ptr++=':';if (fmt) *ptr++=IDENT;
         strcpy(ptr,entries[i]);ptr+=strlen(entries[i]);
         if (i!=numentries-1) *ptr++=',';
         if (fmt) {*ptr++='\n';}
@@ -666,7 +668,7 @@ static char *print_object(Json *item,int depth,int fmt){
     }
 
     json_free(names);json_free(entries);
-    if (fmt) for (i=0;i<depth-1;i++) *ptr++='\t';
+    if (fmt) for (i=0;i<depth-1;i++) *ptr++=IDENT;
     *ptr++='}';*ptr++=0;
     return out;
 }
@@ -971,7 +973,7 @@ void json_minify(char *json){
     char *into=json;
     while (*json){
         if (*json==' ') json++;
-        else if (*json=='\t') json++;
+        else if (*json==IDENT) json++;
         else if (*json=='\r') json++;
         else if (*json=='\n') json++;
         else if (*json=='/' && json[1]=='/')  while (*json && *json!='\n') json++;

@@ -113,12 +113,10 @@ LRESULT CALLBACK SetViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
         case WM_COMMAND:{
             switch(LOWORD(wParam)){
                 case TB_CMD_MOVE_DATA:{
-                    MessageBox(hwnd,"move hash data right now.","title",MB_OK);
                     break;
                 }
 
                 case TB_CMD_REFRESH_DATA:{
-                    MessageBox(hwnd,"move refresh data right now.","title",MB_OK);
                     break;
                 }
 

@@ -1,7 +1,5 @@
 #include "databaseview.h"
 
-const char * db_flush_msg = "flushdb will remove all data in the database,continue?";
-
 widget query_row[5]={
     {NULL,{5,  28,80,20},WC_EDIT,"0",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER|ES_AUTOHSCROLL,(HMENU)DB_CTRL_CURSOR},
     {NULL,{90, 28,-1,20},WC_EDIT,"*",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER|ES_AUTOHSCROLL,(HMENU)DB_CTRL_PATTERN},
@@ -79,8 +77,6 @@ void search_database(HWND hwnd,DatabaseViewModel * model){
                 node->database->last,
                 node->database->pattern,
                 node->database->page_size);
-    }else{
-        MessageBox(hwnd,"Input Parameter Invalid!","Wedis",MB_OK);
     }
 }
 
@@ -146,7 +142,7 @@ LRESULT CALLBACK DatabaseViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPA
                 }
 
                 case TB_CMD_DELETE_DATA:{
-                    int result = MessageBox(hwnd,db_flush_msg,"wedis",MB_YESNOCANCEL|MB_ICONASTERISK);
+                    int result = DumpMessage(0x0008);
                     if(result == IDYES){
                         TreeNode * node = model->databaseNode;
                         s_db_flushdb(node);

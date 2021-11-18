@@ -89,6 +89,20 @@ void load_config(){
         preference->log_network_traffic = node->valueint;
     }
 
+    node = json_get_object_item(json,"lwidth");
+    if(node == NULL){
+        preference->lwidth = 850;
+    }else{
+        preference->lwidth = node->valueint;
+    }
+
+    node = json_get_object_item(json,"lheight");
+    if(node == NULL){
+        preference->lwidth = 600;
+    }else{
+        preference->lheight = node->valueint;
+    }
+
     Json * hosts = json_get_object_item(json,"hosts");
     if(hosts){
         int host_count = json_get_array_size(hosts);
@@ -159,6 +173,12 @@ void save_preference(Json * parent){
 
     Json * log_network_traffic = json_create_number(preference->log_network_traffic);
     json_add_item_to_object(parent,"logNetworkTraffic",log_network_traffic);
+    
+    Json * lwidth = json_create_number(preference->lwidth);
+    json_add_item_to_object(parent,"lwidth",lwidth);
+
+    Json * lheight = json_create_number(preference->lheight);
+    json_add_item_to_object(parent,"lheight",lheight);
 }
 
 void save_config(){

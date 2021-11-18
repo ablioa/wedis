@@ -249,7 +249,6 @@ LRESULT CALLBACK stringViewPropWndProc(HWND hwnd, UINT message, WPARAM wParam, L
                     if(file_name == NULL){
                         break;
                     }
-                    MessageBox(hwnd,"Import a new key","Title",MB_OK);
                     break;
                 }
 
@@ -269,7 +268,6 @@ LRESULT CALLBACK stringViewPropWndProc(HWND hwnd, UINT message, WPARAM wParam, L
         case WM_DT:{
             model->data = (RedisReply)wParam;
             model->dataNode = (TreeNode*)lParam;
-            
             SetDlgItemText(hwnd,7,model->dataNode->data->data_key);
         }
 

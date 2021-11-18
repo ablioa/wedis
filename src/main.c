@@ -3,8 +3,6 @@
 Application * App;
 SystemResource * resource;
 
-const char * data_remove_msg = "Do you want to remove data item?";
-
 void initpan(HINSTANCE hInstance){
     init_hashview(hInstance);
     init_stringview(hInstance);
@@ -49,6 +47,7 @@ void initpan(HINSTANCE hInstance){
 }
 
 void onExit(){
+    save_config(); 
 }
 
 /**
@@ -75,9 +74,11 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
     initResource();
     initpan(hInst);
 
+    atexit(onExit);
+
     HWND hwndFrame = CreateWindowEx(WS_EX_LEFT,szFrameClass, TEXT ("wedis"),
             WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
-            CW_USEDEFAULT, 0,400, 300,
+            CW_USEDEFAULT, 0,preference->lwidth, preference->lheight,
             NULL,NULL, hInst, NULL) ;
 
     App->mainWindowHwnd = hwndFrame;
@@ -111,19 +112,12 @@ void sigin_in_host(HWND hwnd,int hostIndex){
     TreeNode * hostNode = addHostNode(stream,host->name);
     int ret = s_auth(hostNode,host->password);
     if(ret == 0){
-        char buff1[255] = {};
-        sprintf(buff1,"%s-%d",host->name,hostNode->tid);
-        add_host_node(buff1,hostNode);
+        add_host_node(host->name,hostNode);
         s_key_space(hostNode);
         App->activeHost = hostNode;
 
         add_node(App->hostList,hostNode);
-        
-        //char buff[255] = {};
-        //sprintf(buff,"count of host: %d",App->hostList->size);
-        //MessageBox(NULL,buff,"Title",MB_OK);  
-        
-        // TODO add function to maintain host list
+
         SetTimer(hwnd,(UINT_PTR)hostNode,5000,heart_beat_timer);
         showWindows(App->view);
     }
@@ -138,7 +132,7 @@ int match_host_node(void * tnode,void * target){
 
 void remove_connection(TreeNode * host){
     TreeNode * tnode = (TreeNode *)find_from_list(App->hostList,match_host_node,host);
-    
+
     if(tnode == NULL){
         return;
     }
@@ -246,13 +240,12 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
             break;
 
         case WM_DESTROY:{
-            onExit();
             PostQuitMessage(0);
             break;
         }
 
         case WM_GETMINMAXINFO:{
-            MINMAXINFO * mminfo=(PMINMAXINFO)lParam;  
+            MINMAXINFO * mminfo=(PMINMAXINFO)lParam;
             mminfo->ptMinTrackSize.x = 850;
             mminfo->ptMinTrackSize.y = 600;
             break;
@@ -273,7 +266,6 @@ void hideWindows(AppView * v){
     ShowWindow(v->westSplitHwnd,SW_HIDE);
     ShowWindow(v->dataviewHwnd,SW_HIDE);
 }
-
 
 void appendDynamicMenu(){
     if(appConfig->total_host != 0){
@@ -519,6 +511,12 @@ void onWindowResize(AppView * view){
     RECT dataRect;
     RECT spliterRect;
 
+    RECT rect;
+    GetWindowRect(App->mainWindowHwnd,&rect);
+
+    preference->lwidth  = rect.right - rect.left;
+    preference->lheight = rect.bottom - rect.top;
+
     GetClientRect(view->hwnd,&rt);
     MoveWindow(view->toolBarHwnd,0,0,rt.right,TOOLBAR_HEIGHT,TRUE);
     MoveWindow(view->statusBarHwnd,0,rt.bottom-STATUSBAR_HEIGHT,rt.right,STATUSBAR_HEIGHT,TRUE);
@@ -671,7 +669,7 @@ char * encode(char * chunk,int length,int * outlength){
 }
 
 void delete_data_node(TreeNode * db_node,const char * key){
-    int result = MessageBox(NULL,data_remove_msg,"wedis",MB_YESNOCANCEL|MB_ICONASTERISK);
+    int result = DumpMessage(0x007);
     if(result == IDYES){
         s_db_delete_key(db_node,key);
     }

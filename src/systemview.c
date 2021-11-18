@@ -342,18 +342,13 @@ LRESULT CALLBACK SystemViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
         case WM_COMMAND:{
             int cmd = LOWORD(wParam);
             if(cmd == TB_CMD_FLUSH_DB){
-                int result = MessageBox(hwnd,"flushall will remove all data in all databases,continue?","wedis",MB_YESNOCANCEL|MB_ICONASTERISK);
+                int result = DumpMessage(0x0006);
                 if(result == IDYES){
-                    MessageBox(hwnd,"YES","title",MB_OK);
+                    ;// TODO handle flushall command
                 }
             }
             else if(cmd == TB_CMD_DISCONNECT){
-                char buff[255] = {};
-                sprintf(buff,"total: %d,tid:%d",App->hostList->size,App->activeHost->tid);
-                //MessageBox(hwnd,buff,"Title",MB_OK);
-
-                //SendMessage();
-                SendMessage(GetParent(GetParent(hwnd)),WM_REMOVE_CONNECTION,(WPARAM)App->activeHost,(LPARAM)NULL);
+                SendMessage(App->mainWindowHwnd,WM_REMOVE_CONNECTION,(WPARAM)App->activeHost,(LPARAM)NULL);
             }
             else{
                 stat_command(hwnd,LOWORD (wParam));
@@ -363,10 +358,7 @@ LRESULT CALLBACK SystemViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 
         case WM_DT:{
             RedisReply data     = (RedisReply) wParam;
-            //TreeNode * datanode = (TreeNode *) lParam;
-
             KVPair kp = parseKVPair(data->bulk->content);
-
             updateConfigDataSet(model->paramViewHwnd,kp);
             break;
         }
@@ -374,7 +366,6 @@ LRESULT CALLBACK SystemViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
         case WM_SIZE:{
             GetClientRect(hwnd,&rect);
             MoveWindow(hwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
-            // MoveWindow(model->paramViewHwnd,0,0,rect.right-rect.left,rect.bottom-rect.top,TRUE);
             MoveWindow(model->toolBar,0,0,rect.right-rect.left,28,TRUE);
             MoveWindow(model->paramViewHwnd,0,28,rect.right-rect.left,rect.bottom-rect.top-28,TRUE);
             break;
