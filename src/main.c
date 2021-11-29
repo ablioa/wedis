@@ -597,7 +597,8 @@ void buildConnectionView(AppView * view){
         WS_CHILD |WS_BORDER | (!WS_VISIBLE) | TVIF_TEXT | TVS_HASLINES  | TVS_LINESATROOT,
             0,
             TOOLBAR_HEIGHT,
-            CONNECTION_AREA_WIDTH,
+            //CONNECTION_AREA_WIDTH,
+            preference->twidth,
             rt.bottom-rt.top-TOOLBAR_HEIGHT - STATUSBAR_HEIGHT,
             view->hwnd,NULL,hinst,0);
 

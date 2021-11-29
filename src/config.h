@@ -48,6 +48,8 @@ typedef struct wedis_preference{
     int lwidth;
 
     int lheight;
+
+    int twidth;
 }Preference;
 
 extern Config * appConfig;
