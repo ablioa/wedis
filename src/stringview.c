@@ -56,7 +56,7 @@ LRESULT CALLBACK StringViewWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
             SetWindowLongPtr(hwnd,GWLP_USERDATA,(LONG_PTR)model);
 
             model->stringView = CreateWindowEx(0, WC_EDIT, (""), 
-                    WS_VISIBLE | ES_AUTOVSCROLL | WS_BORDER | WS_CHILD | WS_TABSTOP | WS_VSCROLL |ES_MULTILINE, 
+                    WS_VISIBLE | ES_AUTOVSCROLL | WS_BORDER | WS_CHILD | WS_TABSTOP | WS_VSCROLL | WS_HSCROLL |ES_MULTILINE, 
                     0, 0, 0, 0, hwnd, (HMENU)IDC_STRING_VIEW_TEXT, App->hInstance, 0);
             model->propertyView   = CreateWindowEx(0, STRING_VIEW_PROP_CLASS,NULL, 
                     (WS_VISIBLE) | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL, 
@@ -323,7 +323,7 @@ char * dump_text(char * text,int len,int width){
     int ix = 0;
     for(ix = 0; ix < len; ix ++){
         if(ix % width ==0){
-            sprintf(output,"%08X: ",(ix/width));
+            sprintf(output,"%08X: ",(ix/width * width));
             output += 10;
         }
 

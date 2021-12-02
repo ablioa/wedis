@@ -39,7 +39,7 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
     HWND parentHwnd = GetParent(hwnd);
     RECT parentRect;
     RECT splitRect;
-    
+
     GetWindowRect(parentHwnd, &parentRect);
     GetWindowRect(hwnd,&splitRect);
 
@@ -71,9 +71,9 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
              GetWindowRect(parentHwnd,&rect);
              pt.x -= rect.left;
              pt.y -= rect.top;
-        
+
              OffsetRect(&rect,-rect.left,-rect.top);
-        
+
              if(pt.x < 0) pt.x = 0;
              if(pt.x > rect.right - SPLIT_WIDTH) {
                  pt.x = rect.right - SPLIT_WIDTH;
@@ -86,14 +86,14 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
             hdc = GetWindowDC(parentHwnd);
             DrawXorBar(hdc, oldx,shadowTop, SPLIT_WIDTH ,shadowHeight);
             ReleaseDC(parentHwnd, hdc);
-        
+
             oldx = pt.x;
-        
+
             fDragMode = FALSE;
-        
+
             pt.x += parentRect.left;
             pt.y += parentRect.top;
-        
+
             ScreenToClient(parentHwnd, &pt);
             nSplitterPos = pt.x;
 
@@ -115,8 +115,10 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
 
                 MoveWindow(hwnd,pp.x,pp.y,nSplitterPos-pp.x,qq.y - pp.y,TRUE);
                 SendMessage(hwnd,WM_SIZE,(WPARAM)NULL,(LPARAM)NULL);
+
+                preference->twidth = nSplitterPos - pp.x;
             }
-            
+
             for(int ix = 0; ix < splitModel->rightSize; ix ++){
                 HWND hwnd = splitModel->right[ix];
                 GetWindowRect(hwnd,&rect1);
@@ -132,7 +134,7 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
                 MoveWindow(hwnd,nSplitterPos+SPLIT_WIDTH,pp.y,
                     qq.x - (nSplitterPos+SPLIT_WIDTH),
                     qq.y - pp.y,TRUE);
-                
+
                 SendMessage(hwnd,WM_SIZE,(WPARAM)NULL,(LPARAM)NULL);
             }
 
@@ -157,7 +159,7 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
             pt.x = (short)LOWORD(lParam);
             pt.y = (short)HIWORD(lParam);
             ClientToScreen(hwnd, &pt);
-            
+
             pt.x -= parentRect.left;
             pt.y -= parentRect.top;
 
@@ -166,7 +168,7 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
             if(pt.x > parentRect.right - SPLIT_WIDTH) {
                 pt.x = parentRect.right - SPLIT_WIDTH;
             }
-            
+
             if(pt.x != oldx && wParam & MK_LBUTTON){
                 hdc = GetWindowDC(parentHwnd);
                 DrawXorBar(hdc, oldx,shadowTop,SPLIT_WIDTH, shadowHeight);
@@ -196,7 +198,7 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
             if(pt.x > parentRect.right - SPLIT_WIDTH){
                 pt.x = parentRect.right - SPLIT_WIDTH;
             }
-            
+
             fDragMode = TRUE;
             SetCapture(hwnd);
 
@@ -204,13 +206,12 @@ LRESULT CALLBACK vSplitProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
         }
         break;
 
-        
         case WM_DESTROY:{
             PostQuitMessage(0);
         }
         break;
     }
-    
+
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
@@ -220,7 +221,7 @@ void WINAPI DrawXorBar(HDC hdc, int x, int y, int width, int height){
 
     hbitmap = CreateBitmap(8,8,1,1,_dotPatternBmp);
     hbrush = CreatePatternBrush(hbitmap);
-    
+
     SetBrushOrgEx(hdc,x,y,0);
     hbrushOld = (HBRUSH)SelectObject(hdc,hbrush);
     PatBlt(hdc,x,y,width,height,PATINVERT);
