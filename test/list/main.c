@@ -11,6 +11,10 @@ TNode * getTNode(int index){
     return node;
 }
 
+list build_default_list();
+void test_add_and_remove();
+void test_find();
+
 /**
  * 节点打印
  */
@@ -28,8 +32,23 @@ int match_tnode(void * tnode,void * target){
     return 0;
 }
 
+int match_by_value(void * tnode,void * target){
+	if(((TNode *)tnode)->index == * ((int *)target)){
+        return 1;
+    }
+    return 0;
+}
+
+
 int main(int argc,char **argv){
-    list mlist = build_list();
+	// test_add_and_remove();
+
+	test_find();
+    return 0;
+}
+
+list build_default_list(){
+	list mlist = build_list();
    
     TNode * target  = getTNode(17);
     TNode * target1 = getTNode(100);
@@ -46,7 +65,17 @@ int main(int argc,char **argv){
     add_node(mlist,getTNode(0));
     add_node(mlist,getTNode(101));
 
-    print_list(mlist,print_tnode);
+	printf("==== list built ====\n");
+	print_list(mlist,print_tnode);
+	return mlist;
+}
+
+void test_add_and_remove(){
+	list mlist = build_default_list();
+
+    TNode * target  = getTNode(17);
+    TNode * target1 = getTNode(100);
+    TNode * target2 = getTNode(101);
 
     TNode * get =(TNode *)find_from_list(mlist,match_tnode,target); 
     printf("found: %d\n",get->index);
@@ -59,7 +88,16 @@ int main(int argc,char **argv){
     get =(TNode *)find_from_list(mlist,match_tnode,target2); 
     printf("found: %d\n",get->index);
     print_list(mlist,print_tnode);
-    
-    return 0;
 }
 
+void test_find(){
+	list mlist = build_default_list();
+	int mvalue = 19;
+	TNode * value = (TNode*)find(mlist,match_by_value,&mvalue);
+	if(value !=NULL){
+	    printf("found: %d\n",value->index);
+	}else{
+		printf("item not found.\n");
+	}
+    print_list(mlist,print_tnode);
+}
