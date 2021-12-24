@@ -8,7 +8,7 @@
 
 #define CONFIG_FILENAME "wedis.json"
 
-#define DEFAULT_CONFIG_FILE "{\"dbScanDefault\":15,\"logNetworkTraffic\":1,\"hosts\":[]}"
+#define DEFAULT_CONFIG_FILE "{\"pageSize\":15,\"logTraffic\":1,\"hosts\":[]}"
 
 Config * appConfig;
 
@@ -79,10 +79,10 @@ void load_config(){
     Json * json = json_parse(json_text);
 
     preference = (Preference*) calloc(1,sizeof(Preference));
-    Json * node = json_get_object_item(json,"dbScanDefault");
+    Json * node = json_get_object_item(json,"pageSize");
     preference->db_scan_default = node->valueint;
 
-    node = json_get_object_item(json,"logNetworkTraffic");
+    node = json_get_object_item(json,"logTraffic");
     if(node == NULL){
         preference->log_network_traffic = 0;
     }else{
@@ -176,11 +176,10 @@ void read_host_config(Json * node,Host * host){
 
 void save_preference(Json * parent){
     Json * db_scan_count = json_create_number(preference->db_scan_default);
-    json_add_item_to_object(parent,"dbScanDefault",db_scan_count);
+    json_add_item_to_object(parent,"pageSize",db_scan_count);
 
     Json * log_network_traffic = json_create_number(preference->log_network_traffic);
-    json_add_item_to_object(parent,"logNetworkTraffic",log_network_traffic);
-
+    json_add_item_to_object(parent,"logTraffic",log_network_traffic);
     Json * lwidth = json_create_number(preference->lwidth);
     json_add_item_to_object(parent,"lwidth",lwidth);
 

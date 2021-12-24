@@ -1,5 +1,50 @@
 #include "wedis.h"
 
+#define MSG_CONNECT_FAILED       0x00001 /* Can't connect to server! */
+#define MSG_SOCKET_FAILED        0x00002 /* Create Socket Failed!    */
+#define MSG_SENT_FAILED          0x00003 /* Send data failed!        */
+#define MSG_SERVER_BROKEN        0x00004 /* TCP-Server have broken down! */
+#define MSG_WINDOW_BUILD_FAILED  0x00005 /* Create Window failed. */
+#define MSG_FLUSHALL_WARNIG      0x00006 /* Flushall will remove all databases,continiue? */
+#define MSG_FLUSHDB_WARNING      0x00007 /* Do you want to remove the data item? */
+#define MSG_REMOVE_DATA_WARNING  0x00008 /* Flushdb will remove all data in the database,continue. */
+#define MSG_DATA_REMOVED_INFO    0x00009 /* Data does not exist anymore.*/
+
+/** define string table resource for msg definition. */
+#define IDS_MSG_CONNECT_FAILED       0x00001 /* Can't connect to server! */
+#define IDS_MSG_SOCKET_FAILED        0x00002 /* Create Socket Failed!    */
+#define IDS_MSG_SENT_FAILED          0x00003 /* Send data failed!        */
+#define IDS_MSG_SERVER_BROKEN        0x00004 /* TCP-Server have broken down! */
+#define IDS_MSG_WINDOW_BUILD_FAILED  0x00005 /* Create Window failed. */
+#define IDS_MSG_FLUSHALL_WARNIG      0x00006 /* Flushall will remove all databases,continiue? */
+#define IDS_MSG_FLUSHDB_WARNING      0x00007 /* Do you want to remove the data item? */
+#define IDS_MSG_REMOVE_DATA_WARNING  0x00008 /* Flushdb will remove all data in the database,continue. */
+#define IDS_MSG_DATA_REMOVED_INFO    0x00009 /* Data does not exist anymore.*/
+
+/** user message structure */
+typedef struct{
+	unsigned int msgId;
+	unsigned int resourceId;
+	UINT msgStyle;
+}UserMessage;
+
+/** predefined user message pool */
+UserMessage messagePool[]={
+	{MSG_CONNECT_FAILED,222},
+	{MSG_SOCKET_FAILED,222},
+	{MSG_SENT_FAILED,222},
+	{MSG_SERVER_BROKEN,222},
+	{MSG_WINDOW_BUILD_FAILED,222},
+	{MSG_FLUSHALL_WARNIG,222},
+	{MSG_FLUSHDB_WARNING,222},
+	{MSG_REMOVE_DATA_WARNING,222},
+	{MSG_DATA_REMOVED_INFO,222}
+};
+
+UserMessage * getUserMessage(){
+	return NULL;
+}
+
 eMsg err_list[]={
     {0X0000,"",0},
     {0X0001,"Can't connect to server!",MB_RETRYCANCEL},
@@ -9,7 +54,7 @@ eMsg err_list[]={
     {0x0005,"Create Window failed.",MB_OK},
     {0x0006,"Flushall will remove all databases,continiue?",MB_YESNOCANCEL|MB_ICONASTERISK},
     {0x0007,"Do you want to remove the data item?",MB_YESNOCANCEL|MB_ICONASTERISK},
-    {0x0008,"实施?Flushdb will remove all data in the database,continue.",MB_YESNOCANCEL|MB_ICONASTERISK},
+    {0x0008,"Flushdb will remove all data in the database,continue.",MB_YESNOCANCEL|MB_ICONASTERISK},
     {0x0009,"Data does not exist anymore.",MB_OK}
 };
 

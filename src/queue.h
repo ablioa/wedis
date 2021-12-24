@@ -29,6 +29,9 @@ void * get_node(list lst);
 
 void * find_from_list(list head,node_match match,void * param);
 
+/** find a node matches the param with the match method. */
+void * find(list head,node_match match,void * param);
+
 void free_list(list list);
 
 void print_list(list head,print_node p);

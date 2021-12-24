@@ -33,7 +33,9 @@ void add_node(list head,void * value){
     head->size ++;
 }
 
-
+/**
+ * find_then_remove
+ */
 void * find_from_list(list head,node_match match,void * param){
     list cur = head->next;
 
@@ -56,6 +58,21 @@ void * find_from_list(list head,node_match match,void * param){
     }
 
     return NULL;
+}
+
+/**
+ * find
+ */
+void * find(list head,node_match match,void * param){
+	list cur = head->next;
+	while(cur != NULL){
+		if(match(cur->value,param) == 1){
+            return cur->value;
+        }
+	    cur = cur->next;
+	}
+
+	return NULL;
 }
 
 void * get_node_from_head(list head){
