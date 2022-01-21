@@ -41,20 +41,23 @@
 #define ERR_SENDDATA_FAILED			0x0003
 #define ERR_LINK_BREAKDOWN			0x0004
 
-
 typedef struct app_view{
     HWND hwnd;
 
     HWND toolBarHwnd;
+    
     HWND statusBarHwnd;
+    
+    HWND progressBarHwnd;
 
     HWND overviewHwnd;
     HWND dataviewHwnd;
 
     HWND westSplitHwnd;
 
-	int statusbarHeight;
-	int toolbarHeight;
+	  int statusbarHeight;
+
+	  int toolbarHeight;
 }AppView;
 
 typedef struct data_view{
