@@ -76,7 +76,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
 
     atexit(onExit);
 
-    HWND hwndFrame = CreateWindowEx(WS_EX_LEFT,szFrameClass, TEXT ("wedis"),
+    HWND hwndFrame = CreateWindowEx(WS_EX_LEFT,szFrameClass, TEXT ("Wedis - https://github.com/ablioa/wedis"),
             WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
             CW_USEDEFAULT, 0,preference->lwidth, preference->lheight,
             NULL,NULL, hInst, NULL) ;
@@ -294,7 +294,7 @@ void onMainFrameCreate(HWND hwnd){
             0,0,0,0,App->view->hwnd,0,App->hInstance,NULL);
 
     app_view->westSplitHwnd =CreateWindowEx(0,V_SPLIT,"", 
-            (!WS_VISIBLE)|WS_CHILD,
+            (!WS_VISIBLE)|WS_CHILD|WS_CLIPCHILDREN,
             0,0,0,0,App->view->hwnd,0,hInst,0);
 
     SendMessage(app_view->westSplitHwnd,WM_SET_PANES_HWND,(WPARAM)app_view->overviewHwnd,(LPARAM)app_view->dataviewHwnd);
