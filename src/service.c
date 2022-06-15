@@ -156,6 +156,21 @@ void s_db_get_data(TreeNode * dbnode,int cursor,char * pattern,int count){
     }
 }
 
+DataType s_db_get_data_type(const RedisConnection stream,const char * key,const int length){
+    RedisParams param = redis_build_params(2);
+    redis_add_param(param,redis_build_param("type"));
+    redis_add_param(param,redis_build_real_param(key,length));
+
+    RedisReply reply = redis_serialize_params(stream,param);
+    if(reply->bulk->content == NULL || strcmp(reply->bulk->content,"none")==0){
+        DumpMessage(0x0009);
+        return REDIS_STRING;
+    }
+
+    return checkDataType(reply->bulk->content);
+}
+
+
 void s_db_data_type(TreeNode * selected){
     RedisParams param = redis_build_params(2);
     redis_add_param(param,redis_build_param("type"));

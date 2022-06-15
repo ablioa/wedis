@@ -80,6 +80,21 @@ void add_data_node(TreeNode * dbnode,RedisReply data){
         datanode->data->key_length = item->bulk->length;
         datanode->stream = dbnode->stream;
 
+        int dataType = TREE_DATA_NODE;
+        DataType dt = s_db_get_data_type(dbnode->stream,item->bulk->content,item->bulk->length);
+
+        if(dt == REDIS_STRING){
+            dataType = TREE_DATA_NODE_TEXT;
+        }else if(dt == REDIS_LIST){
+            dataType = TREE_DATA_NODE_LIST;
+        }else if (dt == REDIS_HASH){
+            dataType = TREE_DATA_NODE_HASH;
+        }else if (dt == REDIS_SET ){
+            dataType = TREE_DATA_NODE_SET;
+        }else if (dt == REDIS_ZSET){
+            dataType = TREE_DATA_NODE_ZSET;
+        }
+
         int tlen;
         char * encoded_key=encode(item->bulk->content,item->bulk->length,&tlen);
 
@@ -89,8 +104,8 @@ void add_data_node(TreeNode * dbnode,RedisReply data){
         tvinsert.item.mask           = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
         tvinsert.item.cchTextMax     = tlen;
         tvinsert.item.pszText        = encoded_key;
-        tvinsert.item.iImage         = TREE_DATA_NODE;
-        tvinsert.item.iSelectedImage = TREE_DATA_NODE;
+        tvinsert.item.iImage         = dataType;//TREE_DATA_NODE_HASH;
+        tvinsert.item.iSelectedImage = dataType;// TREE_DATA_NODE_HASH;
         tvinsert.item.lParam         = (LPARAM)datanode;
 
         datanode->handle = (HTREEITEM)SendMessage(App->view->overviewHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);

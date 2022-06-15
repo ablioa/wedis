@@ -55,4 +55,5 @@ RedisParams redis_delete_key(char * dataKey);
 
 RedisReply redis_rename_key(TreeNode * dataNode,char * dataKey,char * newKey);
 
+DataType s_db_get_data_type(const RedisConnection stream,const char * key,const int length);
 #endif
