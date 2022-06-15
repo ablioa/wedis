@@ -557,15 +557,15 @@ void buildStatusBar(AppView * view){
     GetWindowRect(view->statusBarHwnd,&trt);
     view->statusbarHeight = trt.bottom-trt.top;
 
-    // add progress bar 
-    view->progressBarHwnd = CreateWindowEx(0,PROGRESS_CLASS,(LPSTR)NULL,WS_CHILD|WS_VISIBLE|PBS_SMOOTH,
-            560,4,
-            120,20,
-            view->statusBarHwnd,(HMENU)0,
-            App->hInstance,NULL);
+    //// add progress bar 
+    //view->progressBarHwnd = CreateWindowEx(0,PROGRESS_CLASS,(LPSTR)NULL,WS_CHILD|WS_VISIBLE|PBS_SMOOTH,
+    //        560,4,
+    //        120,20,
+    //        view->statusBarHwnd,(HMENU)0,
+    //        App->hInstance,NULL);
 
-    SendMessage(view->progressBarHwnd,PBM_SETRANGE,0,MAKELPARAM(1,100));
-    SendMessage(view->progressBarHwnd,PBM_SETSTEP,(WPARAM)1,0);
+    //SendMessage(view->progressBarHwnd,PBM_SETRANGE,0,MAKELPARAM(1,100));
+    //SendMessage(view->progressBarHwnd,PBM_SETSTEP,(WPARAM)1,0);
 }
 
 void getConnectionRect(AppView * v,RECT * rt,RECT * rect){

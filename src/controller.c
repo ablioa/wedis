@@ -10,7 +10,7 @@ void init_progress(int total){
 
 /** update data transfer progress */
 void update_transfer_progress(int done,int total){
-/*    if(done > total){
+   if(done > total){
         done = total;
     }
 
@@ -20,14 +20,14 @@ void update_transfer_progress(int done,int total){
         SendMessage(App->view->statusBarHwnd,SB_SETTEXT,5,(LPARAM)buff);
         MAX_DONE = done;
     }
-*/
+
     //if(done >= total){
     //    SendMessage(App->view->progressBarHwnd,PBM_SETPOS,(WPARAM)0,(LPARAM)0);
     //    return;
    // }
 
-    SendMessage(App->view->progressBarHwnd,PBM_SETRANGE,0,MAKELPARAM(1,total));
-    SendMessage(App->view->progressBarHwnd,PBM_SETPOS,(WPARAM)done,(LPARAM)0);
+   // SendMessage(App->view->progressBarHwnd,PBM_SETRANGE,0,MAKELPARAM(1,total));
+    //SendMessage(App->view->progressBarHwnd,PBM_SETPOS,(WPARAM)done,(LPARAM)0);
 }
 
 void handle_redis_data(TreeNode * datanode,RedisReply reply){
