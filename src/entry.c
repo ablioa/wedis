@@ -1,5 +1,6 @@
 #include "main.h"
 #include "entry.h"
+#include <windowsx.h>
 
 #define IMPORT_STRING_DATA_BUTTON 9999
 #define IMPORT_STRING_DATA_EDITOR 8888
@@ -222,6 +223,139 @@ static void switch_editor_pane(int index){
     }
 }
 
+////////////////////
+HWND hwndPB;
+// HINSTANCE mhInstance;
+HWND hwndStatic;
+
+BOOL OnNotify(HWND hwndTab, HWND hwndDisplay, LPARAM lParam)
+{
+	static int actualPage = 0;
+    char achTemp[256]={0};
+
+	switch (((LPNMHDR)lParam)->code)
+		{
+			case TCN_SELCHANGING:
+				{
+					// Return FALSE to allow the selection to change.
+					return FALSE;
+				}
+
+			case TCN_SELCHANGE:
+				{
+                    HANDLE p = GetDlgItem(hwndTab, 0); 
+                    int iPage = TabCtrl_GetCurSel(p); 
+
+                    //MessageBox(hwndTab,"Hello,world.","xxx",MB_OK);
+                    sprintf(achTemp,"index: %ld",iPage);
+
+                    printf("----- %d\n",iPage);
+
+                    // Note that g_hInst is the global instance handle.
+                    //LoadString(mhInstance, IDS_SUNDAY + iPage, achTemp,sizeof(achTemp) / sizeof(achTemp[0])); 
+                    LRESULT result = SendMessage(hwndDisplay, WM_SETTEXT, 0, (LPARAM) achTemp); 
+
+					//int iPage = TabCtrl_GetCurSel(hwndTab);
+					//ShowWindow(hwndDisplay[actualPage], FALSE);
+					//ShowWindow(hwndDisplay[iPage], TRUE);
+					//actualPage = iPage;
+					break;
+				}
+		}
+		return TRUE;
+}
+
+HRESULT OnSize(HWND hwndTab, LPARAM lParam)
+{
+    RECT rc; 
+
+    if (hwndTab == NULL)
+        return E_INVALIDARG;
+
+    HANDLE p = GetDlgItem(hwndTab, 0); 
+
+    // Resize the tab control to fit the client are of main window.
+     if (!SetWindowPos(p, HWND_TOP, 0, 0, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), SWP_SHOWWINDOW))
+        return E_FAIL;
+
+    return S_OK;
+}
+
+BOOL CALLBACK frameProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
+    RECT rcClient;
+    int cyVScroll;
+    TCHAR achTemp[256]={0};
+    TCITEM tie;
+
+	switch(message){
+        case WM_INITDIALOG:{
+            GetClientRect(hwnd, &rcClient); 
+            cyVScroll = GetSystemMetrics(SM_CYVSCROLL); 
+
+            hwndPB = CreateWindowEx(0, WC_TABCONTROL, (LPTSTR) NULL, 
+                            WS_CHILD | WS_VISIBLE, 0, 
+                            0, 
+                            rcClient.right, rcClient.bottom, 
+                            hwnd, (HMENU) 0, App->hInstance, NULL);
+
+      hwndStatic= CreateWindow(WC_STATIC, L"", 
+        WS_CHILD | WS_VISIBLE | WS_BORDER, 
+        100, 100, 100, 100,        // Position and dimensions; example only.
+        hwndPB, NULL, App->hInstance,    // g_hInst is the global instance handle
+        NULL); 
+
+
+            tie.mask = TCIF_TEXT ; 
+            tie.iImage = -1; 
+            tie.pszText = achTemp; 
+
+            for(int i = 0; i < 4; i++){
+                LoadString(App->hInstance, IDS_DATA_SUNDAY + i, achTemp, sizeof(achTemp) / sizeof(achTemp[0])); 
+                TabCtrl_InsertItem(hwndPB, i, &tie);
+            }
+
+            EnumChildWindows(hwnd,enumChildProc,0);
+
+			break;
+        }
+
+        case WM_SIZE:{
+            OnSize(hwnd,lParam);
+            break;
+        }
+
+        case WM_NOTIFY:{
+            //LPNMHDR lParam = ((LPNMHDR) lParam);
+            //MessageBox(hwnd,"ssss","sdsd",MB_OK);
+            OnNotify(hwnd, hwndStatic,lParam);
+            break;
+        }
+
+		case WM_COMMAND:{
+			switch(LOWORD(wParam)){
+				// case IDC_OK:{
+                //     char buff[128] = {0};
+                //     for(int ix = 0; ix < 100; ix ++){
+                //         SendMessage(hwndPB, PBM_STEPIT, 0, 0);
+                //     }
+
+				// 	break;
+				// }
+			}
+			break;
+		}
+
+		case WM_CLOSE:{
+			EndDialog(hwnd,0);
+			break;
+		}
+	}
+
+	return FALSE;
+}
+
+/////////////////////
+
 BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
     static entry * ety;
     switch(msg){
@@ -277,14 +411,17 @@ BOOL CALLBACK entryDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam){
                 }
 
                 case 3:{
-                    LPTSTR file_name = mGetOpenFileName(hwnd);
-                    if(file_name == NULL){
-                        break;
-                    }
+                    DialogBox(App->hInstance,MAKEINTRESOURCE (IDD_DATA_FRAME),NULL,(DLGPROC)frameProc);
+                    //LPTSTR file_name = mGetOpenFileName(hwnd);
+
+                    //MessageBox(NULL,"Hello,world.","Caption",MB_OK);
+                    //if(file_name == NULL){
+                    //    break;
+                    //}
               
-                    size_t len;
-                    char * key = fetch_text_from_file(file_name,&len);
-                    SendMessage(hwnd,WM_DATA_KEY,(WPARAM)key,(LPARAM)len);
+                    //size_t len;
+                    //char * key = fetch_text_from_file(file_name,&len);
+                    //SendMessage(hwnd,WM_DATA_KEY,(WPARAM)key,(LPARAM)len);
                     break;
                 }
 

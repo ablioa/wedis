@@ -221,7 +221,6 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lPa
                      TreeView_GetItem(model->hostTree,&item);
                      Host * host = (Host*)item.lParam;
 
-                    // FIXME 这里为什么会取不到数据?
                     if(host == NULL){
                         break;
                     }
@@ -243,7 +242,6 @@ BOOL CALLBACK conectionConfigDlgProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lPa
                     ht.flags = TVHT_ONITEM;
                     HTREEITEM hItem = TreeView_HitTest(GetDlgItem(hwnd,IDC_CONNECTION_TREE), &ht);
 
-                    /** 未选中任何节点 */
                     if(hItem == NULL){
                         break;
                     }

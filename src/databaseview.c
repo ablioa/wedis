@@ -28,10 +28,16 @@ void init_database_view(HINSTANCE hInstance){
 }
 
 static HWND buildDatabaseToolBar(HWND parent){
-    int buttonCount = 2;
-    TBBUTTON tbtn[2] = {
+    int buttonCount = 7;
+    TBBUTTON tbtn[7] = {
         {(TB_DELETE_BUTTON), TB_CMD_DELETE_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
-        {(TB_ADD_BUTTON), TB_CMD_ADD_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0}
+        {(TB_ADD_BUTTON), TB_CMD_ADD_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+
+        {(TREE_DATA_NODE_TEXT), TB_CMD_ADD_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TREE_DATA_NODE_LIST), TB_CMD_ADD_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TREE_DATA_NODE_HASH), TB_CMD_ADD_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TREE_DATA_NODE_SET), TB_CMD_ADD_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
+        {(TREE_DATA_NODE_ZSET), TB_CMD_ADD_DATA, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0},
     };
     return buildGeneralToolBar(parent,tbtn,buttonCount);
 }

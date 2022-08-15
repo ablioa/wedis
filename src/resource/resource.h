@@ -358,3 +358,11 @@
 #define TREE_DATA_NODE_HASH  25
 #define TREE_DATA_NODE_SET   26
 #define TREE_DATA_NODE_ZSET  27
+
+
+#define IDD_DATA_FRAME                               103
+//#define IDC_DATA_CANCEL                              40000
+//#define IDC_DATA_OK                                  40002
+
+
+#define IDS_DATA_SUNDAY 7000
