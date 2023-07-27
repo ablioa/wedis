@@ -81,7 +81,7 @@ void initResource(){
     resource->ctrlFont = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE,
             1, 400, 0, 0, 0, ("Ms Shell Dlg"));
 
-    resource->fixedWidthFont = CreateFont(-11, 0, 0, 0, 400, FALSE, FALSE, FALSE,
+    resource->fixedWidthFont = CreateFont(-18, -9, 0, 0, 400, FALSE, FALSE, FALSE,
             1, 400, 0, 0, 0, ("Consolas"));
 
     HINSTANCE hInst = App->hInstance;

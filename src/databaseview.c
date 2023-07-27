@@ -43,7 +43,7 @@ static HWND buildDatabaseToolBar(HWND parent){
 }
 
 BOOL CALLBACK enumChildProc(HWND hwnd,LPARAM lParam){
-    SendMessage(hwnd, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
+    //SendMessage(hwnd, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
 
     char buff[255] = {0};
     GetClassName(hwnd,buff,255);

@@ -19,7 +19,7 @@ $(APP):$(OBJS) $(RESOURCE)
 $(DIRM)/%.o:%.c
 	$(CC) $(CFLAGS) -o $@ -c $^
 
-$(RESOURCE):resource/res.rc
+$(RESOURCE):resource/res.rc resource/wedis_cn.rc1 resource/wedis_en.rc1
 	windres --target=pe-x86-64 -D WX_CPU_AMD64 -i resource/res.rc -O COFF -o $(RESOURCE)
 
 clean:

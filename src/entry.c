@@ -12,8 +12,8 @@ const char * zset_entry_column[2] = {"score","item"};
 
 widget key_row[3] = {
     {NULL,{5, 5,-1,20},WC_EDIT,"",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL,(HMENU)9},
-    {NULL,{110,5,40,20},WC_BUTTON,"...",WS_VISIBLE | WS_CHILD | WS_TABSTOP,(HMENU)3},
-    {NULL,{160,5,60,100},WC_COMBOBOX,"",WS_VISIBLE | WS_CHILD | WS_TABSTOP | CBS_DROPDOWN,(HMENU)IDC_DATATYPE}
+    {NULL,{70,5,40,20},WC_BUTTON,"...",WS_VISIBLE | WS_CHILD | WS_TABSTOP,(HMENU)3},
+    {NULL,{80,5,60,100},WC_COMBOBOXEX,"",WS_VISIBLE | WS_CHILD | WS_TABSTOP | CBS_DROPDOWN,(HMENU)IDC_DATATYPE}
 };
 
 widget entry_pane[5]={
@@ -69,9 +69,24 @@ static void set_default_style(HWND hwnd){
 }
 
 static void add_items(HWND hWndComboBox){
-    const char * types[5]= {"- string","- list","- hash","- set","- zset"};
-    for (int k = 0; k <= 4; k++){
-        SendMessage(hWndComboBox,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM) types[k]); 
+    const char * types[5]= {
+		"- string",
+		"- list",
+		"- hash",
+		"- set",
+		"- zset"
+	};
+
+	for (int k = 0; k <= 4; k++){
+		COMBOBOXEXITEM item;
+		item.mask = CBEIF_TEXT | CBEIF_OVERLAY; //CBEIF_IMAGE|CBEIF_INDENT|CBEIF_OVERLAY|CBEIF_SELECTEDIMAGE|
+		//item.iImage=1;
+		//item.isSelectedImage=0;
+		item.iOverlay =1;
+		item.pszText = (LPTSTR)(LPCTSTR)(types[k]); //_T() 
+		item.iItem = k;
+
+        SendMessage(hWndComboBox,(UINT) CBEM_INSERTITEM,(WPARAM) 0,(LPARAM) &item); 
     }
 
     SendMessage(hWndComboBox, CB_SETCURSEL, (WPARAM)0, (LPARAM)0);
@@ -230,7 +245,7 @@ HWND hwndStatic;
 
 BOOL OnNotify(HWND hwndTab, HWND hwndDisplay, LPARAM lParam)
 {
-	static int actualPage = 0;
+	//static int actualPage = 0;
     char achTemp[256]={0};
 
 	switch (((LPNMHDR)lParam)->code)
@@ -247,13 +262,14 @@ BOOL OnNotify(HWND hwndTab, HWND hwndDisplay, LPARAM lParam)
                     int iPage = TabCtrl_GetCurSel(p); 
 
                     //MessageBox(hwndTab,"Hello,world.","xxx",MB_OK);
-                    sprintf(achTemp,"index: %ld",iPage);
+                    sprintf(achTemp,"index: %d",iPage);
 
                     printf("----- %d\n",iPage);
 
                     // Note that g_hInst is the global instance handle.
                     //LoadString(mhInstance, IDS_SUNDAY + iPage, achTemp,sizeof(achTemp) / sizeof(achTemp[0])); 
-                    LRESULT result = SendMessage(hwndDisplay, WM_SETTEXT, 0, (LPARAM) achTemp); 
+                    // LRESULT result = 
+					SendMessage(hwndDisplay, WM_SETTEXT, 0, (LPARAM) achTemp); 
 
 					//int iPage = TabCtrl_GetCurSel(hwndTab);
 					//ShowWindow(hwndDisplay[actualPage], FALSE);
@@ -267,7 +283,7 @@ BOOL OnNotify(HWND hwndTab, HWND hwndDisplay, LPARAM lParam)
 
 HRESULT OnSize(HWND hwndTab, LPARAM lParam)
 {
-    RECT rc; 
+    //RECT rc; 
 
     if (hwndTab == NULL)
         return E_INVALIDARG;
@@ -283,14 +299,14 @@ HRESULT OnSize(HWND hwndTab, LPARAM lParam)
 
 BOOL CALLBACK frameProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
     RECT rcClient;
-    int cyVScroll;
+    //int cyVScroll;
     TCHAR achTemp[256]={0};
     TCITEM tie;
 
 	switch(message){
         case WM_INITDIALOG:{
             GetClientRect(hwnd, &rcClient); 
-            cyVScroll = GetSystemMetrics(SM_CYVSCROLL); 
+    //        cyVScroll = GetSystemMetrics(SM_CYVSCROLL); 
 
             hwndPB = CreateWindowEx(0, WC_TABCONTROL, (LPTSTR) NULL, 
                             WS_CHILD | WS_VISIBLE, 0, 
@@ -298,11 +314,11 @@ BOOL CALLBACK frameProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
                             rcClient.right, rcClient.bottom, 
                             hwnd, (HMENU) 0, App->hInstance, NULL);
 
-      hwndStatic= CreateWindow(WC_STATIC, L"", 
-        WS_CHILD | WS_VISIBLE | WS_BORDER, 
-        100, 100, 100, 100,        // Position and dimensions; example only.
-        hwndPB, NULL, App->hInstance,    // g_hInst is the global instance handle
-        NULL); 
+            hwndStatic= CreateWindow(WC_STATIC, "", 
+              WS_CHILD | WS_VISIBLE | WS_BORDER, 
+              100, 100, 100, 100,        // Position and dimensions; example only.
+              hwndPB, NULL, App->hInstance,    // g_hInst is the global instance handle
+              NULL); 
 
 
             tie.mask = TCIF_TEXT ; 
@@ -311,7 +327,8 @@ BOOL CALLBACK frameProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 
             for(int i = 0; i < 4; i++){
                 LoadString(App->hInstance, IDS_DATA_SUNDAY + i, achTemp, sizeof(achTemp) / sizeof(achTemp[0])); 
-                TabCtrl_InsertItem(hwndPB, i, &tie);
+                //TabCtrl_InsertItem(hwndPB, i, &tie);
+				SendMessage(hwndPB, TCM_INSERTITEM, 0, (LPARAM) &tie);
             }
 
             EnumChildWindows(hwnd,enumChildProc,0);
