@@ -43,6 +43,7 @@ static HWND buildDatabaseToolBar(HWND parent){
 }
 
 BOOL CALLBACK enumChildProc(HWND hwnd,LPARAM lParam){
+	// HFONT systemFont = GetStockObject(SYSTEM_FONT);
     SendMessage(hwnd, WM_SETFONT, (WPARAM)(resource->ctrlFont), FALSE);
 
     char buff[255] = {0};
