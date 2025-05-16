@@ -14,6 +14,8 @@ void initpan(HINSTANCE hInstance){
     init_editor_view(hInstance);
     initSplit(hInstance);
 
+	init_connection_pool();
+
     WNDCLASSEX hSplitClass;
     hSplitClass.cbSize        = sizeof(hSplitClass);
     hSplitClass.style         = 0;
@@ -50,9 +52,7 @@ void onExit(){
     save_config(); 
 }
 
-/**
- * heart beat to keep the tcp connection alive.
- */ 
+/* heart beat to keep the tcp connection alive.*/ 
 VOID CALLBACK heart_beat_timer(HWND hwnd,UINT message,UINT_PTR timer,DWORD dwTime){
     TreeNode * host = (TreeNode *) timer;
     s_db_ping(host);
@@ -118,12 +118,12 @@ void sigin_in_host(HWND hwnd,int hostIndex){
 
         add_node(App->hostList,hostNode);
 
-        SetTimer(hwnd,(UINT_PTR)hostNode,5000,heart_beat_timer);
+        hostNode->timer_handler=SetTimer(NULL,(UINT_PTR)hostNode,5000,heart_beat_timer);
         showWindows(App->view);
     }
 }
 
-int match_host_node(void * tnode,void * target){
+int match_host_node(const void * tnode,const void * target){
     if(((TreeNode *)tnode)->tid == ((TreeNode *)target)->tid){
         return 1;
     }
@@ -137,12 +137,18 @@ void remove_connection(TreeNode * host){
         return;
     }
 
+	/* stop the heart beat */
+	KillTimer(NULL,tnode->timer_handler);
+
+	/* remove tree node */
     TreeView_DeleteItem(App->view->overviewHwnd,tnode->handle);
-    // TODO release connection
 
     if(App->hostList->size == 0){
         hideWindows(App->view);
     }
+
+	/* remove then close the connection */
+	pool_remove_connection(tnode->stream->connection_id);
 }
 
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){

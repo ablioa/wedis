@@ -42,6 +42,7 @@
 #define ERR_SENDDATA_FAILED			0x0003
 #define ERR_LINK_BREAKDOWN			0x0004
 
+/* definition of application view */
 typedef struct app_view{
     HWND hwnd;
 
@@ -56,52 +57,62 @@ typedef struct app_view{
 
     HWND westSplitHwnd;
 
-	  int statusbarHeight;
+	int statusbarHeight;
 
-	  int toolbarHeight;
+	int toolbarHeight;
 }AppView;
 
+/* data view definition */
 typedef struct data_view{
 	WNDPROC ttlBtnProc;
+	
 	WNDPROC exportBtnProc;
 
 	HWND hashViewHwnd;
+	
 	HWND stringViewHwnd;
+	
 	HWND listViewHwnd;
+	
 	HWND setViewHwnd;
-    HWND zsetViewHwnd;
+    
+	HWND zsetViewHwnd;
+	
 	HWND systemViewHwnd;
+
 	HWND databaseViewHwnd;
 
 	HWND visibleHwnd;
 
     RedisReply data;
+	
 	int type;
 }DataView;
 
+/* application definition,describes global information about the wedis app itself.*/
 typedef struct application{
-	AppView     * view;
-	DataView    * dataView;
+    AppView     * view;
 
-	HMENU hConnectionMenu;
+    DataView    * dataView;
+    
+    HMENU hConnectionMenu;
+    
+    HINSTANCE hInstance;
+    
+    HWND mainWindowHwnd;
 
-  HINSTANCE hInstance;
-
-	HWND mainWindowHwnd;
-	int spaceCount;
-
-	TreeNode * activeHost;
-
-	TreeNode * selectHost;
-
-  TreeNode ** hosts;
-
-  int totalHosts;
-
-  list hostList;
+    int spaceCount;
+    
+    TreeNode * activeHost;
+    
+    TreeNode * selectHost;
+    
+    TreeNode ** hosts;
+    
+    int totalHosts;
+    
+    list hostList;
 }Application;
-
-extern Application * App;
 
 typedef struct system_resource{
     HFONT      ctrlFont;
@@ -118,12 +129,14 @@ typedef struct err_info{
 	UINT Style;
 }eMsg;
 
+extern Application * App;
 extern eMsg err_list[];
 
 int DumpMessage(long Err_Code);
 
 void initResource();
 
+/* dump communication traffics */
 void log_message(const char * message);
 
 #endif

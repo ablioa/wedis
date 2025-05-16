@@ -1,9 +1,12 @@
 #ifndef redis_h
 #define redis_h
 
+#include <stdlib.h>
+#include <winsock2.h>
 #include <windows.h>
 #include <commctrl.h>
 
+#include "queue.h"
 #include "log.h"
 
 #define CHAR_SPACE ' '
@@ -68,8 +71,23 @@ struct redis_connection{
 
     char * host;
     int    port;
+
+	int connection_id;
 };
 typedef struct redis_connection * RedisConnection;
+
+// TODO 构造一个全局的链接池，用于链接管理
+typedef struct redis_connection_pool{
+	int size;
+	list con_pool;
+}RedisConnectionPool;
+
+extern RedisConnectionPool RedisCp;
+
+void init_connection_pool();
+void pool_add_connection(const RedisConnection con);
+int connection_comparator(const void * a,const void * b);
+void pool_remove_connection(const int connection_id);
 
 typedef struct redis_host_node{
     char host[255];
@@ -130,10 +148,9 @@ typedef struct tree_node{
     };
 
     struct tree_node * parent;
-}TreeNode;
 
-extern int GLOBAL_TREE_NODE_ID;
-TreeNode * build_tree_node(TreeNode * parent,RedisNodeType nodeType);
+	int timer_handler;
+}TreeNode;
 
 struct redis_param{
     const char * content;
@@ -149,10 +166,6 @@ struct redis_params{
     RedisParam * items;
 };
 typedef struct redis_params * RedisParams;
-
-RedisParams redis_build_params(int count);
-
-void redis_add_param(RedisParams params,RedisParam param);
 
 struct redis_bulk{
     char  * content;
@@ -213,26 +226,22 @@ typedef int (*redis_pack_handle)(unsigned char *,int);
 /** data read progress handle */
 typedef void (*redis_read_progress_handle)(int,int);
 
+extern int GLOBAL_TREE_NODE_ID;
+
+TreeNode * build_tree_node(TreeNode * parent,RedisNodeType nodeType);
+RedisParams redis_build_params(int count);
+void redis_add_param(RedisParams params,RedisParam param);
+
 KVPair buildKVPair();
-
 void destroyKVPair(KVPair kv);
-
 void setKVPair(KVPair kv,const char * text);
-
 KVPair parseKVPair(char * buffer);
-
 RedisReply read_reply(char *text,int * cur,int length,redis_read_progress_handle handle);
-
 RedisReply receive_msg(RedisConnection stream,redis_read_progress_handle handle);
-
 char  * parse_command(char * text,const size_t size);
-
 DataType checkDataType(char * type);
-
 int redis_read_pack(char * text,int length,redis_pack_handle handle);
-
 int get_bulk_size(char * text, int * cur,int length);
-
 int get_status_scope(char * text,int length);
 
 #endif

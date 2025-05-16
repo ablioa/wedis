@@ -1,5 +1,6 @@
 #include "queue.h"
 
+/* build a element of list */
 list_node build_list_node(void * value){
     list_node node = (list)calloc(1,sizeof(struct wedis_list));
 
@@ -9,7 +10,7 @@ list_node build_list_node(void * value){
 
     return node;
 }
-
+/* build a new list */
 list build_list(){
     list_node node = build_list_node(NULL);
     node->size = 0;
@@ -33,9 +34,7 @@ void add_node(list head,void * value){
     head->size ++;
 }
 
-/**
- * find_then_remove
- */
+/* find_then_remove */
 void * find_from_list(list head,node_match match,void * param){
     list cur = head->next;
 
@@ -60,9 +59,7 @@ void * find_from_list(list head,node_match match,void * param){
     return NULL;
 }
 
-/**
- * find
- */
+/** find a node matches the param with the match method. */
 void * find(list head,node_match match,void * param){
 	list cur = head->next;
 	while(cur != NULL){
@@ -75,6 +72,7 @@ void * find(list head,node_match match,void * param){
 	return NULL;
 }
 
+/* retrieve data node from list,and remove it */
 void * get_node_from_head(list head){
     if(head->next == NULL){
         return NULL;
@@ -91,7 +89,7 @@ void * get_node_from_head(list head){
 
     return data;
 }
-
+/* traverse list and display it with print_node function */
 void print_list(list head,print_node p){
     list cur = head->next;
 

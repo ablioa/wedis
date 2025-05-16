@@ -14,25 +14,17 @@ struct wedis_list{
 };
 
 typedef struct wedis_list * list;
-
 typedef struct wedis_list * list_node;
-
-typedef int (* node_match)(void * param1,void * param2);
-
+typedef int (* node_match)(const void * param1,const void * param2);
 typedef void (* print_node)(void * node);
 
 list build_list();
-
+list_node build_list_node(void * value);
 void add_node(list lst,void * value);
-
-void * get_node(list lst);
-
 void * find_from_list(list head,node_match match,void * param);
-
-/** find a node matches the param with the match method. */
 void * find(list head,node_match match,void * param);
-
+void * get_node_from_head(list head);
+void print_list(list head,print_node p);
 void free_list(list list);
 
-void print_list(list head,print_node p);
 #endif

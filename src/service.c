@@ -1,3 +1,5 @@
+
+/* an implemetation of rsap */
 #include "service.h"
 
 FILE * logstream;
@@ -238,7 +240,7 @@ void s_handle_data(TreeNode * datanode,DataType dataType){
     handle_redis_data(datanode,reply);
 }
 
-/** flushdb command */
+/* implementation of FLUSHDB command */
 RedisReply s_db_flushdb(TreeNode * dbnode){
     RedisParams params = redis_build_params(1);
     redis_add_param(params,redis_build_param("flushdb"));
@@ -251,6 +253,7 @@ RedisReply s_db_ping(TreeNode * hostnode){
     return redis_serialize_params(hostnode->stream,params);
 }
 
+/* query string type data,implementation of GET command */
 RedisReply s_db_fetch_string(TreeNode * datanode){
     RedisParams params = redis_build_params(2);
     redis_add_param(params,redis_build_param("get"));

@@ -8,6 +8,10 @@ void ginit(){
     }
 }
 
+void gdestroy(){
+    WSACleanup();
+}
+
 char * get_real_host(const char * hostname){
     struct hostent * host = gethostbyname(hostname);
     if(!host){
@@ -50,6 +54,8 @@ connect:
         return NULL;
     }
 
+	pool_add_connection(stream);
+
     return stream;
 }
 
@@ -57,7 +63,7 @@ void sendmsg(RedisConnection stream,char * message,int length){
     send(stream->socket, message, length, 0);
 }
 
-void close(RedisConnection stream){
+/* close redis connection */
+void close_connection(RedisConnection stream){
     closesocket(stream->socket);
-    WSACleanup();
 }
