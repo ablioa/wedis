@@ -9,17 +9,8 @@
 #include <commctrl.h>
 
 #include "connection.h"
-#include "service.h"
-#include "hashview.h"
-#include "stringview.h"
-#include "listview.h"
-#include "setview.h"
-#include "zsetview.h"
-#include "databaseview.h"
 
-#include "dataview.h"
-#include "systemview.h"
-#include "callbacks.h"
+#include "view.h"
 #include "resource/resource.h"
 #include "config.h"
 #include "entry.h"
@@ -30,6 +21,8 @@
 #define DATAVIEW_WINDOW     "DATA_VIEW_WINDOW"
 #define CONSOLE_WINDOW      "CONSOLE_WINDOW"
 #define DATA_RENDER_WINDOW  "DATA_RENDER_WINDOW"
+
+#define APP_TITLE "Wedis - https://github.com/ablioa/wedis"
 
 #define MAX_SIZE	          20
 #define CONNECTION_AREA_WIDTH 200
@@ -188,5 +181,8 @@ void delete_data_node(TreeNode * db_node,const char * key);
 void sigin_in_host(HWND hwnd,int hostIndex);
 
 void appendDynamicMenu();
+
+void remove_connection(TreeNode * host);
+
 #endif
 

@@ -17,6 +17,9 @@
 
 #define WORKING_BUFFER_SIZE 10485760
 
+extern int MAX_DONE;
+extern FILE * logstream;
+
 typedef enum replpy_status{
     REPLY_STATUS_PENDING,
     REPLY_STATUS_DONE
@@ -75,19 +78,6 @@ struct redis_connection{
 	int connection_id;
 };
 typedef struct redis_connection * RedisConnection;
-
-// TODO 构造一个全局的链接池，用于链接管理
-typedef struct redis_connection_pool{
-	int size;
-	list con_pool;
-}RedisConnectionPool;
-
-extern RedisConnectionPool RedisCp;
-
-void init_connection_pool();
-void pool_add_connection(const RedisConnection con);
-int connection_comparator(const void * a,const void * b);
-void pool_remove_connection(const int connection_id);
 
 typedef struct redis_host_node{
     char host[255];
@@ -244,4 +234,68 @@ int redis_read_pack(char * text,int length,redis_pack_handle handle);
 int get_bulk_size(char * text, int * cur,int length);
 int get_status_scope(char * text,int length);
 
+
+int s_auth(TreeNode * hodeNode,char * password);
+
+void s_key_space(TreeNode * hodeNode);
+
+void s_add_string(TreeNode * db_node,char * key,int key_length,char * value,int value_length);
+
+void s_db_get_data(TreeNode * dbnode,int cursor,char * pattern,int count);
+
+void s_db_select(TreeNode * selected);
+
+void s_handle_data(TreeNode * datanode,DataType dataType);
+
+RedisReply s_db_flushdb(TreeNode * dbnode);
+
+RedisReply s_db_ping(TreeNode * dbnode);
+
+RedisReply s_db_fetch_string(TreeNode * datanode);
+
+RedisReply s_db_fetch_hash(TreeNode * datanode);
+
+RedisReply s_db_fetch_list(TreeNode * datanode);
+
+RedisReply s_db_fetch_set(TreeNode * datanode);
+
+RedisReply s_db_fetch_zset(TreeNode * datanode);
+
+void s_db_data_type(TreeNode * selected);
+
+RedisReply s_db_delete_key(TreeNode * dataNode,const char * data_key);
+
+RedisReply s_db_info_stats(TreeNode * host,const char * information);
+
+RedisReply redis_serialize_params(RedisConnection stream,RedisParams params);
+
+/**
+ * 动态参数序列化
+ * 2^32最大10位+2+2+1 = 15
+ **/
+RedisParam redis_build_param(const char * content);
+RedisParam redis_build_real_param(const char * content,int length);
+
+void appendTask(CommandType cmdType,const DataType dataType,const char * dataKey);
+
+RedisParams redis_delete_key(char * dataKey);
+
+RedisReply redis_rename_key(TreeNode * dataNode,char * dataKey,char * newKey);
+
+DataType s_db_get_data_type(const RedisConnection stream,const char * key,const int length);
+
+/** update data transfer progresss */
+void update_transfer_progress(int done,int total);
+
+/** add host node to nav tree */
+TreeNode * add_host_node(char * host_name,TreeNode * hostNode);
+
+void add_database_node(TreeNode * dbnode,int dbCount);
+
+void add_data_node(TreeNode * dbnode,RedisReply rp);
+
+void handle_redis_data(TreeNode * datanode,RedisReply data);
+
+/**/
+RedisReply s_client_list(TreeNode * hostnode);
 #endif

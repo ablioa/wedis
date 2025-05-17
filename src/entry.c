@@ -10,6 +10,9 @@ const char * set_entry_column[1]  = {"item"};
 const char * hash_entry_column[2] = {"key","value"};
 const char * zset_entry_column[2] = {"score","item"};
 
+HWND hwndPB;
+HWND hwndStatic;
+
 widget key_row[3] = {
     {NULL,{5, 5,-1,20},WC_EDIT,"",WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL,(HMENU)9},
     {NULL,{70,5,40,20},WC_BUTTON,"...",WS_VISIBLE | WS_CHILD | WS_TABSTOP,(HMENU)3},
@@ -79,11 +82,9 @@ static void add_items(HWND hWndComboBox){
 
 	for (int k = 0; k <= 4; k++){
 		COMBOBOXEXITEM item;
-		item.mask = CBEIF_TEXT | CBEIF_OVERLAY; //CBEIF_IMAGE|CBEIF_INDENT|CBEIF_OVERLAY|CBEIF_SELECTEDIMAGE|
-		//item.iImage=1;
-		//item.isSelectedImage=0;
+		item.mask = CBEIF_TEXT | CBEIF_OVERLAY; 
 		item.iOverlay =1;
-		item.pszText = (LPTSTR)(LPCTSTR)(types[k]); //_T() 
+		item.pszText = (LPTSTR)(LPCTSTR)(types[k]);
 		item.iItem = k;
 
         SendMessage(hWndComboBox,(UINT) CBEM_INSERTITEM,(WPARAM) 0,(LPARAM) &item); 
@@ -238,10 +239,6 @@ static void switch_editor_pane(int index){
     }
 }
 
-////////////////////
-HWND hwndPB;
-// HINSTANCE mhInstance;
-HWND hwndStatic;
 
 BOOL OnNotify(HWND hwndTab, HWND hwndDisplay, LPARAM lParam)
 {
@@ -306,7 +303,6 @@ BOOL CALLBACK frameProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	switch(message){
         case WM_INITDIALOG:{
             GetClientRect(hwnd, &rcClient); 
-    //        cyVScroll = GetSystemMetrics(SM_CYVSCROLL); 
 
             hwndPB = CreateWindowEx(0, WC_TABCONTROL, (LPTSTR) NULL, 
                             WS_CHILD | WS_VISIBLE, 0, 
@@ -342,8 +338,6 @@ BOOL CALLBACK frameProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
         }
 
         case WM_NOTIFY:{
-            //LPNMHDR lParam = ((LPNMHDR) lParam);
-            //MessageBox(hwnd,"ssss","sdsd",MB_OK);
             OnNotify(hwnd, hwndStatic,lParam);
             break;
         }

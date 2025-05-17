@@ -1,5 +1,8 @@
 #include "connection.h"
 
+/* global connection pool */
+RedisConnectionPool RedisCp;
+
 void ginit(){
     WORD sockVersion = MAKEWORD(2, 2);
     WSADATA data;
@@ -66,4 +69,37 @@ void sendmsg(RedisConnection stream,char * message,int length){
 /* close redis connection */
 void close_connection(RedisConnection stream){
     closesocket(stream->socket);
+}
+
+void init_connection_pool(){
+	memset(&RedisCp,0,sizeof(RedisCp));
+
+	RedisCp.size =0 ;
+
+	RedisCp.con_pool = build_list();
+}
+
+/* add connection into connection pool */
+void pool_add_connection(const RedisConnection con){
+	con->connection_id=RedisCp.size++;
+	add_node(RedisCp.con_pool,con);
+}
+
+/* redis connection comparator */
+int connection_comparator(const void * a,const void * b){
+	if(((RedisConnection)a)->connection_id == ((RedisConnection)b)->connection_id){
+        return 1;
+    }
+	return 0;
+}
+
+/* remove connection from cache*/
+void pool_remove_connection(const int connection_id){
+	RedisConnection conn = (RedisConnection)calloc(1,sizeof(struct redis_connection));
+	conn->connection_id = connection_id;
+
+	RedisConnection ret = (RedisConnection)find_from_list(RedisCp.con_pool,connection_comparator,conn);
+	if(ret != NULL){
+		close_connection(ret);
+	}
 }

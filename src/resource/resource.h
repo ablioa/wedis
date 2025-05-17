@@ -46,6 +46,7 @@
 #define IDM_STAT_CPU                            706
 #define IDM_STAT_CLUSTER                        707
 #define IDM_STAT_KEYSPACE                       708
+#define IDM_STAT_CLIENT_LIST                    709
 #define IDM_CONNECTION_POOL                     899
 #define IDM_EXIT                                4002
 #define IDM_ABOUT                               4004

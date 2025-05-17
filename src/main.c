@@ -3,60 +3,7 @@
 Application * App;
 SystemResource * resource;
 
-void initpan(HINSTANCE hInstance){
-    init_hashview(hInstance);
-    init_stringview(hInstance);
-    init_listview(hInstance);
-    init_setview(hInstance);
-    init_zsetview(hInstance);
-    init_systemview(hInstance);
-    init_database_view(hInstance);
-    init_editor_view(hInstance);
-    initSplit(hInstance);
-
-	init_connection_pool();
-
-    WNDCLASSEX hSplitClass;
-    hSplitClass.cbSize        = sizeof(hSplitClass);
-    hSplitClass.style         = 0;
-    hSplitClass.lpfnWndProc   = dataViewProc;
-    hSplitClass.cbClsExtra    = 0;
-    hSplitClass.cbWndExtra    = 0;
-    hSplitClass.hInstance     = hInstance;
-    hSplitClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
-    hSplitClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
-    hSplitClass.hbrBackground = resource->brush; 
-    hSplitClass.lpszMenuName  = 0;
-    hSplitClass.lpszClassName = DATAVIEW_WINDOW;
-    hSplitClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
-    RegisterClassEx(&hSplitClass);
-
-    WNDCLASSEX  mainClass;
-    mainClass.cbSize = sizeof (WNDCLASSEX);
-    mainClass.style = CS_HREDRAW | CS_VREDRAW | CS_BYTEALIGNWINDOW;
-    mainClass.lpfnWndProc=MainWndProc;
-    mainClass.lpszClassName = szFrameClass;
-    mainClass.hInstance = hInstance;
-    mainClass.hIcon = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
-    mainClass.hIconSm = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
-    mainClass.lpszMenuName = MAKEINTRESOURCE (ID_MAIN);
-    mainClass.cbClsExtra = 0;
-    mainClass.cbWndExtra = 0;
-    mainClass.hbrBackground = resource->brush; 
-    mainClass.hCursor = LoadCursor (0, IDC_ARROW);
-
-    RegisterClassEx(&mainClass);
-}
-
-void onExit(){
-    save_config(); 
-}
-
-/* heart beat to keep the tcp connection alive.*/ 
-VOID CALLBACK heart_beat_timer(HWND hwnd,UINT message,UINT_PTR timer,DWORD dwTime){
-    TreeNode * host = (TreeNode *) timer;
-    s_db_ping(host);
-}
+int MAX_DONE = 0;
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cmdShow){
     MSG  msg;
@@ -76,7 +23,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
 
     atexit(onExit);
 
-    HWND hwndFrame = CreateWindowEx(WS_EX_LEFT,szFrameClass, TEXT ("Wedis - https://github.com/ablioa/wedis"),
+    HWND hwndFrame = CreateWindowEx(WS_EX_LEFT,szFrameClass, TEXT (APP_TITLE),
             WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
             CW_USEDEFAULT, 0,preference->lwidth, preference->lheight,
             NULL,NULL, hInst, NULL) ;
@@ -95,60 +42,6 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, char * cmdParam, int cm
     }
 
     return msg.wParam;
-}
-
-
-void sigin_in_host(HWND hwnd,int hostIndex){
-    Host * host = get_host_by_index(appConfig,hostIndex);
-    if(host == NULL){
-        return;
-    }
-
-    RedisConnection stream = init(host->host,host->port);
-    if(stream == NULL){
-        return;
-    }
-
-    TreeNode * hostNode = addHostNode(stream,host->name);
-    int ret = s_auth(hostNode,host->password);
-    if(ret == 0){
-        add_host_node(host->name,hostNode);
-        s_key_space(hostNode);
-        App->activeHost = hostNode;
-
-        add_node(App->hostList,hostNode);
-
-        hostNode->timer_handler=SetTimer(NULL,(UINT_PTR)hostNode,5000,heart_beat_timer);
-        showWindows(App->view);
-    }
-}
-
-int match_host_node(const void * tnode,const void * target){
-    if(((TreeNode *)tnode)->tid == ((TreeNode *)target)->tid){
-        return 1;
-    }
-    return 0;
-}
-
-void remove_connection(TreeNode * host){
-    TreeNode * tnode = (TreeNode *)find_from_list(App->hostList,match_host_node,host);
-
-    if(tnode == NULL){
-        return;
-    }
-
-	/* stop the heart beat */
-	KillTimer(NULL,tnode->timer_handler);
-
-	/* remove tree node */
-    TreeView_DeleteItem(App->view->overviewHwnd,tnode->handle);
-
-    if(App->hostList->size == 0){
-        hideWindows(App->view);
-    }
-
-	/* remove then close the connection */
-	pool_remove_connection(tnode->stream->connection_id);
 }
 
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
@@ -259,6 +152,115 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
     }
 
     return DefWindowProc (hwnd, message, wParam, lParam);
+}
+
+void initpan(HINSTANCE hInstance){
+    init_hashview(hInstance);
+    init_stringview(hInstance);
+    init_listview(hInstance);
+    init_setview(hInstance);
+    init_zsetview(hInstance);
+    init_systemview(hInstance);
+    init_database_view(hInstance);
+    init_editor_view(hInstance);
+    initSplit(hInstance);
+
+	init_connection_pool();
+
+    WNDCLASSEX hSplitClass;
+    hSplitClass.cbSize        = sizeof(hSplitClass);
+    hSplitClass.style         = 0;
+    hSplitClass.lpfnWndProc   = dataViewProc;
+    hSplitClass.cbClsExtra    = 0;
+    hSplitClass.cbWndExtra    = 0;
+    hSplitClass.hInstance     = hInstance;
+    hSplitClass.hIcon         = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
+    hSplitClass.hCursor       = LoadCursor (hInstance, IDC_ARROW);
+    hSplitClass.hbrBackground = resource->brush; 
+    hSplitClass.lpszMenuName  = 0;
+    hSplitClass.lpszClassName = DATAVIEW_WINDOW;
+    hSplitClass.hIconSm       = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
+    RegisterClassEx(&hSplitClass);
+
+    WNDCLASSEX  mainClass;
+    mainClass.cbSize = sizeof (WNDCLASSEX);
+    mainClass.style = CS_HREDRAW | CS_VREDRAW | CS_BYTEALIGNWINDOW;
+    mainClass.lpfnWndProc=MainWndProc;
+    mainClass.lpszClassName = szFrameClass;
+    mainClass.hInstance = hInstance;
+    mainClass.hIcon = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
+    mainClass.hIconSm = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_MAIN));
+    mainClass.lpszMenuName = MAKEINTRESOURCE (ID_MAIN);
+    mainClass.cbClsExtra = 0;
+    mainClass.cbWndExtra = 0;
+    mainClass.hbrBackground = resource->brush; 
+    mainClass.hCursor = LoadCursor (0, IDC_ARROW);
+
+    RegisterClassEx(&mainClass);
+}
+
+void onExit(){
+    save_config(); 
+}
+
+/* heart beat to keep the tcp connection alive.*/ 
+VOID CALLBACK heart_beat_timer(HWND hwnd,UINT message,UINT_PTR timer,DWORD dwTime){
+    TreeNode * host = (TreeNode *) timer;
+    s_db_ping(host);
+}
+
+void sigin_in_host(HWND hwnd,int hostIndex){
+    Host * host = get_host_by_index(appConfig,hostIndex);
+    if(host == NULL){
+        return;
+    }
+
+    RedisConnection stream = init(host->host,host->port);
+    if(stream == NULL){
+        return;
+    }
+
+    TreeNode * hostNode = addHostNode(stream,host->name);
+    int ret = s_auth(hostNode,host->password);
+    if(ret == 0){
+        add_host_node(host->name,hostNode);
+        s_key_space(hostNode);
+        App->activeHost = hostNode;
+
+        add_node(App->hostList,hostNode);
+
+        hostNode->timer_handler=SetTimer(NULL,(UINT_PTR)hostNode,5000,heart_beat_timer);
+        showWindows(App->view);
+    }
+}
+
+int match_host_node(const void * tnode,const void * target){
+    if(((TreeNode *)tnode)->tid == ((TreeNode *)target)->tid){
+        return 1;
+    }
+    return 0;
+}
+
+/* close connection */
+void remove_connection(TreeNode * host){
+    TreeNode * tnode = (TreeNode *)find_from_list(App->hostList,match_host_node,host);
+
+    if(tnode == NULL){
+        return;
+    }
+
+	/* stop the heart beat */
+	KillTimer(NULL,tnode->timer_handler);
+
+	/* remove tree node */
+    TreeView_DeleteItem(App->view->overviewHwnd,tnode->handle);
+
+    if(App->hostList->size == 0){
+        hideWindows(App->view);
+    }
+
+	/* remove then close the connection */
+	pool_remove_connection(tnode->stream->connection_id);
 }
 
 void showWindows(AppView * v){
@@ -381,8 +383,7 @@ TreeNode * getSelectedNode(){
     ti.hItem = hItem;
     TreeView_GetItem(App->view->overviewHwnd, &ti);
 
-    TreeNode * tn = (TreeNode*) ti.lParam;
-    return tn;
+    return (TreeNode*) ti.lParam;
 }
 
 // TODO rename to build host node
@@ -692,3 +693,165 @@ void delete_data_node(TreeNode * db_node,const char * key){
     }
 }
 
+/* set progress range */
+void init_progress(int total){
+    SendMessage(App->view->progressBarHwnd,PBM_SETRANGE,0,MAKELPARAM(1,total));
+}
+
+
+/** update data transfer progress */
+void update_transfer_progress(int done,int total){
+   if(done > total){
+        done = total;
+    }
+
+    if(done > MAX_DONE){
+        char buff[128] = {0};
+        sprintf(buff,"%d/%d",done,total);
+        SendMessage(App->view->statusBarHwnd,SB_SETTEXT,5,(LPARAM)buff);
+        MAX_DONE = done;
+    }
+
+    //if(done >= total){
+    //    SendMessage(App->view->progressBarHwnd,PBM_SETPOS,(WPARAM)0,(LPARAM)0);
+    //    return;
+   // }
+
+   // SendMessage(App->view->progressBarHwnd,PBM_SETRANGE,0,MAKELPARAM(1,total));
+    //SendMessage(App->view->progressBarHwnd,PBM_SETPOS,(WPARAM)done,(LPARAM)0);
+}
+
+void handle_redis_data(TreeNode * datanode,RedisReply reply){
+    // TODO handle wrong response
+    // TODO release memory for the view
+    SendMessage(App->view->dataviewHwnd,WM_DT,(WPARAM)reply,(LPARAM)(datanode));
+}
+
+TreeNode * add_host_node(char * host_name,TreeNode * hostNode){
+    TV_INSERTSTRUCT tvinsert;
+    memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
+
+    //TreeNode * hostNode = build_tree_node(NULL,NODE_LEVEL_HOST);
+
+    tvinsert.hParent             = NULL;
+    tvinsert.hInsertAfter        = TVI_ROOT;
+    tvinsert.item.mask           = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
+    tvinsert.item.iImage         = TREE_HOST_NODE;
+    tvinsert.item.iSelectedImage = TREE_HOST_NODE;
+    tvinsert.item.pszText        = host_name;
+    tvinsert.item.lParam         = (LPARAM)hostNode;
+
+    HTREEITEM  handle = (HTREEITEM)SendMessage(App->view->overviewHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+    hostNode->handle = handle;
+
+    return hostNode;
+}
+
+void add_data_node(TreeNode * dbnode,RedisReply data){
+    for(int ix =0; ix < dbnode->subHandleSize; ix ++){
+        TreeView_DeleteItem(App->view->overviewHwnd,dbnode->subHandles[ix]);
+    }
+
+    RedisReply cursor = data->bulks[0];
+    dbnode->database->cursor = atoi(cursor->bulk->content);
+    SendMessage(App->view->dataviewHwnd,WM_DTT,(WPARAM)dbnode,(LPARAM)cursor->bulk->content);
+
+    dbnode->subHandleSize= 0;
+    RedisReply keydata   = data->bulks[1];
+
+    int total = keydata->array_length;
+    for(int ix = 0; ix < total; ix ++){
+        RedisReply item = keydata->bulks[ix];
+
+        item->bulk->content = item->bulk->content;
+        item->bulk->length  = item->bulk->length;
+
+        TreeNode * datanode = build_tree_node(dbnode,NODE_LEVEL_DATA);
+        datanode->data->data_key   = item->bulk->content;
+        datanode->data->key_length = item->bulk->length;
+        datanode->stream = dbnode->stream;
+
+        int dataType = TREE_DATA_NODE;
+        DataType dt = s_db_get_data_type(dbnode->stream,item->bulk->content,item->bulk->length);
+
+        if(dt == REDIS_STRING){
+            dataType = TREE_DATA_NODE_TEXT;
+        }else if(dt == REDIS_LIST){
+            dataType = TREE_DATA_NODE_LIST;
+        }else if (dt == REDIS_HASH){
+            dataType = TREE_DATA_NODE_HASH;
+        }else if (dt == REDIS_SET ){
+            dataType = TREE_DATA_NODE_SET;
+        }else if (dt == REDIS_ZSET){
+            dataType = TREE_DATA_NODE_ZSET;
+        }
+
+        int tlen;
+        char * encoded_key=encode(item->bulk->content,item->bulk->length,&tlen);
+
+        TV_INSERTSTRUCT tvinsert;
+        tvinsert.hParent             = dbnode->handle;
+        tvinsert.hInsertAfter        = TVI_LAST;
+        tvinsert.item.mask           = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM;
+        tvinsert.item.cchTextMax     = tlen;
+        tvinsert.item.pszText        = encoded_key;
+        tvinsert.item.iImage         = dataType;//TREE_DATA_NODE_HASH;
+        tvinsert.item.iSelectedImage = dataType;// TREE_DATA_NODE_HASH;
+        tvinsert.item.lParam         = (LPARAM)datanode;
+
+        datanode->handle = (HTREEITEM)SendMessage(App->view->overviewHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+
+        dbnode->subHandleSize ++;
+        dbnode->subHandles[ix] = datanode->handle;
+
+        free(encoded_key);
+    }
+
+    TreeView_Expand(App->view->overviewHwnd,dbnode->handle,TVE_EXPAND);
+}
+
+void add_database_node(TreeNode * hostNode,int dbCount){
+    TV_INSERTSTRUCT tvinsert;
+    
+    AppView * view = App->view;
+    HTREEITEM parentHandle = hostNode->handle;
+
+    /** initialize connection specific data */
+    hostNode->host->db_count = dbCount;
+
+    memset(&tvinsert,0,sizeof(TV_INSERTSTRUCT));
+    tvinsert.hInsertAfter=TVI_ROOT;
+    tvinsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;
+
+    for(int dbindex =0; dbindex < dbCount;dbindex ++){
+        char showName[255]={0};
+        TreeNode * dbnode = build_tree_node(hostNode,NODE_LEVEL_DATABASE);
+        dbnode->database->dbindex=dbindex;
+        sprintf(dbnode->database->dbname,"db%d",dbindex);
+        dbnode->stream = hostNode->stream;
+        
+        sprintf(showName,"%s",dbnode->database->dbname);
+        tvinsert.item.iImage         = TREE_DATABASE_NODE;
+        tvinsert.item.iSelectedImage = TREE_DATABASE_NODE;
+        tvinsert.hParent= parentHandle;
+        tvinsert.hInsertAfter=TVI_LAST;
+        tvinsert.item.pszText= showName;
+        tvinsert.item.lParam= (LPARAM)dbnode;
+
+        HTREEITEM handle = (HTREEITEM)SendMessage(view->overviewHwnd,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+        dbnode->handle = handle;
+
+        /** add other database menu*/
+        dbnode->database->db_menu  = CreatePopupMenu();
+        for(int ix =0; ix < dbCount; ix ++){
+            if(ix == dbindex){
+                continue;
+            }
+            char dbname[128]={};
+            sprintf(dbname,"db%d",ix);
+            AppendMenu(dbnode->database->db_menu,MF_STRING,WM_MOVEDATA_CMD+ix,dbname);
+        }
+    }
+
+    SendMessage(App->view->overviewHwnd,TVM_EXPAND,(WPARAM)TVE_TOGGLE,(LPARAM)(hostNode->handle));
+}
