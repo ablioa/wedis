@@ -18,4 +18,4 @@ wedis is written in C and compiled with MinGW,it depends on nothing but the wind
 
 # Screen Shot
 ---
-![wedis screen shot](screenshot/screenshot.png)
+![wedis screen shot](screen/screenshot.png)
